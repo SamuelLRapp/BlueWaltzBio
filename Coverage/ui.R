@@ -9,25 +9,22 @@
 
 library(shiny)
 
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
-
+shinyUI(pageWithSidebar(
+    
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
+    headerPanel("Dynamically append arbitrary number of inputs"),
+    
     # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
-        )
+    sidebarPanel(
+        uiOutput("allInputs"),
+        actionButton("appendInput", "Append Input")
+    ),
+    
+    # Show a plot of the generated distribution
+    mainPanel(
+        p("This shows how to add an arbitrary number of inputs
+      without resetting the values of existing inputs each time a new input is added.
+      For example, add a new input, set the new input's value to Option 2, then add
+      another input. Note that the value of the first input does not reset to Option 1.")
     )
 ))
