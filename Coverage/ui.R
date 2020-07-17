@@ -16,8 +16,8 @@ shinyUI(pageWithSidebar(
     
     # Sidebar with a slider input for number of bins
     sidebarPanel(
-        uiOutput("allInputs"),
-        actionButton("appendInput", "Append Input")
+        textAreaInput(inputId = "organismList", label = "Species Names"),
+        textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest")
     ),
     
     # Show a plot of the generated distribution

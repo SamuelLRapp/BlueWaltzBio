@@ -29,7 +29,7 @@ shinyServer(function(input, output) {
                 newInputValue <- input[[newInputId]]
             }
             # Define new input
-            newInput <- selectInput(newInputId, newInputLabel, c("Option 1", "Option 2", "Option 3"), selected=newInputValue)
+            newInput <- textInput(newInputId, newInputLabel)
             # Append new input to list of existing inputs
             inputTagList <<- tagAppendChild(inputTagList, newInput)
         })
