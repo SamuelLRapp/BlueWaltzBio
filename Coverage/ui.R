@@ -12,20 +12,21 @@ library(shiny)
 shinyUI(pageWithSidebar(
     
     # Application title
-    headerPanel("Dynamically append arbitrary number of inputs"),
+    headerPanel("Search for database coverage of your species and barcodes of interest"),
     
-    # Sidebar with a slider input for number of bins
+    # Usage instructions
+    mainPanel(
+      p("Enter the names of your species of interest and genetic bar codes of interest
+         on separate lines")
+    ),
+    
+    # Sidebar with a text area for organisms and bar code
     sidebarPanel(
         textAreaInput(inputId = "organismList", label = "Species Names"),
         textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
         actionButton(inputId = "searchButton", label = "Search")
-    ),
+    )
     
     # Show a plot of the generated distribution
-    mainPanel(
-        p("This shows how to add an arbitrary number of inputs
-      without resetting the values of existing inputs each time a new input is added.
-      For example, add a new input, set the new input's value to Option 2, then add
-      another input. Note that the value of the first input does not reset to Option 1.")
-    )
+    
 ))
