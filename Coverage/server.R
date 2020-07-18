@@ -19,14 +19,15 @@ shinyServer(function(input, output) {
         barcodeList <- strsplit(input$barcodeList, ",")
         listLength <- length(organismList[[1]])
         searchTerm <- ""
-        var <- 0
+        searchResult <- 0
         for(organism in organismList[[1]]){
             for(code in barcodeList[[1]]){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
-                var <- var + 1  
+                searchResult <- entrez_search(db = "nucleotide", term = searchTerm)
             }
         }
-        searchTerm
+        numResults <- length(searchResult$ids)
+        toString(numResults)
     })
     
 })
