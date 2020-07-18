@@ -15,8 +15,9 @@ shinyServer(function(input, output) {
     
     
     output$coverageResults <- renderUI({
-        organismList <- strsplit(input$organismList, ",")[[1]][1]
-        
+        organismList <- strsplit(input$organismList, ",")
+        listLength <- length(organismList[[1]])
+        c(listLength, "breh")[1]
     })
     
 })
