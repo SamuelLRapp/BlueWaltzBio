@@ -18,7 +18,7 @@ shinyUI(fluidPage(
     fluidRow(
       mainPanel(
         p("Enter the names of your species of interest and genetic bar codes of interest
-           on separate lines")
+           separated by commas")
       ),
     ),
  
