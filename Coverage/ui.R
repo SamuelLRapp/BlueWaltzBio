@@ -9,24 +9,32 @@
 
 library(shiny)
 
-shinyUI(pageWithSidebar(
+shinyUI(fluidPage(
     
     # Application title
-    headerPanel("Search for database coverage of your species and barcodes of interest"),
+    titlePanel("Search for database coverage of your species and barcodes of interest"),
     
     # Usage instructions
-    mainPanel(
-      p("Enter the names of your species of interest and genetic bar codes of interest
-         on separate lines")
+    fluidRow(
+      mainPanel(
+        p("Enter the names of your species of interest and genetic bar codes of interest
+           separated by commas")
+      ),
+    ),
+ 
+    fluidRow(
+      # Sidebar with a text area for organisms and bar code
+      sidebarPanel(
+          textAreaInput(inputId = "organismList", label = "Species Names"),
+          textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
+          actionButton(inputId = "searchButton", label = "Search")
+      )
     ),
     
-    # Sidebar with a text area for organisms and bar code
-    sidebarPanel(
-        textAreaInput(inputId = "organismList", label = "Species Names"),
-        textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
-        actionButton(inputId = "searchButton", label = "Search")
+    fluidRow(
+      # Show a plot of the generated distribution
+      mainPanel (
+        uiOutput("coverageResults")
+      )
     )
-    
-    # Show a plot of the generated distribution
-    
 ))
