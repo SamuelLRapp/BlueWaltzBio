@@ -12,22 +12,27 @@ library(rentrez)
 
 shinyServer(function(input, output) {
     
-    
-    
-    output$coverageResults <- renderUI({
+    coverage <- reactive({
         organismList <- strsplit(input$organismList, ",")
         barcodeList <- strsplit(input$barcodeList, ",")
-        listLength <- length(organismList[[1]])
+        organismListLength <- length(organismList[[1]])
+        codeListLength <- length(barcodeList[[1]])
         searchTerm <- ""
         searchResult <- 0
+        results <- c()
         for(organism in organismList[[1]]){
             for(code in barcodeList[[1]]){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm)
+                results <- c(results, length(searchResult$ids))
             }
         }
-        numResults <- length(searchResult$ids)
-        toString(numResults)
+        data <- matrix(results, nrow = organismListLength, ncol = codeListLength, byrow = TRUE)
+        data
     })
+    
+    output$coverageResults <- renderTable(
+        coverage(), striped = TRUE, hover = TRUE, bordered = TRUE, rownames = TRUE
+    )
     
 })
