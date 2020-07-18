@@ -13,15 +13,13 @@ library(rentrez)
 shinyServer(function(input, output) {
     
     coverage <- reactive({
-        organismList <- strsplit(input$organismList, ",")
-        barcodeList <- strsplit(input$barcodeList, ",")
-        organismListLength <- length(organismList[[1]])
-        codeListLength <- length(barcodeList[[1]])
+        organismListLength <- length(organismList())
+        codeListLength <- length(barcodeList())
         searchTerm <- ""
         searchResult <- 0
         results <- c()
-        for(organism in organismList[[1]]){
-            for(code in barcodeList[[1]]){
+        for(organism in organismList()){
+            for(code in barcodeList()){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm)
                 results <- c(results, length(searchResult$ids))
@@ -31,8 +29,18 @@ shinyServer(function(input, output) {
         data
     })
     
-    output$coverageResults <- renderTable(
-        coverage(), striped = TRUE, hover = TRUE, bordered = TRUE, rownames = TRUE
+    organismList <- reactive({
+        organismList <- strsplit(input$organismList, ",")
+        organismList[[1]]
+    })
+    
+    barcodeList <- reactive({
+        barcodeList <- strsplit(input$barcodeList, ",")
+        barcodeList[[1]]
+    })
+    
+    output$coverageResults <- DT::renderDataTable(
+        coverage(), rownames = organismList(), colnames = barcodeList()
     )
     
 })
