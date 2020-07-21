@@ -21,8 +21,8 @@ shinyServer(function(input, output) {
         for(organism in organismList()){
             for(code in barcodeList()){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
-                searchResult <- entrez_search(db = "nucleotide", term = searchTerm)
-                results <- c(results, length(searchResult$ids))
+                searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 10000)$count
+                results <- c(results, searchResult)
             }
         }
         data <- matrix(results, nrow = organismListLength, ncol = codeListLength, byrow = TRUE)
