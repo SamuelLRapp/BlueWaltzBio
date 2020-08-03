@@ -15,6 +15,10 @@ shinyServer(function(input, output) {
     coverage <- reactive({
         organismListLength <- length(organismList())
         codeListLength <- length(barcodeList())
+        validate(
+            need(organismListLength > 0, 'Please name at least one organism'),
+            need(codeListLength > 0, 'Please choose at least one barcode')
+        )
         searchTerm <- ""
         searchResult <- 0
         results <- c()
