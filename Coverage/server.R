@@ -9,11 +9,15 @@
 
 library(shiny)
 library(rentrez)
+library(taxize)
 
 shinyServer(function(input, output) {
     
     coverage <- reactive({
+        
+        organismList <- organismList()
         organismListLength <- length(organismList())
+        
         codeListLength <- length(barcodeList())
         validate(
             need(organismListLength > 0, 'Please name at least one organism'),
@@ -22,7 +26,7 @@ shinyServer(function(input, output) {
         searchTerm <- ""
         searchResult <- 0
         results <- c()
-        for(organism in organismList()){
+        for(organism in organismList){
             for(code in barcodeList()){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count
@@ -34,8 +38,32 @@ shinyServer(function(input, output) {
     })
     
     organismList <- reactive({
-        organismList <- strsplit(input$organismList, ",")
-        organismList[[1]]
+        organismList <- strsplit(input$organismList, ",")[[1]]
+        if(input$taxizeOption){
+            taxize_organism_list <- c()
+            
+            for(organism in organismList)
+            {
+                NCBI_name <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+                row_count <- nrow(NCBI_name)
+                
+                if(row_count > 0)
+                {
+                    for(i in 1:row_count)
+                    {
+                        taxa_name <- NCBI_name[[i,3]]
+                        taxize_organism_list <- c(taxize_organism_list, taxa_name)
+                    }
+                }
+                else
+                {
+                    taxize_organism_list <- c(taxize_organism_list, organism)
+                }
+            }
+            taxize_organism_list  
+        } else{
+            organismList
+        }
     })
     
     barcodeList <- reactive({
@@ -46,5 +74,20 @@ shinyServer(function(input, output) {
     output$coverageResults <- DT::renderDataTable(
         coverage(), rownames = organismList(), colnames = barcodeList()
     )
+    
+    output$debug <- renderText(
+        # class(taxize_org_list)
+        # class(barcodeList)
+         #typeof(barcodeList())
+         # typeof(taxize_org_list())
+        
+         typeof((gnr_resolve(sci = "homo", data_source_ids = 4)[[1,3]])) 
+        # NCBI_name <- gnr_resolve(sci = "homo", data_source_ids = 4) #4 = NCBI
+         
+         # taxize_org_list()[[2]]
+        # taxize_org_list()[[3]]
+        
+    )
+    
     
 })
