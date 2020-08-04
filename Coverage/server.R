@@ -14,7 +14,18 @@ library(taxize)
 shinyServer(function(input, output) {
     
     coverage <- reactive({
-        organismListLength <- length(taxize_org_list())
+        
+        organismList <- c()
+        organismListLength <- 0
+        
+        if(input$taxizeOption){
+            organismList <- taxize_org_list()
+            organismListLength <- length(taxize_org_list()) 
+        } else {
+            organismList <- organismList()
+            organismListLength <- length(organismList())
+        }
+        
         codeListLength <- length(barcodeList())
         validate(
             need(organismListLength > 0, 'Please name at least one organism'),
@@ -23,7 +34,7 @@ shinyServer(function(input, output) {
         searchTerm <- ""
         searchResult <- 0
         results <- c()
-        for(organism in taxize_org_list()){
+        for(organism in organismList){
             for(code in barcodeList()){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count
