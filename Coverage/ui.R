@@ -34,7 +34,8 @@ shinyUI(fluidPage(
     fluidRow(
       # Show a plot of the generated distribution
       mainPanel (
-          DT::dataTableOutput("coverageResults")
+          DT::dataTableOutput("coverageResults"),
+          textOutput("debug")
       )
     )
 ))
