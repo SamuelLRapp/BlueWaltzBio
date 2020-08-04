@@ -15,16 +15,8 @@ shinyServer(function(input, output) {
     
     coverage <- reactive({
         
-        organismList <- c()
-        organismListLength <- 0
-        
-        if(input$taxizeOption){
-            organismList <- taxize_org_list()
-            organismListLength <- length(taxize_org_list()) 
-        } else {
-            organismList <- organismList()
-            organismListLength <- length(organismList())
-        }
+        organismList <- organismList()
+        organismListLength <- length(organismList())
         
         codeListLength <- length(barcodeList())
         validate(
@@ -45,33 +37,33 @@ shinyServer(function(input, output) {
         data
     })
     
-    taxize_org_list <- reactive({
-        taxize_organism_list <- c()
-        
-        for(organism in organismList())
-        {
-            NCBI_name <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
-            row_count <- nrow(NCBI_name)
-
-            if(row_count > 0)
+    organismList <- reactive({
+        organismList <- strsplit(input$organismList, ",")[[1]]
+        if(input$taxizeOption){
+            taxize_organism_list <- c()
+            
+            for(organism in organismList)
             {
-                for(i in 1:row_count)
+                NCBI_name <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+                row_count <- nrow(NCBI_name)
+                
+                if(row_count > 0)
                 {
-                    taxa_name <- NCBI_name[[i,3]]
-                    taxize_organism_list <- c(taxize_organism_list, taxa_name)
+                    for(i in 1:row_count)
+                    {
+                        taxa_name <- NCBI_name[[i,3]]
+                        taxize_organism_list <- c(taxize_organism_list, taxa_name)
+                    }
+                }
+                else
+                {
+                    taxize_organism_list <- c(taxize_organism_list, organism)
                 }
             }
-            else
-            {
-                taxize_organism_list <- c(taxize_organism_list, organism)
-            }
+            taxize_organism_list  
+        } else{
+            organismList
         }
-        taxize_organism_list
-    })
-    
-    organismList <- reactive({
-        organismList <- strsplit(input$organismList, ",")
-        organismList[[1]]
     })
     
     barcodeList <- reactive({
@@ -80,7 +72,7 @@ shinyServer(function(input, output) {
     })
     
     output$coverageResults <- DT::renderDataTable(
-        coverage(), rownames = taxize_org_list(), colnames = barcodeList()
+        coverage(), rownames = organismList(), colnames = barcodeList()
     )
     
     output$debug <- renderText(
