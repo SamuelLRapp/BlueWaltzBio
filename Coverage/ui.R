@@ -27,6 +27,7 @@ shinyUI(fluidPage(
       sidebarPanel(
           textAreaInput(inputId = "organismList", label = "Species Names"),
           textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
+          checkboxInput(inputId = "taxizeOption", label = "Include taxonomic resolution", value = TRUE),
           actionButton(inputId = "searchButton", label = "Search")
       )
     ),
@@ -34,7 +35,8 @@ shinyUI(fluidPage(
     fluidRow(
       # Show a plot of the generated distribution
       mainPanel (
-          DT::dataTableOutput("coverageResults")
+          DT::dataTableOutput("coverageResults"),
+          textOutput("debug")
       )
     )
 ))
