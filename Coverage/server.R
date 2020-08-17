@@ -37,6 +37,8 @@ shinyServer(function(input, output) {
         data
     })
     
+    
+    
     organismList <- reactive({
         organismList <- strsplit(input$organismList, ",")[[1]]
         if(input$taxizeOption){

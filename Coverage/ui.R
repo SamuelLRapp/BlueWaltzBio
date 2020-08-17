@@ -28,6 +28,8 @@ shinyUI(fluidPage(
           textAreaInput(inputId = "organismList", label = "Species Names"),
           textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
           checkboxInput(inputId = "taxizeOption", label = "Include taxonomic resolution", value = TRUE),
+          checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
+          #renderUI(),
           actionButton(inputId = "searchButton", label = "Search")
       )
     ),
