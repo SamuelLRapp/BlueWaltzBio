@@ -37,7 +37,17 @@ shinyServer(function(input, output) {
         data
     })
     
+    seqLenList <- reactive({
+        if(input$seqLengthOption){
+            textList <- c()
+            for(marker in barcodeList()){
+                textList <- c(textList, textInput(marker, NULL))
+            }
+            textList
+        }
+    })
     
+    output$seqLenInputs <- renderUI(seqLenList())
     
     organismList <- reactive({
         organismList <- strsplit(input$organismList, ",")[[1]]
