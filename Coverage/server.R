@@ -29,6 +29,9 @@ shinyServer(function(input, output) {
         for(organism in organismList){
             for(code in barcodeList()){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
+                if(input$seqLengthOption){
+                    searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="")
+                }
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count
                 results <- c(results, searchResult)
             }
@@ -48,7 +51,7 @@ shinyServer(function(input, output) {
     })
     
     output$seqLenInputs <- renderUI(seqLenList())
-    
+
     organismList <- reactive({
         organismList <- strsplit(input$organismList, ",")[[1]]
         if(input$taxizeOption){
