@@ -41,7 +41,7 @@ shinyServer(function(input, output) {
         if(input$seqLengthOption){
             textList <- c()
             for(marker in barcodeList()){
-                textList <- c(textList, textInput(marker, NULL))
+                textList <- c(textList, numericInput(marker, paste("Minimum sequence length for", marker), 500))
             }
             textList
         }
