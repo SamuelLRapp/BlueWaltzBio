@@ -39,9 +39,9 @@ shinyServer(function(input, output) {
     
     seqLenList <- reactive({
         if(input$seqLengthOption){
-            textList <- c()
+            textList <- list()
             for(marker in barcodeList()){
-                textList <- c(textList, numericInput(marker, paste("Minimum sequence length for", marker), 500))
+                textList <- list(textList, numericInput(marker, paste("Minimum sequence length for", marker), 500))
             }
             textList
         }
