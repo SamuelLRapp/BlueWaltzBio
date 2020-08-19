@@ -26,8 +26,8 @@ shinyUI(fluidPage(
       # Sidebar with a text area for organisms and bar code
       sidebarPanel(
           textAreaInput(inputId = "organismList", label = "Species Names"),
-          textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
           checkboxInput(inputId = "taxizeOption", label = "Include taxonomic resolution", value = TRUE),
+          textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
           checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
           uiOutput("seqLenInputs"),
           actionButton(inputId = "searchButton", label = "Search")
