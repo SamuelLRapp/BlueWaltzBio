@@ -29,6 +29,9 @@ shinyServer(function(input, output) {
         for(organism in organismList){
             for(code in barcodeList()){
                 searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="")
+                if(input$seqLengthOption){
+                    searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="")
+                }
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count
                 results <- c(results, searchResult)
             }
@@ -37,21 +40,34 @@ shinyServer(function(input, output) {
         data
     })
     
+    seqLenList <- reactive({
+        if(input$seqLengthOption){
+            textList <- list()
+            for(marker in barcodeList()){
+                textList <- list(textList, numericInput(marker, paste("Minimum sequence length for", marker), 500, min= 0))
+            }
+            textList
+        }
+    })
+    
+    output$seqLenInputs <- renderUI(seqLenList())
+
     organismList <- reactive({
         organismList <- strsplit(input$organismList, ",")[[1]]
         if(input$taxizeOption){
             taxize_organism_list <- c()
             
-            for(organism in organismList)
+            for(i in 1:length(organismList))
             {
-                NCBI_name <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
-                row_count <- nrow(NCBI_name)
+                organism <- trimws(organismList[[i]], "b")
+                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+                row_count <- nrow(NCBI_names)
                 
                 if(row_count > 0)
                 {
-                    for(i in 1:row_count)
+                    for(j in 1:row_count)
                     {
-                        taxa_name <- NCBI_name[[i,3]]
+                        taxa_name <- NCBI_names[[j,3]]
                         taxize_organism_list <- c(taxize_organism_list, taxa_name)
                     }
                 }
@@ -80,12 +96,15 @@ shinyServer(function(input, output) {
         # class(barcodeList)
          #typeof(barcodeList())
          # typeof(taxize_org_list())
-        
-         typeof((gnr_resolve(sci = "homo", data_source_ids = 4)[[1,3]])) 
+        #"  "
+         #typeof((gnr_resolve(sci = "homo", data_source_ids = 4)[[1,3]])) 
+        #gnr_resolve(sci = "homo", data_source_ids = 4)[[1,3]]
         # NCBI_name <- gnr_resolve(sci = "homo", data_source_ids = 4) #4 = NCBI
-         
+        # typeof(strsplit(input$organismList, ",")[[1]])
          # taxize_org_list()[[2]]
         # taxize_org_list()[[3]]
+        #length(strsplit(input$organismList, ",")[[1]])
+        organismList()
         
     )
     
