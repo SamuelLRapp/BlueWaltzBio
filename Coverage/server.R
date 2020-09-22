@@ -40,7 +40,27 @@ shinyServer(function(input, output) {
         results <- c()
         for(organism in organismList){
             location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
-            results <- c(results, nrow(location))
+            if(nrow(location) == 0){
+                searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")
+                location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                if(nrow(location) == 0){
+                    searchTerm <- tax_name(query= organism, get= "family", db= "ncbi")
+                    location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                    if(nrow(location)==0){
+                        searchTerm <- tax_name(query= organism, get= "order", db= "ncbi")
+                        location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                        if(nrow(location) ==0){
+                            searchTerm <- tax_name(query= organism, get= "clas", db= "ncbi")
+                            location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                            if(nrow(location)==0){
+                                searchTerm <- tax_name(query= organism, get= "phylum", db= "ncbi")
+                                location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                                results <- c(results, nrow(location))
+                            }
+                        } else {results <- c(results, "order")}
+                    } else {results <- c(results, "family")}
+                }else {results <- c(results, "genus") }
+            } else {results <- c(results, toString(nrow(location)))}
         }
         data <- matrix(results, nrow = organismListLength, ncol = 1, byrow = TRUE)
         data
