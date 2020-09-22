@@ -10,6 +10,7 @@
 library(shiny)
 library(rentrez)
 library(taxize)
+library(tidyverse)
 library(dplyr)
 
 shinyServer(function(input, output) {
