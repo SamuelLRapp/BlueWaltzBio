@@ -92,18 +92,6 @@ shinyServer(function(input, output) {
     )
     
     output$debug <- renderText(
-        # class(taxize_org_list)
-        # class(barcodeList)
-         #typeof(barcodeList())
-         # typeof(taxize_org_list())
-        #"  "
-         #typeof((gnr_resolve(sci = "homo", data_source_ids = 4)[[1,3]])) 
-        #gnr_resolve(sci = "homo", data_source_ids = 4)[[1,3]]
-        # NCBI_name <- gnr_resolve(sci = "homo", data_source_ids = 4) #4 = NCBI
-        # typeof(strsplit(input$organismList, ",")[[1]])
-         # taxize_org_list()[[2]]
-        # taxize_org_list()[[3]]
-        #length(strsplit(input$organismList, ",")[[1]])
         organismList()
         
     )
