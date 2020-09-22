@@ -28,7 +28,9 @@ shinyServer(function(input, output) {
     
     df_18S <- file_to_DF("18S_taxonomy.txt")
     
-    coverage <- reactive({
+    
+    
+    genBankCoverage <- reactive({
         
         organismList <- organismList()
         organismListLength <- length(organismList())
@@ -103,7 +105,7 @@ shinyServer(function(input, output) {
     })
     
     output$coverageResults <- DT::renderDataTable(
-        coverage(), rownames = organismList(), colnames = barcodeList()
+        genBankCoverage(), rownames = organismList(), colnames = barcodeList()
     )
     
     output$debug <- renderText(
