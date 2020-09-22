@@ -10,7 +10,7 @@
 library(shiny)
 
 shinyUI(fluidPage(
-    navBarPage("Coverage",
+    navbarPage("Coverage",
       tabPanel("NCBI",          #NCBI Tab    
         # Application title
         titlePanel("Find NCBI records of your species and barcodes of interest"),
@@ -36,12 +36,9 @@ shinyUI(fluidPage(
     
         fluidRow(
           # Show a plot of the generated distribution
-          tabsetPanel (type = "tabs", 
-              #tabPanel(textOutput("debug")),
-              tabPanel(DT::dataTableOutput("coverageResults")),
-              #tabPanel(),
+              DT::dataTableOutput("coverageResults")
           
-          )
+          
         )
       ),
       
