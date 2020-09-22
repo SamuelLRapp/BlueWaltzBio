@@ -10,8 +10,22 @@
 library(shiny)
 library(rentrez)
 library(taxize)
+library(dplyr)
 
 shinyServer(function(input, output) {
+    
+    file_to_DF <- function(filepath) {
+        #phyloseq::import_qiime_sample_data(input$in_metadata$datapath) %>%
+        #    as.matrix() %>%
+        #    as.data.frame()
+
+        taxonomytable<-read.delim(filepath, header=FALSE)
+        taxonomy_only_table <-select(taxonomytable, V2) %>%
+            separate(V2, c("domain", "phylum", "class", "order", "family", "genus", "genus species"), sep = ";",remove=FALSE)
+        #change taxon data to only have genus_spp, what rGlobi accepts as an argument
+    }
+    
+    df_18S <- file_to_DF("18S_taxonomy.txt")
     
     coverage <- reactive({
         
