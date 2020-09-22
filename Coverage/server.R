@@ -40,7 +40,7 @@ shinyServer(function(input, output) {
         results <- c()
         for(organism in organismList){
             location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
-            results <- c(results, ncol(location))
+            results <- c(results, nrow(location))
         }
         data <- matrix(results, nrow = organismListLength, ncol = 1, byrow = TRUE)
         data
