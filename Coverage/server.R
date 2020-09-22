@@ -28,12 +28,40 @@ shinyServer(function(input, output) {
     
     df_18S <- file_to_DF("18S_taxonomy.txt")
     
-    
+    cruxOrganismList <- reactive({
+        organismList <- strsplit(input$CRUXorganismList, ",")[[1]]
+        if(input$CRUXtaxizeOption){
+            taxize_organism_list <- c()
+            
+            for(i in 1:length(organismList))
+            {
+                organism <- trimws(organismList[[i]], "b")
+                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI      THIS NEEDS TO GET VERIFIED
+                row_count <- nrow(NCBI_names)
+                
+                if(row_count > 0)
+                {
+                    for(j in 1:row_count)
+                    {
+                        taxa_name <- NCBI_names[[j,3]]
+                        taxize_organism_list <- c(taxize_organism_list, taxa_name)
+                    }
+                }
+                else
+                {
+                    taxize_organism_list <- c(taxize_organism_list, organism)
+                }
+            }
+            taxize_organism_list  
+        } else{
+            organismList
+        }
+    })
     
     genBankCoverage <- reactive({
         
-        organismList <- organismList()
-        organismListLength <- length(organismList())
+        organismList <- NCBIorganismList()
+        organismListLength <- length(organismList)
         
         codeListLength <- length(barcodeList())
         validate(
@@ -69,9 +97,9 @@ shinyServer(function(input, output) {
     
     output$seqLenInputs <- renderUI(seqLenList())
 
-    organismList <- reactive({
-        organismList <- strsplit(input$organismList, ",")[[1]]
-        if(input$taxizeOption){
+    NCBIorganismList <- reactive({
+        organismList <- strsplit(input$NCBIorganismList, ",")[[1]]
+        if(input$NCBItaxizeOption){
             taxize_organism_list <- c()
             
             for(i in 1:length(organismList))
@@ -105,7 +133,7 @@ shinyServer(function(input, output) {
     })
     
     output$coverageResults <- DT::renderDataTable(
-        genBankCoverage(), rownames = organismList(), colnames = barcodeList()
+        genBankCoverage(), rownames = NCBIorganismList(), colnames = barcodeList()
     )
     
     output$debug <- renderText(

@@ -26,8 +26,8 @@ shinyUI(fluidPage(
         fluidRow(
           # Sidebar with a text area for organisms and bar code
           sidebarPanel(
-              textAreaInput(inputId = "organismList", label = "Species Names"),
-              checkboxInput(inputId = "taxizeOption", label = "Include taxonomic resolution", value = TRUE),
+              textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
+              checkboxInput(inputId = "NCBItaxizeOption", label = "Include taxonomic resolution", value = TRUE),
               textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
               uiOutput("seqLenInputs"),
@@ -57,8 +57,8 @@ shinyUI(fluidPage(
                fluidRow(
                  # Sidebar with a text area for organisms and bar code
                  sidebarPanel(
-                   textAreaInput(inputId = "organismList", label = "Species Names"),
-                   checkboxInput(inputId = "taxizeOption", label = "Include taxonomic resolution", value = TRUE),
+                   textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
+                   checkboxInput(inputId = "CRUXtaxizeOption", label = "Include taxonomic resolution", value = TRUE),
                  )
                ),
       )
