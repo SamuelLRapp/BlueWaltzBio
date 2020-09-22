@@ -13,7 +13,7 @@ shinyUI(fluidPage(
     navBarPage("Coverage",
       tabPanel("NCBI",          #NCBI Tab    
         # Application title
-        titlePanel("Search for database coverage of your species and barcodes of interest"),
+        titlePanel("Find NCBI records of your species and barcodes of interest"),
     
         # Usage instructions
         fluidRow(
@@ -31,7 +31,6 @@ shinyUI(fluidPage(
               textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
               uiOutput("seqLenInputs"),
-              actionButton(inputId = "searchButton", label = "Search")
           )
         ),
     
@@ -48,7 +47,23 @@ shinyUI(fluidPage(
       
       #CRUX tab
       tabPanel("CRUX",
-        
+               # Application title
+               titlePanel("Find CRUX database coverage of your species of interest"),
+               
+               # Usage instructions
+               fluidRow(
+                 mainPanel(
+                   p("Enter the names of your species of interest")
+                 ),
+               ),
+               
+               fluidRow(
+                 # Sidebar with a text area for organisms and bar code
+                 sidebarPanel(
+                   textAreaInput(inputId = "organismList", label = "Species Names"),
+                   checkboxInput(inputId = "taxizeOption", label = "Include taxonomic resolution", value = TRUE),
+                 )
+               ),
       )
     )
 ))
