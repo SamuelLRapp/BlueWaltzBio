@@ -28,6 +28,24 @@ shinyServer(function(input, output) {
     
     df_18S <- file_to_DF("18S_taxonomy.txt")
     
+    cruxCoverage <- reactive({
+        organismList <- cruxOrganismList()
+        organismListLength <- length(organismList)
+        
+        validate(
+            need(organismListLength > 0, 'Please name at least one organism')
+        )
+        searchTerm <- ""
+        searchResult <- 0
+        results <- c()
+        for(organism in organismList){
+            location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+            results <- c(results, ncol(location))
+        }
+        data <- matrix(results, nrow = organismListLength, ncol = 1, byrow = TRUE)
+        data
+    })
+    
     cruxOrganismList <- reactive({
         organismList <- strsplit(input$CRUXorganismList, ",")[[1]]
         if(input$CRUXtaxizeOption){
