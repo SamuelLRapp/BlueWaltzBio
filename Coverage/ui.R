@@ -36,7 +36,7 @@ shinyUI(fluidPage(
     
         fluidRow(
           # Show a plot of the generated distribution
-              DT::dataTableOutput("coverageResults")
+              DT::dataTableOutput("NCBIcoverageResults")
           
           
         )
@@ -61,6 +61,11 @@ shinyUI(fluidPage(
                    checkboxInput(inputId = "CRUXtaxizeOption", label = "Include taxonomic resolution", value = TRUE),
                  )
                ),
+               
+               fluidRow(
+                 # Show a plot of the generated distribution
+                 DT::dataTableOutput("CRUXcoverageResults")
+               )
       )
     )
 ))

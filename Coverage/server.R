@@ -150,8 +150,12 @@ shinyServer(function(input, output) {
         barcodeList[[1]]
     })
     
-    output$coverageResults <- DT::renderDataTable(
+    output$NCBIcoverageResults <- DT::renderDataTable(
         genBankCoverage(), rownames = NCBIorganismList(), colnames = barcodeList()
+    )
+    
+    output$CRUXcoverageResults <- DT::renderDataTable(
+        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S")
     )
     
     output$debug <- renderText(
