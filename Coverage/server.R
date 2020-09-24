@@ -41,22 +41,22 @@ shinyServer(function(input, output) {
         for(organism in organismList){
             location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
             if(nrow(location) == 0){
-                searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")
-                location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")[1,3]
+                location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
                 if(nrow(location) == 0){
-                    searchTerm <- tax_name(query= organism, get= "family", db= "ncbi")
-                    location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                    searchTerm <- tax_name(query= organism, get= "family", db= "ncbi")[1,3]
+                    location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
                     if(nrow(location)==0){
-                        searchTerm <- tax_name(query= organism, get= "order", db= "ncbi")
-                        location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                        searchTerm <- tax_name(query= organism, get= "order", db= "ncbi")[1,3]
+                        location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
                         if(nrow(location) ==0){
-                            searchTerm <- tax_name(query= organism, get= "clas", db= "ncbi")
-                            location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                            searchTerm <- tax_name(query= organism, get= "class", db= "ncbi")[1,3]
+                            location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
                             if(nrow(location)==0){
-                                searchTerm <- tax_name(query= organism, get= "phylum", db= "ncbi")
-                                location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
+                                searchTerm <- tax_name(query= organism, get= "phylum", db= "ncbi")[1,3]
+                                location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
                                 results <- c(results, nrow(location))
-                            }
+                            } else { results <- c(results, "class")}
                         } else {results <- c(results, "order")}
                     } else {results <- c(results, "family")}
                 }else {results <- c(results, "genus") }
