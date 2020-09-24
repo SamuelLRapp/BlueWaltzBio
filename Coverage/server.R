@@ -27,6 +27,10 @@ shinyServer(function(input, output) {
     }
     
     df_18S <- file_to_DF("18S_taxonomy.txt")
+    df_16S <- file_to_DF("16S_taxonomy.txt")
+    
+    
+    dbList <- list(df_18S, df_16S)
     
     cruxCoverage <- reactive({
         organismList <- cruxOrganismList()
@@ -39,30 +43,33 @@ shinyServer(function(input, output) {
         searchResult <- 0
         results <- c()
         for(organism in organismList){
-            location <- which(taxonomy_only_table == organism, arr.ind = TRUE)
-            if(nrow(location) == 0){
-                searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")[1,3]
-                location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
+            for(table in dbList){
+                location <- which(table == organism, arr.ind = TRUE)
                 if(nrow(location) == 0){
-                    searchTerm <- tax_name(query= organism, get= "family", db= "ncbi")[1,3]
-                    location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
-                    if(nrow(location)==0){
-                        searchTerm <- tax_name(query= organism, get= "order", db= "ncbi")[1,3]
-                        location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
-                        if(nrow(location) ==0){
-                            searchTerm <- tax_name(query= organism, get= "class", db= "ncbi")[1,3]
-                            location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
-                            if(nrow(location)==0){
-                                searchTerm <- tax_name(query= organism, get= "phylum", db= "ncbi")[1,3]
-                                location <- which(taxonomy_only_table == searchTerm, arr.ind = TRUE)
-                                results <- c(results, nrow(location))
-                            } else { results <- c(results, "class")}
-                        } else {results <- c(results, "order")}
-                    } else {results <- c(results, "family")}
-                }else {results <- c(results, "genus") }
-            } else {results <- c(results, toString(nrow(location)))}
+                    searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")[1,3]
+                    location <- which(table == searchTerm, arr.ind = TRUE)
+                    if(nrow(location) == 0){
+                        searchTerm <- tax_name(query= organism, get= "family", db= "ncbi")[1,3]
+                        location <- which(table == searchTerm, arr.ind = TRUE)
+                        if(nrow(location)==0){
+                            searchTerm <- tax_name(query= organism, get= "order", db= "ncbi")[1,3]
+                            location <- which(table == searchTerm, arr.ind = TRUE)
+                            if(nrow(location) ==0){
+                                searchTerm <- tax_name(query= organism, get= "class", db= "ncbi")[1,3]
+                                location <- which(table == searchTerm, arr.ind = TRUE)
+                                if(nrow(location)==0){
+                                    searchTerm <- tax_name(query= organism, get= "phylum", db= "ncbi")[1,3]
+                                    location <- which(table == searchTerm, arr.ind = TRUE)
+                                    results <- c(results, nrow(location))
+                                } else { results <- c(results, "class")}
+                            } else {results <- c(results, "order")}
+                        } else {results <- c(results, "family")}
+                    }else {results <- c(results, "genus") }
+                } else {results <- c(results, toString(nrow(location)))}
+            }
+            
         }
-        data <- matrix(results, nrow = organismListLength, ncol = 1, byrow = TRUE)
+        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE)
         data
     })
     
@@ -175,7 +182,7 @@ shinyServer(function(input, output) {
     )
     
     output$CRUXcoverageResults <- DT::renderDataTable(
-        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S")
+        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S")
     )
     
     output$debug <- renderText(
