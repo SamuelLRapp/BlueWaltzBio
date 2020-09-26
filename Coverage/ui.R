@@ -59,6 +59,7 @@ shinyUI(fluidPage(
                  sidebarPanel(
                    textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
                    checkboxInput(inputId = "CRUXtaxizeOption", label = "Include taxonomic resolution", value = TRUE),
+                   actionButton("searchButton", "Search")
                  )
                ),
                

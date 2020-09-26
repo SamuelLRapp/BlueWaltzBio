@@ -15,7 +15,7 @@ library(dplyr)
 
 shinyServer(function(input, output) {
     
-    # file_to_DF <- function(filepath) {
+    # file_to_DF <- function(filepath) {                                  LEAVE THESE HERE FOR LATER
     #     taxonomytable<-read.delim(filepath, header=FALSE)
     #     taxonomy_only_table <-select(taxonomytable, V2) %>%
     #         separate(V2, c("domain", "phylum", "class", "order", "family", "genus", "genus species"), sep = ";",remove=FALSE)
@@ -68,8 +68,12 @@ shinyServer(function(input, output) {
         data
     })
     
+    cruxOrgSearch <- eventReactive(input$searchButton, {
+        input$CRUXorganismList
+    })
+    
     cruxOrganismList <- reactive({
-        organismList <- strsplit(input$CRUXorganismList, ",")[[1]]
+        organismList <- strsplit(cruxOrgSearch(), ",")[[1]]
         if(input$CRUXtaxizeOption){
             taxize_organism_list <- c()
             
