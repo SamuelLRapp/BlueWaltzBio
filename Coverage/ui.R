@@ -51,7 +51,7 @@ shinyUI(fluidPage(
                # Usage instructions
                fluidRow(
                  mainPanel(
-                   p("Enter the names of your species of interest")
+                   p("Enter the names of your species of interest, then hit the \"search\" button. NOTE: This may take upwards of 10 minutes to load")
                  ),
                ),
                
