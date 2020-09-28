@@ -20,16 +20,18 @@ shinyServer(function(input, output) {
         taxonomy_only_table <-select(taxonomytable, V2) %>%
             separate(V2, c("domain", "phylum", "class", "order", "family", "genus", "genus species"), sep = ";",remove=FALSE)
     }
-
+    
+    df_18S <- file_to_DF("18S_taxonomy.txt")
+    df_16S <- file_to_DF("16S_taxonomy.txt")
+    df_PITS <- file_to_DF("PITS_taxonomy.txt")
+    df_CO1 <- file_to_DF("CO1_taxonomy.txt")
+    df_FITS <- file_to_DF("FITS_taxonomy.txt")
+    
+    
+    dbList <- list(df_18S, df_16S, df_PITS, df_CO1, df_FITS)
     
     
     cruxCoverage <- reactive({
-        df_18S <- file_to_DF("18S_taxonomy.txt")
-        df_16S <- file_to_DF("16S_taxonomy.txt")
-        
-        
-        dbList <- list(df_18S, df_16S)
-        
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
         
@@ -183,7 +185,7 @@ shinyServer(function(input, output) {
     )
     
     output$CRUXcoverageResults <- DT::renderDataTable(
-        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S")
+        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS")
     )
     
     output$debug <- renderText(
