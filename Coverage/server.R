@@ -26,9 +26,11 @@ shinyServer(function(input, output) {
     df_PITS <- file_to_DF("PITS_taxonomy.txt")
     df_CO1 <- file_to_DF("CO1_taxonomy.txt")
     df_FITS <- file_to_DF("FITS_taxonomy.txt")
+    df_trnL <- file_to_DF("trnL_taxonomy.txt")
+    df_Vert12S <- file_to_DF("Vert12S_taxonomy.txt")
     
     
-    dbList <- list(df_18S, df_16S, df_PITS, df_CO1, df_FITS)
+    dbList <- list(df_18S, df_16S, df_PITS, df_CO1, df_FITS, df_trnL, df_Vert12S)
     
     
     cruxCoverage <- reactive({
@@ -186,7 +188,7 @@ shinyServer(function(input, output) {
     )
     
     output$CRUXcoverageResults <- DT::renderDataTable(
-        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS")
+        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
         
     )
     
