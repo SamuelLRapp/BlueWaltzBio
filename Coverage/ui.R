@@ -24,6 +24,7 @@ shinyUI(fluidPage(
           ),
         ),
  
+
         fluidRow(
           # Sidebar with a text area for organisms and bar code
           sidebarPanel(
@@ -34,6 +35,7 @@ shinyUI(fluidPage(
               uiOutput("seqLenInputs"),
           )
         ),
+
     
         fluidRow(
           # Show a plot of the generated distribution

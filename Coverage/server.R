@@ -145,6 +145,7 @@ shinyServer(function(input, output) {
     
     output$seqLenInputs <- renderUI(seqLenList())
 
+
     NCBIorganismList <- reactive({
         organismList <- strsplit(input$NCBIorganismList, ",")[[1]]
         if(input$NCBItaxizeOption){
@@ -186,10 +187,6 @@ shinyServer(function(input, output) {
     
     output$CRUXcoverageResults <- DT::renderDataTable(
         cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS")
-    )
-    
-    output$debug <- renderText(
-        organismList()
         
     )
     
