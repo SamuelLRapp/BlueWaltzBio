@@ -15,19 +15,21 @@ library(dplyr)
 
 shinyServer(function(input, output) {
     
-    # file_to_DF <- function(filepath) {                                  LEAVE THESE HERE FOR LATER
-    #     taxonomytable<-read.delim(filepath, header=FALSE)
-    #     taxonomy_only_table <-select(taxonomytable, V2) %>%
-    #         separate(V2, c("domain", "phylum", "class", "order", "family", "genus", "genus species"), sep = ";",remove=FALSE)
-    # }
-    # 
-    # df_18S <- file_to_DF("18S_taxonomy.txt")
-    # df_16S <- file_to_DF("16S_taxonomy.txt")
-    # 
-    # 
-    # dbList <- list(df_18S, df_16S)
+    file_to_DF <- function(filepath) {                                  #LEAVE THESE HERE FOR LATER
+        taxonomytable<-read.delim(filepath, header=FALSE)
+        taxonomy_only_table <-select(taxonomytable, V2) %>%
+            separate(V2, c("domain", "phylum", "class", "order", "family", "genus", "genus species"), sep = ";",remove=FALSE)
+    }
+
+    
     
     cruxCoverage <- reactive({
+        df_18S <- file_to_DF("18S_taxonomy.txt")
+        df_16S <- file_to_DF("16S_taxonomy.txt")
+        
+        
+        dbList <- list(df_18S, df_16S)
+        
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
         

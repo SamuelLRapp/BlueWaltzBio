@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(shinycssloaders)
 
 shinyUI(fluidPage(
     navbarPage("Coverage",
@@ -65,7 +66,7 @@ shinyUI(fluidPage(
                
                fluidRow(
                  # Show a plot of the generated distribution
-                 DT::dataTableOutput("CRUXcoverageResults")
+                 DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1")
                )
       )
     )
