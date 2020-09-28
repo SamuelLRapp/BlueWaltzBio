@@ -53,7 +53,7 @@ shinyUI(fluidPage(
                # Usage instructions
                fluidRow(
                  mainPanel(
-                   p("Enter the names of your species of interest, then hit the \"search\" button.\n NOTE: This may take upwards of 10 minutes on initial load. Subsequent searches will be faster.")
+                   p("Enter the names of your species of interest, then hit the \"search\" button.\n NOTE: This may take upwards of 20 minutes on initial load. Subsequent searches will be faster.")
                  ),
                ),
                
