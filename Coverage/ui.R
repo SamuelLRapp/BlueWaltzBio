@@ -20,7 +20,7 @@ shinyUI(fluidPage(
         fluidRow(
           mainPanel(
             p("Enter the names of your species of interest and genetic bar codes of interest
-               separated by commas")
+               separated by commas.\n NOTE: The appication may take upwards of 15 minutes on initial load. Subsequent searches will be faster.")
           ),
         ),
  
@@ -39,9 +39,7 @@ shinyUI(fluidPage(
     
         fluidRow(
           # Show a plot of the generated distribution
-              DT::dataTableOutput("NCBIcoverageResults")
-          
-          
+              DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1")
         )
       ),
       
@@ -53,7 +51,7 @@ shinyUI(fluidPage(
                # Usage instructions
                fluidRow(
                  mainPanel(
-                   p("Enter the names of your species of interest, then hit the \"search\" button.\n NOTE: This may take upwards of 20 minutes on initial load. Subsequent searches will be faster.")
+                   p("Enter the names of your species of interest, then hit the \"search\" button.\n NOTE: The app may take upwards of 15 minutes on initial load. Subsequent searches will be faster.")
                  ),
                ),
                
