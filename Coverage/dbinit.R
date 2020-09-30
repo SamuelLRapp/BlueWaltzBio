@@ -1,6 +1,9 @@
 # Imports:
 library(RSQLite)
 library(dplyr)
+library(dbplyr)
+library(DBI)
+library(tidyverse)
 
 #Creating databases from taxonomy files/datafames:
 file_to_DF <- function(filepath) {
@@ -10,20 +13,20 @@ file_to_DF <- function(filepath) {
 }
 
 #running function to create dataframes
-df_18S <- file_to_DF("18S_taxonomy.txt")
-df_16S <- file_to_DF("16S_taxonomy.txt")
-df_PITS <- file_to_DF("PITS_taxonomy.txt")
-df_CO1 <- file_to_DF("CO1_taxonomy.txt")
-df_FITS <- file_to_DF("FITS_taxonomy.txt")
-df_trnL <- file_to_DF("trnL_taxonomy.txt")
-df_Vert12S <- file_to_DF("Vert12S_taxonomy.txt")
+df_18S <- file_to_DF("Coverage/18S_taxonomy.txt")
+df_16S <- file_to_DF("Coverage/16S_taxonomy.txt")
+df_PITS <- file_to_DF("Coverage/PITS_taxonomy.txt")
+df_CO1 <- file_to_DF("Coverage/CO1_taxonomy.txt")
+df_FITS <- file_to_DF("Coverage/FITS_taxonomy.txt")
+df_trnL <- file_to_DF("Coverage/trnL_taxonomy.txt")
+df_Vert12S <- file_to_DF("Coverage/Vert12S_taxonomy.txt")
 
 #create SQLite DB
-taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") 
+taxaDB <- dbConnect(RSQLite::SQLite(), "Coverage/taxa-db.sqlite")
 
 #populate SQLite Db with dataframes
 dbWriteTable(taxaDB, "18S", df_18S)
-dbWriteTable(taxaDB, "16", df_16S)
+dbWriteTable(taxaDB, "16S", df_16S)
 dbWriteTable(taxaDB, "PITS", df_PITS)
 dbWriteTable(taxaDB, "CO1", df_CO1)
 dbWriteTable(taxaDB, "FITS", df_FITS)
