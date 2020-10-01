@@ -9,7 +9,7 @@ library(tidyverse)
 file_to_DF <- function(filepath) {
   taxonomytable<-read.delim(filepath, header=FALSE)
   taxonomy_only_table <-select(taxonomytable, V2) %>%
-  separate(V2, c("domain", "phylum", "class", "order",  "family", "genus", "genus species"), sep = ";",remove=FALSE)
+  separate(V2, c("regio", "phylum", "classis", "ordo",  "familia", "genus", "genusspecies"), sep = ";",remove=FALSE)
 }
 
 #running function to create dataframes
@@ -25,10 +25,10 @@ df_Vert12S <- file_to_DF("Coverage/Vert12S_taxonomy.txt")
 taxaDB <- dbConnect(RSQLite::SQLite(), "Coverage/taxa-db.sqlite")
 
 #populate SQLite Db with dataframes
-dbWriteTable(taxaDB, "18S", df_18S)
-dbWriteTable(taxaDB, "16S", df_16S)
-dbWriteTable(taxaDB, "PITS", df_PITS)
-dbWriteTable(taxaDB, "CO1", df_CO1)
-dbWriteTable(taxaDB, "FITS", df_FITS)
-dbWriteTable(taxaDB, "trnL", df_trnL)
-dbWriteTable(taxaDB, "Vert12S", df_Vert12S)
+dbWriteTable(taxaDB, "MB18S", df_18S)
+dbWriteTable(taxaDB, "MB16S", df_16S)
+dbWriteTable(taxaDB, "MBPITS", df_PITS)
+dbWriteTable(taxaDB, "MBCO1", df_CO1)
+dbWriteTable(taxaDB, "MBFITS", df_FITS)
+dbWriteTable(taxaDB, "MBtrnL", df_trnL)
+dbWriteTable(taxaDB, "MB12S", df_Vert12S)
