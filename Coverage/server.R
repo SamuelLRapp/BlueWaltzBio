@@ -14,13 +14,14 @@ library(tidyverse)
 library(dplyr)
 
 shinyServer(function(input, output) {
-    dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S")
-
-    taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
     
     cruxCoverage <- reactive({
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
+        
+        dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S")
+        
+        taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
         
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
@@ -30,22 +31,22 @@ shinyServer(function(input, output) {
         results <- c()
         for(organism in organismList){
             for(table in dbList){
-                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= \'", organism, "\' or phylum= \'", organism, "\' or classis= \'", organism, "\' or ordo= \'", organism, "\' or familia= \'", organism, "\' or genus= \'", organism, "\' or genusspecies= \'", organism, "\'"))
+                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
                 if(nrow(location) == 0){
                     searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")[1,3]
-                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= \'", searchTerm, "\' or phylum= \'", searchTerm, "\' or classis= \'", searchTerm, "\' or ordo= \'", searchTerm, "\' or familia= \'", searchTerm, "\' or genus= \'", searchTerm, "\' or genusspecies= \'", searchTerm, "\'"))
+                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
                     if(nrow(location) == 0){
                         searchTerm <- tax_name(query= organism, get= "family", db= "ncbi")[1,3]
-                        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= \'", searchTerm, "\' or phylum= \'", searchTerm, "\' or classis= \'", searchTerm, "\' or ordo= \'", searchTerm, "\' or familia= \'", searchTerm, "\' or genus= \'", searchTerm, "\' or genusspecies= \'", searchTerm, "\'"))
+                        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
                         if(nrow(location)==0){
                             searchTerm <- tax_name(query= organism, get= "order", db= "ncbi")[1,3]
-                            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= \'", searchTerm, "\' or phylum= \'", searchTerm, "\' or classis= \'", searchTerm, "\' or ordo= \'", searchTerm, "\' or familia= \'", searchTerm, "\' or genus= \'", searchTerm, "\' or genusspecies= \'", searchTerm, "\'"))
+                            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
                             if(nrow(location) ==0){
                                 searchTerm <- tax_name(query= organism, get= "class", db= "ncbi")[1,3]
-                                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= \'", searchTerm, "\' or phylum= \'", searchTerm, "\' or classis= \'", searchTerm, "\' or ordo= \'", searchTerm, "\' or familia= \'", searchTerm, "\' or genus= \'", searchTerm, "\' or genusspecies= \'", searchTerm, "\'"))
+                                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
                                 if(nrow(location)==0){
                                     searchTerm <- tax_name(query= organism, get= "phylum", db= "ncbi")[1,3]
-                                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= \'", searchTerm, "\' or phylum= \'", searchTerm, "\' or classis= \'", searchTerm, "\' or ordo= \'", searchTerm, "\' or familia= \'", searchTerm, "\' or genus= \'", searchTerm, "\' or genusspecies= \'", searchTerm, "\'"))
+                                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
                                     results <- c(results, nrow(location))
                                 } else { results <- c(results, "class")}
                             } else {results <- c(results, "order")}
@@ -55,6 +56,9 @@ shinyServer(function(input, output) {
             }
             
         }
+        dbDisconnect(taxaDB)
+        unlink("taxa-db.sqlite")
+        
         data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE)
         data
     })
