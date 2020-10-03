@@ -12,6 +12,7 @@ library(rentrez)
 library(taxize)
 library(tidyverse)
 library(dplyr)
+library(RSQLite)
 
 shinyServer(function(input, output) {
     
