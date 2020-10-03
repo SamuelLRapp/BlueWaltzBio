@@ -32,3 +32,6 @@ dbWriteTable(taxaDB, "MBCO1", df_CO1)
 dbWriteTable(taxaDB, "MBFITS", df_FITS)
 dbWriteTable(taxaDB, "MBtrnL", df_trnL)
 dbWriteTable(taxaDB, "MB12S", df_Vert12S)
+
+dbDisconnect(taxaDB)
+unlink("taxa-db.sqlite")
