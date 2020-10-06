@@ -58,7 +58,7 @@ shinyServer(function(input, output) {
             
         }
         dbDisconnect(taxaDB)
-        unlink("taxa-db.sqlite")
+        # unlink("taxa-db.sqlite")
         
         data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE)
         data
