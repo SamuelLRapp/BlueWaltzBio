@@ -10,6 +10,7 @@
 library(shiny)
 library(shinycssloaders)
 library(shinyWidgets)
+library(tidyverse)
 
 shinyUI(fluidPage(
   
@@ -38,7 +39,6 @@ shinyUI(fluidPage(
                dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
                p(), #empty space 
                
-               dropdown(label='test', dropdown(label="yo"))
              ),
            ),
            
