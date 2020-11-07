@@ -16,37 +16,37 @@ library(RSQLite)
 
 shinyServer(function(input, output) {
     
-    cruxOrgSearch <- eventReactive(input$searchButton, {
-        input$CRUXorganismList
+    cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+        input$CRUXorganismList #Returns as a string
     })
     
-    cruxOrganismList <- reactive({
-        organismList <- strsplit(cruxOrgSearch(), ",")[[1]]
-        if(input$CRUXtaxizeOption){
-            taxize_organism_list <- c()
+    cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
+        organismList <- strsplit(cruxOrgSearch(), ",")[[1]] #separate based on commas
+        if(input$CRUXtaxizeOption){ #if the taxize option is selected
+            taxize_organism_list <- c() #initialize an empty vector
             
             for(i in 1:length(organismList))
             {
-                organism <- trimws(organismList[[i]], "b")
-                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI      THIS NEEDS TO GET VERIFIED
-                row_count <- nrow(NCBI_names)
+                organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
+                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+                row_count <- nrow(NCBI_names) # get number of rows in dataframe
                 
-                if(row_count > 0)
+                if(row_count > 0) #If a legitimate name was found
                 {
                     for(j in 1:row_count)
                     {
-                        taxa_name <- NCBI_names[[j,3]]
-                        taxize_organism_list <- c(taxize_organism_list, taxa_name)
+                        taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
+                        taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
                     }
                 }
                 else
                 {
-                    taxize_organism_list <- c(taxize_organism_list, organism)
+                    taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
             taxize_organism_list  
         } else{
-            organismList
+            organismList #return the list as is
         }
     })
     
@@ -54,18 +54,20 @@ shinyServer(function(input, output) {
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
         
-        dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S")
-        
-        taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
-        
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
         )
+        
+        dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
+        
+        taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
+        
         searchTerm <- ""
         searchResult <- 0
         results <- c()
         for(organism in organismList){
             for(table in dbList){
+                # 
                 location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
                 if(nrow(location) == 0){
                     searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")[1,3]
