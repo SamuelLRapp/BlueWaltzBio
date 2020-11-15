@@ -7,8 +7,6 @@
 #    http://shiny.rstudio.com/
 #
 
-#;lkasdjf;aldf
-
 library(shiny)
 library(rentrez)
 library(taxize)
