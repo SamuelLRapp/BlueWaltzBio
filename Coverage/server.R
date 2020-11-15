@@ -98,8 +98,8 @@ shinyServer(function(input, output) {
         dbDisconnect(taxaDB)
         # unlink("taxa-db.sqlite")
         
-        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
-        data #return data matrix
+        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE)
+        data
     })
     
     NCBIorganismList <- reactive({
