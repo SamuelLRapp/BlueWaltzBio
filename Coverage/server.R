@@ -186,5 +186,31 @@ shinyServer(function(input, output) {
         
     )
     
+    # Download NCBI table
+    output$download <- downloadHandler(
+        filename = function() {
+            paste(input$NCBIorganismList, ".csv", sep = "")
+        },
+        content = function(file) {
+            columns <- barcodeList()
+            NCBImatrix <- genBankCoverage()
+            colnames(NCBImatrix) <- columns
+            rownames(NCBImatrix) <- NCBIorganismList()
+            write.csv(NCBImatrix, file)
+        }
+    )
     
+    # Download options
+    output$downloadCrux <- downloadHandler(
+        filename = function() {
+            paste(input$CRUXorganismList, ".csv", sep = "")
+        },
+        content = function(file) {
+            columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+            CRUXmatrix <- cruxCoverage()
+            colnames(CRUXmatrix) <- columns
+            rownames(CRUXmatrix) <- cruxOrganismList()
+            write.csv(CRUXmatrix, file)
+        }
+    )
 })
