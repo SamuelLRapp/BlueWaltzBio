@@ -52,7 +52,7 @@ shinyUI(fluidPage(
            ),
            
            # Download button
-           downloadButton('downloadCrux',"Download table", class = "butt"),
+           downloadButton('downloadCrux',"Download table"),
            
            fluidRow(
              # Show a plot of the generated distribution
@@ -101,7 +101,7 @@ shinyUI(fluidPage(
         ),
         
         # Download button
-        downloadButton('download',"Download table", class = "butt"),
+        downloadButton('download',"Download table"),
 
         fluidRow(
           # Show a plot of the generated distribution
