@@ -51,6 +51,9 @@ shinyUI(fluidPage(
              )
            ),
            
+           # Download button
+           downloadButton('downloadCrux',"Download table"),
+           
            fluidRow(
              # Show a plot of the generated distribution
              DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1")
@@ -96,8 +99,10 @@ shinyUI(fluidPage(
               uiOutput("seqLenInputs"),
           )
         ),
+        
+        # Download button
+        downloadButton('download',"Download table"),
 
-    
         fluidRow(
           # Show a plot of the generated distribution
               DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1")
