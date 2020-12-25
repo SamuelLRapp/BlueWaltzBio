@@ -46,7 +46,7 @@ shinyUI(fluidPage(
              # Sidebar with a text area for organisms and bar code
              sidebarPanel(
                textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
-               checkboxInput(inputId = "CRUXtaxizeOption", label = "Include taxonomic resolution", value = TRUE),
+               checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                actionButton("searchButton", "Search")
              )
            ),
@@ -81,7 +81,7 @@ shinyUI(fluidPage(
             
             h4("Descriptions of each Search Field"),
             dropdown(label="Species List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
-            dropdown(label="Taxonomic Resolution (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your species names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the taxonomic resolution box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
+            dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your species names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
             dropdown(label="Barcodes of Interest (Text box)", p("A comma separated list of the genes you want to search. Common genes used as organism barcodes include: CO1, 16S, 18S, rbcL, matK, ITS, FITS, trnL, Vert12S."), p("Note: naming conventions in NCBI may vary, thus one gene may be found under multiple names. Cytochrome Oxidase subunit 1, for example, may be found under the names COI, CO1, COXI, and COX1.")),
             dropdown(label="Minimum sequence lengths", p("When searching for barcodes, A NCBI database record may only be useful for identifying an organism if it is above a certain base pair length. This varies from gene to gene and thus the tool allows each gene’s minimum base pair length to be specified individually."), p("By checking this box users can set a minimum base pair length filter. Entries that are below the specified base pair length, won’t appear in the coverage matrix output.")),
             p("")
@@ -93,7 +93,7 @@ shinyUI(fluidPage(
           # Sidebar with a text area for organisms and bar code
           sidebarPanel(
               textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
-              checkboxInput(inputId = "NCBItaxizeOption", label = "Include taxonomic resolution", value = TRUE),
+              checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
               textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
               uiOutput("seqLenInputs"),
