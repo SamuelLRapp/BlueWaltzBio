@@ -48,16 +48,22 @@ shinyUI(fluidPage(
                textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
                checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                actionButton("searchButton", "Search")
+             ), 
+             mainPanel(
+               # Show a plot of the generated distribution
+               DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
+               # Download button
+               downloadButton('downloadCrux',"Download table"),
              )
            ),
            
-           # Download button
-           downloadButton('downloadCrux',"Download table"),
-           
-           fluidRow(
-             # Show a plot of the generated distribution
-             DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1")
-           )
+           # # Download button
+           # downloadButton('downloadCrux',"Download table"),
+           # 
+           # fluidRow(
+           #   # Show a plot of the generated distribution
+           #   DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1")
+           # )
     ),
   
   
@@ -97,16 +103,20 @@ shinyUI(fluidPage(
               textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
               uiOutput("seqLenInputs"),
-          )
+          ),
+          mainPanel(  
+              DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
+              # Download button
+              downloadButton('download',"Download table"),
+          ),
         ),
         
-        # Download button
-        downloadButton('download',"Download table"),
+        
 
-        fluidRow(
-          # Show a plot of the generated distribution
-              DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1")
-        )
+        # fluidRow(
+        #   # Show a plot of the generated distribution
+        #       DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1")
+        # )
       )
       
       
