@@ -221,4 +221,68 @@ shinyServer(function(input, output) {
             write.csv(CRUXmatrix, file)
         }
     )
+    
+    observeEvent(input$barcodeOptionCO1,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("CO1, COI, COX1,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "CO1, COI, COX1")
+        }
+    })
+    
+    observeEvent(input$barcodeOption16S,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("16S,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "16S")
+        }
+    })
+    
+    observeEvent(input$barcodeOptionPITS,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("PITS,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "PITS")
+        }
+    })
+    
+    observeEvent(input$barcodeOption18S,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("18S,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "18S")
+        }
+    })
+    
+    observeEvent(input$barcodeOptionFITS,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("FITS,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "FITS")
+        }
+    })
+    
+    observeEvent(input$barcodeOptiontrnl,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("trnl,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "trnl")
+        }
+    })
+    
+    observeEvent(input$barcodeOption12S,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("12S,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "12S")
+        }
+    })
+    
 })
