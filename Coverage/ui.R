@@ -100,17 +100,16 @@ shinyUI(fluidPage(
           sidebarPanel(
               textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
               checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
-              fluidRow(column(width = 8, actionButton(inputId = "barcodeOptionCO1", label = "CO1, COI, COX1")),
-                       column(width = 4, actionButton("barcodeOption16S", "16S"))
+              fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
+                       column(width = 3, actionButton("barcodeOption16S", "16S")),
+                       column(width = 3, actionButton(inputId = "barcodeOption12S", label = "12S")),
+                       column(width = 3, actionButton(inputId = "barcodeOption18S", label = "18S"))
+                       
               ),
               fluidRow(
                 column(width = 4, actionButton(inputId = "barcodeOptionPITS", label = "PITS")),
                 column(width = 4, actionButton(inputId = "barcodeOptiontrnl", label = "trnl")),
-                column(width = 4, actionButton(inputId = "barcodeOption12S", label = "12S"))
-              ),
-              fluidRow(
-                column(width = 6, actionButton(inputId = "barcodeOptionFITS", label = "FITS")),
-                column(width = 6, actionButton(inputId = "barcodeOption18S", label = "18S"))
+                column(width = 4, actionButton(inputId = "barcodeOptionFITS", label = "FITS"))
               ),
               textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
