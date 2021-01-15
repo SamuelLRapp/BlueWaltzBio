@@ -107,9 +107,9 @@ shinyUI(fluidPage(
                        
               ),
               fluidRow(
-                column(width = 4, actionButton(inputId = "barcodeOptionPITS", label = "PITS")),
+                column(width = 4, actionButton(inputId = "barcodeOptionITS2", label = "ITS2")),
                 column(width = 4, actionButton(inputId = "barcodeOptiontrnl", label = "trnl")),
-                column(width = 4, actionButton(inputId = "barcodeOptionFITS", label = "FITS"))
+                column(width = 4, actionButton(inputId = "barcodeOptionITS1", label = "ITS1"))
               ),
               textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
