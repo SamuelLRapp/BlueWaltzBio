@@ -104,6 +104,19 @@ shinyServer(function(input, output) {
         data #return data matrix
     })
     
+    # Download options
+    output$downloadCrux <- downloadHandler(
+        filename = function() { # Create the file and set its name
+            paste(input$CRUXorganismList, ".csv", sep = "")
+        },
+        content = function(file) {
+            columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
+            CRUXmatrix <- cruxCoverage() # Gets the matrix for the Crux results
+            colnames(CRUXmatrix) <- columns # Adds the column names to the matrix
+            rownames(CRUXmatrix) <- cruxOrganismList() # Adds the row names to the matrix
+            write.csv(CRUXmatrix, file) # Writes the matrix to the CSV file
+        }
+    )
     
     #NCBI: 
     
@@ -179,10 +192,70 @@ shinyServer(function(input, output) {
         data
     })
     
+    observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
+        if(input$barcodeList[[1]] != "") { # If the input barcodeList is not empty (ie. the inputtextarea is not empty) then use the paste function to the add the barcode/s to the beginning
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("CO1, COI, COX1,", input$barcodeList)) # Updates the text area input adds the barcode/s to the beginning of whatever is already in it
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "CO1, COI, COX1") # Here since the textarea is empty we just set its value to the barcode/s
+        }
+    })
+    
+    observeEvent(input$barcodeOption16S,{ 
+        if(input$barcodeList[[1]] != "") { 
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("16S,", input$barcodeList)) 
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "16S")
+        }
+    })
+    
+    observeEvent(input$barcodeOptionITS2,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("ITS2,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "ITS2")
+        }
+    })
+    
+    observeEvent(input$barcodeOption18S,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("18S,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "18S")
+        }
+    })
+    
+    observeEvent(input$barcodeOptionITS1,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("ITS1,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "ITS1")
+        }
+    })
+    
+    observeEvent(input$barcodeOptiontrnl,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("trnl,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "trnl")
+        }
+    })
+    
+    observeEvent(input$barcodeOption12S,{
+        if(input$barcodeList[[1]] != "") {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("12S,", input$barcodeList))
+        }
+        else {
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "12S")
+        }
+    })
     
     #outputs:
-    
-
     output$seqLenInputs <- renderUI(seqLenList())
     
     output$NCBIcoverageResults <- DT::renderDataTable(
@@ -196,29 +269,15 @@ shinyServer(function(input, output) {
     
     # Download NCBI table
     output$download <- downloadHandler(
-        filename = function() {
+        filename = function() { # Create the file and set its name
             paste(input$NCBIorganismList, ".csv", sep = "")
         },
         content = function(file) {
-            columns <- barcodeList()
-            NCBImatrix <- genBankCoverage()
-            colnames(NCBImatrix) <- columns
-            rownames(NCBImatrix) <- NCBIorganismList()
-            write.csv(NCBImatrix, file)
-        }
-    )
-    
-    # Download options
-    output$downloadCrux <- downloadHandler(
-        filename = function() {
-            paste(input$CRUXorganismList, ".csv", sep = "")
-        },
-        content = function(file) {
-            columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-            CRUXmatrix <- cruxCoverage()
-            colnames(CRUXmatrix) <- columns
-            rownames(CRUXmatrix) <- cruxOrganismList()
-            write.csv(CRUXmatrix, file)
+            columns <- barcodeList() # Gets the column names for the matrix
+            NCBImatrix <- genBankCoverage() # Gets the matrix for the NCBI results
+            colnames(NCBImatrix) <- columns # Adds the column names to the matrix
+            rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
+            write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
         }
     )
 })
