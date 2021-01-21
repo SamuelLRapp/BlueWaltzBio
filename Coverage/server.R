@@ -180,7 +180,12 @@ shinyServer(function(input, output) {
         results <- c() #initialize empty vector
         for(organism in organismList){
             for(code in barcodeList()){
-                searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="") #our query to GenBank
+                if(input$NCBISearchOption){
+                    searchTerm <- paste(organism, "[ORGN] AND ", code, "[GENE]", sep="") #our query to GenBank
+                }
+                else {
+                    searchTerm <- paste(organism, "AND ", code, sep="") #our non-Metadata query to GenBank
+                }
                 if(input$seqLengthOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }

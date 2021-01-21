@@ -100,6 +100,7 @@ shinyUI(fluidPage(
           sidebarPanel(
               textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
               checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+              checkboxInput(inputId = "NCBISearchOption", label = "Search by Metadata", value = TRUE),
               fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
                        column(width = 3, actionButton("barcodeOption16S", "16S")),
                        column(width = 3, actionButton(inputId = "barcodeOption12S", label = "12S")),
