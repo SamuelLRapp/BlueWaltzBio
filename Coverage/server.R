@@ -192,7 +192,6 @@ shinyServer(function(input, output) {
                 else {
                     searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
                 }
-                print(searchTerm)
                 if(input$seqLengthOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
