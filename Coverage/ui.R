@@ -100,6 +100,18 @@ shinyUI(fluidPage(
           sidebarPanel(
               textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
               checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+              checkboxInput(inputId = "NCBISearchOption", label = "Search by Metadata", value = TRUE),
+              fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
+                       column(width = 3, actionButton("barcodeOption16S", "16S")),
+                       column(width = 3, actionButton(inputId = "barcodeOption12S", label = "12S")),
+                       column(width = 3, actionButton(inputId = "barcodeOption18S", label = "18S"))
+                       
+              ),
+              fluidRow(
+                column(width = 4, actionButton(inputId = "barcodeOptionITS2", label = "ITS2")),
+                column(width = 4, actionButton(inputId = "barcodeOptiontrnl", label = "trnl")),
+                column(width = 4, actionButton(inputId = "barcodeOptionITS1", label = "ITS1"))
+              ),
               textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
               uiOutput("seqLenInputs"),
