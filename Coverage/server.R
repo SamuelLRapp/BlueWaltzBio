@@ -187,7 +187,7 @@ shinyServer(function(input, output) {
                     searchTerm <- paste(organism, " AND ", sep="") #our non-Metadata query to GenBank
                 }
                 if(input$NCBISearchOptionGene) {
-                    searchTerm <- paste(searchTerm, code, "[GENE]", sep="") #our query to GenBank
+                    searchTerm <- paste(searchTerm, code, "[All Fields]", sep="") #our query to GenBank
                 }
                 else {
                     searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
