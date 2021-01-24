@@ -177,7 +177,8 @@ shinyServer(function(input, output) {
         )
         searchTerm <- ""
         searchResult <- 0
-        results <- c() #initialize empty vector
+        countResults <- c() #initialize empty vector
+        uids <- c()
         for(organism in organismList){
             for(code in barcodeList()){
                 if(input$NCBISearchOptionOrgn){
@@ -195,11 +196,13 @@ shinyServer(function(input, output) {
                 if(input$seqLengthOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
-                searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count #only get back the number of search results
-                results <- c(results, searchResult) #append the count to the vector of results
+                searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
+                uids <- c(uids, searchResult$ids)
+                countResults <- c(countResults, searchResult$count) #append the count to the vector of results
             }
         }
-        data <- matrix(results, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
+        print(uids)
+        data <- matrix(countResults, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
         data
     })
     
