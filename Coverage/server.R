@@ -15,6 +15,7 @@ library(taxize)
 library(tidyverse)
 library(dplyr)
 library(RSQLite)
+library(rlist)
 
 shinyServer(function(input, output) {
     
@@ -177,8 +178,8 @@ shinyServer(function(input, output) {
         )
         searchTerm <- ""
         searchResult <- 0
-        countResults <- c() #initialize empty vector
-        uids <- c()
+        countResults <- list() #initialize empty vector
+        uids <- list()
         for(organism in organismList){
             for(code in barcodeList()){
                 if(input$NCBISearchOptionOrgn){
@@ -197,8 +198,8 @@ shinyServer(function(input, output) {
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
-                uids <- c(uids, searchResult$ids)
-                countResults <- c(countResults, searchResult$count) #append the count to the vector of results
+                uids <- list.append(uids, searchResult$ids)
+                countResults <- list.append(countResults, searchResult$count) #append the count to the vector of results
             }
         }
         print(uids)
