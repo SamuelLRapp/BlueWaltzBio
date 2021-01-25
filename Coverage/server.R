@@ -202,21 +202,36 @@ shinyServer(function(input, output) {
                 countResults <- list.append(countResults, searchResult$count) #append the count to the vector of results
             }
         }
-        # results <- list(count=countResults, ids=uids)
-        # results
-        countResults
+        results <- list(count=countResults, ids=uids)
+        results
     })
     
     matrixGet <- reactive({
         organismList <- NCBIorganismList() #get species and barcode inputs
         organismListLength <- length(organismList)
         codeListLength <- length(barcodeList())
-        #count <- c()
         results <- genBankCoverage()
-        count <- unlist(results)
-        print(typeof(count))
+        count <- c()
+        for (i in results[[1]]) {
+            count <- c(count, i)
+        }
         data <- matrix(count, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
         data
+    })
+    
+    uidsGet <- reactive({
+        uids <- c()
+        results <- genBankCoverage()
+        for (i in results[[2]]) {
+            uids <- c(uids, i)
+        }
+        uids
+    })
+    
+    observeEvent(input$fileDownload, {
+        print("WOWOOOWOWOWOOW")
+        uids <- uidsGet()
+        print(uids)
     })
     
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
@@ -286,7 +301,7 @@ shinyServer(function(input, output) {
     output$seqLenInputs <- renderUI(seqLenList())
     
     output$NCBIcoverageResults <- DT::renderDataTable(
-        genBankCoverage(), rownames = NCBIorganismList(), colnames = barcodeList()
+        matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
     )
     
     output$CRUXcoverageResults <- DT::renderDataTable(
@@ -301,7 +316,7 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             columns <- barcodeList() # Gets the column names for the matrix
-            NCBImatrix <- genBankCoverage() # Gets the matrix for the NCBI results
+            NCBImatrix <- matrixGet() # Gets the matrix for the NCBI results
             colnames(NCBImatrix) <- columns # Adds the column names to the matrix
             rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
             write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
