@@ -121,6 +121,8 @@ shinyUI(fluidPage(
               DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
               # Download button
               downloadButton('download',"Download table"),
+              checkboxInput(inputId = "Fasta", label = "Download Fasta"),
+              checkboxInput(inputId = "Genbank", label = "Download Genbank"),
               downloadButton("fileDownload","Download Files"),
           ),
         ),
