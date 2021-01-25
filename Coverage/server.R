@@ -202,8 +202,20 @@ shinyServer(function(input, output) {
                 countResults <- list.append(countResults, searchResult$count) #append the count to the vector of results
             }
         }
-        print(uids)
-        data <- matrix(countResults, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
+        # results <- list(count=countResults, ids=uids)
+        # results
+        countResults
+    })
+    
+    matrixGet <- reactive({
+        organismList <- NCBIorganismList() #get species and barcode inputs
+        organismListLength <- length(organismList)
+        codeListLength <- length(barcodeList())
+        #count <- c()
+        results <- genBankCoverage()
+        count <- unlist(results)
+        print(typeof(count))
+        data <- matrix(count, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
         data
     })
     
