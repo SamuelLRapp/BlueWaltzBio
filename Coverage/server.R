@@ -228,15 +228,17 @@ shinyServer(function(input, output) {
         uids
     })
     
-    observeEvent(input$fileDownload, {
-        print("WOWOOOWOWOWOOW")
-        uids <- uidsGet()
-        print(uids)
-        
-        print(uids[[1]])
-        fasta <- entrez_fetch(db = "nucleotide", id = uids[[1]], rettype = "fasta")
-        write(fasta, "test.fasta")
-    })
+    # Download NCBI table
+    output$fileDownload <- downloadHandler(
+        filename = function() { # Create the file and set its name
+            paste("TEST", ".fasta", sep = "")
+        },
+        content = function(file) {
+            uids <- uidsGet()
+            fasta <- entrez_fetch(db = "nucleotide", id = uids[[1]], rettype = "fasta")
+            write(fasta, file) # Writes the matrix to the CSV file
+        }
+    )
     
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
         if(input$barcodeList[[1]] != "") { # If the input barcodeList is not empty (ie. the inputtextarea is not empty) then use the paste function to the add the barcode/s to the beginning
