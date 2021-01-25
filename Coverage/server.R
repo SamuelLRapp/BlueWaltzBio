@@ -232,6 +232,10 @@ shinyServer(function(input, output) {
         print("WOWOOOWOWOWOOW")
         uids <- uidsGet()
         print(uids)
+        
+        print(uids[[1]])
+        fasta <- entrez_fetch(db = "nucleotide", id = uids[[1]], rettype = "fasta")
+        write(fasta, "test.fasta")
     })
     
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
