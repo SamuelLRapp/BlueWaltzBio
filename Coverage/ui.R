@@ -137,7 +137,16 @@ shinyUI(fluidPage(
         #   # Show a plot of the generated distribution
         #       DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1")
         # )
-      )
+      ),
+    
+   tabPanel("Contact Us", 
+            
+            titlePanel("Contact Us + Additional Information"),
+            p(HTML('&emsp;'), " This app was developed by the BlueWaltzBio team." ),
+            p(HTML('&emsp;'), " Learn more about us on our website BlueWaltzBio.com or direct message us on twitter @BlueWaltzBio" ),
+  
+            
+            )
       
       
     )
