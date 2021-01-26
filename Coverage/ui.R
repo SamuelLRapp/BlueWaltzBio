@@ -20,8 +20,13 @@ shinyUI(fluidPage(
              titlePanel("Welcome to the Reference Sequence Browser"),
              p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
  Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
-" )
-             
+" ),
+             p(HTML('&emsp;'), "This rShiny app was built to bridge the gap between ecologists and computer scientists by providing efficient and intuitive access to NCBI and CRUX databases without the user having to write a single line of code. If you would like to learn more details about either the NBCI or CRUX search browser specific design and function click on the relevant tab above. Assemble a list of organisms and get started! 
+" ),
+             p(HTML('&emsp;'), "The diagram represents how the two search portals function in the back end."),
+             img(src='backend.png',  align = "center", height = 450, width = 900),
+          
+                          
              ),
     tabPanel("CRUX",
            # Application title
@@ -142,9 +147,11 @@ shinyUI(fluidPage(
    tabPanel("Contact Us", 
             
             titlePanel("Contact Us + Additional Information"),
-            p(HTML('&emsp;'), " This app was developed by the BlueWaltzBio team." ),
-            p(HTML('&emsp;'), " Learn more about us on our website BlueWaltzBio.com or direct message us on twitter @BlueWaltzBio" ),
-  
+            p(HTML('&emsp;'), "This app was developed by the BlueWaltzBio team." ),
+            p(HTML('&emsp;'), "Learn more about us on our website BlueWaltzBio.com or direct message us on twitter @BlueWaltzBio" ),
+            p(HTML('&emsp;'), "The app was iteratively built with direct feedback from eDNA scientists who spoke with members of BlueWaltzBio. In total our team has interviewed over 70 lab techs, professors, government regulators, and investors in the field of Environmental DNA. 
+            If you want to provide feedback please use the google link: https://forms.gle/ysT6g8sk1zxWQ1wZA" ),
+            
             
             )
       
