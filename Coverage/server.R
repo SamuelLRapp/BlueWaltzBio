@@ -235,22 +235,27 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             uids <- uidsGet()
+            progLength <- if(input$Fasta && input$Genbank) ((length(uids)*2)) else (length(uids))
             shiny::withProgress(message="Downloading", value=0,{
               if(input$Fasta) {
                   Vector_Fasta <- c()
                   for (uid in uids) {
                       File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta")
                       Vector_Fasta <- c(Vector_Fasta, File_fasta)
+                      shiny::incProgress(1/progLength)
                   }
                   write(Vector_Fasta, file) # Writes the matrix to the fasta file
+                  shiny::incProgress(1/progLength)
               }
               if(input$Genbank) {
                   Vector_genbank <- c()
                   for (uid in uids) {
                       File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")
                       Vector_genbank <- c(Vector_genbank, File_fasta)
+                      shiny::incProgress(1/progLength)
                   }
                   write(Vector_genbank, file, append=TRUE) # Writes the matrix to the fasta file
+                  shiny::incProgress(1/progLength)
               }
             })
             
