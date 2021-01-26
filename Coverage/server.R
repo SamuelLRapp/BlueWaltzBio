@@ -250,7 +250,7 @@ shinyServer(function(input, output) {
                       File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")
                       Vector_genbank <- c(Vector_genbank, File_fasta)
                   }
-                  write(Vector_genbank, file) # Writes the matrix to the fasta file
+                  write(Vector_genbank, file, append=TRUE) # Writes the matrix to the fasta file
               }
             })
             
