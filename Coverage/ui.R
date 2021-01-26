@@ -16,6 +16,13 @@ shinyUI(fluidPage(
   
   navbarPage("Coverage",
     #CRUX tab
+    tabPanel("Home", 
+             titlePanel("Welcome to the Reference Sequence Browser"),
+             p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
+ Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
+" )
+             
+             ),
     tabPanel("CRUX",
            # Application title
            titlePanel("Find CRUX database coverage of your species of interest"),
