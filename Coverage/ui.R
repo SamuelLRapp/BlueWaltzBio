@@ -116,6 +116,7 @@ shinyUI(fluidPage(
               checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by Metadata", value = TRUE),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
               uiOutput("seqLenInputs"),
+              actionButton("NCBIsearchButton", "Search"),
           ),
           mainPanel(  
               DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
