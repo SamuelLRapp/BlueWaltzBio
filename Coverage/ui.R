@@ -11,6 +11,7 @@ library(shiny)
 library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
+#library(shinybusy)
 
 shinyUI(fluidPage(
   
@@ -124,6 +125,7 @@ shinyUI(fluidPage(
               checkboxInput(inputId = "Fasta", label = "Download Fasta"),
               checkboxInput(inputId = "Genbank", label = "Download Genbank"),
               downloadButton("fileDownload","Download Files"),
+              #add_busy_spinner(spin = "fading-circle")
           ),
         ),
         
