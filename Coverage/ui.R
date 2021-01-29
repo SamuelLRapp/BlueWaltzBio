@@ -146,11 +146,12 @@ shinyUI(fluidPage(
     
    tabPanel("Contact Us", 
             
-            titlePanel("Contact Us + Additional Information"),
+            titlePanel("Contact us"),
             p(HTML('&emsp;'), "This app was developed by the BlueWaltzBio team." ),
             p(HTML('&emsp;'), "Learn more about us on our website BlueWaltzBio.com or direct message us on twitter @BlueWaltzBio" ),
+            p(HTML('&emsp;'), "If you want to provide feedback please use the google link: https://forms.gle/ysT6g8sk1zxWQ1wZA"),
             p(HTML('&emsp;'), "The app was iteratively built with direct feedback from eDNA scientists who spoke with members of BlueWaltzBio. In total our team has interviewed over 70 lab techs, professors, government regulators, and investors in the field of Environmental DNA. 
-            If you want to provide feedback please use the google link: https://forms.gle/ysT6g8sk1zxWQ1wZA" ),
+            " ),
             
             
             )
