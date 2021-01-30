@@ -148,12 +148,8 @@ shinyServer(function(input, output) {
                     taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
-            print("OG list")
-            print(class(taxize_organism_list))
             taxize_organism_list  
         } else{
-          print("OG list")
-          print(class(organismList))
             organismList #return the list as is
         }
     })
@@ -207,25 +203,14 @@ shinyServer(function(input, output) {
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count #only get back the number of search results
                 results <- c(results, searchResult) #append the count to the vector of results
                 searchTerms <- c(searchTerms, searchTerm)
-                print(class(results))
+         
             }
         }
-        data <- as.data.frame( matrix(results, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) )    #convert results vector to dataframe
-       # dataST <- matrix(searchTerms, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) 
-       # data <- cbind(data, dataST)
-        
+        data <- as.data.frame( matrix(results, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) )    #convert results matrix to dataframe
+   
         dataST <- as.data.frame(matrix(searchTerms, nrow = organismListLength, ncol = codeListLength, byrow = TRUE))  
-        print("NEW RUN")
-        print(class(dataST))
-      #  relax <- c("relax")
-        combined <- rbind(data, dataST)
-        print(str(combined))
-        print("NcutN")
-        print(head(combined))
-        print(combined)
-      #  print(searchTerms)
-       # print(class(data))
-        #data
+    
+        combined <- rbind(data, dataST) #adding the searchsTerms dataframe to the buttom of the counts dataframe 
         combined
     })
     
@@ -332,34 +317,13 @@ shinyServer(function(input, output) {
       content = function(file) {
         columns <- barcodeList() # Gets the column names for the matrix
         rows <- NCBIorganismList()
-        print("hello there")
-      firststatement <- length(NCBIorganismList()) + 1  
-      
-    # NCBImatrix <- genBankCoverage()[firststatement:nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
-  #   NCBImatrix <- genBankCoverage()[length(NCBIorganismList()):nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
+
         NCBImatrix <- genBankCoverage()[(length(NCBIorganismList())+1):nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
-        print (NCBImatrix)
-          print("hello there2")
-          print(length(NCBIorganismList()))
-          print(nrow(genBankCoverage()))
-          print(class(NCBIorganismList()))
-           if(length(NCBIorganismList()) == (nrow(genBankCoverage())- length(NCBIorganismList())))
-          {
-            print("equals")
-           }
-          .rowNamesDF(NCBImatrix, make.names = TRUE) <- rows
-        #with = NA the rows are numbered and the extra
-        #with = TRUE the row name are correct
-       #   rownames(NCBImatrix) <- rows
+        
+        .rowNamesDF(NCBImatrix, make.names = TRUE) <- rows #with = NA the rows are numbered and the extra #with = TRUE the row name are correct
+  
         colnames(NCBImatrix) <- columns # Adds the column names to the matrix
-   #     print("hello there3")
-   #     print(nrow(NCBImatrix))
-      
-     #   NCBImatrix <- NCBImatrix #[2:nrow(NCBImatrix),]
-      #  print(nrow(NCBImatrix))
-       #rownames(NCBImatrix) <- rows
-    #    rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
-        print("hello there4")
+
         write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
       }
       
