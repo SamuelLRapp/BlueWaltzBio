@@ -229,54 +229,6 @@ shinyServer(function(input, output) {
         combined
     })
     
-    GenBankStatements <- reactive({
-      
-      organismList <- NCBIorganismList() #get species and barcode inputs
-      organismListLength <- length(organismList)
-      print("hello world")
-      codeListLength <- length(barcodeList()) 
-      validate( #verify that the  user has typed things into both inputs
-        need(organismListLength > 0, 'Please name at least one organism'),
-        need(codeListLength > 0, 'Please choose at least one barcode')
-      )
-      searchTerm <- ""
-      searchResult <- 0
-      searchTerms <- c() #list of search terms
-      results <- c() #initialize empty vector
-      for(organism in organismList){
-        for(code in barcodeList()){
-          if(input$NCBISearchOptionOrgn){
-            searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
-          }
-          else {
-            searchTerm <- paste(organism, " AND ", sep="") #our non-Metadata query to GenBank
-          }
-          if(input$NCBISearchOptionGene) {
-            searchTerm <- paste(searchTerm, code, "[GENE]", sep="") #our query to GenBank
-          }
-          else {
-            searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
-          }
-          if(input$seqLengthOption){
-            searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
-          }
-      #    searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count #only get back the number of search results
-       #   results <- c(results, searchResult) #append the count to the vector of results
-          searchTerms <- c(searchTerms, searchTerm)
-        }
-      }
-    #  data <- matrix(results, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
-      dataST <- as.data.frame(matrix(searchTerms, nrow = organismListLength, ncol = codeListLength, byrow = TRUE))  
-      print(class(dataST))
-     # data <- cbind(data, dataST)
-      #print(searchTerms)
-      dataST
-      
-      
-      
-      
-    })
-    
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
         if(input$barcodeList[[1]] != "") { # If the input barcodeList is not empty (ie. the inputtextarea is not empty) then use the paste function to the add the barcode/s to the beginning
             updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("CO1, COI, COX1,", input$barcodeList)) # Updates the text area input adds the barcode/s to the beginning of whatever is already in it
@@ -362,12 +314,11 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
   
-            columns <- barcodeList() # Gets the column names for the matrix
-            NCBImatrix <- genBankCoverage()[1:length(NCBIorganismList()),] # Gets the matrix for the NCBI count results
-            class(NCBImatrix)
-            colnames(NCBImatrix) <- columns # Adds the column names to the matrix
+            columns <- barcodeList() # Gets the column names for the dataframe
+            NCBImatrix <- genBankCoverage()[1:length(NCBIorganismList()),] # subset the dataframe for the NCBI count results
+            colnames(NCBImatrix) <- columns # Adds the column names to the dataframe
             rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
-            write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
+            write.csv(NCBImatrix, file) # Writes the dataframe to the CSV file
         }
         
         
@@ -382,8 +333,11 @@ shinyServer(function(input, output) {
         columns <- barcodeList() # Gets the column names for the matrix
         rows <- NCBIorganismList()
         print("hello there")
-      # NCBImatrix <- GenBankStatements()[length(NCBIorganismList()):nrow(GenBankStatements()),] #***KEY LINE Gets the matrix for the NCBI search statements
-        NCBImatrix <- genBankCoverage()[length(NCBIorganismList())+1:nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
+      firststatement <- length(NCBIorganismList()) + 1  
+      
+    # NCBImatrix <- genBankCoverage()[firststatement:nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
+  #   NCBImatrix <- genBankCoverage()[length(NCBIorganismList()):nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
+        NCBImatrix <- genBankCoverage()[(length(NCBIorganismList())+1):nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
         print (NCBImatrix)
           print("hello there2")
           print(length(NCBIorganismList()))
@@ -392,13 +346,18 @@ shinyServer(function(input, output) {
            if(length(NCBIorganismList()) == (nrow(genBankCoverage())- length(NCBIorganismList())))
           {
             print("equals")
-          }
-       
+           }
+          .rowNamesDF(NCBImatrix, make.names = TRUE) <- rows
+        #with = NA the rows are numbered and the extra
+        #with = TRUE the row name are correct
+       #   rownames(NCBImatrix) <- rows
         colnames(NCBImatrix) <- columns # Adds the column names to the matrix
-        print("hello there3")
-        print(nrow(NCBImatrix))
-     #   .rowNamesDF(NCBImatrix, make.names = TRUE) <- rows
-    #    rownames(NCBImatrix) <- rows
+   #     print("hello there3")
+   #     print(nrow(NCBImatrix))
+      
+     #   NCBImatrix <- NCBImatrix #[2:nrow(NCBImatrix),]
+      #  print(nrow(NCBImatrix))
+       #rownames(NCBImatrix) <- rows
     #    rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
         print("hello there4")
         write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
