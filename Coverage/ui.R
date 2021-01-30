@@ -121,7 +121,8 @@ shinyUI(fluidPage(
           mainPanel(  
               DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
               # Download button
-              downloadButton('download',"Download table"),
+              downloadButton('download',"Download Counts table"),
+              downloadButton('downloadStatements',"Download Statements table"),
           ),
         ),
         
