@@ -380,12 +380,26 @@ shinyServer(function(input, output) {
       },
       content = function(file) {
         columns <- barcodeList() # Gets the column names for the matrix
+        rows <- NCBIorganismList()
         print("hello there")
-        NCBImatrix <- GenBankStatements()[length(NCBIorganismList()):nrow(GenBankStatements()),] #***KEY LINE Gets the matrix for the NCBI search statements
-        print("hello there2")
+      # NCBImatrix <- GenBankStatements()[length(NCBIorganismList()):nrow(GenBankStatements()),] #***KEY LINE Gets the matrix for the NCBI search statements
+        NCBImatrix <- genBankCoverage()[length(NCBIorganismList())+1:nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
+        print (NCBImatrix)
+          print("hello there2")
+          print(length(NCBIorganismList()))
+          print(nrow(genBankCoverage()))
+          print(class(NCBIorganismList()))
+           if(length(NCBIorganismList()) == (nrow(genBankCoverage())- length(NCBIorganismList())))
+          {
+            print("equals")
+          }
+       
         colnames(NCBImatrix) <- columns # Adds the column names to the matrix
         print("hello there3")
-        rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
+        print(nrow(NCBImatrix))
+     #   .rowNamesDF(NCBImatrix, make.names = TRUE) <- rows
+    #    rownames(NCBImatrix) <- rows
+    #    rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
         print("hello there4")
         write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
       }
