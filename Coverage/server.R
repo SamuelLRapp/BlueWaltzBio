@@ -206,11 +206,11 @@ shinyServer(function(input, output) {
         results
     })
     
-    matrixGet <- reactive({
+    matrixGet <- reactive({ # creates and returns the matrix to be displayed with the count
         organismList <- NCBIorganismList() #get species and barcode inputs
         organismListLength <- length(organismList)
         codeListLength <- length(barcodeList())
-        results <- genBankCoverage()
+        results <- genBankCoverage() # Get the results from the NCBI query
         count <- c()
         for (i in results[[1]]) {
             count <- c(count, i)
@@ -219,9 +219,9 @@ shinyServer(function(input, output) {
         data
     })
     
-    uidsGet <- reactive({
+    uidsGet <- reactive({ # Returns the uids stored in the results from the NCBi query
         uids <- c()
-        results <- genBankCoverage()
+        results <- genBankCoverage() # Get the results from the NCBI query
         for (i in results[[2]]) {
             uids <- c(uids, i)
         }
@@ -229,34 +229,44 @@ shinyServer(function(input, output) {
     })
     
     # Download NCBI table
-    output$fileDownload <- downloadHandler(
+    output$fileDownloadF <- downloadHandler(
         filename = function() { # Create the file and set its name
             paste("TEST", ".fasta", sep = "")
         },
         content = function(file) {
             uids <- uidsGet()
-            progLength <- if(input$Fasta && input$Genbank) ((length(uids)*2)) else (length(uids))
+            progLength <- length(uids)
+            shiny::withProgress(message="Downloading", value=0, {
+                Vector_Fasta <- c()
+                for (uid in uids) {
+                    File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+                    Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+                    shiny::incProgress(1/progLength)
+                }
+                write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
+                shiny::incProgress(1/progLength)
+            })
+            
+        }
+    )
+    
+    # Download NCBI table
+    output$fileDownloadG <- downloadHandler(
+        filename = function() { # Create the file and set its name
+            paste("GenbankTEST", ".gb", sep = "")
+        },
+        content = function(file) {
+            uids <- uidsGet()
+            progLength <- length(uids)
             shiny::withProgress(message="Downloading", value=0,{
-              if(input$Fasta) {
-                  Vector_Fasta <- c()
-                  for (uid in uids) {
-                      File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta")
-                      Vector_Fasta <- c(Vector_Fasta, File_fasta)
-                      shiny::incProgress(1/progLength)
-                  }
-                  write(Vector_Fasta, file) # Writes the matrix to the fasta file
-                  shiny::incProgress(1/progLength)
-              }
-              if(input$Genbank) {
-                  Vector_genbank <- c()
-                  for (uid in uids) {
-                      File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")
-                      Vector_genbank <- c(Vector_genbank, File_fasta)
-                      shiny::incProgress(1/progLength)
-                  }
-                  write(Vector_genbank, file, append=TRUE) # Writes the matrix to the fasta file
-                  shiny::incProgress(1/progLength)
-              }
+                Vector_genbank <- c()
+                for (uid in uids) {
+                    File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
+                    Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+                    shiny::incProgress(1/progLength)
+                }
+                write(Vector_genbank, file, append=TRUE) # Writes the vector containing all the genbank file information into one genbank file
+                shiny::incProgress(1/progLength)
             })
             
         }
