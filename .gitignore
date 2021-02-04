@@ -4,3 +4,4 @@
 .Ruserdata
 *_taxonomy.txt
 *.sqlite
+*.fasta
