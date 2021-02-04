@@ -11,6 +11,7 @@ library(shiny)
 library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
+#library(shinybusy)
 
 shinyUI(fluidPage(
   
@@ -122,6 +123,9 @@ shinyUI(fluidPage(
               DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
               # Download button
               downloadButton('download',"Download table"),
+              downloadButton("fileDownloadF","Download FASTA Files"),
+              downloadButton("fileDownloadG","Download Genbank Files"),
+              #add_busy_spinner(spin = "fading-circle")
           ),
         ),
         
