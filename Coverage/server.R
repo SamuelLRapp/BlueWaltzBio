@@ -15,6 +15,7 @@ library(taxize)
 library(tidyverse)
 library(dplyr)
 library(RSQLite)
+library(rlist)
 
 shinyServer(function(input, output) {
     
@@ -181,7 +182,8 @@ shinyServer(function(input, output) {
         )
         searchTerm <- ""
         searchResult <- 0
-        results <- c() #initialize empty vector
+        countResults <- list() #initialize empty vector
+        uids <- list()
         for(organism in organismList){
             for(code in barcodeList()){
                 if(input$NCBISearchOptionOrgn){
@@ -199,13 +201,80 @@ shinyServer(function(input, output) {
                 if(input$seqLengthOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
-                searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 0)$count #only get back the number of search results
-                results <- c(results, searchResult) #append the count to the vector of results
+                searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
+                uids <- list.append(uids, searchResult$ids)
+                countResults <- list.append(countResults, searchResult$count) #append the count to the vector of results
             }
         }
-        data <- matrix(results, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
+        results <- list(count=countResults, ids=uids)
+        results
+    })
+    
+    matrixGet <- reactive({ # creates and returns the matrix to be displayed with the count
+        organismList <- NCBIorganismList() #get species and barcode inputs
+        organismListLength <- length(organismList)
+        codeListLength <- length(barcodeList())
+        results <- genBankCoverage() # Get the results from the NCBI query
+        count <- c()
+        for (i in results[[1]]) {
+            count <- c(count, i)
+        }
+        data <- matrix(count, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
         data
     })
+    
+    uidsGet <- reactive({ # Returns the uids stored in the results from the NCBi query
+        uids <- c()
+        results <- genBankCoverage() # Get the results from the NCBI query
+        for (i in results[[2]]) {
+            uids <- c(uids, i)
+        }
+        uids
+    })
+    
+    # Download NCBI table
+    output$fileDownloadF <- downloadHandler(
+        filename = function() { # Create the file and set its name
+            paste("TEST", ".fasta", sep = "")
+        },
+        content = function(file) {
+            uids <- uidsGet()
+            progLength <- length(uids)
+            shiny::withProgress(message="Downloading", value=0, {
+                Vector_Fasta <- c()
+                for (uid in uids) {
+                    File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+                    Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+                    shiny::incProgress(1/progLength)
+                }
+                write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
+                shiny::incProgress(1/progLength)
+            })
+            
+        }
+    )
+    
+    # Download NCBI table
+    output$fileDownloadG <- downloadHandler(
+        filename = function() { # Create the file and set its name
+            paste("GenbankTEST", ".gb", sep = "")
+        },
+        content = function(file) {
+            uids <- uidsGet()
+            progLength <- length(uids)
+            shiny::withProgress(message="Downloading", value=0,{
+                Vector_genbank <- c()
+                for (uid in uids) {
+                    File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
+                    Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+                    shiny::incProgress(1/progLength)
+                }
+                write(Vector_genbank, file, append=TRUE) # Writes the vector containing all the genbank file information into one genbank file
+                shiny::incProgress(1/progLength)
+            })
+            
+        }
+    )
     
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
         if(input$barcodeList[[1]] != "") { # If the input barcodeList is not empty (ie. the inputtextarea is not empty) then use the paste function to the add the barcode/s to the beginning
@@ -274,7 +343,7 @@ shinyServer(function(input, output) {
     output$seqLenInputs <- renderUI(seqLenList())
     
     output$NCBIcoverageResults <- DT::renderDataTable(
-        genBankCoverage(), rownames = NCBIorganismList(), colnames = barcodeList()
+        matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
     )
     
     output$CRUXcoverageResults <- DT::renderDataTable(
@@ -289,7 +358,7 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             columns <- barcodeList() # Gets the column names for the matrix
-            NCBImatrix <- genBankCoverage() # Gets the matrix for the NCBI results
+            NCBImatrix <- matrixGet() # Gets the matrix for the NCBI results
             colnames(NCBImatrix) <- columns # Adds the column names to the matrix
             rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
             write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
