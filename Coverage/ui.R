@@ -45,6 +45,8 @@ shinyUI(fluidPage(
            fluidRow(
              # Sidebar with a text area for organisms and bar code
              sidebarPanel(
+               fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
+               actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
                textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
                checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                actionButton("searchButton", "Search")
@@ -98,6 +100,8 @@ shinyUI(fluidPage(
         fluidRow(
           # Sidebar with a text area for organisms and bar code
           sidebarPanel(
+              fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
+              actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
               textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
               checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
               checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by Metadata", value = TRUE),
