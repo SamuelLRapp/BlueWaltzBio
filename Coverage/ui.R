@@ -11,6 +11,7 @@ library(shiny)
 library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
+#library(shinybusy)
 
 shinyUI(fluidPage(
   
@@ -47,7 +48,7 @@ shinyUI(fluidPage(
              sidebarPanel(
                fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
                actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-               textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
+               textAreaInput(inputId = "CRUXorganismList", label = "Organism(s) Latin Names"),
                checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                actionButton("searchButton", "Search")
              ), 
@@ -102,7 +103,7 @@ shinyUI(fluidPage(
           sidebarPanel(
               fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
               actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
-              textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
+              textAreaInput(inputId = "NCBIorganismList", label = "Organism(s) Latin Names"),
               checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
               checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by Metadata", value = TRUE),
               fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
@@ -120,11 +121,15 @@ shinyUI(fluidPage(
               checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by Metadata", value = TRUE),
               checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
               uiOutput("seqLenInputs"),
+              actionButton("NCBIsearchButton", "Search"),
           ),
           mainPanel(  
               DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
               # Download button
               downloadButton('download',"Download table"),
+              downloadButton("fileDownloadF","Download FASTA Files"),
+              downloadButton("fileDownloadG","Download Genbank Files"),
+              #add_busy_spinner(spin = "fading-circle")
           ),
         ),
         
