@@ -182,10 +182,7 @@ shinyServer(function(input, output) {
         )
         searchTerm <- ""
         searchResult <- 0
-# <<<<<<< HEAD
-#         searchTerms <- c() #list of search terms
-#         results <- c() #initialize empty vector
-# =======
+
         countResults <- list() #initialize empty vector
         uids <- list()
         searchTerms <- c() #list of search terms
@@ -365,14 +362,7 @@ shinyServer(function(input, output) {
     output$seqLenInputs <- renderUI(seqLenList())
     
     output$NCBIcoverageResults <- DT::renderDataTable(
-# <<<<<<< HEAD
-#      
-#        genBankCoverage()[1:length(NCBIorganismList()),], rownames = NCBIorganismList(), colnames = barcodeList() #subset data to only include sequence counts
-#       
-# 
-# =======
         matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
-# >>>>>>> master
     )
     
     output$CRUXcoverageResults <- DT::renderDataTable(
@@ -396,6 +386,8 @@ shinyServer(function(input, output) {
         
         
     )
+    
+    #Download Search Terms:
     output$downloadStatements <- downloadHandler(
       filename = function() { # Create the file and set its name
         paste(input$NCBIorganismList, ".csv", sep = "")
@@ -408,30 +400,6 @@ shinyServer(function(input, output) {
         rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
         write.csv(NCBImatrix, file) # Writes the dataframe to the CSV file
       }
-      
-      
     )
-    #Download Search Terms:
-    
-    # output$downloadStatements <- downloadHandler(
-    #   filename = function() { # Create the file and set its name
-    #     paste("NCBI_search_statements", ".csv", sep = "")
-    #   },
-    #   content = function(file) {
-    #     columns <- barcodeList() # Gets the column names for the matrix
-    #     NCBImatrix <- matrixGetSearchTerms() # Gets the matrix for the NCBI results
-    #     rows <- NCBIorganismList()
-    # 
-    #     NCBImatrix <- genBankCoverage()[(length(NCBIorganismList())+1):nrow(genBankCoverage()),] #***KEY LINE Gets the matrix for the NCBI search statements
-    #     
-    #     .rowNamesDF(NCBImatrix, make.names = TRUE) <- rows #with = NA the rows are numbered and the extra #with = TRUE the row name are correct
-    # 
-    #     colnames(NCBImatrix) <- columns # Adds the column names to the matrix
-    # 
-    #     write.csv(NCBImatrix, file) # Writes the matrix to the CSV file
-    #   }
-    #   
-    #   
-    # )
     
 })
