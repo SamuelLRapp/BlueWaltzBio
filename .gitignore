@@ -4,8 +4,5 @@
 .Ruserdata
 *_taxonomy.txt
 *.sqlite
-<<<<<<< HEAD
 .DS_Store
-=======
 *.fasta
->>>>>>> master

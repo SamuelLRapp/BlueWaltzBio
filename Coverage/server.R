@@ -185,7 +185,7 @@ shinyServer(function(input, output) {
 
         countResults <- list() #initialize empty vector
         uids <- list()
-        searchTerms <- c() #list of search terms
+        searchTerms <- list() #list of search terms
         for(organism in organismList){
             for(code in barcodeList()){
                 if(input$NCBISearchOptionOrgn){
