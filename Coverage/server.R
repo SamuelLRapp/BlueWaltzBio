@@ -105,6 +105,19 @@ shinyServer(function(input, output) {
         data #return data matrix
     })
     
+    inputFileCrux <- observeEvent(input$uploadCRUXButton,{
+        isolate({
+            req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
+            uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
+            if(input$CRUXorganismList[[1]] != "") {
+                updateTextAreaInput(getDefaultReactiveDomain(), "CRUXorganismList", value = c(head(uploadinfo$OrganismNames, -1), input$CRUXorganismList))
+            }
+            else {
+                updateTextAreaInput(getDefaultReactiveDomain(), "CRUXorganismList", value = uploadinfo$OrganismNames)
+            }
+        })
+    })
+    
     # Download options
     output$downloadCrux <- downloadHandler(
         filename = function() { # Create the file and set its name
@@ -350,6 +363,25 @@ shinyServer(function(input, output) {
         cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
         
     )
+    
+    inputFileNCBI <- observeEvent(input$uploadNCBIButton,{
+        isolate({
+            req(input$uNCBIfile, file.exists(input$uNCBIfile$datapath))
+            uploadinfo <- read.csv(input$uNCBIfile$datapath, header = TRUE)
+            if(input$NCBIorganismList[[1]] != "") {
+                updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(head(uploadinfo$OrganismNames, -1), input$NCBIorganismList))
+            }
+            else {
+                updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = uploadinfo$OrganismNames)
+            }
+            if(input$barcodeList[[1]] != "") {
+                updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(head(uploadinfo$Barcodes, -1), input$barcodeList))
+            }
+            else {
+                updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = uploadinfo$Barcodes)
+            }
+        })
+    })
     
     # Download NCBI table
     output$download <- downloadHandler(
