@@ -84,28 +84,30 @@ shinyServer(function(input, output) {
         searchResult <- 0
         results <- c()
         for(organism in organismList){
-            searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
-            for(table in dbList){
-                # 
-                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
-                if(nrow(location) == 0){
-                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
-                    if(nrow(location) == 0){
-                        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
-                        if(nrow(location)==0){
-                            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
-                            if(nrow(location) ==0){
-                                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
-                                if(nrow(location)==0){
-                                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
-                                    results <- c(results, nrow(location))
-                                } else { results <- c(results, "class")}
-                            } else {results <- c(results, "order")}
-                        } else {results <- c(results, "family")}
-                    }else {results <- c(results, "genus") }
-                } else {results <- c(results, toString(nrow(location)))}
-            }
-            
+            results <- tryCatch({
+              searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
+              for(table in dbList){
+                  location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
+                  if(nrow(location) == 0){
+                      location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
+                      if(nrow(location) == 0){
+                          location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
+                          if(nrow(location)==0){
+                              location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
+                              if(nrow(location) ==0){
+                                  location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
+                                  if(nrow(location)==0){
+                                      location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
+                                      results <- c(results, nrow(location))
+                                  } else { results <- c(results, "class")}
+                              } else {results <- c(results, "order")}
+                          } else {results <- c(results, "family")}
+                      }else {results <- c(results, "genus") }
+                  } else {results <- c(results, toString(nrow(location)))}
+                }
+              }, error = function(err) {
+                  results <- c(results, "error")
+              })
         }
         dbDisconnect(taxaDB)
         # unlink("taxa-db.sqlite")
