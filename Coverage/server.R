@@ -86,7 +86,7 @@ shinyServer(function(input, output) {
         for(organism in organismList){
             searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
             for(table in dbList){
-                # 
+              results <- tryCatch({
                 location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
                 if(nrow(location) == 0){
 <<<<<<< HEAD
@@ -121,6 +121,9 @@ shinyServer(function(input, output) {
                         } else {results <- c(results, "family")}
                     }else {results <- c(results, "genus") }
                 } else {results <- c(results, toString(nrow(location)))}
+              }, error = function(err) {
+                results <- c(results, "error")
+              })
             }
             
         }
