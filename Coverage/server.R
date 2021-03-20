@@ -188,6 +188,7 @@ shinyServer(function(input, output) {
         organismList <- NCBIorganismList() #get species and barcode inputs
         organismListLength <- length(organismList)
         
+        codeList <- barcodeList()
         codeListLength <- length(barcodeList()) 
         validate( #verify that the  user has typed things into both inputs
             need(organismListLength > 0, 'Please name at least one organism'),
@@ -199,22 +200,27 @@ shinyServer(function(input, output) {
         countResults <- list() #initialize empty vector
         uids <- list()
         searchTerms <- list() #list of search terms
+        
+        searchOptionOrgn <- input$NCBISearchOptionOrgn
+        searchOptionGene <- input$NCBISearchOptionGene
+        seqLengthOption <- input$seqLengthOption
+        
         future_promise({
         for(organism in organismList){
-            for(code in barcodeList()){
-                if(input$NCBISearchOptionOrgn){
+            for(code in codeList){
+                if(searchOptionOrgn){
                     searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
                 }
                 else {
                     searchTerm <- paste(organism, " AND ", sep="") #our non-Metadata query to GenBank
                 }
-                if(input$NCBISearchOptionGene) {
+                if(searchOptionGene) {
                     searchTerm <- paste(searchTerm, code, "[GENE]", sep="") #our query to GenBank
                 }
                 else {
                     searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
                 }
-                if(input$seqLengthOption){
+                if(seqLengthOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
 
