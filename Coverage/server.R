@@ -268,7 +268,7 @@ shinyServer(function(input, output) {
     uidsGet <- reactive({ # Returns the uids stored in the results from the NCBi query
         genBankCoverage() %...>% { # Get the results from the NCBI query
         uids <- c()
-        for (i in results[[2]]) {
+        for (i in .[[2]]) {
             uids <- c(uids, i)
         }
         uids
