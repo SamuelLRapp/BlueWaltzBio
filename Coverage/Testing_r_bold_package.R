@@ -30,3 +30,4 @@ records_bold_pi <- bold_seqspec(taxon = "Pisaster giganteus")[, c('species_name'
                                                                   'genbank_accession', 
                                                                   'lat', 
                                                                   'lon')]
+
