@@ -19,6 +19,9 @@ library(tidyverse)
 library(dplyr)
 library(RSQLite)
 library(rlist)
+#install.packages("bold")    # R package to pull sequences from BOLD
+require("bold") 
+
 
 shinyServer(function(input, output) {
     
@@ -494,6 +497,85 @@ shinyServer(function(input, output) {
         rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
         write.csv(NCBImatrix, file) # Writes the dataframe to the CSV file
       }
+    )
+    
+
+# BOLD --------------------------------------------------------------------
+
+
+# * BOLDSearchButton ------------------------------------------------------
+
+    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+        input$BOLDorganismList #Returns as a string
+    })
+    
+
+# * BOLDStrToList ---------------------------------------------------------
+
+    boldOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
+        print("HEY")
+        organismList <- strsplit(BOLDOrgSearch(), ",")[[1]] #separate based on commas
+        if(input$BOLDtaxizeOption){ #if the taxize option is selected
+            taxize_organism_list <- c() #initialize an empty vector
+            
+            for(i in 1:length(organismList))
+            {
+                organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
+                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+                row_count <- nrow(NCBI_names) # get number of rows in dataframe
+                
+                if(row_count > 0) #If a legitimate name was found
+                {
+                    for(j in 1:row_count)
+                    {
+                        taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
+                        taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
+                    }
+                }
+                else
+                {
+                    taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
+                }
+            }
+            print(taxize_organism_list)
+            taxize_organism_list  
+        } else{
+            organismList #return the list as is
+        }
+    })
+    
+    # * BOLDCoverage ------------------------------------------------------------
+    
+    boldCoverage <- reactive({
+        print("HEY STARTING COVERAGE")
+        organismList <- boldOrganismList()
+        organismListLength <- length(organismList)
+        print("HEY CONTINIOUING COVERAGE")
+        validate(
+            need(organismListLength > 0, 'Please name at least one organism')
+        )
+        list <- c('species_name', 'processid', 'genbank_accession','lat', 'lon')
+        # dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
+        
+        searchTerm <- ""
+        searchResult <- 0
+        results <- c()
+        for(organism in organismList){
+            records_bold <- bold_seqspec(taxon = organism)[, c('species_name',   #this vector is the dataframe's column"
+                                                                    'processid',             # BOLD identifier
+                                                                    'genbank_accession', 
+                                                                    'lat', 
+                                                                    'lon')]
+            print(records_bold)
+        }
+        
+        
+        data <- matrix(records_bold, nrow = length(records_bold), ncol = length(list), byrow = TRUE) #store vector results in data matrix
+        data #return data matrix
+    })
+    
+    output$BOLDcoverageResults <- DT::renderDataTable(
+        boldCoverage(), rownames = boldOrganismList(), colnames = c('species_name', 'processid', 'genbank_accession','lat', 'lon')
     )
     
 })
