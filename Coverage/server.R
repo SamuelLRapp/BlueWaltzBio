@@ -9,6 +9,9 @@
 
 #;lkasdjf;aldf
 
+
+# Imports ------------------------------------------------------------------
+
 library(shiny)
 library(rentrez)
 library(taxize)
@@ -19,11 +22,18 @@ library(rlist)
 
 shinyServer(function(input, output) {
     
-    #CRUX: 
-    
+
+# CRUX --------------------------------------------------------------------
+
+
+# * CRUXSearchButton --------------------------------------------------------
+
     cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
         input$CRUXorganismList #Returns as a string
     })
+    
+
+# * CRUXStrToList -----------------------------------------------------------
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
         organismList <- strsplit(cruxOrgSearch(), ",")[[1]] #separate based on commas
@@ -55,6 +65,9 @@ shinyServer(function(input, output) {
         }
     })
     
+
+# * CRUXCoverage ------------------------------------------------------------
+
     cruxCoverage <- reactive({
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
@@ -105,6 +118,9 @@ shinyServer(function(input, output) {
         data #return data matrix
     })
     
+
+# * CRUXInputCSV -----------------------------------------------------------
+    
     inputFileCrux <- observeEvent(input$uploadCRUXButton,{
         isolate({
             req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
@@ -118,7 +134,9 @@ shinyServer(function(input, output) {
         })
     })
     
-    # Download options
+
+# * CRUXDownload ------------------------------------------------------------
+    
     output$downloadCrux <- downloadHandler(
         filename = function() { # Create the file and set its name
             paste(input$CRUXorganismList, ".csv", sep = "")
@@ -132,12 +150,27 @@ shinyServer(function(input, output) {
         }
     )
     
-    #NCBI: 
+
+# * CRUXOutput --------------------------------------------------------------
+
+    output$CRUXcoverageResults <- DT::renderDataTable(
+      cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+      
+    )
+    
+
+# NCBI --------------------------------------------------------------------
+
+
+# * NCBISearchButton --------------------------------------------------------
     
     NCBISearch <- eventReactive(input$NCBIsearchButton, { #When searchButton clicked, update NCBIOrgSearch to return the value input into NCBIorganismList 
         list(input$NCBIorganismList, input$barcodeList) #Returns as a string
     })
     
+
+# * NCBIStrToList -----------------------------------------------------------
+
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
         organismList <- strsplit(NCBISearch()[[1]], ",")[[1]] #separate based on commas
         if(input$NCBItaxizeOption){ #if the taxize option is selected
@@ -168,11 +201,17 @@ shinyServer(function(input, output) {
         }
     })
     
+
+# * NCBIBarcodeList ---------------------------------------------------------
+
     barcodeList <- reactive({
         barcodeList <- strsplit(NCBISearch()[[2]], ",") #separate based on comma
         barcodeList[[1]]
     })
     
+
+# * NCBISequenceLength ------------------------------------------------------
+
     seqLenList <- reactive({ #list of sequence length specifications
         if(input$seqLengthOption){ #only present if the option is selected
             textList <- list()
@@ -182,6 +221,9 @@ shinyServer(function(input, output) {
             textList #return the list of numeric inputs
         }
     })
+    
+
+# * NCBICoverage ------------------------------------------------------------
     
     genBankCoverage <- reactive({
         
@@ -227,6 +269,8 @@ shinyServer(function(input, output) {
         results
     })
     
+
+# * NCBIMatrix --------------------------------------------------------------
     
     matrixGet <- reactive({ # creates and returns the matrix to be displayed with the count
         organismList <- NCBIorganismList() #get species and barcode inputs
@@ -241,6 +285,9 @@ shinyServer(function(input, output) {
         data
     })
     
+
+# * NCBITableOutput ---------------------------------------------------------
+    
     matrixGetSearchTerms <- reactive({ # creates and returns the matrix to be displayed with the count
       organismList <- NCBIorganismList() #get species and barcode inputs
       organismListLength <- length(organismList)
@@ -254,7 +301,9 @@ shinyServer(function(input, output) {
       data
     })
     
-    
+
+# *   NCBIGetIDs --------------------------------------------------------------
+
     uidsGet <- reactive({ # Returns the uids stored in the results from the NCBi query
         uids <- c()
         results <- genBankCoverage() # Get the results from the NCBI query
@@ -264,6 +313,9 @@ shinyServer(function(input, output) {
         uids
     })
     
+
+# * NCBIDownloadFASTA -------------------------------------------------------
+  
     # Download NCBI table
     output$fileDownloadF <- downloadHandler(
         filename = function() { # Create the file and set its name
@@ -286,7 +338,10 @@ shinyServer(function(input, output) {
         }
     )
     
-    # Download NCBI table
+
+# * NCBIDownloadGenbank -----------------------------------------------------
+
+    # Download NCBI Genbank
     output$fileDownloadG <- downloadHandler(
         filename = function() { # Create the file and set its name
             paste("GenbankTEST", ".gb", sep = "")
@@ -308,6 +363,9 @@ shinyServer(function(input, output) {
         }
     )
     
+
+# * NCBIBarcodeButtons -----------------------------------------------------
+
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
         if(input$barcodeList[[1]] != "") { # If the input barcodeList is not empty (ie. the inputtextarea is not empty) then use the paste function to the add the barcode/s to the beginning
             updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("CO1, COI, COX1,", input$barcodeList)) # Updates the text area input adds the barcode/s to the beginning of whatever is already in it
@@ -371,18 +429,21 @@ shinyServer(function(input, output) {
         }
     })
     
+
+# * NCBIOutputTables ------------------------------------------------------------
+
+    
     #outputs:
     output$seqLenInputs <- renderUI(seqLenList())
     
     output$NCBIcoverageResults <- DT::renderDataTable(
         matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
     )
-    
-    output$CRUXcoverageResults <- DT::renderDataTable(
-        cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-        
-    )
-    
+  
+
+# * NCBInputFile ------------------------------------------------------------
+
+  
     inputFileNCBI <- observeEvent(input$uploadNCBIButton,{
         isolate({
             req(input$uNCBIfile, file.exists(input$uNCBIfile$datapath))
@@ -402,6 +463,9 @@ shinyServer(function(input, output) {
         })
     })
     
+
+# * NCBIDownloadTable -------------------------------------------------------
+    
     # Download NCBI table
     output$download <- downloadHandler(
         filename = function() { # Create the file and set its name
@@ -418,7 +482,9 @@ shinyServer(function(input, output) {
         
         
     )
-    
+
+# * NCBIDownloadSearchTerms -------------------------------------------------
+
     #Download Search Terms:
     output$downloadStatements <- downloadHandler(
       filename = function() { # Create the file and set its name
