@@ -16,11 +16,14 @@ library(tidyverse)
 library(dplyr)
 library(RSQLite)
 library(rlist)
+library(future)
+library(promises)
 
+
+plan(multisession)
 shinyServer(function(input, output) {
     
-    #CRUX: 
-    
+    #CRUX:
     cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
         input$CRUXorganismList #Returns as a string
     })
