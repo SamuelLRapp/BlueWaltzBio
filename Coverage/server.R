@@ -20,7 +20,7 @@ library(future)
 library(promises)
 
 
-plan(multisession)
+plan(multicore)
 shinyServer(function(input, output) {
     
     #CRUX:
