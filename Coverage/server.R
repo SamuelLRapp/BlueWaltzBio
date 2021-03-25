@@ -112,7 +112,6 @@ shinyServer(function(input, output) {
         }
         dbDisconnect(taxaDB)
         # unlink("taxa-db.sqlite")
-        
         data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
         data #return data matrix
     })
@@ -554,28 +553,31 @@ shinyServer(function(input, output) {
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
         )
-        list <- c('species_name', 'processid', 'genbank_accession','lat', 'lon')
+        list <- c('processid', 'genbank_accession','lat', 'lon')
         # dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
         
         searchTerm <- ""
         searchResult <- 0
         results <- c()
+        temp <- c()
         for(organism in organismList){
             records_bold <- bold_seqspec(taxon = organism)[, c('species_name',   #this vector is the dataframe's column"
                                                                     'processid',             # BOLD identifier
                                                                     'genbank_accession', 
                                                                     'lat', 
                                                                     'lon')]
-            print(records_bold)
+            for(i in 1:length(records_bold)){
+                temp <- c(records_bold$processid[i], records_bold$genbank_accession[i], records_bold$lat[i], records_bold$lon[i])
+                results <- c(results, temp)
+            }
         }
         
-        
-        data <- matrix(records_bold, nrow = length(records_bold), ncol = length(list), byrow = TRUE) #store vector results in data matrix
+        data <- matrix(results, nrow = length(records_bold)-1, ncol = length(list), byrow = TRUE) #store vector results in data matrix
         data #return data matrix
     })
     
     output$BOLDcoverageResults <- DT::renderDataTable(
-        boldCoverage(), rownames = boldOrganismList(), colnames = c('species_name', 'processid', 'genbank_accession','lat', 'lon')
+        boldCoverage(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','lat', 'lon')
     )
     
 })
