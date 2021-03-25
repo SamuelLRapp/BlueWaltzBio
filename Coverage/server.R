@@ -285,17 +285,19 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             uidsGet() %...>% {
-            progLength <- length(.)
-            shiny::withProgress(message="Downloading", value=0, {
-                Vector_Fasta <- c()
-                for (uid in .) {
-                    File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
-                    Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+              future_promise({
+                progLength <- length(.)
+                shiny::withProgress(message="Downloading", value=0, {
+                    Vector_Fasta <- c()
+                    for (uid in .) {
+                        File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+                        Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+                        shiny::incProgress(1/progLength)
+                    }
+                    write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
                     shiny::incProgress(1/progLength)
-                }
-                write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
-                shiny::incProgress(1/progLength)
-            })
+                })
+              })
             }
         }
     )
