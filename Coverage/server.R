@@ -309,17 +309,19 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             uidsGet() %...>% {
-            progLength <- length(.)
-            shiny::withProgress(message="Downloading", value=0,{
-                Vector_genbank <- c()
-                for (uid in .) {
-                    File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
-                    Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+              future_promise({
+                progLength <- length(.)
+                shiny::withProgress(message="Downloading", value=0,{
+                    Vector_genbank <- c()
+                    for (uid in .) {
+                        File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
+                        Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+                        shiny::incProgress(1/progLength)
+                    }
+                    write(Vector_genbank, file, append=TRUE) # Writes the vector containing all the genbank file information into one genbank file
                     shiny::incProgress(1/progLength)
-                }
-                write(Vector_genbank, file, append=TRUE) # Writes the vector containing all the genbank file information into one genbank file
-                shiny::incProgress(1/progLength)
-            })
+                })
+              })
             }
         }
     )
@@ -425,11 +427,14 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             columns <- barcodeList() # Gets the column names for the matrix
+            rows <- NCBIorganismList() #Gets the row names for the matrix
             matrixGet() %...>% { # Gets the matrix for the NCBI results
-            colnames(.) <- columns # Adds the column names to the matrix
+              future_promise({
+                colnames(.) <- columns # Adds the column names to the matrix
 
-            rownames(.) <- NCBIorganismList() # Adds the row names to the matrix
-            write.csv(., file) # Writes the dataframe to the CSV file
+                rownames(.) <- rows # Adds the row names to the matrix
+                write.csv(., file) # Writes the dataframe to the CSV file
+              })
             }
         }
         
@@ -442,12 +447,16 @@ shinyServer(function(input, output) {
         paste(input$NCBIorganismList, ".csv", sep = "")
       },
       content = function(file) {
-        columns <- barcodeList() # Gets the column names for the matrix
-        matrixGetSearchTerms() %...>% { # Gets the matrix for the NCBI results
-        colnames(.) <- columns # Adds the column names to the matrix
         
-        rownames(.) <- NCBIorganismList() # Adds the row names to the matrix
-        write.csv(., file) # Writes the dataframe to the CSV file
+        columns <- barcodeList() # Gets the column names for the matrix
+        rows <- NCBIorganismList() #Gets the row names for the matrix
+        matrixGetSearchTerms() %...>% { # Gets the matrix for the NCBI results
+          future_promise({
+            colnames(.) <- columns # Adds the column names to the matrix
+        
+            rownames(.) <- rows # Adds the row names to the matrix
+            write.csv(., file) # Writes the dataframe to the CSV file
+          })
         }
       }
     )
