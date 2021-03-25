@@ -84,12 +84,18 @@ shinyServer(function(input, output) {
         searchResult <- 0
         results <- c()
         for(organism in organismList){
-            searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
+            print("YOu are NCBI")
+            searchTerm <- tryCatch({
+              searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
+            }, error = function(err) {
+              results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+              next
+            })
             for(table in dbList){
-              results <- tryCatch({
+                #
+                print("YOU ARE LOCAL")
                 location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
                 if(nrow(location) == 0){
-<<<<<<< HEAD
                     location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
                     if(nrow(location) == 0){
                         location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
@@ -99,33 +105,13 @@ shinyServer(function(input, output) {
                                 location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
                                 if(nrow(location)==0){
                                     location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
-=======
-                    searchTerm <- tax_name(query= organism, get= "genus", db= "ncbi")[1,3]
-                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
-                    if(nrow(location) == 0){
-                        searchTerm <- tax_name(query= organism, get= "family", db= "ncbi")[1,3]
-                        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
-                        if(nrow(location)==0){
-                            searchTerm <- tax_name(query= organism, get= "order", db= "ncbi")[1,3]
-                            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
-                            if(nrow(location) ==0){
-                                searchTerm <- tax_name(query= organism, get= "class", db= "ncbi")[1,3]
-                                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
-                                if(nrow(location)==0){
-                                    searchTerm <- tax_name(query= organism, get= "phylum", db= "ncbi")[1,3]
-                                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm))
->>>>>>> 4ef475f... trying out a thing
                                     results <- c(results, nrow(location))
                                 } else { results <- c(results, "class")}
                             } else {results <- c(results, "order")}
                         } else {results <- c(results, "family")}
                     }else {results <- c(results, "genus") }
                 } else {results <- c(results, toString(nrow(location)))}
-              }, error = function(err) {
-                results <- c(results, "error")
-              })
             }
-            
         }
         dbDisconnect(taxaDB)
         # unlink("taxa-db.sqlite")
@@ -285,11 +271,8 @@ shinyServer(function(input, output) {
         results
     })
     
-<<<<<<< HEAD
 
 # * NCBIMatrix --------------------------------------------------------------
-=======
->>>>>>> 4ef475f... trying out a thing
     
     matrixGet <- reactive({ # creates and returns the matrix to be displayed with the count
         organismList <- NCBIorganismList() #get species and barcode inputs
@@ -304,12 +287,9 @@ shinyServer(function(input, output) {
         data
     })
     
-<<<<<<< HEAD
 
 # * NCBITableOutput ---------------------------------------------------------
     
-=======
->>>>>>> 4ef475f... trying out a thing
     matrixGetSearchTerms <- reactive({ # creates and returns the matrix to be displayed with the count
       organismList <- NCBIorganismList() #get species and barcode inputs
       organismListLength <- length(organismList)
@@ -323,13 +303,9 @@ shinyServer(function(input, output) {
       data
     })
     
-<<<<<<< HEAD
 
 # *   NCBIGetIDs --------------------------------------------------------------
 
-=======
-    
->>>>>>> 4ef475f... trying out a thing
     uidsGet <- reactive({ # Returns the uids stored in the results from the NCBi query
         uids <- c()
         results <- genBankCoverage() # Get the results from the NCBI query
@@ -507,7 +483,6 @@ shinyServer(function(input, output) {
         }
         
         
-<<<<<<< HEAD
     )
 
 # * NCBIDownloadSearchTerms -------------------------------------------------
@@ -527,23 +502,4 @@ shinyServer(function(input, output) {
       }
     )
     
-=======
-    )
-    
-    #Download Search Terms:
-    output$downloadStatements <- downloadHandler(
-      filename = function() { # Create the file and set its name
-        paste(input$NCBIorganismList, ".csv", sep = "")
-      },
-      content = function(file) {
-        columns <- barcodeList() # Gets the column names for the matrix
-        NCBImatrix <- matrixGetSearchTerms() # Gets the matrix for the NCBI results
-        colnames(NCBImatrix) <- columns # Adds the column names to the matrix
-        
-        rownames(NCBImatrix) <- NCBIorganismList() # Adds the row names to the matrix
-        write.csv(NCBImatrix, file) # Writes the dataframe to the CSV file
-      }
-    )
-    
->>>>>>> 4ef475f... trying out a thing
 })
