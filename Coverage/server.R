@@ -26,6 +26,8 @@ library(ipc)
 
 plan(multicore)
 shinyServer(function(input, output, session) {
+  
+# CRUX ----------------------------------------------------------------------
 
 # * CRUXSearchButton --------------------------------------------------------
 
