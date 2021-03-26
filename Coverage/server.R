@@ -348,7 +348,7 @@ shinyServer(function(input, output) {
             shiny::withProgress(message="Downloading", value=0,{
                 Vector_genbank <- c()
                 for (uid in uids) {
-                    File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
+                    File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb")  # Get the genbank file with that uid
                     Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
                     shiny::incProgress(1/progLength)
                 }
