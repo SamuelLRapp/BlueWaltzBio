@@ -18,10 +18,11 @@ library(RSQLite)
 library(rlist)
 library(future)
 library(promises)
+library(ipc)
 
 
 plan(multicore)
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
     
     #CRUX:
     cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
@@ -284,21 +285,22 @@ shinyServer(function(input, output) {
             paste("TEST", ".fasta", sep = "")
         },
         content = function(file) {
-            uidsGet() %...>% {
-              future_promise({
-                progLength <- length(.)
-                shiny::withProgress(message="Downloading", value=0, {
-                    Vector_Fasta <- c()
-                    for (uid in .) {
-                        File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
-                        Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
-                        shiny::incProgress(1/progLength)
-                    }
-                    write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
-                    shiny::incProgress(1/progLength)
-                })
-              })
-            }
+          uidsGet() %...>% {
+            progLength <- length(.)
+            progress <- AsyncProgress$new(session, min=0, max=progLength, message="Downloading", value=0)
+            future_promise({
+                  Vector_Fasta <- c()
+                  for (uid in .) {
+                      File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+                      Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+                      progress$inc(amount=1)
+                  }
+                  write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
+                  progress$set(value=progLength)
+                  progress$close()
+              #})
+            })
+          }
         }
     )
     
@@ -309,18 +311,18 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             uidsGet() %...>% {
+              progLength <- length(.)
+              progress <- AsyncProgress$new(session, min=0, max=progLength, message="Downloading", value=0)
               future_promise({
-                progLength <- length(.)
-                shiny::withProgress(message="Downloading", value=0,{
-                    Vector_genbank <- c()
-                    for (uid in .) {
-                        File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
-                        Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
-                        shiny::incProgress(1/progLength)
-                    }
-                    write(Vector_genbank, file, append=TRUE) # Writes the vector containing all the genbank file information into one genbank file
-                    shiny::incProgress(1/progLength)
-                })
+                  Vector_genbank <- c()
+                  for (uid in .) {
+                      File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
+                      Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+                      progress$inc(amount=1)
+                  }
+                  write(Vector_genbank, file, append=TRUE) # Writes the vector containing all the genbank file information into one genbank file
+                  progress$set(value=progLength)
+                  progress$close()
               })
             }
         }
