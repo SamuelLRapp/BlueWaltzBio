@@ -169,6 +169,7 @@ shinyServer(function(input, output) {
     })
     
     barcodeList <- reactive({
+        # Detect that there is a parenthesis then do not change and keep it together
         barcodeList <- strsplit(input$barcodeList, ",") #separate based on comma
         barcodeList[[1]]
     })
@@ -201,6 +202,10 @@ shinyServer(function(input, output) {
         searchTerms <- list() #list of search terms
         for(organism in organismList){
             for(code in barcodeList()){
+                # (CO1, COX1, COI)
+                # if there is a parenthesis
+                # Break up the string
+                # searchterm + CO1 + OR + COX1 + OR + COI + [GENE]
                 if(input$NCBISearchOptionOrgn){
                     searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
                 }
