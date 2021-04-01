@@ -89,11 +89,19 @@ shinyServer(function(input, output) {
               searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
               results <- c()
             }, error = function(err) {
-              results <- c(results, "error")
+              results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+              next
             })
-            print("HELLOOOOOO")
-            print(searchTerm)
-            print(results)
+            for(i in 1:7) {
+              if(is.na(searchTerm[i])) {
+                results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+                err <- 1
+                break
+              }
+            }
+            if(err == 1) {
+              next
+            }
             for(table in dbList){
                 #
                 location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
