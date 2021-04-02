@@ -31,7 +31,7 @@ RefseqsearchTerm <- "apis AND srcdb_refseq[PROP]"
 #we can add s '15000:18000[SLEN]' for cholorplast etc...
 
 
-Gallus gallus AND srcdb_refseq[PROP] AND 15000:18000[Sequence Length] AND mitochondrial
+#Gallus gallus AND srcdb_refseq[PROP] AND 15000:18000[Sequence Length] AND mitochondrial
 
 
 #All refseq information lives in nucleotide database. It can be accessed in nucleotide by adding 'AND srcdb_refseq[property]'
