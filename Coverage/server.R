@@ -92,14 +92,13 @@ shinyServer(function(input, output) {
               results <- c(results, "error", "error", "error", "error", "error", "error", "error")
               next
             })
-            for(i in 1:7) {
+            for(i in 3:8) {
               if(is.na(searchTerm[i])) {
-                results <- c(results, "error", "error", "error", "error", "error", "error", "error")
-                err <- 1
-                break
+                err <- err + 1
               }
             }
-            if(err == 1) {
+            if(err == 6) {
+              results <- c(results, "error", "error", "error", "error", "error", "error", "error")
               next
             }
             for(table in dbList){
