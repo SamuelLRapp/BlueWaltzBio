@@ -60,37 +60,14 @@ shinyServer(function(input, output) {
                     taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
+            taxize_organism_list
         } else{
             organismList #return the list as is
         }
-        # if(input$CRUXtaxizeOption) {
-        #   organismList <- taxize_organism_list
-        # }
-        # if(input$CRUXHomonym) {
-        #   for(organism in organismList){
-        #     search <- get_uid_(sci_com = organism)
-        #     if(nrow(search[[1]]) > 1) {
-        #       string <- paste("1:", search[[1]]$division[1])
-        #       for(i in 2:nrow(search[[1]])) {
-        #         temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
-        #         string <- paste(string, temp, sep="\n")
-        #       }
-        #       title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
-        #       #user.input <- dlgInput("Enter a number", gui = .GUI)$res
-        #       #user <- dlg_input("Who are you?", Sys.info()["user"], gui = .GUI)$res
-        #       #input <- dlgInput(message = "Enter a value", default = "",gui = .GUI)
-        #       #input <- dlgInput.rstudio_dlg_input(message = "ENTER A VALUE")
-        #       #shinyalert(title, string, type = "input", inputType = "number", callbackR = mycallback)
-        #       # req(input$shinyalert)
-        #       # print(input$shinyalert)
-        #     }
-        #   }
-        #}
-        organismList
     })
     
     
-    observeEvent(input$homonymButton, {
+    # observeEvent(input$homonymButton, {
       # for(i in 1:3) {
       #   shinyalert("HEY", "WELL", type = "input", inputType = "number", callbackR = mycallback)
       # }
@@ -117,34 +94,34 @@ shinyServer(function(input, output) {
       #     # print(hfix)
       #   }
       # }
-      print("HEY")
-      cruxOrganismHomonymList()
-    })
+    #   print("HEY")
+    #   cruxOrganismHomonymList()
+    # })
     
-    finalres <- function(value) {
-      cat(value)
-    }
+    # finalres <- function(value) {
+    #   cat(value)
+    # }
     # 
-    cruxOrganismHomonymList <- reactive({
-      organismList <- input$CRUXorganismList
-      print(organismList)
-      homonymList <- list()
-      hfix <- c()
-      for(organism in organismList){
-        print(organism)
-        search <- get_uid_(sci_com = organism)
-        if(nrow(search[[1]]) > 1) {
-          string <- paste("1:", search[[1]]$division[1])
-          for(i in 2:nrow(search[[1]])) {
-            temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
-            string <- paste(string, temp, sep="\n")
-          }
-          title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
-        }
-      }
-      shinyalert(title, string, type = "input", inputType = "input", callbackR = finalres)
-      #shinyalert(html = TRUE, text = tagList(numericInput("num", "Number", 10), numericInput("num3", "Number", 10), numericInput("num2", "Number", 10)), callbackR = finalres)
-    })
+    # cruxOrganismHomonymList <- reactive({
+    #   organismList <- input$CRUXorganismList
+    #   print(organismList)
+    #   homonymList <- list()
+    #   hfix <- c()
+    #   for(organism in organismList){
+    #     print(organism)
+    #     search <- get_uid_(sci_com = organism)
+    #     if(nrow(search[[1]]) > 1) {
+    #       string <- paste("1:", search[[1]]$division[1])
+    #       for(i in 2:nrow(search[[1]])) {
+    #         temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
+    #         string <- paste(string, temp, sep="\n")
+    #       }
+    #       title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
+    #     }
+    #   }
+    #   shinyalert(title, string, type = "input", inputType = "input", callbackR = finalres)
+    #   #shinyalert(html = TRUE, text = tagList(numericInput("num", "Number", 10), numericInput("num3", "Number", 10), numericInput("num2", "Number", 10)), callbackR = finalres)
+    # })
     
     # tempFunc <- function(value) {
     #   cat(value)
@@ -182,7 +159,7 @@ shinyServer(function(input, output) {
             #   print(input$shinyalert)
             #   
             # }
-            user <- dlg_input("Who are you?", Sys.info()["user"])$res
+            user <- dlg_input("Who are you?", Sys.info()["user"], gui = .GUI)$res
             print(user)
             #Error
             results <- tryCatch({

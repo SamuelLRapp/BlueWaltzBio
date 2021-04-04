@@ -56,7 +56,7 @@ shinyUI(fluidPage(
                             checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                             checkboxInput(inputId = "CRUXHomonym", label = "Check for homonyms", value = TRUE),
                             actionButton("searchButton", "Search"),
-                            actionButton("homonymButton", "Homonym")
+                            #actionButton("homonymButton", "Homonym")
                           ), 
                           mainPanel(
                             # Show a plot of the generated distribution
