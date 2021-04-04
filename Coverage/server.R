@@ -19,6 +19,8 @@ library(tidyverse)
 library(dplyr)
 library(RSQLite)
 library(rlist)
+library(svDialogs)
+library(shinyalert)
 
 shinyServer(function(input, output) {
     
@@ -31,7 +33,6 @@ shinyServer(function(input, output) {
     cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
         input$CRUXorganismList #Returns as a string
     })
-    
 
 # * CRUXStrToList -----------------------------------------------------------
     
@@ -59,22 +60,107 @@ shinyServer(function(input, output) {
                     taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
-            taxize_organism_list  
         } else{
             organismList #return the list as is
         }
+        # if(input$CRUXtaxizeOption) {
+        #   organismList <- taxize_organism_list
+        # }
+        # if(input$CRUXHomonym) {
+        #   for(organism in organismList){
+        #     search <- get_uid_(sci_com = organism)
+        #     if(nrow(search[[1]]) > 1) {
+        #       string <- paste("1:", search[[1]]$division[1])
+        #       for(i in 2:nrow(search[[1]])) {
+        #         temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
+        #         string <- paste(string, temp, sep="\n")
+        #       }
+        #       title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
+        #       #user.input <- dlgInput("Enter a number", gui = .GUI)$res
+        #       #user <- dlg_input("Who are you?", Sys.info()["user"], gui = .GUI)$res
+        #       #input <- dlgInput(message = "Enter a value", default = "",gui = .GUI)
+        #       #input <- dlgInput.rstudio_dlg_input(message = "ENTER A VALUE")
+        #       #shinyalert(title, string, type = "input", inputType = "number", callbackR = mycallback)
+        #       # req(input$shinyalert)
+        #       # print(input$shinyalert)
+        #     }
+        #   }
+        #}
+        organismList
     })
     
-
+    
+    observeEvent(input$homonymButton, {
+      # for(i in 1:3) {
+      #   shinyalert("HEY", "WELL", type = "input", inputType = "number", callbackR = mycallback)
+      # }
+      # organismList <- cruxOrganismList()
+      # #homonymList <- list()
+      # #hfix <- c()
+      # for(organism in organismList){
+      #   search <- get_uid_(sci_com = organism)
+      #   if(nrow(search[[1]]) > 1) {
+      #     string <- paste("1:", search[[1]]$division[1])
+      #     for(i in 2:nrow(search[[1]])) {
+      #       temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
+      #       string <- paste(string, temp, sep="\n")
+      #     }
+      #     title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
+      #     shinyalert(title, string, type = "input", inputType = "number")
+      #     req(input$shinyalert)
+      #     print(input$shinyalert)
+      #     # 2 Problems
+      #     # 1 we need to wait for input$shinyalert to be set before doing anything
+      #     # 2 we need to make sure the search stops until this is done
+      #     # hfix <- c(search[[1]]$scientificname, search[[1]]$division[input$shinyalert])
+      #     # print("HEY")
+      #     # print(hfix)
+      #   }
+      # }
+      print("HEY")
+      cruxOrganismHomonymList()
+    })
+    
+    finalres <- function(value) {
+      cat(value)
+    }
+    # 
+    cruxOrganismHomonymList <- reactive({
+      organismList <- input$CRUXorganismList
+      print(organismList)
+      homonymList <- list()
+      hfix <- c()
+      for(organism in organismList){
+        print(organism)
+        search <- get_uid_(sci_com = organism)
+        if(nrow(search[[1]]) > 1) {
+          string <- paste("1:", search[[1]]$division[1])
+          for(i in 2:nrow(search[[1]])) {
+            temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
+            string <- paste(string, temp, sep="\n")
+          }
+          title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
+        }
+      }
+      shinyalert(title, string, type = "input", inputType = "input", callbackR = finalres)
+      #shinyalert(html = TRUE, text = tagList(numericInput("num", "Number", 10), numericInput("num3", "Number", 10), numericInput("num2", "Number", 10)), callbackR = finalres)
+    })
+    
+    # tempFunc <- function(value) {
+    #   cat(value)
+    # }
+    
 # * CRUXCoverage ------------------------------------------------------------
 
     cruxCoverage <- reactive({
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
-        
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
         )
+        # validate(
+        #   need(!is.null(hlist), 'Need to check for homonyms')
+        # )
         
         dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
         
@@ -85,13 +171,29 @@ shinyServer(function(input, output) {
         results <- c()
         err <- 0
         for(organism in organismList){
+            # search <- get_uid_(sci_com = organism)
+            # if(nrow(search[[1]]) > 1) {
+            #   string <- paste("1:", search[[1]]$division[1])
+            #   for(i in 2:nrow(search[[1]])) {
+            #     temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
+            #     string <- paste(string, temp, sep="\n")
+            #   }
+            #   chosenH <- shinyalert("Please choose a homonym:", string, type = "input", inputType = "number")
+            #   print(input$shinyalert)
+            #   
+            # }
+            user <- dlg_input("Who are you?", Sys.info()["user"])$res
+            print(user)
+            #Error
             results <- tryCatch({
-              searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
+              searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = TRUE)
               results <- c()
             }, error = function(err) {
               results <- c(results, "error", "error", "error", "error", "error", "error", "error")
               next
             })
+            print(searchTerm)
+            # NO error 
             for(i in 3:8) {
               if(is.na(searchTerm[i])) {
                 err <- err + 1
