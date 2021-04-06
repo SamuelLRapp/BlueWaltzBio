@@ -45,7 +45,7 @@ shinyServer(function(input, output, session) {
             
             for(i in 1:length(organismList))
             {
-                Sys.sleep(0.34)
+                Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
                 row_count <- nrow(NCBI_names) # get number of rows in dataframe
@@ -183,7 +183,7 @@ shinyServer(function(input, output, session) {
             
             for(i in 1:length(organismList))
             {
-                Sys.sleep(0.34)
+                Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
                 row_count <- nrow(NCBI_names)# get number of rows in dataframe
@@ -272,7 +272,7 @@ shinyServer(function(input, output, session) {
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
 
-                Sys.sleep(0.34)
+                Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
                 uids <- list.append(uids, searchResult$ids)
                 searchTerms <- list.append(searchTerms, searchTerm) # 
@@ -346,7 +346,7 @@ shinyServer(function(input, output, session) {
             future_promise({
                   Vector_Fasta <- c()
                   for (uid in .) {
-                      Sys.sleep(0.34)
+                      Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
                       File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
                       Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
                       progress$inc(amount=1)
@@ -375,7 +375,7 @@ shinyServer(function(input, output, session) {
               future_promise({
                   Vector_genbank <- c()
                   for (uid in .) {
-                      Sys.sleep(0.34)
+                      Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
                       File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb")  # Get the genbank file with that uid
                       Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
                       progress$inc(amount=1)
