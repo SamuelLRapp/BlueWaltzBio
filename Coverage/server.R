@@ -29,14 +29,14 @@ shinyServer(function(input, output) {
 # * CRUXSearchButton --------------------------------------------------------
 
     cruxSearchInputs <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
-        input$CRUXorganismList #Returns as a string
+        list(orgList=input$CRUXorganismList) #Returns as a string
     })
     
 
 # * CRUXStrToList -----------------------------------------------------------
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-        organismList <- strsplit(cruxSearchInputs(), ",")[[1]] #separate based on commas
+        organismList <- strsplit(cruxSearchInputs()$orgList, ",")[[1]] #separate based on commas
         if(input$CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
             
