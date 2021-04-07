@@ -87,6 +87,10 @@ shinyServer(function(input, output, session) {
         searchTerm <- ""
         searchResult <- 0
         results <- c()
+        
+        progLength <- (7 * organismListLength) + 1
+        progress <- AsyncProgress$new(session, min=0, max=progLength, message="Searching", value=0)
+        
         future_promise({
           for(organism in organismList){
               searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
@@ -109,6 +113,8 @@ shinyServer(function(input, output, session) {
                           } else {results <- c(results, "family")}
                       }else {results <- c(results, "genus") }
                   } else {results <- c(results, toString(nrow(location)))}
+                  
+                  progress$inc(amount=1)
               }
           }
         
@@ -117,6 +123,10 @@ shinyServer(function(input, output, session) {
         # unlink("taxa-db.sqlite")
         
         data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
+        
+        progress$set(value=progLength)
+        progress$close()
+        
         data #return data matrix
         })
     })
@@ -253,6 +263,9 @@ shinyServer(function(input, output, session) {
         searchOptionGene <- input$NCBISearchOptionGene
         seqLengthOption <- input$seqLengthOption
         
+        progLength <- (codeListLength * organismListLength) + 1
+        progress <- AsyncProgress$new(session, min=0, max=progLength, message="Searching", value=0)
+        
         future_promise({
         for(organism in organismList){
             for(code in codeList){
@@ -277,9 +290,15 @@ shinyServer(function(input, output, session) {
                 uids <- list.append(uids, searchResult$ids)
                 searchTerms <- list.append(searchTerms, searchTerm) # 
                 countResults <- list.append(countResults, searchResult$count) #append the count to the vector of results
+                
+                progress$inc(amount=1)
             }
         }
         results <- list(count=countResults, ids=uids,searchTermslist = searchTerms ) #
+        
+        progress$set(value=progLength)
+        progress$close()
+        
         results
         })
     })
