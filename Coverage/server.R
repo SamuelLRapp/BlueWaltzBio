@@ -161,7 +161,8 @@ shinyServer(function(input, output) {
 # * NCBISearchButton --------------------------------------------------------
     
     NCBISearchInputs <- eventReactive(input$NCBIsearchButton, { #When searchButton clicked, update NCBIOrgSearch to return the value input into NCBIorganismList 
-        list(orgList=input$NCBIorganismList, codeList=input$barcodeList) #Returns as a string
+        list(orgList=input$NCBIorganismList, codeList=input$barcodeList,
+              taxize=input$NCBItaxizeOption) #Returns as a string
     })
     
 
@@ -169,7 +170,7 @@ shinyServer(function(input, output) {
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
         organismList <- strsplit(NCBISearchInputs()$orgList, ",")[[1]] #separate based on commas
-        if(input$NCBItaxizeOption){ #if the taxize option is selected
+        if(NCBISearchInputs()$taxize){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
             
             for(i in 1:length(organismList))
