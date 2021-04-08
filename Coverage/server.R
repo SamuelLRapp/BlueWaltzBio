@@ -162,7 +162,7 @@ shinyServer(function(input, output) {
     
     NCBISearchInputs <- eventReactive(input$NCBIsearchButton, { #When searchButton clicked, update NCBIOrgSearch to return the value input into NCBIorganismList 
         list(orgList=input$NCBIorganismList, codeList=input$barcodeList,
-              taxize=input$NCBItaxizeOption) #Returns as a string
+              taxize=input$NCBItaxizeOption, seqLenOption=input$seqLengthOption) #Returns as a string
     })
     
 
@@ -253,7 +253,7 @@ shinyServer(function(input, output) {
                 else {
                     searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
                 }
-                if(input$seqLengthOption){
+                if(NCBISearchInputs()$seqLenOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
 
