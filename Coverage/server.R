@@ -28,16 +28,16 @@ shinyServer(function(input, output) {
 
 # * CRUXSearchButton --------------------------------------------------------
 
-    cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
-        input$CRUXorganismList #Returns as a string
+    cruxSearchInputs <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+        list(orgList=input$CRUXorganismList, taxize=input$CRUXtaxizeOption) #Returns as a string
     })
     
 
 # * CRUXStrToList -----------------------------------------------------------
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-        organismList <- strsplit(cruxOrgSearch(), ",")[[1]] #separate based on commas
-        if(input$CRUXtaxizeOption){ #if the taxize option is selected
+        organismList <- strsplit(cruxSearchInputs()$orgList, ",")[[1]] #separate based on commas
+        if(cruxSearchInputs()$taxize){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
             
             for(i in 1:length(organismList))
@@ -160,16 +160,17 @@ shinyServer(function(input, output) {
 
 # * NCBISearchButton --------------------------------------------------------
     
-    NCBISearch <- eventReactive(input$NCBIsearchButton, { #When searchButton clicked, update NCBIOrgSearch to return the value input into NCBIorganismList 
-        list(input$NCBIorganismList, input$barcodeList) #Returns as a string
+    NCBISearchInputs <- eventReactive(input$NCBIsearchButton, { #When searchButton clicked, update NCBIOrgSearch to return the value input into NCBIorganismList 
+        list(orgList=input$NCBIorganismList, codeList=input$barcodeList,
+              taxize=input$NCBItaxizeOption, seqLenOption=input$seqLengthOption) #Returns as a string
     })
     
 
 # * NCBIStrToList -----------------------------------------------------------
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
-        organismList <- strsplit(NCBISearch()[[1]], ",")[[1]] #separate based on commas
-        if(input$NCBItaxizeOption){ #if the taxize option is selected
+        organismList <- strsplit(NCBISearchInputs()$orgList, ",")[[1]] #separate based on commas
+        if(NCBISearchInputs()$taxize){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
             
             for(i in 1:length(organismList))
@@ -201,7 +202,7 @@ shinyServer(function(input, output) {
 # * NCBIBarcodeList ---------------------------------------------------------
 
     barcodeList <- reactive({
-        barcodeList <- strsplit(NCBISearch()[[2]], ",") #separate based on comma
+        barcodeList <- strsplit(NCBISearchInputs()$codeList, ",") #separate based on comma
         barcodeList[[1]]
     })
     
@@ -211,7 +212,8 @@ shinyServer(function(input, output) {
     seqLenList <- reactive({ #list of sequence length specifications
         if(input$seqLengthOption){ #only present if the option is selected
             textList <- list()
-            for(marker in barcodeList()){ #allow the user to specify a different length for every barcode
+            barcodeList <- strsplit(input$barcodeList, ",") #separate based on comma
+            for(marker in barcodeList[[1]]){ #allow the user to specify a different length for every barcode
                 textList <- list(textList, numericInput(marker, paste("Minimum sequence length for", marker), 500, min= 0)) #add a numeric input
             }
             textList #return the list of numeric inputs
@@ -251,7 +253,7 @@ shinyServer(function(input, output) {
                 else {
                     searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
                 }
-                if(input$seqLengthOption){
+                if(NCBISearchInputs()$seqLenOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                 }
 
