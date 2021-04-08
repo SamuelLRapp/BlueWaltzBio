@@ -566,13 +566,20 @@ shinyServer(function(input, output) {
                                                                     'genbank_accession', 
                                                                     'lat', 
                                                                     'lon')]
-            for(i in 1:length(records_bold)){
+            # print(records_bold)
+            # print("HEYLLO")
+            # print(typeof(records_bold))
+            # print(length(records_bold))
+            print(records_bold$processid)
+            print(length(records_bold$species_name))
+            # print(length(records_bold))
+            for(i in 1:length(records_bold$species_name)){
                 temp <- c(records_bold$processid[i], records_bold$genbank_accession[i], records_bold$lat[i], records_bold$lon[i])
                 results <- c(results, temp)
             }
         }
         
-        data <- matrix(results, nrow = length(records_bold)-1, ncol = length(list), byrow = TRUE) #store vector results in data matrix
+        data <- matrix(results, nrow = length(records_bold$species_name)-1, ncol = length(list), byrow = TRUE) #store vector results in data matrix
         data #return data matrix
     })
     
