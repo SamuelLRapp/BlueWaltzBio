@@ -212,7 +212,8 @@ shinyServer(function(input, output) {
     seqLenList <- reactive({ #list of sequence length specifications
         if(input$seqLengthOption){ #only present if the option is selected
             textList <- list()
-            for(marker in barcodeList()){ #allow the user to specify a different length for every barcode
+            barcodeList <- strsplit(input$barcodeList, ",") #separate based on comma
+            for(marker in barcodeList[[1]]){ #allow the user to specify a different length for every barcode
                 textList <- list(textList, numericInput(marker, paste("Minimum sequence length for", marker), 500, min= 0)) #add a numeric input
             }
             textList #return the list of numeric inputs
