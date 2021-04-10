@@ -51,12 +51,10 @@ shinyUI(fluidPage(
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
-                            useShinyalert(),
+                            #useShinyalert(),
                             textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
                             checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
-                            checkboxInput(inputId = "CRUXHomonym", label = "Check for homonyms", value = TRUE),
                             actionButton("searchButton", "Search"),
-                            #actionButton("homonymButton", "Homonym")
                           ), 
                           mainPanel(
                             # Show a plot of the generated distribution

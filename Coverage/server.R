@@ -19,8 +19,7 @@ library(tidyverse)
 library(dplyr)
 library(RSQLite)
 library(rlist)
-library(svDialogs)
-library(shinyalert)
+library(mpoly)
 
 shinyServer(function(input, output) {
     
@@ -66,71 +65,57 @@ shinyServer(function(input, output) {
         }
     })
     
+    cruxResult <- function(results, searchTerm, organism) {
+      dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
+      taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
+      #results <- c()
+      for(table in dbList){
+        #
+        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
+        if(nrow(location) == 0){
+          location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
+          if(nrow(location) == 0){
+            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
+            if(nrow(location)==0){
+              location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
+              if(nrow(location) ==0){
+                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
+                if(nrow(location)==0){
+                  location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
+                  results <- c(results, nrow(location))
+                } else { results <- c(results, "class")}
+              } else {results <- c(results, "order")}
+            } else {results <- c(results, "family")}
+          }else {results <- c(results, "genus") }
+        } else {results <- c(results, toString(nrow(location)))}
+      }
+      dbDisconnect(taxaDB)
+      results
+    }
     
-    # observeEvent(input$homonymButton, {
-      # for(i in 1:3) {
-      #   shinyalert("HEY", "WELL", type = "input", inputType = "number", callbackR = mycallback)
-      # }
-      # organismList <- cruxOrganismList()
-      # #homonymList <- list()
-      # #hfix <- c()
-      # for(organism in organismList){
-      #   search <- get_uid_(sci_com = organism)
-      #   if(nrow(search[[1]]) > 1) {
-      #     string <- paste("1:", search[[1]]$division[1])
-      #     for(i in 2:nrow(search[[1]])) {
-      #       temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
-      #       string <- paste(string, temp, sep="\n")
-      #     }
-      #     title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
-      #     shinyalert(title, string, type = "input", inputType = "number")
-      #     req(input$shinyalert)
-      #     print(input$shinyalert)
-      #     # 2 Problems
-      #     # 1 we need to wait for input$shinyalert to be set before doing anything
-      #     # 2 we need to make sure the search stops until this is done
-      #     # hfix <- c(search[[1]]$scientificname, search[[1]]$division[input$shinyalert])
-      #     # print("HEY")
-      #     # print(hfix)
-      #   }
-      # }
-    #   print("HEY")
-    #   cruxOrganismHomonymList()
-    # })
-    
-    # finalres <- function(value) {
-    #   cat(value)
-    # }
-    # 
-    # cruxOrganismHomonymList <- reactive({
-    #   organismList <- input$CRUXorganismList
-    #   print(organismList)
-    #   homonymList <- list()
-    #   hfix <- c()
-    #   for(organism in organismList){
-    #     print(organism)
-    #     search <- get_uid_(sci_com = organism)
-    #     if(nrow(search[[1]]) > 1) {
-    #       string <- paste("1:", search[[1]]$division[1])
-    #       for(i in 2:nrow(search[[1]])) {
-    #         temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
-    #         string <- paste(string, temp, sep="\n")
-    #       }
-    #       title <- paste("Please choose a homonym for ", search[[1]]$scientificname)
-    #     }
-    #   }
-    #   shinyalert(title, string, type = "input", inputType = "input", callbackR = finalres)
-    #   #shinyalert(html = TRUE, text = tagList(numericInput("num", "Number", 10), numericInput("num3", "Number", 10), numericInput("num2", "Number", 10)), callbackR = finalres)
-    # })
-    
-    # tempFunc <- function(value) {
-    #   cat(value)
-    # }
+    organismListHomonym <- reactive({
+      organismList <- cruxOrganismList()
+      newOrgList <- c()
+      for(organism in organismList){
+        search <- get_uid_(sci_com = organism)
+        if( nrow(search[[1]]) > 1) {
+          for (i in 1:nrow(search[[1]])) {
+            newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
+            newOrgList <- c(newOrgList, newOrg)
+          }
+        } else {
+          newOrgList <- c(newOrgList, organism)
+        }
+        Sys.sleep(.5)
+      }
+      newOrgList
+    })
     
 # * CRUXCoverage ------------------------------------------------------------
 
     cruxCoverage <- reactive({
         organismList <- cruxOrganismList()
+        x <- organismListHomonym()
         organismListLength <- length(organismList)
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
@@ -140,70 +125,42 @@ shinyServer(function(input, output) {
         # )
         
         dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
-        
-        taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
+        #taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
         
         searchTerm <- ""
         searchResult <- 0
         results <- c()
         err <- 0
         for(organism in organismList){
-            # search <- get_uid_(sci_com = organism)
-            # if(nrow(search[[1]]) > 1) {
-            #   string <- paste("1:", search[[1]]$division[1])
-            #   for(i in 2:nrow(search[[1]])) {
-            #     temp <- paste(toString(i), ": ", search[[1]]$division[i], sep="")
-            #     string <- paste(string, temp, sep="\n")
-            #   }
-            #   chosenH <- shinyalert("Please choose a homonym:", string, type = "input", inputType = "number")
-            #   print(input$shinyalert)
-            #   
-            # }
-            user <- dlg_input("Who are you?", Sys.info()["user"], gui = .GUI)$res
-            print(user)
-            #Error
-            results <- tryCatch({
-              searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = TRUE)
-              results <- c()
-            }, error = function(err) {
-              results <- c(results, "error", "error", "error", "error", "error", "error", "error")
-              next
-            })
-            print(searchTerm)
-            # NO error 
-            for(i in 3:8) {
-              if(is.na(searchTerm[i])) {
-                err <- err + 1
+            search <- get_uid_(sci_com = organism)
+            if( nrow(search[[1]]) > 1) {
+              organismListLength <- organismListLength + nrow(search[[1]]) - 1
+              for (i in 1:nrow(search[[1]])) {
+                hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]]
+                match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
+                query <- c("db", "query", "genus", "family", "order", "class","phylum", "domain")
+                match <- c("ncbi", organism, match)
+                searchTerm <- stats::setNames(
+                  data.frame(t(match), stringsAsFactors = FALSE), 
+                  query
+                )
+                results <- cruxResult(results, searchTerm, organism)
               }
-            }
-            if(err == 6) {
-              results <- c(results, "error", "error", "error", "error", "error", "error", "error")
-              next
-            }
-            for(table in dbList){
-                #
-                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
-                if(nrow(location) == 0){
-                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
-                    if(nrow(location) == 0){
-                        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
-                        if(nrow(location)==0){
-                            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
-                            if(nrow(location) ==0){
-                                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
-                                if(nrow(location)==0){
-                                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
-                                    results <- c(results, nrow(location))
-                                } else { results <- c(results, "class")}
-                            } else {results <- c(results, "order")}
-                        } else {results <- c(results, "family")}
-                    }else {results <- c(results, "genus") }
-                } else {results <- c(results, toString(nrow(location)))}
+            } else {
+              # Error
+              searchTerm <- tryCatch({
+                searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = TRUE)
+              }, error = function(err) {
+                results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+                err <- 1
+              })
+              print(searchTerm)
+              if(err == 1) {
+                next
               }
+              results <- cruxResult(results, searchTerm, organism)
+            }
         }
-        dbDisconnect(taxaDB)
-        # unlink("taxa-db.sqlite")
-        
         data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
         data #return data matrix
     })
@@ -244,7 +201,7 @@ shinyServer(function(input, output) {
 # * CRUXOutput --------------------------------------------------------------
 
     output$CRUXcoverageResults <- DT::renderDataTable(
-      cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+      cruxCoverage(), rownames = organismListHomonym(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
       
     )
     
