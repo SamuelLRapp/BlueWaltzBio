@@ -95,10 +95,12 @@ shinyServer(function(input, output) {
     
     organismListHomonym <- reactive({
       organismList <- cruxOrganismList()
+      popuplist <-c()
       newOrgList <- c()
       for(organism in organismList){
         search <- get_uid_(sci_com = organism)
         if( nrow(search[[1]]) > 1) {
+          popuplist <- c(popuplist, organism)
           for (i in 1:nrow(search[[1]])) {
             newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
             newOrgList <- c(newOrgList, newOrg)
@@ -108,6 +110,7 @@ shinyServer(function(input, output) {
         }
         Sys.sleep(.5)
       }
+      print(popuplist)
       newOrgList
     })
     
