@@ -93,32 +93,10 @@ shinyServer(function(input, output) {
       results
     }
     
-    organismListHomonym <- reactive({
-      organismList <- cruxOrganismList()
-      popuplist <-c()
-      newOrgList <- c()
-      for(organism in organismList){
-        search <- get_uid_(sci_com = organism)
-        if( nrow(search[[1]]) > 1) {
-          popuplist <- c(popuplist, organism)
-          for (i in 1:nrow(search[[1]])) {
-            newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
-            newOrgList <- c(newOrgList, newOrg)
-          }
-        } else {
-          newOrgList <- c(newOrgList, organism)
-        }
-        Sys.sleep(.5)
-      }
-      print(popuplist)
-      newOrgList
-    })
-    
 # * CRUXCoverage ------------------------------------------------------------
 
     cruxCoverage <- reactive({
         organismList <- cruxOrganismList()
-        x <- organismListHomonym()
         organismListLength <- length(organismList)
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
@@ -133,12 +111,15 @@ shinyServer(function(input, output) {
         searchTerm <- ""
         searchResult <- 0
         results <- c()
+        newOrgList <- c()
         err <- 0
         for(organism in organismList){
             search <- get_uid_(sci_com = organism)
             if( nrow(search[[1]]) > 1) {
               organismListLength <- organismListLength + nrow(search[[1]]) - 1
-              for (i in 1:nrow(search[[1]])) {
+              for (i in 1:nrow(search[[1]])) { # tax_name
+                newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
+                newOrgList <- c(newOrgList, newOrg)
                 hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]]
                 match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
                 query <- c("db", "query", "genus", "family", "order", "class","phylum", "domain")
@@ -151,6 +132,7 @@ shinyServer(function(input, output) {
               }
             } else {
               # Error
+              newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
                 searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = TRUE)
               }, error = function(err) {
@@ -164,8 +146,37 @@ shinyServer(function(input, output) {
               results <- cruxResult(results, searchTerm, organism)
             }
         }
-        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
-        data #return data matrix
+        print("results")
+        print(newOrgList)
+        results <- list(organismList=newOrgList, data=results) 
+        results
+        # data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
+        # data #return data matrix
+    })
+    
+# * matrixGetCRUX ------------------------------------------------------------
+    
+    matrixGetCRUX <- reactive({ # creates and returns the matrix to be displayed with the count
+      dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S")
+      cruxCoverage <- cruxCoverage() # Get the results from the NCBI query
+      results <- c()
+      organismListLength <- length(cruxCoverage[[1]])
+      for (i in cruxCoverage[[2]]) {
+        results <- c(results, i)
+      }
+      data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #convert results vector to dataframe
+      data
+    })
+    
+# * organismListGet ------------------------------------------------------------
+    
+    organismListGet <- reactive({ # Returns the uids stored in the results from the NCBi query
+      organismList <- c()
+      cruxCoverage <- cruxCoverage() # Get the results from the NCBI query
+      for (i in cruxCoverage[[1]]) {
+        organismList <- c(organismList, i)
+      }
+      organismList
     })
     
 
@@ -204,7 +215,7 @@ shinyServer(function(input, output) {
 # * CRUXOutput --------------------------------------------------------------
 
     output$CRUXcoverageResults <- DT::renderDataTable(
-      cruxCoverage(), rownames = organismListHomonym(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+      matrixGetCRUX(), rownames = organismListGet(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
       
     )
     
@@ -334,7 +345,6 @@ shinyServer(function(input, output) {
         data <- matrix(count, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
         data
     })
-    
 
 # * NCBITableOutput ---------------------------------------------------------
     
