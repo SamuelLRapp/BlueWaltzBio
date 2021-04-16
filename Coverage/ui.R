@@ -62,7 +62,7 @@ shinyUI(fluidPage(
                 
                 checkboxInput(inputId = "ref_seq", label = "Search for reference sequences", value = TRUE),
                          
-                ),
+              
               
                 actionButton("genomesearchButton", "Search"),
               ),
