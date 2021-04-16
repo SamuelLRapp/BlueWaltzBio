@@ -22,7 +22,53 @@ library(rlist)
 
 shinyServer(function(input, output) {
     
-
+# TEST --------------------------------------------------------------------
+  
+Organisms_with_Mitochondrial_genomes <- function( 
+  taxa_dataframe,  #input a list or dataframe and return a dataframe
+  refseq = FALSE#if TRUE then add AND srcdb_refseq[PROP] to search statement, default don't add 
+)
+{
+  taxa_dataframe <- taxa_dataframe[!duplicated(taxa_dataframe), ] #remove duplicate taxa names!
+  num_rows <- nrow(taxa_dataframe)
+  Results <- data.frame(matrix(0, ncol = 3, nrow = num_rows))
+  
+  parameters<- "set vector up"
+  
+  # canis lupus[ORGN] AND 16000:17000[Sequence Length] AND (mitochondrial[Title] or mitochondrion[Title]] 
+  # AND srcdb_refseq[PROP]
+  
+  if(isTRUE(refseq))
+  {
+    parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
+    names(Results) <- c('taxaname', 'Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+  }else
+  {
+    parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
+    names(Results) <- c('taxaname', 'Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+  }
+  
+  taxa_of_interest <- taxa_dataframe[,column_number] #vectorizing the species of interest
+  Results$taxaname <- taxa_of_interest #add the vector under taxa column to dataframe
+  
+  for(i in 1:num_rows)
+  {
+    Mitochondrial_genome_SearchTerm <- paste0('',taxa_dataframe[i,column_number],'[ORGN]',parameters,'')
+    genome_result<- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+    Results[i,2] <- genome_result$count 
+    Results[i,3] <- Mitochondrial_genome_SearchTerm
+    
+    #to see if anythings popping up as we go
+    if(genome_result$count > 0)
+    {
+      print(i)
+      print(Mitochondrial_genome_SearchTerm)
+    }
+  }
+  
+  Results
+}
+  
 # CRUX --------------------------------------------------------------------
 
 
