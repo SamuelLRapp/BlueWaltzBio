@@ -24,11 +24,10 @@ shinyServer(function(input, output) {
     
 # TEST --------------------------------------------------------------------
   
-Organisms_with_Mitochondrial_genomes <- function( 
-  taxa_dataframe,  #input a list or dataframe and return a dataframe
-  refseq = FALSE#if TRUE then add AND srcdb_refseq[PROP] to search statement, default don't add 
-)
-{
+Organisms_with_Mitochondrial_genomes <- reactive({
+  
+
+
   taxa_dataframe <- taxa_dataframe[!duplicated(taxa_dataframe), ] #remove duplicate taxa names!
   num_rows <- nrow(taxa_dataframe)
   Results <- data.frame(matrix(0, ncol = 3, nrow = num_rows))
@@ -67,7 +66,7 @@ Organisms_with_Mitochondrial_genomes <- function(
   }
   
   Results
-}
+})
   
 # CRUX --------------------------------------------------------------------
 
