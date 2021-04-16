@@ -26,18 +26,16 @@ shinyServer(function(input, output) {
   
 Organisms_with_Mitochondrial_genomes <- reactive({
   
-
-
-  taxa_dataframe <- taxa_dataframe[!duplicated(taxa_dataframe), ] #remove duplicate taxa names!
+  taxa_dataframe <- input$genomeorganismList[!duplicated(input$genomeorganismList), ] #remove duplicate taxa names!
   num_rows <- nrow(taxa_dataframe)
   Results <- data.frame(matrix(0, ncol = 3, nrow = num_rows))
   
-  parameters<- "set vector up"
+  parameters <- "set vector up"
   
   # canis lupus[ORGN] AND 16000:17000[Sequence Length] AND (mitochondrial[Title] or mitochondrion[Title]] 
   # AND srcdb_refseq[PROP]
   
-  if(isTRUE(refseq))
+  if(isTRUE(input$ref_seq))
   {
     parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
     names(Results) <- c('taxaname', 'Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
