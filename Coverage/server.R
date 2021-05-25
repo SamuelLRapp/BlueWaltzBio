@@ -21,51 +21,160 @@ library(RSQLite)
 library(rlist)
 
 shinyServer(function(input, output) {
-    
+# * FullGenomeSearchButton --------------------------------------------------------
+  print("statement3")
+  FullgenomesearchButton <- eventReactive(input$genomesearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+    input$genomeorganismList #Returns as a string
+  })
+  print("statement6")    
 # TEST --------------------------------------------------------------------
+    print("statement")  
+  # Organisms_with_Mitochondrial_genomes <- reactive({
+  #   
+  #   print("statement11")
+  #   genomeList <- FullgenomesearchButton()
+  #   datagen <- matrix(c(1, 2, 3), nrow = 1, ncol = 3, byrow = TRUE)
+  #   
+  # 
+  # })
   
-Organisms_with_Mitochondrial_genomes <- reactive({
+   # Organisms_with_Mitochondrial_genomes <- reactive({
+   # 
+   #    print("statement2")
+   #    genomeList <- FullgenomesearchButton()
+   #    print("pedo")
+   #    taxa_dataframe <- !duplicated(genomeList) #remove duplicate taxa names!
+   #    print("pedo2")
+   #    num_rows <- nrow(taxa_dataframe)
+   #    
+   #    Results <- data.frame(matrix(0, ncol = 3, nrow = 3))
+   # 
+   #    parameters <- "set vector up"
+   #    
+   # 
+   #    # canis lupus[ORGN] AND 16000:17000[Sequence Length] AND (mitochondrial[Title] or mitochondrion[Title]]
+   #    # AND srcdb_refseq[PROP]
+   # 
+   #    if(isTRUE(input$ref_seq))
+   #    {
+   #      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
+   #      names(Results) <- c('taxaname', 'Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+   #    }else
+   #    {
+   #      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
+   #      names(Results) <- c('taxaname', 'Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+   #    }
+   # 
+   #    taxa_of_interest <- taxa_dataframe[, 3] #vectorizing the species of interest
+   #    Results$taxaname <- taxa_of_interest #add the vector under taxa column to dataframe
+   # 
+   #    for(i in 1:num_rows)
+   #    {
+   #      Mitochondrial_genome_SearchTerm <- paste0('',taxa_dataframe[i, 3],'[ORGN]',parameters,'')
+   #      genome_result<- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+   #      Results[i,2] <- genome_result$count
+   #      Results[i,3] <- Mitochondrial_genome_SearchTerm
+   # 
+   #      #to see if anythings popping up as we go
+   #      if(genome_result$count > 0)
+   #      {
+   #        print(i)
+   #        print(Mitochondrial_genome_SearchTerm)
+   #      }
+   #    }
+   #    
+   #    print(Results)
+   #    datagen <- matrix(c(1, 2, 3), nrow = 1, ncol = 3, byrow = TRUE)
+   #    datagen
+   #  })
   
-  taxa_dataframe <- input$genomeorganismList[!duplicated(input$genomeorganismList), ] #remove duplicate taxa names!
-  num_rows <- nrow(taxa_dataframe)
-  Results <- data.frame(matrix(0, ncol = 3, nrow = num_rows))
   
-  parameters <- "set vector up"
+  #IMPORTANT: clean the code!
+  #IMPORTANT: create a reactive function to break up the user's string (that way if the user searches for several species, each species will be on its own string instead of all the species being on a single string).
+  #IMPORTANT: discuss with the team whether we should use taxize for this code (taxize corrects the scientific names of the species if the user spells them wrong).
   
-  # canis lupus[ORGN] AND 16000:17000[Sequence Length] AND (mitochondrial[Title] or mitochondrion[Title]] 
-  # AND srcdb_refseq[PROP]
-  
-  if(isTRUE(input$ref_seq))
-  {
-    parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
-    names(Results) <- c('taxaname', 'Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
-  }else
-  {
-    parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
-    names(Results) <- c('taxaname', 'Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
-  }
-  
-  taxa_of_interest <- taxa_dataframe[,column_number] #vectorizing the species of interest
-  Results$taxaname <- taxa_of_interest #add the vector under taxa column to dataframe
-  
-  for(i in 1:num_rows)
-  {
-    Mitochondrial_genome_SearchTerm <- paste0('',taxa_dataframe[i,column_number],'[ORGN]',parameters,'')
-    genome_result<- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
-    Results[i,2] <- genome_result$count 
-    Results[i,3] <- Mitochondrial_genome_SearchTerm
+  Organisms_with_Mitochondrial_genomes <- reactive({
     
-    #to see if anythings popping up as we go
-    if(genome_result$count > 0)
+    print("statement2")
+    #genomeList <- FullgenomesearchButton()
+    genomeList <- strsplit(FullgenomesearchButton(), ",")[[1]]
+    print("pedo")
+    #taxa_dataframe <- !duplicated(genomeList) #remove duplicate taxa names!
+    print("pedo2")
+    #num_rows <- nrow(taxa_dataframe)
+    num_rows <- length(genomeList)
+    print(genomeList)
+    print(num_rows)
+    
+    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    
+    parameters <- "set vector up"
+    
+    
+    # canis lupus[ORGN] AND 16000:17000[Sequence Length] AND (mitochondrial[Title] or mitochondrion[Title]]
+    # AND srcdb_refseq[PROP]
+
+    if(isTRUE(input$ref_seq))
     {
-      print(i)
-      print(Mitochondrial_genome_SearchTerm)
+      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
+      names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
     }
-  }
+    else
+    {
+      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
+      names(Results) <- c('Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+    }
+    
+    
+    #parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
+    #names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+    # parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
+    # names(Results) <- c('taxaname', 'Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+    
+    taxa_of_interest <- genomeList #vectorizing the species of interest
+    #Results$taxaname <- taxa_of_interest #add the vector under taxa column to dataframe
+    
+    for(i in 1:num_rows)
+    {
+      Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
+      genome_result<- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+      Results[i,1] <- genome_result$count
+      Results[i,2] <- Mitochondrial_genome_SearchTerm
+      
+      #to see if anythings popping up as we go
+      if(genome_result$count > 0)
+      {
+        print(i)
+        print(Mitochondrial_genome_SearchTerm)
+      }
+    }
+    
+    Results
+  })
   
-  Results
-})
   
+#  * FullGenomeOutput --------------------------------------------------------------
+
+ output$genomeResults <- DT::renderDataTable(
+
+   Organisms_with_Mitochondrial_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+
+ )
+
+# * CRUXOutput --------------------------------------------------------------
+
+#output$CRUXcoverageResults <- DT::renderDataTable(
+#   cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+#   
+# )
+
+#NCBI outputs:
+# output$seqLenInputs <- renderUI(seqLenList())
+# 
+# output$NCBIcoverageResults <- DT::renderDataTable(
+#   matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
+# )
+
 # CRUX --------------------------------------------------------------------
 
 
@@ -79,16 +188,17 @@ Organisms_with_Mitochondrial_genomes <- reactive({
 # * CRUXStrToList -----------------------------------------------------------
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
+        print("Caca1")
         organismList <- strsplit(cruxOrgSearch(), ",")[[1]] #separate based on commas
         if(input$CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
-            
+
             for(i in 1:length(organismList))
             {
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
                 row_count <- nrow(NCBI_names) # get number of rows in dataframe
-                
+
                 if(row_count > 0) #If a legitimate name was found
                 {
                     for(j in 1:row_count)
@@ -102,7 +212,7 @@ Organisms_with_Mitochondrial_genomes <- reactive({
                     taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
-            taxize_organism_list  
+            taxize_organism_list
         } else{
             organismList #return the list as is
         }
@@ -112,6 +222,7 @@ Organisms_with_Mitochondrial_genomes <- reactive({
 # * CRUXCoverage ------------------------------------------------------------
 
     cruxCoverage <- reactive({
+        print("Caca2")
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
         
@@ -211,16 +322,17 @@ Organisms_with_Mitochondrial_genomes <- reactive({
 # * NCBIStrToList -----------------------------------------------------------
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
+        print("Caca3")
         organismList <- strsplit(NCBISearch()[[1]], ",")[[1]] #separate based on commas
         if(input$NCBItaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
-            
+
             for(i in 1:length(organismList))
             {
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
                 row_count <- nrow(NCBI_names)# get number of rows in dataframe
-                
+
                 if(row_count > 0)#If a legitimate name was found
                 {
                     for(j in 1:row_count)
@@ -234,7 +346,7 @@ Organisms_with_Mitochondrial_genomes <- reactive({
                     taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
-            taxize_organism_list  
+            taxize_organism_list
         } else{
             organismList #return the list as is
         }
@@ -265,7 +377,7 @@ Organisms_with_Mitochondrial_genomes <- reactive({
 # * NCBICoverage ------------------------------------------------------------
     
     genBankCoverage <- reactive({
-        
+        print("Caca4")
         organismList <- NCBIorganismList() #get species and barcode inputs
         organismListLength <- length(organismList)
         
