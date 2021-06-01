@@ -22,13 +22,13 @@ library(rlist)
 
 shinyServer(function(input, output) {
 # * FullGenomeSearchButton --------------------------------------------------------
-  print("statement3")
+  
   FullgenomesearchButton <- eventReactive(input$genomesearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
     input$genomeorganismList #Returns as a string
   })
-  print("statement6")    
+     
 # TEST --------------------------------------------------------------------
-    print("statement")  
+    
   # Organisms_with_Mitochondrial_genomes <- reactive({
   #   
   #   print("statement11")
@@ -126,19 +126,18 @@ shinyServer(function(input, output) {
   
   Organisms_with_Mitochondrial_genomes <- reactive({
     
-    print("statement2")
+    
     #genomeList <- FullgenomesearchButton()
     #genomeList <- strsplit(FullgenomesearchButton(), ",")[[1]]
-    print("pedo")
+    
     #taxa_dataframe <- !duplicated(genomeList) #remove duplicate taxa names!
-    print("pedo2")
+    
     #print(FullgenomesearchButton())
     #num_rows <- nrow(taxa_dataframe)
     #num_rows <- length(genomeList)
     num_rows <- length(Organisms_split())
     #print(genomeList)
-    print(Organisms_split())
-    print(num_rows)
+    
     genomeList <- Organisms_split()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
     
@@ -185,15 +184,92 @@ shinyServer(function(input, output) {
     
     Results
   })
+
+  Organisms_with_Chloroplast_genomes <- reactive({
+    
+    num_rows <- length(Organisms_split())
+    genomeList <- Organisms_split()
+    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    
+    parameters <- "set vector up"
+    
+    # ((Sequoia sempervirens[ORGN] AND Chloroplast[TITLE])) AND 120000:170000[Sequence Length] 
+    # AND srcdb_refseq[PROP]
+    
+    if(isTRUE(input$ref_seq))
+    {
+      parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN] AND srcdb_refseq[PROP]"
+      names(Results) <- c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide','SearchStatements')
+    }else
+    {
+      parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN]"
+      names(Results) <- c('Num_Chloroplast_Genomes_in_NCBI_Nucleotide','Chloroplast_SearchStatements')
+    }
+    
+    #taxa_of_interest <- taxa_dataframe[,column_number] #vectorizing the species of interest
+    #Results$taxaname <- taxa_of_interest #add the vector under taxa column to dataframe
+    
+    for(i in 1:num_rows)
+    {
+      Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
+      genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
+      Results[i,1] <- genome_result$count 
+      Results[i,2] <- Chloroplast_genome_SearchTerm
+      
+      #to see if anythings popping up as we go
+      if(genome_result$count > 0)
+      {
+        print(i)
+        print(Chloroplast_genome_SearchTerm)
+      }
+    }
+    #ger <- input$gsearch
+    #print(ger)
+    Results
+  })
   
+
   
 #  * FullGenomeOutput --------------------------------------------------------------
 
- output$genomeResults <- DT::renderDataTable(
-
-   Organisms_with_Mitochondrial_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
-
- )
+ selectfunction <- reactive({
+  if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
+ {
+    genomes <- Organisms_with_Mitochondrial_genomes()
+  }
+  else if (input$gsearch == "Full chloroplast genomes in nucleotide database") {
+    genomes <- Organisms_with_Chloroplast_genomes()
+  }
+   print(genomes)
+   genomes
+ })
+  
+  tablecolname <- reactive({
+    if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
+    {
+      tablecol <- c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+    }
+    else if (input$gsearch == "Full chloroplast genomes in nucleotide database") {
+      tablecol <- c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+    }
+    tablecol
+  })
+  
+  output$genomeResults <- DT::renderDataTable(
+    selectfunction(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = tablecolname() 
+  )
+#if (input$gsearch == "Full mitochondrial genomes in nucleotide database") {
+   #output$genomeResults <- DT::renderDataTable(
+     #Organisms_with_Mitochondrial_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+ #}
+  # output$genomeResults <- DT::renderDataTable(
+  # if (input$gsearch == "Full mitochondrial genomes in nucleotide database") {
+  #  Organisms_with_Mitochondrial_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+  #}
+  #else if (input$gsearch == "Full chloroplast genomes in nucleotide database") {
+   #Organisms_with_Chloroplast_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+  #}
+ #)
 
 # * CRUXOutput --------------------------------------------------------------
 
@@ -222,7 +298,7 @@ shinyServer(function(input, output) {
 # * CRUXStrToList -----------------------------------------------------------
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-        print("Caca1")
+        
         organismList <- strsplit(cruxOrgSearch(), ",")[[1]] #separate based on commas
         if(input$CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
@@ -256,7 +332,7 @@ shinyServer(function(input, output) {
 # * CRUXCoverage ------------------------------------------------------------
 
     cruxCoverage <- reactive({
-        print("Caca2")
+        
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
         
@@ -356,7 +432,7 @@ shinyServer(function(input, output) {
 # * NCBIStrToList -----------------------------------------------------------
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
-        print("Caca3")
+        
         organismList <- strsplit(NCBISearch()[[1]], ",")[[1]] #separate based on commas
         if(input$NCBItaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
@@ -411,7 +487,7 @@ shinyServer(function(input, output) {
 # * NCBICoverage ------------------------------------------------------------
     
     genBankCoverage <- reactive({
-        print("Caca4")
+        
         organismList <- NCBIorganismList() #get species and barcode inputs
         organismListLength <- length(organismList)
         
