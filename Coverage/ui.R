@@ -23,6 +23,7 @@ shinyUI(fluidPage(
             titlePanel("Find genome of interest"),
             fluidRow(
               mainPanel(
+                
                 h4("Descriptions of each Search Field"),
                 dropdown(label="Species List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
                 dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your species names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
@@ -32,6 +33,7 @@ shinyUI(fluidPage(
                 
               ),
             ),
+            
             fluidPage(    
               
               # Give the page a title
@@ -42,7 +44,7 @@ shinyUI(fluidPage(
                 
                 # Define the sidebar with one input
                  sidebarPanel(
-                   selectInput("function", "Function:", 
+                   selectInput("gsearch", "Gsearch:", 
                                choices = c("Full mitochondrial genomes in nucleotide database", "Full chloroplast genomes in nucleotide database", "Taxa availability in genome database")),
                    hr(),
                    helpText("Select a function")
@@ -57,21 +59,24 @@ shinyUI(fluidPage(
               # Sidebar with a text area for organisms and bar code
               sidebarPanel(
                 fileInput("uploadgenomefile", "Choose CSV file to upload", accept = c(".csv")),
+                
                 actionButton(inputId = "UploadGenomeButton", label = "Upload file to textboxes"),
                 textAreaInput(inputId = "genomeorganismList", label = "Species Names"),
                 
                 checkboxInput(inputId = "ref_seq", label = "Search for reference sequences", value = TRUE),
-                         
+                checkboxInput(inputId = "FullGenometaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+                
               
-              
+                
                 actionButton("genomesearchButton", "Search"),
               ),
               
               mainPanel(
-                # Show a plot of the generated distribution
-                DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
-                # Download button
-                downloadButton('downloadgenomes',"Download table"),
+                
+                 # Show a plot of the generated distribution
+                 DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
+                 # Download button
+                 downloadButton('downloadgenomes',"Download table"),
               )
             )
          ))),
