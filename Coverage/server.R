@@ -126,7 +126,6 @@ shinyServer(function(input, output) {
   
   Organisms_with_Mitochondrial_genomes <- reactive({
     
-    
     #genomeList <- FullgenomesearchButton()
     #genomeList <- strsplit(FullgenomesearchButton(), ",")[[1]]
     
@@ -158,7 +157,7 @@ shinyServer(function(input, output) {
       names(Results) <- c('Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
     }
     
-    
+    #print(names(Results))
     #parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
     #names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
     # parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
@@ -170,18 +169,18 @@ shinyServer(function(input, output) {
     for(i in 1:num_rows)
     {
       Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
-      genome_result<- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+      genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
       Results[i,1] <- genome_result$count
       Results[i,2] <- Mitochondrial_genome_SearchTerm
       
       #to see if anythings popping up as we go
-      if(genome_result$count > 0)
+      if(genome_result$count > 0) #Erase at the end
       {
         print(i)
         print(Mitochondrial_genome_SearchTerm)
       }
     }
-    
+    print(names(Results))
     Results
   })
 
@@ -217,7 +216,7 @@ shinyServer(function(input, output) {
       Results[i,2] <- Chloroplast_genome_SearchTerm
       
       #to see if anythings popping up as we go
-      if(genome_result$count > 0)
+      if(genome_result$count > 0) #Erase at the end
       {
         print(i)
         print(Chloroplast_genome_SearchTerm)
@@ -228,35 +227,92 @@ shinyServer(function(input, output) {
     Results
   })
   
-
+  Is_the_taxa_in_the_NCBI_genome_DB <- reactive ({
+    
+    num_rows <- length(Organisms_split())
+    genomeList <- Organisms_split()
+    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    
+    names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
+    # taxa_of_interest <- taxa_dataframe[,column_number] #vectorizing the species of interest
+    # Results$taxaname <- taxa_of_interest #add the vector under taxa column to dataframe
+    print(names(Results))
+    for(i in 1:num_rows)
+    {
+      genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
+      genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
+      Results[i, 1] <- genome_result$count #add zero
+      Results[i, 2] <- genome_SearchTerm 
+      
+      if(genome_result$count > 0) #Erase at the end
+      {
+        print(i)
+        print(genome_SearchTerm)
+      }
+    }
+    #ger <- input$gsearch
+    #print(ger)
+    Results
+  })
   
 #  * FullGenomeOutput --------------------------------------------------------------
 
  selectfunction <- reactive({
   if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
- {
+  {
     genomes <- Organisms_with_Mitochondrial_genomes()
+    print("Hola")
+    print(names(genomes))
+    print("Hola2")
+    #tablecol <- reactiveVal(c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements"))
   }
-  else if (input$gsearch == "Full chloroplast genomes in nucleotide database") {
+  else if (input$gsearch == "Full chloroplast genomes in nucleotide database") 
+  {
     genomes <- Organisms_with_Chloroplast_genomes()
+    #tablecol <- reactiveVal(c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements"))
   }
-   print(genomes)
-   genomes
+  else if (input$gsearch == "Taxa availability in genome database") 
+  {
+    genomes <- Is_the_taxa_in_the_NCBI_genome_DB()
+    #tablecol <- reactiveVal(c("present_in_NCBI_Genome", "SearchStatements"))
+  }
+    #print(genomes)
+    genomes
+    #tablecol
  })
   
-  tablecolname <- reactive({
-    if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
-    {
-      tablecol <- c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
-    }
-    else if (input$gsearch == "Full chloroplast genomes in nucleotide database") {
-      tablecol <- c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
-    }
-    tablecol
-  })
-  
+  # tablecolname <- reactive({
+  #   if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
+  #   {
+  #     if (input$ref_seq)
+  #     {
+  #       tablecol <- c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+  #     }
+  #     else 
+  #     {
+  #       tablecol <- c("Num_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+  #     }
+  #   }
+  #   else if (input$gsearch == "Full chloroplast genomes in nucleotide database")
+  #   {
+  #     if (input$ref_seq)
+  #     {
+  #     tablecol <- c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+  #     }
+  #     else
+  #     {
+  #       tablecol <- c("Num_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+  #     }
+  #   }
+  #   else if (input$gsearch == "Taxa availability in genome database")
+  #   {
+  #     tablecol <- c("present_in_NCBI_Genome", "SearchStatements")
+  #   }
+  #   tablecol
+  # })
+
   output$genomeResults <- DT::renderDataTable(
-    selectfunction(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = tablecolname() 
+    selectfunction(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = names(selectfunction()) 
   )
 #if (input$gsearch == "Full mitochondrial genomes in nucleotide database") {
    #output$genomeResults <- DT::renderDataTable(
