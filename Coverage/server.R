@@ -23,7 +23,7 @@ library(rlist)
 shinyServer(function(input, output) {
 # * FullGenomeSearchButton --------------------------------------------------------
   
-  FullgenomesearchButton <- eventReactive(input$genomesearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+  fullGenomeSearchButton <- eventReactive(input$genomesearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
     input$genomeorganismList #Returns as a string
   })
   
@@ -33,7 +33,7 @@ shinyServer(function(input, output) {
   
    FGenOrgSearch <- reactive({
     
-    genomeList2 <- strsplit(FullgenomesearchButton(), ",")[[1]]
+    genomeList2 <- strsplit(fullGenomeSearchButton(), ",")[[1]]
     if(input$FullGenometaxizeOption){ #if the taxize option is selected
       taxize_organism_list2 <- c() #initialize an empty vector
 
@@ -64,12 +64,12 @@ shinyServer(function(input, output) {
   
   Organisms_with_Mitochondrial_genomes <- reactive({
     
-    #genomeList <- FullgenomesearchButton()
-    #genomeList <- strsplit(FullgenomesearchButton(), ",")[[1]]
+    #genomeList <- fullGenomeSearchButton()
+    #genomeList <- strsplit(fullGenomeSearchButton(), ",")[[1]]
     
     #taxa_dataframe <- !duplicated(genomeList) #remove duplicate taxa names!
     
-    #print(FullgenomesearchButton())
+    #print(fullGenomeSearchButton())
     #num_rows <- nrow(taxa_dataframe)
     #num_rows <- length(genomeList)
     num_rows <- length(FGenOrgSearch())
@@ -250,18 +250,18 @@ shinyServer(function(input, output) {
   # })
 
   output$genomeResults <- DT::renderDataTable(
-    selectfunction(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = names(selectfunction()) 
+    selectfunction(), rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = names(selectfunction()) 
   )
 #if (input$gsearch == "Full mitochondrial genomes in nucleotide database") {
    #output$genomeResults <- DT::renderDataTable(
-     #Organisms_with_Mitochondrial_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+     #Organisms_with_Mitochondrial_genomes(), rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
  #}
   # output$genomeResults <- DT::renderDataTable(
   # if (input$gsearch == "Full mitochondrial genomes in nucleotide database") {
-  #  Organisms_with_Mitochondrial_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+  #  Organisms_with_Mitochondrial_genomes(), rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
   #}
   #else if (input$gsearch == "Full chloroplast genomes in nucleotide database") {
-   #Organisms_with_Chloroplast_genomes(), rownames = strsplit(FullgenomesearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
+   #Organisms_with_Chloroplast_genomes(), rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
   #}
  #)
 
