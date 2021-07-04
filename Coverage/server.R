@@ -84,7 +84,7 @@ shinyServer(function(input, output) {
     # canis lupus[ORGN] AND 16000:17000[Sequence Length] AND (mitochondrial[Title] or mitochondrion[Title]]
     # AND srcdb_refseq[PROP]
 
-    if(isTRUE(input$ref_seq))
+    if(isTRUE(input$refSeq))
     {
       parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
       names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
@@ -133,7 +133,7 @@ shinyServer(function(input, output) {
     # ((Sequoia sempervirens[ORGN] AND Chloroplast[TITLE])) AND 120000:170000[Sequence Length] 
     # AND srcdb_refseq[PROP]
     
-    if(isTRUE(input$ref_seq))
+    if(isTRUE(input$refSeq))
     {
       parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN] AND srcdb_refseq[PROP]"
       names(Results) <- c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide','SearchStatements')
@@ -222,7 +222,7 @@ shinyServer(function(input, output) {
   # tablecolname <- reactive({
   #   if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
   #   {
-  #     if (input$ref_seq)
+  #     if (input$refSeq)
   #     {
   #       tablecol <- c("Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide", "SearchStatements")
   #     }
@@ -233,7 +233,7 @@ shinyServer(function(input, output) {
   #   }
   #   else if (input$gsearch == "Full chloroplast genomes in nucleotide database")
   #   {
-  #     if (input$ref_seq)
+  #     if (input$refSeq)
   #     {
   #     tablecol <- c("Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide", "SearchStatements")
   #     }

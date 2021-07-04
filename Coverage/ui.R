@@ -63,7 +63,7 @@ shinyUI(fluidPage(
                 actionButton(inputId = "uploadGenomeButton", label = "Upload file to textboxes"),
                 textAreaInput(inputId = "genomeOrganismList", label = "Species Names"),
                 
-                checkboxInput(inputId = "ref_seq", label = "Search for reference sequences", value = TRUE),
+                checkboxInput(inputId = "refSeq", label = "Search for reference sequences", value = TRUE),
                 checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                 
               
