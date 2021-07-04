@@ -23,8 +23,8 @@ library(rlist)
 shinyServer(function(input, output) {
 # * FullGenomeSearchButton --------------------------------------------------------
   
-  fullGenomeSearchButton <- eventReactive(input$genomesearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
-    input$genomeorganismList #Returns as a string
+  fullGenomeSearchButton <- eventReactive(input$genomeSearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+    input$genomeOrganismList #Returns as a string
   })
   
   #IMPORTANT: clean the code!
@@ -34,7 +34,7 @@ shinyServer(function(input, output) {
    FGenOrgSearch <- reactive({
     
     genomeList2 <- strsplit(fullGenomeSearchButton(), ",")[[1]]
-    if(input$FullGenometaxizeOption){ #if the taxize option is selected
+    if(input$fullGenomeTaxizeOption){ #if the taxize option is selected
       taxize_organism_list2 <- c() #initialize an empty vector
 
       for(i in 1:length(genomeList2))
