@@ -49,9 +49,6 @@ shinyUI(fluidPage(
                    hr(),
                    helpText("Select a function")
                  ),
-                 mainPanel(
-                   textOutput("Hi")
-                 )
                )
              ),
 
