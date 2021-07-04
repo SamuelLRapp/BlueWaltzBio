@@ -58,17 +58,17 @@ shinyUI(fluidPage(
             fluidRow(
               # Sidebar with a text area for organisms and bar code
               sidebarPanel(
-                fileInput("uploadgenomefile", "Choose CSV file to upload", accept = c(".csv")),
+                fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv")),
                 
-                actionButton(inputId = "UploadGenomeButton", label = "Upload file to textboxes"),
-                textAreaInput(inputId = "genomeorganismList", label = "Species Names"),
+                actionButton(inputId = "uploadGenomeButton", label = "Upload file to textboxes"),
+                textAreaInput(inputId = "genomeOrganismList", label = "Species Names"),
                 
                 checkboxInput(inputId = "ref_seq", label = "Search for reference sequences", value = TRUE),
-                checkboxInput(inputId = "FullGenometaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+                checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                 
               
                 
-                actionButton("genomesearchButton", "Search"),
+                actionButton("genomeSearchButton", "Search"),
               ),
               
               mainPanel(
@@ -76,7 +76,7 @@ shinyUI(fluidPage(
                  # Show a plot of the generated distribution
                  DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                  # Download button
-                 downloadButton('downloadgenomes',"Download table"),
+                 downloadButton('downloadGenomes',"Download table"),
               )
             )
          ))),
