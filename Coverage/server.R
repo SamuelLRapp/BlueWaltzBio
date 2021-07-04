@@ -31,7 +31,7 @@ shinyServer(function(input, output) {
   #IMPORTANT: create a reactive function to break up the user's string (that way if the user searches for several species, each species will be on its own string instead of all the species being on a single string).
   #IMPORTANT: discuss with the team whether we should use taxize for this code (taxize corrects the scientific names of the species if the user spells them wrong).
   
-  Organisms_split <- reactive({
+   FGenOrgSearch <- reactive({
     
     genomeList2 <- strsplit(FullgenomesearchButton(), ",")[[1]]
     if(input$FullGenometaxizeOption){ #if the taxize option is selected
@@ -72,10 +72,10 @@ shinyServer(function(input, output) {
     #print(FullgenomesearchButton())
     #num_rows <- nrow(taxa_dataframe)
     #num_rows <- length(genomeList)
-    num_rows <- length(Organisms_split())
+    num_rows <- length(FGenOrgSearch())
     #print(genomeList)
     
-    genomeList <- Organisms_split()
+    genomeList <- FGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
     
     parameters <- "set vector up"
@@ -124,8 +124,8 @@ shinyServer(function(input, output) {
 
   Organisms_with_Chloroplast_genomes <- reactive({
     
-    num_rows <- length(Organisms_split())
-    genomeList <- Organisms_split()
+    num_rows <- length(FGenOrgSearch())
+    genomeList <- FGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
     
     parameters <- "set vector up"
@@ -167,8 +167,8 @@ shinyServer(function(input, output) {
   
   Is_the_taxa_in_the_NCBI_genome_DB <- reactive ({
     
-    num_rows <- length(Organisms_split())
-    genomeList <- Organisms_split()
+    num_rows <- length(FGenOrgSearch())
+    genomeList <- FGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
     
     names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
