@@ -23,23 +23,20 @@ library(rlist)
 shinyServer(function(input, output) {
 # * FullGenomeSearchButton --------------------------------------------------------
   
-  fullGenomeSearchButton <- eventReactive(input$genomeSearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+  fullGenomeSearchButton <- eventReactive(input$genomeSearchButton, { 
+    #When searchButton clicked, update fGenOrgSearch to return the value input into genomeOrganismList 
     input$genomeOrganismList #Returns as a string
   })
   
-  #IMPORTANT: clean the code!
-  #IMPORTANT: create a reactive function to break up the user's string (that way if the user searches for several species, each species will be on its own string instead of all the species being on a single string).
-  #IMPORTANT: discuss with the team whether we should use taxize for this code (taxize corrects the scientific names of the species if the user spells them wrong).
-  
-   FGenOrgSearch <- reactive({
+   fGenOrgSearch <- reactive({
     
-    genomeList2 <- strsplit(fullGenomeSearchButton(), ",")[[1]]
+    genomeOrgList <- strsplit(fullGenomeSearchButton(), ",")[[1]]
     if(input$fullGenomeTaxizeOption){ #if the taxize option is selected
-      taxize_organism_list2 <- c() #initialize an empty vector
+      taxizeGenOrgList <- c() #initialize an empty vector
 
-      for(i in 1:length(genomeList2))
+      for(i in 1:length(genomeOrgList))
       {
-        organism <- trimws(genomeList2[[i]], "b") #trim both leading and trailing whitespace
+        organism <- trimws(genomeOrgList[[i]], "b") #trim both leading and trailing whitespace
         NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
         row_count <- nrow(NCBI_names) # get number of rows in dataframe
 
@@ -48,17 +45,17 @@ shinyServer(function(input, output) {
           for(j in 1:row_count)
           {
             taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
-            taxize_organism_list2 <- c(taxize_organism_list2, taxa_name) #update the vector with all the taxa_names.
+            taxizeGenOrgList <- c(taxizeGenOrgList, taxa_name) #update the vector with all the taxa_names.
           }
         }
         else
         {
-          taxize_organism_list2 <- c(taxize_organism_list2, organism) #just append organism to the list, and return taxize_organism_list
+          taxizeGenOrgList <- c(taxizeGenOrgList, organism) #just append organism to the list, and return taxizeGenOrgList
         }
       }
-      taxize_organism_list2
+      taxizeGenOrgList
     } else{
-      genomeList2 #return the list as is
+      genomeOrgList #return the list as is
     }
   })
   
@@ -72,10 +69,10 @@ shinyServer(function(input, output) {
     #print(fullGenomeSearchButton())
     #num_rows <- nrow(taxa_dataframe)
     #num_rows <- length(genomeList)
-    num_rows <- length(FGenOrgSearch())
+    num_rows <- length(fGenOrgSearch())
     #print(genomeList)
     
-    genomeList <- FGenOrgSearch()
+    genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
     
     parameters <- "set vector up"
@@ -124,8 +121,8 @@ shinyServer(function(input, output) {
 
   Organisms_with_Chloroplast_genomes <- reactive({
     
-    num_rows <- length(FGenOrgSearch())
-    genomeList <- FGenOrgSearch()
+    num_rows <- length(fGenOrgSearch())
+    genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
     
     parameters <- "set vector up"
@@ -167,8 +164,8 @@ shinyServer(function(input, output) {
   
   Is_the_taxa_in_the_NCBI_genome_DB <- reactive ({
     
-    num_rows <- length(FGenOrgSearch())
-    genomeList <- FGenOrgSearch()
+    num_rows <- length(fGenOrgSearch())
+    genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
     
     names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
