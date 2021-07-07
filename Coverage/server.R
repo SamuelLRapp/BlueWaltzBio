@@ -268,8 +268,16 @@ shinyServer(function(input, output) {
                     # Add the tail to the replacement string
                     replacement <- paste(replacement, ") OR (", sep="")
                     
-                    #Now we finally set searchTerm by replacing the ;s.
+                    # Now we finally set searchTerm by replacing the ;s.
                     searchTerm <- gsub(";", replacement, code)
+                    # But the last synonym won't have a ; after it! Sub in one last time:
+                    # trim last parenthesis
+                    searchTerm <- substring(searchTerm, 1, nchar(searchTerm)-1)
+                    # add in replacement string
+                    searchTerm <- paste(searchTerm, replacement, sep="")
+                    # cut off the " OR ("
+                    searchTerm <- substring(searchTerm, 1, nchar(searchTerm)-5)
+                    
                 }else {
                   if(input$NCBISearchOptionOrgn){
                     searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
