@@ -240,21 +240,33 @@ shinyServer(function(input, output) {
         searchTerms <- list() #list of search terms
         for(organism in organismList){
             for(code in barcodeList()){
-                # (CO1, COX1, COI)
-                # if there is a parenthesis
-                # Break up the string
-                # searchterm + CO1 + OR + COX1 + OR + COI + [GENE]
                 if(input$NCBISearchOptionOrgn){
                     searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
                 }
                 else {
                     searchTerm <- paste(organism, " AND ", sep="") #our non-Metadata query to GenBank
                 }
-                if(input$NCBISearchOptionGene) {
+                # TODO: Add more sanitization to this
+                # if there is a parenthesis
+                if(substring(code, 1,1) == "("){
+                    # Break up the string
+                    processedCode <- substring(code, 2, nchar(code)-1)
+                    # searchterm + CO1 + OR + COX1 + OR + COI + [GENE]
+                    if(input$NCBISearchOptionGene) {
+                      processedCode <- gsub(";", "[GENE] OR ", processedCode)
+                      searchTerm <- paste(searchTerm, processedCode, "[GENE]", sep="") #our query to GenBank
+                    }
+                    else {
+                      processedCode <- gsub(";", " OR ", processedCode)
+                      searchTerm <- paste(searchTerm, processedCode, sep="") #our query to GenBank
+                    }
+                }else {
+                  if(input$NCBISearchOptionGene) {
                     searchTerm <- paste(searchTerm, code, "[GENE]", sep="") #our query to GenBank
-                }
-                else {
+                  }
+                  else {
                     searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
+                  }
                 }
                 if(input$seqLengthOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
