@@ -32,6 +32,21 @@ shinyServer(function(input, output) {
     input$genomeOrganismList #Returns as a string
   })
   
+  # * FullGenomeInputCSV -----------------------------------------------------------
+  
+  inputFileCrux <- observeEvent(input$uploadGenomeButton,{
+    isolate({
+      req(input$uploadGenomeFile, file.exists(input$uploadGenomeFile$datapath))
+      uploadinfo <- read.csv(input$uploadGenomeFile$datapath, header = TRUE)
+      if(input$genomeOrganismList[[1]] != "") {
+        updateTextAreaInput(getDefaultReactiveDomain(), "genomeOrganismList", value = c(head(uploadinfo$OrganismNames, -1), input$genomeOrganismList))
+      }
+      else {
+        updateTextAreaInput(getDefaultReactiveDomain(), "genomeOrganismList", value = uploadinfo$OrganismNames)
+      }
+    })
+  })
+  
 
 # * FGenOrgSearch -----------------------------------------------------------------
   
