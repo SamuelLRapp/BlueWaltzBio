@@ -72,13 +72,13 @@ shinyServer(function(input, output) {
       for(table in dbList){
         #
         location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
-        if(nrow(location) == 0){
+        if(nrow(location)==0){
           location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
-          if(nrow(location) == 0){
+          if(nrow(location)==0){
             location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
             if(nrow(location)==0){
               location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
-              if(nrow(location) ==0){
+              if(nrow(location)==0){
                 location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
                 if(nrow(location)==0){
                   location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
@@ -112,12 +112,18 @@ shinyServer(function(input, output) {
         searchResult <- 0
         results <- c()
         newOrgList <- c()
+        popuplist <- c()
         err <- 0
         for(organism in organismList){
             search <- get_uid_(sci_com = organism)
             if( nrow(search[[1]]) > 1) {
-              organismListLength <- organismListLength + nrow(search[[1]]) - 1
+              popuplist <- c(popuplist, organism)
+              #organismListLength <- organismListLength + nrow(search[[1]]) - 1
+              #print(organismListLength)
               for (i in 1:nrow(search[[1]])) { # tax_name
+                if(i > 5) {
+                  break
+                }
                 newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
                 newOrgList <- c(newOrgList, newOrg)
                 hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]]
@@ -131,27 +137,22 @@ shinyServer(function(input, output) {
                 results <- cruxResult(results, searchTerm, organism)
               }
             } else {
-              # Error
               newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
-                searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = TRUE)
+                searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
               }, error = function(err) {
                 results <- c(results, "error", "error", "error", "error", "error", "error", "error")
                 err <- 1
               })
-              print(searchTerm)
               if(err == 1) {
                 next
               }
               results <- cruxResult(results, searchTerm, organism)
             }
         }
-        print("results")
-        print(newOrgList)
-        results <- list(organismList=newOrgList, data=results) 
+        
+        results <- list(organismList=newOrgList, data=results, popupinfo=popuplist) 
         results
-        # data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
-        # data #return data matrix
     })
     
 # * matrixGetCRUX ------------------------------------------------------------
@@ -176,6 +177,7 @@ shinyServer(function(input, output) {
       for (i in cruxCoverage[[1]]) {
         organismList <- c(organismList, i)
       }
+      shinyalert("Species that have Homonyms!", cruxCoverage[[3]], type = "warning")
       organismList
     })
     

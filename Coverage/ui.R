@@ -12,6 +12,7 @@ library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
 library(vembedr)
+library(shinyalert)
 #library(shinybusy)
 
 shinyUI(fluidPage(
@@ -51,7 +52,7 @@ shinyUI(fluidPage(
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
-                            #useShinyalert(),
+                            useShinyalert(),
                             textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
                             checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                             actionButton("searchButton", "Search"),
@@ -59,6 +60,7 @@ shinyUI(fluidPage(
                           mainPanel(
                             # Show a plot of the generated distribution
                             DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                            #DT::dataTableOutput("testresults") %>% withSpinner(color="#0dc5c1"),
                             # Download button
                             downloadButton('downloadCrux',"Download table"),
                           )
