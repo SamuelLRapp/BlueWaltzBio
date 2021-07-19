@@ -568,8 +568,11 @@ shinyServer(function(input, output) {
                                                                     'lon')]
             # print(records_bold)
             # print("HEYLLO")
+            record2 <- bold_seqspec(taxon='Osmia')
             # print(typeof(records_bold))
             # print(length(records_bold))
+            print(record2$processid)
+            print(length(record2$species_name))
             print(records_bold$processid)
             print(length(records_bold$species_name))
             # print(length(records_bold))
