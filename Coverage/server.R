@@ -201,6 +201,7 @@ shinyServer(function(input, output) {
 # * NCBIBarcodeList ---------------------------------------------------------
 
     barcodeList <- reactive({
+        # Detect that there is a parenthesis then do not change and keep it together
         barcodeList <- strsplit(NCBISearch()[[2]], ",") #separate based on comma
         barcodeList[[1]]
     })
@@ -239,21 +240,62 @@ shinyServer(function(input, output) {
         searchTerms <- list() #list of search terms
         for(organism in organismList){
             for(code in barcodeList()){
-                if(input$NCBISearchOptionOrgn){
+                # TODO: Add more sanitization to this
+                # if there is a parenthesis
+                if(substring(code, 1,1) == "("){
+                    # code is in the format (loci1; loci2; loci3...)
+                    # We will make a combined query by substituting the ;s for other stuff
+                  
+                    # set up a replacement string
+                    replacement <- ""
+                    if(input$NCBISearchOptionGene){
+                      replacement <- "[GENE]"
+                    }
+                    # Add organism info 
+                    if(input$NCBISearchOptionOrgn){
+                      #our query to GenBank
+                      replacement <- paste(replacement, " AND ", organism, "[ORGN]", sep="") 
+                    }
+                    else {
+                      #our non-Metadata query to GenBank
+                      replacement <- paste(replacement, " AND ", organism, sep="") 
+                    }
+                    # Add sequence length info
+                    if(input$seqLengthOption){
+                      #if the user specified sequence length
+                      replacement <- paste(replacement, " AND ", input[[code]],":99999999[SLEN]", sep="")
+                    }
+                    # Add the tail to the replacement string
+                    replacement <- paste(replacement, ") OR (", sep="")
+                    
+                    # Now we finally set searchTerm by replacing the ;s.
+                    searchTerm <- gsub(";", replacement, code)
+                    # But the last synonym won't have a ; after it! Sub in one last time:
+                    # trim last parenthesis
+                    searchTerm <- substring(searchTerm, 1, nchar(searchTerm)-1)
+                    # add in replacement string
+                    searchTerm <- paste(searchTerm, replacement, sep="")
+                    # cut off the " OR ("
+                    searchTerm <- substring(searchTerm, 1, nchar(searchTerm)-5)
+                    
+                }else {
+                  if(input$NCBISearchOptionOrgn){
                     searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
-                }
-                else {
+                  }
+                  else {
                     searchTerm <- paste(organism, " AND ", sep="") #our non-Metadata query to GenBank
-                }
-                if(input$NCBISearchOptionGene) {
+                  }
+                  if(input$NCBISearchOptionGene) {
                     searchTerm <- paste(searchTerm, code, "[GENE]", sep="") #our query to GenBank
-                }
-                else {
+                  }
+                  else {
                     searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
-                }
-                if(input$seqLengthOption){
+                  }
+                  if(input$seqLengthOption){
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
+                  }
                 }
+                
 
                 searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
                 uids <- list.append(uids, searchResult$ids)
