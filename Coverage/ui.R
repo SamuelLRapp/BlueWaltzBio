@@ -12,12 +12,17 @@ library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
 library(vembedr)
+<<<<<<< HEAD
 library(shinyalert)
+=======
+library(shinydashboard)
+>>>>>>> master
 #library(shinybusy)
 
 shinyUI(fluidPage(
   
   navbarPage("Coverage",
+    
     #CRUX tab
     tabPanel("Home", 
              titlePanel("Welcome to the Reference Sequence Browser"),
@@ -37,6 +42,7 @@ shinyUI(fluidPage(
                tabPanel("Search",
                         # Application title
                         titlePanel("Find CRUX database coverage of your species of interest"),
+                          img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         
                         # Usage instructions
                         fluidRow(
@@ -52,7 +58,12 @@ shinyUI(fluidPage(
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
+<<<<<<< HEAD
                             useShinyalert(),
+=======
+                            fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
+                            actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
+>>>>>>> master
                             textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
                             checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                             actionButton("searchButton", "Search"),
@@ -125,6 +136,8 @@ shinyUI(fluidPage(
             fluidRow(
               # Sidebar with a text area for organisms and bar code
               sidebarPanel(
+                fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
+                actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
                 textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
                 checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                 checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by Metadata", value = TRUE),
@@ -185,7 +198,9 @@ shinyUI(fluidPage(
             p(HTML('&emsp;'), "If you want to provide feedback please use the google link: https://forms.gle/ysT6g8sk1zxWQ1wZA"),
             p(HTML('&emsp;'), "The app was iteratively built with direct feedback from eDNA scientists who spoke with members of BlueWaltzBio. In total our team has interviewed over 70 lab techs, professors, government regulators, and investors in the field of Environmental DNA. 
             " ),
-            
+            twitter.icon <- tags$a(href='https://twitter.com/?lang=en',
+                                   icon("twitter"),
+                                   'Twitter', target="_blank")
             
             )
       

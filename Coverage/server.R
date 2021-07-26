@@ -189,10 +189,10 @@ shinyServer(function(input, output) {
             req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
             uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
             if(input$CRUXorganismList[[1]] != "") {
-                updateTextAreaInput(getDefaultReactiveDomain(), "CRUXorganismList", value = c(head(uploadinfo$OrganismNames, -1), input$CRUXorganismList))
+                updateTextAreaInput(getDefaultReactiveDomain(), "CRUXorganismList", value = c(head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]), input$CRUXorganismList))
             }
             else {
-                updateTextAreaInput(getDefaultReactiveDomain(), "CRUXorganismList", value = uploadinfo$OrganismNames)
+                updateTextAreaInput(getDefaultReactiveDomain(), "CRUXorganismList", value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
             }
         })
     })
@@ -414,7 +414,7 @@ shinyServer(function(input, output) {
             shiny::withProgress(message="Downloading", value=0,{
                 Vector_genbank <- c()
                 for (uid in uids) {
-                    File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "genbank")  # Get the genbank file with that uid
+                    File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb")  # Get the genbank file with that uid
                     Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
                     shiny::incProgress(1/progLength)
                 }
@@ -511,16 +511,16 @@ shinyServer(function(input, output) {
             req(input$uNCBIfile, file.exists(input$uNCBIfile$datapath))
             uploadinfo <- read.csv(input$uNCBIfile$datapath, header = TRUE)
             if(input$NCBIorganismList[[1]] != "") {
-                updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(head(uploadinfo$OrganismNames, -1), input$NCBIorganismList))
+                updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]), input$NCBIorganismList))
             }
             else {
-                updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = uploadinfo$OrganismNames)
+                updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
             }
             if(input$barcodeList[[1]] != "") {
-                updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(head(uploadinfo$Barcodes, -1), input$barcodeList))
+                updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != ""]), input$barcodeList))
             }
             else {
-                updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = uploadinfo$Barcodes)
+                updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = uploadinfo$Barcodes[uploadinfo$Barcodes != ""])
             }
         })
     })
