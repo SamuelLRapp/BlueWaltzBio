@@ -102,9 +102,6 @@ shinyServer(function(input, output) {
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
         )
-        # validate(
-        #   need(!is.null(hlist), 'Need to check for homonyms')
-        # )
         
         dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
         #taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
@@ -115,6 +112,7 @@ shinyServer(function(input, output) {
         newOrgList <- c()
         popuplist <- c()
         err <- 0
+        
         for(organism in organismList){
             search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
             if( nrow(search[[1]]) > 1) {# There are homonyms
