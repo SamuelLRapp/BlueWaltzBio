@@ -65,7 +65,8 @@ shinyServer(function(input, output) {
         }
     })
     
-    cruxResult <- function(results, searchTerm, organism) {
+# * CRUXSearch --------------------------------------------------------------------
+    cruxSearch <- function(results, searchTerm, organism) {
       dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
       taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
       #results <- c()
@@ -115,17 +116,19 @@ shinyServer(function(input, output) {
         popuplist <- c()
         err <- 0
         for(organism in organismList){
-            search <- get_uid_(sci_com = organism)
-            if( nrow(search[[1]]) > 1) {
+            search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
+            if( nrow(search[[1]]) > 1) {# There are homonyms
               popuplist <- c(popuplist, organism)
-              #organismListLength <- organismListLength + nrow(search[[1]]) - 1
-              #print(organismListLength)
+              # Process the 
               for (i in 1:nrow(search[[1]])) { # tax_name
-                if(i > 5) {
+                # if there are more than 5 homonyms then break we are not interested in more than 5
+                if(i > 5) { 
                   break
                 }
+                # create new organism list since new organism are added
                 newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
                 newOrgList <- c(newOrgList, newOrg)
+                # Creating the same format as the other organisms so the Crux search can be performed correctly
                 hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]]
                 match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
                 query <- c("db", "query", "genus", "family", "order", "class","phylum", "domain")
@@ -134,9 +137,10 @@ shinyServer(function(input, output) {
                   data.frame(t(match), stringsAsFactors = FALSE), 
                   query
                 )
-                results <- cruxResult(results, searchTerm, organism)
+                # Perform the CruxSearch
+                results <- cruxSearch(results, searchTerm, organism)
               }
-            } else {
+            } else { # There are no homonyms
               newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
                 searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
@@ -147,7 +151,7 @@ shinyServer(function(input, output) {
               if(err == 1) {
                 next
               }
-              results <- cruxResult(results, searchTerm, organism)
+              results <- cruxSearch(results, searchTerm, organism)
             }
         }
         
@@ -177,7 +181,8 @@ shinyServer(function(input, output) {
       for (i in cruxCoverage[[1]]) {
         organismList <- c(organismList, i)
       }
-      shinyalert("Species that have Homonyms!", cruxCoverage[[3]], type = "warning")
+      # Send the alert to the user that we have found some homonyms
+      shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
       organismList
     })
     
