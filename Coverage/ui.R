@@ -12,13 +12,13 @@ library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
 library(vembedr)
+library(shinydashboard)
 #library(shinybusy)
 
 shinyUI(fluidPage(
   
   navbarPage("Coverage",
-    
-  
+
     #CRUX tab
     tabPanel("Home", 
              titlePanel("Welcome to the Reference Sequence Browser"),
@@ -38,6 +38,7 @@ shinyUI(fluidPage(
                tabPanel("Search",
                         # Application title
                         titlePanel("Find CRUX database coverage of your species of interest"),
+                          img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         
                         # Usage instructions
                         fluidRow(
@@ -250,7 +251,9 @@ shinyUI(fluidPage(
             p(HTML('&emsp;'), "If you want to provide feedback please use the google link: https://forms.gle/ysT6g8sk1zxWQ1wZA"),
             p(HTML('&emsp;'), "The app was iteratively built with direct feedback from eDNA scientists who spoke with members of BlueWaltzBio. In total our team has interviewed over 70 lab techs, professors, government regulators, and investors in the field of Environmental DNA. 
             " ),
-            
+            twitter.icon <- tags$a(href='https://twitter.com/?lang=en',
+                                   icon("twitter"),
+                                   'Twitter', target="_blank")
             
             )
       
