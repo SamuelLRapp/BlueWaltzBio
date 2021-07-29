@@ -242,7 +242,10 @@ shinyServer(function(input, output) {
             for(code in barcodeList()){
                 # TODO: Add more sanitization to this
                 # if there is a parenthesis
+                print(code)
+                code <- trimws(code)
                 if(substring(code, 1,1) == "("){
+                    print("WOWOWO")
                     # code is in the format (loci1; loci2; loci3...)
                     # We will make a combined query by substituting the ;s for other stuff
                   
@@ -267,7 +270,7 @@ shinyServer(function(input, output) {
                     }
                     # Add the tail to the replacement string
                     replacement <- paste(replacement, ") OR (", sep="")
-                    
+                    print(replacement)
                     # Now we finally set searchTerm by replacing the ;s.
                     searchTerm <- gsub(";", replacement, code)
                     # But the last synonym won't have a ; after it! Sub in one last time:
