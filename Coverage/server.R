@@ -88,6 +88,7 @@ shinyServer(function(input, output) {
 
     genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    uids <- list()
     
     parameters <- "set vector up"
 
@@ -108,8 +109,10 @@ shinyServer(function(input, output) {
       genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
       Results[i,1] <- genome_result$count
       Results[i,2] <- Mitochondrial_genome_SearchTerm
+      uids <- list.append(uids, genome_result$ids)
     }
-    Results
+    results <- list(Results, uids)
+    results
   })
 
 # * Chloroplast Search ---------------------------------------------------------
@@ -119,6 +122,7 @@ shinyServer(function(input, output) {
     num_rows <- length(fGenOrgSearch())
     genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    uids <- list()
     
     parameters <- "set vector up"
     
@@ -138,6 +142,7 @@ shinyServer(function(input, output) {
       genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
       Results[i,1] <- genome_result$count 
       Results[i,2] <- Chloroplast_genome_SearchTerm
+      uids <- list.append(uids, genome_result$ids)
     }
     Results
   })
@@ -149,6 +154,7 @@ shinyServer(function(input, output) {
     num_rows <- length(fGenOrgSearch())
     genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    uids <- list()
     
     names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
     for(i in 1:num_rows)
@@ -157,11 +163,12 @@ shinyServer(function(input, output) {
       genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
       Results[i, 1] <- genome_result$count #add zero
       Results[i, 2] <- genome_SearchTerm 
+      uids <- list.append(uids, genome_result$ids)
     }
-    Results
+    list(Results, uids)
   })
   
-#  * FullGenomeOutput --------------------------------------------------------------
+#  * selectFunction  --------------------------------------------------------------
 
  selectfunction <- reactive({
   if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
@@ -176,11 +183,17 @@ shinyServer(function(input, output) {
   {
     genomes <- Is_the_taxa_in_the_NCBI_genome_DB()
   }
-    genomes
+    genomes[[1]]
+ })
+ 
+ # * fullGenomeTableOutput --------------------------------------------------------
+ fullGenomeTableOutput <- reactive({
+   table <- selectfunction()
+   table
  })
 
   output$genomeResults <- DT::renderDataTable(
-    selectfunction(), rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = names(selectfunction()) 
+    fullGenomeTableOutput(), rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = names(selectfunction()) 
   )
 
 
