@@ -234,7 +234,7 @@ shinyServer(function(input, output) {
         )
         searchTerm <- ""
         searchResult <- 0
-
+        err <- 0
         countResults <- list() #initialize empty vector
         uids <- list()
         searchTerms <- list() #list of search terms
@@ -245,7 +245,6 @@ shinyServer(function(input, output) {
                 print(code)
                 code <- trimws(code)
                 if(substring(code, 1,1) == "("){
-                    print("WOWOWO")
                     # code is in the format (loci1; loci2; loci3...)
                     # We will make a combined query by substituting the ;s for other stuff
                   
@@ -298,12 +297,20 @@ shinyServer(function(input, output) {
                     searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
                   }
                 }
-                
-
-                searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
-                uids <- list.append(uids, searchResult$ids)
-                searchTerms <- list.append(searchTerms, searchTerm) # 
-                countResults <- list.append(countResults, searchResult$count) #append the count to the vector of results
+                searchResult <- tryCatch({
+                  searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
+                }, error = function(err) {
+                  results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+                  err <- 1
+                })
+                if(err == 1) {
+                  err <- 0
+                  next
+                } else {
+                  uids <- list.append(uids, searchResult$ids)
+                  searchTerms <- list.append(searchTerms, searchTerm) # 
+                  countResults <- list.append(countResults, searchResult$count) #append the count to the vector of results
+                }
             }
         }
         results <- list(count=countResults, ids=uids,searchTermslist = searchTerms ) #
