@@ -206,8 +206,8 @@ shinyUI(fluidPage(
                             
                             # Define the sidebar with one input
                             sidebarPanel(
-                              selectInput("gsearch", "Gsearch:", 
-                                          choices = c("Full mitochondrial genomes in nucleotide database", "Full chloroplast genomes in nucleotide database", "Taxa availability in genome database")),
+                              selectInput("gsearch", "Choose which genome to search for:", 
+                                          choices = c("Full mitochondrial genomes", "Full chloroplast genomes", "Taxa availability in genome database")),
                               hr(),
                               helpText("Select a function")
                             ),
@@ -238,7 +238,9 @@ shinyUI(fluidPage(
                             # Show a plot of the generated distribution
                             DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                             # Download button
-                            downloadButton('downloadGenomes',"Download table"),
+                            downloadButton('fullGenomeDownloadT',"Download Table"),
+                            downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
+                            downloadButton('fullGenomeDownloadG', "Download Genbank Files"),
                           )
                         )
                ))),
