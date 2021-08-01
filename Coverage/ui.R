@@ -153,10 +153,12 @@ shinyUI(fluidPage(
               mainPanel(  
                 DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
                 # Download button
-                downloadButton('downloadStatements',"Download Search Terms table"),
-                downloadButton('download',"Download Counts table"),
-                downloadButton("fileDownloadF","Download FASTA Files"),
-                downloadButton("fileDownloadG","Download Genbank Files"),
+                conditionalPanel( condition = "output.NCBIcoverageResults",
+                                  downloadButton('downloadStatements',"Download Search Terms table"),
+                                  downloadButton('download',"Download Counts table"),
+                                  downloadButton("fileDownloadF","Download FASTA Files"),
+                                  downloadButton("fileDownloadG","Download Genbank Files"),
+                                  downloadButton("fileDownloadSD","Download Summary Data"))
                 #add_busy_spinner(spin = "fading-circle")
               )
             )
