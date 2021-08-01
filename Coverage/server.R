@@ -20,8 +20,244 @@ library(dplyr)
 library(RSQLite)
 library(rlist)
 
+
 shinyServer(function(input, output) {
+
+# Full Genome -------------------------------------------------------------------  
+
+# * FullGenomeSearchButton --------------------------------------------------------
+  
+  fullGenomeSearchButton <- eventReactive(input$genomeSearchButton, { 
+    #When searchButton clicked, update fGenOrgSearch to return the value input into genomeOrganismList 
+    input$genomeOrganismList #Returns as a string
+  })
+  
+  # * FullGenomeInputCSV -----------------------------------------------------------
+  
+  inputFileCrux <- observeEvent(input$uploadGenomeButton,{
+    isolate({
+      req(input$uploadGenomeFile, file.exists(input$uploadGenomeFile$datapath))
+      uploadinfo <- read.csv(input$uploadGenomeFile$datapath, header = TRUE)
+      if(input$genomeOrganismList[[1]] != "") {
+        updateTextAreaInput(getDefaultReactiveDomain(), "genomeOrganismList", value = c(head(uploadinfo$OrganismNames, -1), input$genomeOrganismList))
+      }
+      else {
+        updateTextAreaInput(getDefaultReactiveDomain(), "genomeOrganismList", value = uploadinfo$OrganismNames)
+      }
+    })
+  })
+  
+
+# * FGenOrgSearch -----------------------------------------------------------------
+  
+   fGenOrgSearch <- reactive({
+    genomeOrgList <- strsplit(fullGenomeSearchButton(), ",")[[1]]
+    if(input$fullGenomeTaxizeOption){ #if the taxize option is selected
+      taxizeGenOrgList <- c() #initialize an empty vector
+
+      for(i in 1:length(genomeOrgList))
+      {
+        organism <- trimws(genomeOrgList[[i]], "b") #trim both leading and trailing whitespace
+        NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+        row_count <- nrow(NCBI_names) # get number of rows in dataframe
+
+        if(row_count > 0) #If a legitimate name was found
+        {
+          for(j in 1:row_count)
+          {
+            taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
+            taxizeGenOrgList <- c(taxizeGenOrgList, taxa_name) #update the vector with all the taxa_names.
+          }
+        }
+        else
+        {
+          taxizeGenOrgList <- c(taxizeGenOrgList, organism) #just append organism to the list, and return taxizeGenOrgList
+        }
+      }
+      taxizeGenOrgList
+    } else{
+      genomeOrgList #return the list as is
+    }
+  })
+  
+# * Mitochondrial Search -------------------------------------------------------
+   
+  Organisms_with_Mitochondrial_genomes <- reactive({
+
+    num_rows <- length(fGenOrgSearch())
+
+    genomeList <- fGenOrgSearch()
+    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    uids <- c()
     
+    parameters <- "set vector up"
+
+    if(isTRUE(input$refSeq))
+    {
+      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
+      names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+    }
+    else
+    {
+      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
+      names(Results) <- c('Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+    }
+    
+    for(i in 1:num_rows)
+    {
+      Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
+      genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+      Results[i,1] <- genome_result$count
+      Results[i,2] <- Mitochondrial_genome_SearchTerm
+      for(id in genome_result$ids){
+        uids <- c(uids, id)
+      }
+    }
+    list(Results, uids)
+  })
+
+# * Chloroplast Search ---------------------------------------------------------
+  
+  Organisms_with_Chloroplast_genomes <- reactive({
+    
+    num_rows <- length(fGenOrgSearch())
+    genomeList <- fGenOrgSearch()
+    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    uids <- c()
+    
+    parameters <- "set vector up"
+    
+    if(isTRUE(input$refSeq))
+    {
+      parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN] AND srcdb_refseq[PROP]"
+      names(Results) <- c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide','SearchStatements')
+    }else
+    {
+      parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN]"
+      names(Results) <- c('Num_Chloroplast_Genomes_in_NCBI_Nucleotide','Chloroplast_SearchStatements')
+    }
+    
+    for(i in 1:num_rows)
+    {
+      Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
+      genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
+      Results[i,1] <- genome_result$count 
+      Results[i,2] <- Chloroplast_genome_SearchTerm
+      for(id in genome_result$ids){
+        uids <- c(uids, id)
+      }
+    }
+    list(Results, uids)
+  })
+  
+# * Is_the_taxa_in_the_NCBI_genome_DB ------------------------------------------
+  
+  Is_the_taxa_in_the_NCBI_genome_DB <- reactive ({
+    
+    num_rows <- length(fGenOrgSearch())
+    genomeList <- fGenOrgSearch()
+    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+    uids <- c()
+    
+    names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
+    for(i in 1:num_rows)
+    {
+      genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
+      genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
+      Results[i, 1] <- genome_result$count #add zero
+      Results[i, 2] <- genome_SearchTerm 
+      for(id in genome_result$ids){
+        uids <- c(uids, id)
+      }
+    }
+    list(Results, uids)
+  })
+  
+#  * selectFunction  --------------------------------------------------------------
+
+ selectfunction <- reactive({
+  if (input$gsearch == "Full mitochondrial genomes")
+  {
+    genomes <- Organisms_with_Mitochondrial_genomes()
+  }
+  else if (input$gsearch == "Full chloroplast genomes") 
+  {
+    genomes <- Organisms_with_Chloroplast_genomes()
+  }
+  else if (input$gsearch == "Taxa availability in genome database") 
+  {
+    genomes <- Is_the_taxa_in_the_NCBI_genome_DB()
+  }
+    genomes
+ })
+
+ # * Output Table render ----------------------------------------------------------
+  output$genomeResults <- DT::renderDataTable(
+    selectfunction()[[1]], rownames = fGenOrgSearch(), colnames = names(selectfunction()[[1]]) 
+  )
+  
+ # * Download Fastas ---------------------------------------------------------------
+  
+  # Download Full Genome table
+  output$fullGenomeDownloadF <- downloadHandler(
+    filename = function() { # Create the file and set its name
+      paste("TEST", ".fasta", sep = "")
+    },
+    content = function(file) {
+      uids <- selectfunction()[[2]]
+      progLength <- length(uids)
+      print(uids)
+      shiny::withProgress(message="Downloading", value=0, {
+        Vector_Fasta <- c()
+        for (uid in uids) {
+          File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+          Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+          shiny::incProgress(1/progLength)
+        }
+        write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
+        shiny::incProgress(1/progLength)
+      })
+      
+    }
+  )
+  
+  # * Download Genbank files --------------------------------------------------------
+  
+  output$fullGenomeDownloadG <- downloadHandler(
+    filename = function() { # Create the file and set its name
+      paste("TEST", ".gb", sep = "")
+    },
+    content = function(file) {
+      uids <- selectfunction()[[2]]
+      progLength <- length(uids)
+      shiny::withProgress(message="Downloading", value=0, {
+        Vector_genbank <- c()
+        for (uid in uids) {
+          File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
+          Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+          shiny::incProgress(1/progLength)
+        }
+        write(Vector_genbank, file) # Writes the vector containing all the genbank file information into one genbank file
+        shiny::incProgress(1/progLength)
+      })
+      
+    }
+  )
+  
+  # * Download Full Genome Results Table ----------------------------------------
+  
+  # Download NCBI table
+  output$fullGenomeDownloadT <- downloadHandler(
+    filename = function() { # Create the file and set its name
+      paste("TEST", ".csv", sep = "")
+    },
+    content = function(file) {
+      FullGenmatrix <- selectfunction()[[1]] # Gets the matrix for the FullGenome search results
+      rownames(FullGenmatrix) <- fGenOrgSearch() # Adds the row names to the matrix
+      write.csv(FullGenmatrix, file) # Writes the dataframe to the CSV file
+    }
+  )
+
 
 # CRUX --------------------------------------------------------------------
 
@@ -36,16 +272,17 @@ shinyServer(function(input, output) {
 # * CRUXStrToList -----------------------------------------------------------
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
+        
         organismList <- strsplit(cruxOrgSearch(), ",")[[1]] #separate based on commas
         if(input$CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
-            
+
             for(i in 1:length(organismList))
             {
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
                 row_count <- nrow(NCBI_names) # get number of rows in dataframe
-                
+
                 if(row_count > 0) #If a legitimate name was found
                 {
                     for(j in 1:row_count)
@@ -59,7 +296,7 @@ shinyServer(function(input, output) {
                     taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
-            taxize_organism_list  
+            taxize_organism_list
         } else{
             organismList #return the list as is
         }
@@ -69,6 +306,7 @@ shinyServer(function(input, output) {
 # * CRUXCoverage ------------------------------------------------------------
 
     cruxCoverage <- reactive({
+        
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
         
@@ -168,16 +406,17 @@ shinyServer(function(input, output) {
 # * NCBIStrToList -----------------------------------------------------------
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
+        
         organismList <- strsplit(NCBISearch()[[1]], ",")[[1]] #separate based on commas
         if(input$NCBItaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
-            
+
             for(i in 1:length(organismList))
             {
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
                 row_count <- nrow(NCBI_names)# get number of rows in dataframe
-                
+
                 if(row_count > 0)#If a legitimate name was found
                 {
                     for(j in 1:row_count)
@@ -191,7 +430,7 @@ shinyServer(function(input, output) {
                     taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
                 }
             }
-            taxize_organism_list  
+            taxize_organism_list
         } else{
             organismList #return the list as is
         }
