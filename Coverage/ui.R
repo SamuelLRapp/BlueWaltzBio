@@ -196,30 +196,13 @@ shinyUI(fluidPage(
                           ),
                         ),
                         
-                        fluidPage(    
-                          
-                          # Give the page a title
-                          titlePanel("Select function"),
-                          
-                          # Generate a row with a sidebar
-                          sidebarLayout(      
-                            
-                            # Define the sidebar with one input
-                            sidebarPanel(
-                              selectInput("gsearch", "Choose which genome to search for:", 
-                                          choices = c("Full mitochondrial genomes", "Full chloroplast genomes", "Taxa availability in genome database")),
-                              hr(),
-                              helpText("Select a function")
-                            ),
-                            mainPanel(
-                              ## TODO: Find a way to remove this
-                            )
-                          )
-                        ),
-                        
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
+                            selectInput("gsearch", "Choose which genome to search for:", 
+                                        choices = c("Full mitochondrial genomes", "Full chloroplast genomes", "Taxa availability in genome database")),
+                            helpText("Select a function"),
+                            
                             fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv")),
                             
                             actionButton(inputId = "uploadGenomeButton", label = "Upload file to textboxes"),
