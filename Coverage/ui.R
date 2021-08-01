@@ -13,6 +13,7 @@ library(shinyWidgets)
 library(tidyverse)
 library(vembedr)
 library(shinydashboard)
+library(shinyalert) # popup library
 #library(shinybusy)
 
 shinyUI(fluidPage(
@@ -54,6 +55,7 @@ shinyUI(fluidPage(
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
+                            useShinyalert(), #this line is needed for the popup,
                             fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
                             actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
                             textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
