@@ -387,16 +387,23 @@ shinyServer(function(input, output) {
       NCBIdata <- matrixGet() # Gets the matrix for the NCBI results
       colnames(NCBIdata) <- columns # Adds the column names to the matrix
       rownames(NCBIdata) <- NCBIorganismList() # Adds the row names to the matrix
-      NCBIdata <- as.data.frame(NCBIdata)
+      NCBIdata <- as.data.frame(NCBIdata) # Convert to Dataframe
+      
+      
       print(NCBIdata)
+      print(is.data.frame(NCBIdata))
+      print(ncol(NCBIdata))
+      print(nrow(NCBIdata))
       print(typeof(NCBIdata))
-      colnms=c("CO1", "COX1", "COI")
-      print(NCBIdata[, colnms])
+      print(NCBIdata$COI)
+      print(NCBIdata[,'COI'])
+      
+      #colnms=c("X.CO1", "X.COX1", "X.COI")
       #combine multiple COI NCBI names into 1
       #colnms=c("CO1", "COX1", "COI")
-      NCBIdata$Combined_COI<-rowSums(NCBIdata[,colnms])
+      #NCBIdata$Combined_COI<-rowSums(NCBIdata[,colnms])
       #removing columns that were combined
-      drops <- c("CO1", "COX1", "COI")
+      #drops <- c("CO1", "COX1", "COI")
       #NCBIdata<-NCBIdata[ , !(names(NCBIdata) %in% drops)]
       print(NCBIdata)
       
