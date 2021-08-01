@@ -19,6 +19,7 @@ library(tidyverse)
 library(dplyr)
 library(RSQLite)
 library(rlist)
+library(mpoly)
 
 
 shinyServer(function(input, output) {
@@ -267,7 +268,6 @@ shinyServer(function(input, output) {
     cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
         input$CRUXorganismList #Returns as a string
     })
-    
 
 # * CRUXStrToList -----------------------------------------------------------
     
@@ -302,54 +302,126 @@ shinyServer(function(input, output) {
         }
     })
     
-
+# * CRUXSearch --------------------------------------------------------------------
+    cruxSearch <- function(results, searchTerm, organism) {
+      dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
+      taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
+      #results <- c()
+      for(table in dbList){
+        #
+        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
+        if(nrow(location)==0){
+          location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
+          if(nrow(location)==0){
+            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
+            if(nrow(location)==0){
+              location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
+              if(nrow(location)==0){
+                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
+                if(nrow(location)==0){
+                  location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
+                  results <- c(results, nrow(location))
+                } else { results <- c(results, "class")}
+              } else {results <- c(results, "order")}
+            } else {results <- c(results, "family")}
+          }else {results <- c(results, "genus") }
+        } else {results <- c(results, toString(nrow(location)))}
+      }
+      dbDisconnect(taxaDB)
+      results
+    }
+    
 # * CRUXCoverage ------------------------------------------------------------
 
     cruxCoverage <- reactive({
         
         organismList <- cruxOrganismList()
         organismListLength <- length(organismList)
-        
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
         )
         
         dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
-        
-        taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
+        #taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
         
         searchTerm <- ""
         searchResult <- 0
         results <- c()
-        for(organism in organismList){
-            searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi")
-            for(table in dbList){
-                # 
-                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
-                if(nrow(location) == 0){
-                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
-                    if(nrow(location) == 0){
-                        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
-                        if(nrow(location)==0){
-                            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
-                            if(nrow(location) ==0){
-                                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
-                                if(nrow(location)==0){
-                                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
-                                    results <- c(results, nrow(location))
-                                } else { results <- c(results, "class")}
-                            } else {results <- c(results, "order")}
-                        } else {results <- c(results, "family")}
-                    }else {results <- c(results, "genus") }
-                } else {results <- c(results, toString(nrow(location)))}
-            }
-            
-        }
-        dbDisconnect(taxaDB)
-        # unlink("taxa-db.sqlite")
+        newOrgList <- c()
+        popuplist <- c()
+        err <- 0
         
-        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #store vector results in data matrix
-        data #return data matrix
+        for(organism in organismList){
+            search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
+            if( nrow(search[[1]]) > 1) {# There are homonyms
+              popuplist <- c(popuplist, organism)
+              # Process the 
+              for (i in 1:nrow(search[[1]])) { # tax_name
+                # if there are more than 5 homonyms then break we are not interested in more than 5
+                if(i > 5) { 
+                  break
+                }
+                # create new organism list since new organism are added
+                newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
+                newOrgList <- c(newOrgList, newOrg)
+                # Creating the same format as the other organisms so the Crux search can be performed correctly
+                hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]]
+                match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
+                query <- c("db", "query", "genus", "family", "order", "class","phylum", "domain")
+                match <- c("ncbi", organism, match)
+                searchTerm <- stats::setNames(
+                  data.frame(t(match), stringsAsFactors = FALSE), 
+                  query
+                )
+                # Perform the CruxSearch
+                results <- cruxSearch(results, searchTerm, organism)
+              }
+            } else { # There are no homonyms
+              newOrgList <- c(newOrgList, organism)
+              searchTerm <- tryCatch({
+                searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
+              }, error = function(err) {
+                results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+                err <- 1
+              })
+              if(err == 1) {
+                next
+              }
+              results <- cruxSearch(results, searchTerm, organism)
+            }
+        }
+        
+        results <- list(organismList=newOrgList, data=results, popupinfo=popuplist) 
+        results
+    })
+    
+# * matrixGetCRUX ------------------------------------------------------------
+    
+    matrixGetCRUX <- reactive({ # creates and returns the matrix to be displayed with the count
+      dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S")
+      cruxCoverage <- cruxCoverage() # Get the results from the NCBI query
+      results <- c()
+      organismListLength <- length(cruxCoverage[[1]])
+      for (i in cruxCoverage[[2]]) {
+        results <- c(results, i)
+      }
+      data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #convert results vector to dataframe
+      data
+    })
+    
+# * organismListGet ------------------------------------------------------------
+    
+    organismListGet <- reactive({ # Returns the uids stored in the results from the NCBi query
+      organismList <- c()
+      cruxCoverage <- cruxCoverage() # Get the results from the NCBI query
+      for (i in cruxCoverage[[1]]) {
+        organismList <- c(organismList, i)
+      }
+      # Send the alert to the user that we have found some homonyms
+      if(length(organismList) > length(cruxOrganismList())) {
+        shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
+      }
+      organismList
     })
     
 
@@ -388,7 +460,7 @@ shinyServer(function(input, output) {
 # * CRUXOutput --------------------------------------------------------------
 
     output$CRUXcoverageResults <- DT::renderDataTable(
-      cruxCoverage(), rownames = cruxOrganismList(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+      matrixGetCRUX(), rownames = organismListGet(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
       
     )
     
@@ -570,7 +642,6 @@ shinyServer(function(input, output) {
         data <- matrix(count, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
         data
     })
-    
 
 # * NCBITableOutput ---------------------------------------------------------
     
