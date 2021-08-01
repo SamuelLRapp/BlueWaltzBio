@@ -243,6 +243,20 @@ shinyServer(function(input, output) {
       
     }
   )
+  
+  # * Download Full Genome Results Table ----------------------------------------
+  
+  # Download NCBI table
+  output$fullGenomeDownloadT <- downloadHandler(
+    filename = function() { # Create the file and set its name
+      paste("TEST", ".csv", sep = "")
+    },
+    content = function(file) {
+      FullGenmatrix <- selectfunction()[[1]] # Gets the matrix for the FullGenome search results
+      rownames(FullGenmatrix) <- fGenOrgSearch() # Adds the row names to the matrix
+      write.csv(FullGenmatrix, file) # Writes the dataframe to the CSV file
+    }
+  )
 
 
 # CRUX --------------------------------------------------------------------
