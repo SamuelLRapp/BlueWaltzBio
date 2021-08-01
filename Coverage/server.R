@@ -111,8 +111,7 @@ shinyServer(function(input, output) {
       Results[i,2] <- Mitochondrial_genome_SearchTerm
       uids <- list.append(uids, genome_result$ids)
     }
-    results <- list(Results, uids)
-    results
+    list(Results, uids)
   })
 
 # * Chloroplast Search ---------------------------------------------------------
@@ -144,7 +143,7 @@ shinyServer(function(input, output) {
       Results[i,2] <- Chloroplast_genome_SearchTerm
       uids <- list.append(uids, genome_result$ids)
     }
-    Results
+    list(Results, uids)
   })
   
 # * Is_the_taxa_in_the_NCBI_genome_DB ------------------------------------------
@@ -183,17 +182,16 @@ shinyServer(function(input, output) {
   {
     genomes <- Is_the_taxa_in_the_NCBI_genome_DB()
   }
-    genomes[[1]]
+    genomes
  })
  
  # * fullGenomeTableOutput --------------------------------------------------------
  fullGenomeTableOutput <- reactive({
-   table <- selectfunction()
-   table
+    selectfunction()[[1]]
  })
 
   output$genomeResults <- DT::renderDataTable(
-    fullGenomeTableOutput(), rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = names(selectfunction()) 
+    selectfunction()[[1]], rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = names(selectfunction()[[1]]) 
   )
 
 
