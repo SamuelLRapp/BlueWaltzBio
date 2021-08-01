@@ -184,14 +184,57 @@ shinyServer(function(input, output) {
   }
     genomes
  })
- 
- # * fullGenomeTableOutput --------------------------------------------------------
- fullGenomeTableOutput <- reactive({
-    selectfunction()[[1]]
- })
 
+ # * Output Table render ----------------------------------------------------------
   output$genomeResults <- DT::renderDataTable(
     selectfunction()[[1]], rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = names(selectfunction()[[1]]) 
+  )
+  
+ # * Download Fastas ---------------------------------------------------------------
+  
+  # Download Full Genome table
+  output$fullGenomeDownloadF <- downloadHandler(
+    filename = function() { # Create the file and set its name
+      paste("TEST", ".fasta", sep = "")
+    },
+    content = function(file) {
+      uids <- selectfunction()[[2]]
+      progLength <- length(uids)
+      shiny::withProgress(message="Downloading", value=0, {
+        Vector_Fasta <- c()
+        for (uid in uids) {
+          File_fasta <- entrez_fetch(db = "genome", id = uid, rettype = "fasta") # Get the fasta file with that uid
+          Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+          shiny::incProgress(1/progLength)
+        }
+        write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
+        shiny::incProgress(1/progLength)
+      })
+      
+    }
+  )
+  
+  # * Download Genbank files --------------------------------------------------------
+  
+  output$fullGenomeDownloadG <- downloadHandler(
+    filename = function() { # Create the file and set its name
+      paste("TEST", ".gb", sep = "")
+    },
+    content = function(file) {
+      uids <- selectfunction()[[2]]
+      progLength <- length(uids)
+      shiny::withProgress(message="Downloading", value=0, {
+        Vector_genbank <- c()
+        for (uid in uids) {
+          File_genbank <- entrez_fetch(db = "genome", id = uid, rettype = "gb") # Get the genbank file with that uid
+          Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+          shiny::incProgress(1/progLength)
+        }
+        write(Vector_genbank, file) # Writes the vector containing all the genbank file information into one genbank file
+        shiny::incProgress(1/progLength)
+      })
+      
+    }
   )
 
 
