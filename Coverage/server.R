@@ -242,7 +242,6 @@ shinyServer(function(input, output) {
             for(code in barcodeList()){
                 # TODO: Add more sanitization to this
                 # if there is a parenthesis
-                print(code)
                 code <- trimws(code)
                 if(substring(code, 1,1) == "("){
                     # code is in the format (loci1; loci2; loci3...)
@@ -416,10 +415,10 @@ shinyServer(function(input, output) {
 
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
         if(input$barcodeList[[1]] != "") { # If the input barcodeList is not empty (ie. the inputtextarea is not empty) then use the paste function to the add the barcode/s to the beginning
-            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("CO1, COI, COX1,", input$barcodeList)) # Updates the text area input adds the barcode/s to the beginning of whatever is already in it
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = paste("(CO1; COI; COX1),", input$barcodeList)) # Updates the text area input adds the barcode/s to the beginning of whatever is already in it
         }
         else {
-            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "CO1, COI, COX1") # Here since the textarea is empty we just set its value to the barcode/s
+            updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = "(CO1; COI; COX1)") # Here since the textarea is empty we just set its value to the barcode/s
         }
     })
     
