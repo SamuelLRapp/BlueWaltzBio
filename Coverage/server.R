@@ -88,7 +88,7 @@ shinyServer(function(input, output) {
 
     genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-    uids <- list()
+    uids <- c()
     
     parameters <- "set vector up"
 
@@ -109,7 +109,9 @@ shinyServer(function(input, output) {
       genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
       Results[i,1] <- genome_result$count
       Results[i,2] <- Mitochondrial_genome_SearchTerm
-      uids <- list.append(uids, genome_result$ids)
+      for(id in genome_result$ids){
+        uids <- c(uids, id)
+      }
     }
     list(Results, uids)
   })
@@ -121,7 +123,7 @@ shinyServer(function(input, output) {
     num_rows <- length(fGenOrgSearch())
     genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-    uids <- list()
+    uids <- c()
     
     parameters <- "set vector up"
     
@@ -141,7 +143,9 @@ shinyServer(function(input, output) {
       genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
       Results[i,1] <- genome_result$count 
       Results[i,2] <- Chloroplast_genome_SearchTerm
-      uids <- list.append(uids, genome_result$ids)
+      for(id in genome_result$ids){
+        uids <- c(uids, id)
+      }
     }
     list(Results, uids)
   })
@@ -153,7 +157,7 @@ shinyServer(function(input, output) {
     num_rows <- length(fGenOrgSearch())
     genomeList <- fGenOrgSearch()
     Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-    uids <- list()
+    uids <- c()
     
     names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
     for(i in 1:num_rows)
@@ -162,7 +166,9 @@ shinyServer(function(input, output) {
       genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
       Results[i, 1] <- genome_result$count #add zero
       Results[i, 2] <- genome_SearchTerm 
-      uids <- list.append(uids, genome_result$ids)
+      for(id in genome_result$ids){
+        uids <- c(uids, id)
+      }
     }
     list(Results, uids)
   })
@@ -170,11 +176,11 @@ shinyServer(function(input, output) {
 #  * selectFunction  --------------------------------------------------------------
 
  selectfunction <- reactive({
-  if (input$gsearch == "Full mitochondrial genomes in nucleotide database")
+  if (input$gsearch == "Full mitochondrial genomes")
   {
     genomes <- Organisms_with_Mitochondrial_genomes()
   }
-  else if (input$gsearch == "Full chloroplast genomes in nucleotide database") 
+  else if (input$gsearch == "Full chloroplast genomes") 
   {
     genomes <- Organisms_with_Chloroplast_genomes()
   }
@@ -200,10 +206,11 @@ shinyServer(function(input, output) {
     content = function(file) {
       uids <- selectfunction()[[2]]
       progLength <- length(uids)
+      print(uids)
       shiny::withProgress(message="Downloading", value=0, {
         Vector_Fasta <- c()
         for (uid in uids) {
-          File_fasta <- entrez_fetch(db = "genome", id = uid, rettype = "fasta") # Get the fasta file with that uid
+          File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
           Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
           shiny::incProgress(1/progLength)
         }
@@ -226,7 +233,7 @@ shinyServer(function(input, output) {
       shiny::withProgress(message="Downloading", value=0, {
         Vector_genbank <- c()
         for (uid in uids) {
-          File_genbank <- entrez_fetch(db = "genome", id = uid, rettype = "gb") # Get the genbank file with that uid
+          File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
           Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
           shiny::incProgress(1/progLength)
         }
