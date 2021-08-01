@@ -193,7 +193,7 @@ shinyServer(function(input, output) {
 
  # * Output Table render ----------------------------------------------------------
   output$genomeResults <- DT::renderDataTable(
-    selectfunction()[[1]], rownames = strsplit(fullGenomeSearchButton(), ",")[[1]], colnames = names(selectfunction()[[1]]) 
+    selectfunction()[[1]], rownames = strsplit(fGenOrgSearch(), ",")[[1]], colnames = names(selectfunction()[[1]]) 
   )
   
  # * Download Fastas ---------------------------------------------------------------
