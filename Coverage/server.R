@@ -180,7 +180,9 @@ shinyServer(function(input, output) {
         organismList <- c(organismList, i)
       }
       # Send the alert to the user that we have found some homonyms
-      shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
+      if(length(organismList) > length(cruxOrganismList())) {
+        shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
+      }
       organismList
     })
     
