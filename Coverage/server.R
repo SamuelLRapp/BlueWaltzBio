@@ -146,6 +146,15 @@ shinyServer(function(input, output) {
         }
     )
     
+    output$CRUXfileDownloadSD <- downloadHandler(
+      filename = function() { # Create the file and set its name
+        paste("CRUX_Summary_Report", ".csv", sep = "")
+      },
+      content = function(file) {
+        summary_data <- summary_report(cruxCoverage(), 0)
+        write.csv(summary_data, file) # Writes the dataframe to the CSV file
+      })
+    
 
 # * CRUXOutput --------------------------------------------------------------
 
@@ -202,6 +211,10 @@ shinyServer(function(input, output) {
 
     barcodeList <- reactive({
         barcodeList <- strsplit(NCBISearch()[[2]], ",") #separate based on comma
+        for(i in 1:length(barcodeList)) {
+          barcodeList[[i]] <- trimws(barcodeList[[i]], "b")
+        }
+        print(barcodeList)
         barcodeList[[1]]
     })
     
@@ -368,102 +381,105 @@ shinyServer(function(input, output) {
         }
     )
     
-    output$fileDownloadSD <- downloadHandler(
+    output$NCBIfileDownloadSD <- downloadHandler(
       filename = function() { # Create the file and set its name
-        paste("Summary Data", ".csv", sep = "")
+        paste("NCBI_Summary_Report", ".csv", sep = "")
       },
       content = function(file) {
-          summary_data <- summary_report(matrixGet())
+          summary_data <- summary_report(matrixGet(), 1)
           write.csv(summary_data, file) # Writes the dataframe to the CSV file
         })
     
 # * NCBIDownloadSummaryReport ----------------------------------------------
     
-    summary_report <- function(dataframe)
+    summary_report <- function(dataframe, databaseFlag)
     {
       print("hello")
+      if(databaseFlag == 1) {
+        columns <- barcodeList() # Gets the column names for the matrix
+        NCBIdata <- matrixGet() # Gets the matrix for the NCBI results
+        colnames(NCBIdata) <- columns # Adds the column names to the matrix
+        rownames(NCBIdata) <- NCBIorganismList() # Adds the row names to the matrix
+        NCBIdata <- as.data.frame(NCBIdata) # Convert to Dataframe
+        
+        colnms=c("CO1", "COX1", "COI")
+        #combine multiple COI NCBI names into 1
+        NCBIdata$Combined_COI<-rowSums(NCBIdata[,colnms])
+        print(NCBIdata)
+        #removing columns that were combined
+        drops <- c("CO1", "COX1", "COI")
+        NCBIdata <- NCBIdata[,!(names(NCBIdata) %in% drops), drop = FALSE]
+        dataframe <- NCBIdata
+        print(NCBIdata)
+      } else {
+        columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
+        CRUXmatrix <- cruxCoverage() # Gets the matrix for the Crux results
+        print(CRUXmatrix)
+        colnames(CRUXmatrix) <- columns # Adds the column names to the matrix
+        rownames(CRUXmatrix) <- cruxOrganismList() # Adds the row names to the matrix
+        dataframe <- CRUXmatrix
+      }
       
-      columns <- barcodeList() # Gets the column names for the matrix
-      NCBIdata <- matrixGet() # Gets the matrix for the NCBI results
-      colnames(NCBIdata) <- columns # Adds the column names to the matrix
-      rownames(NCBIdata) <- NCBIorganismList() # Adds the row names to the matrix
-      NCBIdata <- as.data.frame(NCBIdata) # Convert to Dataframe
+      #calls convert_CRUX()s
+      dataframe <- convert_CRUX(dataframe)
+      print("I AM HERE")
+      class(dataframe)
+      class(dataframe[,1])
+      options(scipen=999) #scientific notion
+      print(dataframe)
       
+      new_row_names <- "total"
+      new_row_names<-  c(new_row_names, colnames(dataframe))#doesn't include column with taxa snames
+      print(new_row_names)
+
+      statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
+      new_col_names <- c("category","number of sequences found", "percent of total sequences found", "num of organism with at least one sequence", "num of organisms with no sequences")
+      colnames(statistics_df) <- new_col_names
+      #get list of columns + a column called "total"
+
+      print("test1")
+      #add row names
+      for(i in 1:length(new_row_names))
+      {
+        statistics_df[i,1]<-new_row_names[i]
+      }
       
-      print(NCBIdata)
-      print(is.data.frame(NCBIdata))
-      print(ncol(NCBIdata))
-      print(nrow(NCBIdata))
-      print(typeof(NCBIdata))
-      print(NCBIdata$COI)
-      print(NCBIdata[,'COI'])
+      print("test1.5")
+      print(dataframe)
+      barcodeSums <- colSums(dataframe) #doesn't include column with taxa snames
+      print("test1.6")
+      print(barcodeSums)
+
+      Total_seq_found <- sum(barcodeSums)
+      print("test1.7")
+
+      #hard code in the totals
+      statistics_df[1,2] <- Total_seq_found
+      #print("test1.8")
+      statistics_df[1,3] <- 100
+      #("test2")
       
-      #colnms=c("X.CO1", "X.COX1", "X.COI")
-      #combine multiple COI NCBI names into 1
-      #colnms=c("CO1", "COX1", "COI")
-      #NCBIdata$Combined_COI<-rowSums(NCBIdata[,colnms])
-      #removing columns that were combined
-      #drops <- c("CO1", "COX1", "COI")
-      #NCBIdata<-NCBIdata[ , !(names(NCBIdata) %in% drops)]
-      print(NCBIdata)
-      
-      NCBIdata
-      # #calls convert_CRUX()s
-      # dataframe <- convert_CRUX(dataframe)
-      # class(dataframe)
-      # class(dataframe[,1])
-      # class(dataframe[,2])
-      # options(scipen=999) #scientific notion  
-      # 
-      # new_row_names <- "total"
-      # new_row_names<-  c(new_row_names, colnames(dataframe[-1]))#doesn't include column with taxa snames
-      # print(new_row_names)
-      # 
-      # statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
-      # new_col_names <- c("category","number of sequences found", "percent of total sequences found", "num of organism with at least one sequence", "num of organisms with no sequences")
-      # colnames(statistics_df) <- new_col_names
-      # #get list of columns + a column callede "total"
-      # 
-      # print("test1")
-      # #add row names
-      # for(i in 1:length(new_row_names))
-      # {
-      #   statistics_df[i,1]<-new_row_names[i]
-      # }
-      # print("test1.5")
-      # barcodeSums <- colSums(dataframe[,-1]) #doesn't include column with taxa snames
-      # print("test1.6")
-      # 
-      # Total_seq_found <- sum(barcodeSums)
-      # print("test1.7")
-      # 
-      # #hard code in the totals
-      # statistics_df[1,2] <- Total_seq_found
-      # print("test1.8")
-      # statistics_df[1,3] <- 100
-      # print("test2")
-      # for(i in 2:length(new_row_names))
-      # {
-      #   x <- i-1
-      #   statistics_df[i,2] <- barcodeSums[x]
-      #   statistics_df[i,3] <- (barcodeSums[x]/Total_seq_found)
-      # }
-      # print(barcodeSums)
-      # 
-      # #hard code in the totals
-      # output_of_which_rows_are_empty_and_arenot <- which_rows_are_empty_and_arenot(dataframe, -1)
-      # statistics_df[1,5] <- length(output_of_which_rows_are_empty_and_arenot[[2]])    #list 2 is thee species without any seqs
-      # statistics_df[1,4] <-length(output_of_which_rows_are_empty_and_arenot[[1]])   #we know list 1 is the species with some seqs
-      # print("almosthome")
-      # 
-      # for(i in 2:length(new_row_names))
-      # {
-      #   x <- i#-1
-      #   output_of_which_rows_are_empty_and_arenot <- which_rows_are_empty_and_arenot(dataframe, Which_Column = x)
-      #   statistics_df[i,5] <- length(output_of_which_rows_are_empty_and_arenot[[2]])     #list 2 is the species without any seqs 
-      #   statistics_df[i,4] <- length(output_of_which_rows_are_empty_and_arenot[[1]])  #we know list 1 is the species with some seqs
-      # }
-      # statistics_df
+      for(i in 2:length(new_row_names))
+      {
+        x <- i - 1
+        statistics_df[i,2] <- barcodeSums[x]
+        statistics_df[i,3] <- (barcodeSums[x]/Total_seq_found)
+      }
+
+      #hard code in the totals
+      output_of_which_rows_are_empty_and_arenot <- which_rows_are_empty_and_arenot(dataframe, -1)
+      statistics_df[1,5] <- length(output_of_which_rows_are_empty_and_arenot[[2]])    #list 2 is thee species without any seqs
+      statistics_df[1,4] <-length(output_of_which_rows_are_empty_and_arenot[[1]])   #we know list 1 is the species with some seqs
+
+      for(i in 2:length(new_row_names))
+      {
+        x <- i - 1
+        output_of_which_rows_are_empty_and_arenot <- which_rows_are_empty_and_arenot(dataframe, Which_Column = x)
+        statistics_df[i,5] <- length(output_of_which_rows_are_empty_and_arenot[[2]])     #list 2 is the species without any seqs
+        statistics_df[i,4] <- length(output_of_which_rows_are_empty_and_arenot[[1]])  #we know list 1 is the species with some seqs
+      }
+      print(statistics_df)
+      statistics_df
     }
     
     # * * NCBIDownloadConvertCrux ----------------------------------------------
@@ -481,7 +497,10 @@ shinyServer(function(input, output) {
       
       ncols <- ncol(crux_output)
       nrows <- nrow(crux_output)
+      print(ncols)
+      print(nrows)
       print("hello")
+      
       
       for(i in 1:ncols)
       {
@@ -495,28 +514,34 @@ shinyServer(function(input, output) {
             #    print(class(crux_without_taxonomic_names[j,i]))
             crux_without_taxonomic_names[j,i] <- as.numeric(0)
             #       print(class(crux_without_taxonomic_names[j,i]))
+          } else {
+            crux_without_taxonomic_names[j,i] <- as.numeric(crux_output[j,i])
           }
-          print(class(crux_without_taxonomic_names[j,i]))
-          
+          #print(class(crux_without_taxonomic_names[j,i]))
           # print(paste("WORKING", i))
         }
       }
-      # print(crux_without_taxonomic_names)
+      print(crux_without_taxonomic_names)
       firstcolumn <- crux_without_taxonomic_names[,1]
-      crux_without_taxonomic_names <- as.matrix(crux_without_taxonomic_names[,-1])
-      
-      crux_without_taxonomic_names <- as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
-      
-      print("I'm outish1")
-      
-      print(class(crux_without_taxonomic_names[2,2]))
-      print(class(crux_without_taxonomic_names[1,2]))
-      
-      crux_without_taxonomic_names<-cbind.data.frame(firstcolumn,crux_without_taxonomic_names)
-      print("I'm outish")
-      
-      print(class(crux_without_taxonomic_names[2,2]))
-      print(class(crux_without_taxonomic_names[1,2]))
+
+      crux_without_taxonomic_names <- as.matrix(crux_without_taxonomic_names)
+
+      crux_without_taxonomic_names <- as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric))
+      # 
+      # print("I'm outish1")
+      # 
+      # print(class(crux_without_taxonomic_names[2,2]))
+      # print(crux_without_taxonomic_names[2,2])
+      # print(class(crux_without_taxonomic_names[1,2]))
+      # print(crux_without_taxonomic_names[2,2])
+      # 
+      # crux_without_taxonomic_names<-cbind.data.frame(firstcolumn,crux_without_taxonomic_names)
+      # print("I'm outish")
+      # 
+      # print(class(crux_without_taxonomic_names[2,2]))
+      # print(crux_without_taxonomic_names[2,2])
+      # print(class(crux_without_taxonomic_names[1,2]))
+      # print(crux_without_taxonomic_names[2,2])
       
       crux_without_taxonomic_names
     }
@@ -533,7 +558,7 @@ shinyServer(function(input, output) {
       }
       Which_Column <- Which_Column
       dataframe <- convert_CRUX(dataframe)
-      
+      print("HEY")
       #create two lists
       haveSomeSeq <- c()
       haveZeroSeq <- c()
@@ -546,7 +571,7 @@ shinyServer(function(input, output) {
         for(i in 1:nrows) #we will skip the first column because it has names
         {
           total <- 0
-          for(j in 2:ncols)
+          for(j in 1:ncols)
           {
             total <- total + as.numeric(dataframe[i,j])
           }
@@ -567,13 +592,17 @@ shinyServer(function(input, output) {
         }
       }else #if a specific columnn
       {
+        print("ENTERED ELSE")
         for(i in 1:nrows) #we will skip the first column because it has names
         {
           seqs <- 0
+          print(Which_Column)
+          print(dataframe[i,Which_Column])
           seqs <- 0 + as.numeric(dataframe[i,Which_Column]) 
           
           if(!is.null(seqs) && seqs > 0)
           {
+            print("Hey")
             #haveSomeSeq <- c(haveSomeSeq, dataframe[i,Which_Column])
             haveSomeSeq <- c(haveSomeSeq, dataframe[i,1]) #add species name to list
             
@@ -581,6 +610,7 @@ shinyServer(function(input, output) {
             #print(seqs)
           } else
           {
+            print("WELL")
             # print(seqs)
             # haveZeroSeq <- c(haveZeroSeq, dataframe[i,Which_Column])
             haveZeroSeq <- c(haveZeroSeq, dataframe[i,1])#add species name to list
@@ -588,7 +618,7 @@ shinyServer(function(input, output) {
           }
         }
       }
-      
+      print("WOW")
       if(Which_Column < 0){
         results <- list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs =haveZeroSeq)
         results<- as.matrix(results)

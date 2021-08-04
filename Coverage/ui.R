@@ -64,7 +64,9 @@ shinyUI(fluidPage(
                             # Show a plot of the generated distribution
                             DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
                             # Download button
-                            downloadButton('downloadCrux',"Download table"),
+                            conditionalPanel( condition = "output.CRUXcoverageResults",
+                                              downloadButton('downloadCrux',"Download table"),
+                                              downloadButton("CRUXfileDownloadSD","Download Summary Data"))
                           )
                         ),
                         ),
@@ -158,7 +160,7 @@ shinyUI(fluidPage(
                                   downloadButton('download',"Download Counts table"),
                                   downloadButton("fileDownloadF","Download FASTA Files"),
                                   downloadButton("fileDownloadG","Download Genbank Files"),
-                                  downloadButton("fileDownloadSD","Download Summary Data"))
+                                  downloadButton("NCBIfileDownloadSD","Download Summary Data"))
                 #add_busy_spinner(spin = "fading-circle")
               )
             )
