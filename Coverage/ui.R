@@ -13,12 +13,13 @@ library(shinyWidgets)
 library(tidyverse)
 library(vembedr)
 library(shinydashboard)
+library(shinyalert) # popup library
 #library(shinybusy)
 
 shinyUI(fluidPage(
   
   navbarPage("Coverage",
-    
+
     #CRUX tab
     tabPanel("Home", 
              titlePanel("Welcome to the Reference Sequence Browser"),
@@ -54,6 +55,7 @@ shinyUI(fluidPage(
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
+                            useShinyalert(), #this line is needed for the popup,
                             fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
                             actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
                             textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
@@ -184,6 +186,53 @@ shinyUI(fluidPage(
           )
         ),
       ),
+    
+    tabPanel("Full Genome Search",
+             tabsetPanel(
+               tabPanel("Search", 
+                        titlePanel("Find genome of interest"),
+                        fluidRow(
+                          mainPanel(
+                            
+                            h4("Descriptions of each Search Field"),
+                            dropdown(label="Species List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
+                            dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your species names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
+                            p("")
+                            
+                          ),
+                        ),
+                        
+                        fluidRow(
+                          # Sidebar with a text area for organisms and bar code
+                          sidebarPanel(
+                            selectInput("gsearch", "Choose which genome to search for:", 
+                                        choices = c("Full mitochondrial genomes", "Full chloroplast genomes", "Taxa availability in genome database")),
+                            helpText("Select a function"),
+                            
+                            fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv")),
+                            
+                            actionButton(inputId = "uploadGenomeButton", label = "Upload file to textboxes"),
+                            textAreaInput(inputId = "genomeOrganismList", label = "Species Names"),
+                            
+                            checkboxInput(inputId = "refSeq", label = "Search for reference sequences", value = TRUE),
+                            checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+                            
+                            
+                            
+                            actionButton("genomeSearchButton", "Search"),
+                          ),
+                          
+                          mainPanel(
+                            
+                            # Show a plot of the generated distribution
+                            DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
+                            # Download button
+                            downloadButton('fullGenomeDownloadT',"Download Table"),
+                            downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
+                            downloadButton('fullGenomeDownloadG', "Download Genbank Files"),
+                          )
+                        )
+               ))),
     
    tabPanel("Contact Us", 
             
