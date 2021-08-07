@@ -202,7 +202,7 @@ shinyServer(function(input, output) {
   # Download Full Genome table
   output$fullGenomeDownloadF <- downloadHandler(
     filename = function() { # Create the file and set its name
-      paste("TEST", ".fasta", sep = "")
+      paste("Full_Genome_Fasta_File", ".fasta", sep = "")
     },
     content = function(file) {
       uids <- selectfunction()[[2]]
@@ -226,7 +226,7 @@ shinyServer(function(input, output) {
   
   output$fullGenomeDownloadG <- downloadHandler(
     filename = function() { # Create the file and set its name
-      paste("TEST", ".gb", sep = "")
+      paste("Full_Genome_Genbank_File", ".gb", sep = "")
     },
     content = function(file) {
       uids <- selectfunction()[[2]]
@@ -250,7 +250,7 @@ shinyServer(function(input, output) {
   # Download NCBI table
   output$fullGenomeDownloadT <- downloadHandler(
     filename = function() { # Create the file and set its name
-      paste("TEST", ".csv", sep = "")
+      paste("Full_Genome_Table", ".csv", sep = "")
     },
     content = function(file) {
       FullGenmatrix <- selectfunction()[[1]] # Gets the matrix for the FullGenome search results
@@ -445,7 +445,7 @@ shinyServer(function(input, output) {
     
     output$downloadCrux <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste(input$CRUXorganismList, ".csv", sep = "")
+            paste("CRUX_Table", ".csv", sep = "")
         },
         content = function(file) {
             columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
@@ -689,7 +689,7 @@ shinyServer(function(input, output) {
     # Download NCBI table
     output$fileDownloadF <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste("TEST", ".fasta", sep = "")
+            paste("NCBI_Fasta_File", ".fasta", sep = "")
         },
         content = function(file) {
             uids <- uidsGet()
@@ -714,7 +714,7 @@ shinyServer(function(input, output) {
     # Download NCBI Genbank
     output$fileDownloadG <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste("GenbankTEST", ".gb", sep = "")
+            paste("NCBI_Genbank_File", ".gb", sep = "")
         },
         content = function(file) {
             uids <- uidsGet()
@@ -746,7 +746,6 @@ shinyServer(function(input, output) {
     
     summary_report <- function(dataframe, databaseFlag)
     {
-      print("hello")
       if(databaseFlag == 1) {
         columns <- barcodeList() # Gets the column names for the matrix
         NCBIdata <- matrixGet() # Gets the matrix for the NCBI results
@@ -754,35 +753,23 @@ shinyServer(function(input, output) {
         rownames(NCBIdata) <- NCBIorganismList() # Adds the row names to the matrix
         NCBIdata <- as.data.frame(NCBIdata) # Convert to Dataframe
         
-        colnms=c("CO1", "COX1", "COI")
-        #combine multiple COI NCBI names into 1
-        NCBIdata$Combined_COI<-rowSums(NCBIdata[,colnms])
-        print(NCBIdata)
-        #removing columns that were combined
-        drops <- c("CO1", "COX1", "COI")
-        NCBIdata <- NCBIdata[,!(names(NCBIdata) %in% drops), drop = FALSE]
         dataframe <- NCBIdata
-        print(NCBIdata)
       } else {
         columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
         CRUXmatrix <- cruxCoverage() # Gets the matrix for the Crux results
-        print(CRUXmatrix)
         colnames(CRUXmatrix) <- columns # Adds the column names to the matrix
         rownames(CRUXmatrix) <- cruxOrganismList() # Adds the row names to the matrix
         dataframe <- CRUXmatrix
+        #calls convert_CRUX()s
+        dataframe <- convert_CRUX(dataframe)
       }
       
-      #calls convert_CRUX()s
-      dataframe <- convert_CRUX(dataframe)
-      print("I AM HERE")
       class(dataframe)
       class(dataframe[,1])
       options(scipen=999) #scientific notion
-      print(dataframe)
       
       new_row_names <- "total"
       new_row_names<-  c(new_row_names, colnames(dataframe))#doesn't include column with taxa snames
-      print(new_row_names)
 
       statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
       new_col_names <- c("category","number of sequences found", "percent of total sequences found", "num of organism with at least one sequence", "num of organisms with no sequences")
@@ -874,26 +861,12 @@ shinyServer(function(input, output) {
         }
       }
       print(crux_without_taxonomic_names)
+      
       firstcolumn <- crux_without_taxonomic_names[,1]
 
       crux_without_taxonomic_names <- as.matrix(crux_without_taxonomic_names)
 
       crux_without_taxonomic_names <- as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric))
-      # 
-      # print("I'm outish1")
-      # 
-      # print(class(crux_without_taxonomic_names[2,2]))
-      # print(crux_without_taxonomic_names[2,2])
-      # print(class(crux_without_taxonomic_names[1,2]))
-      # print(crux_without_taxonomic_names[2,2])
-      # 
-      # crux_without_taxonomic_names<-cbind.data.frame(firstcolumn,crux_without_taxonomic_names)
-      # print("I'm outish")
-      # 
-      # print(class(crux_without_taxonomic_names[2,2]))
-      # print(crux_without_taxonomic_names[2,2])
-      # print(class(crux_without_taxonomic_names[1,2]))
-      # print(crux_without_taxonomic_names[2,2])
       
       crux_without_taxonomic_names
     }
@@ -909,7 +882,6 @@ shinyServer(function(input, output) {
         Which_Column <- -1
       }
       Which_Column <- Which_Column
-      dataframe <- convert_CRUX(dataframe)
       print("HEY")
       #create two lists
       haveSomeSeq <- c()
@@ -1090,7 +1062,7 @@ shinyServer(function(input, output) {
     # Download NCBI table
     output$download <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste(input$NCBIorganismList, ".csv", sep = "")
+            paste("NCBI_Table", ".csv", sep = "")
         },
         content = function(file) {
             columns <- barcodeList() # Gets the column names for the matrix
@@ -1109,7 +1081,7 @@ shinyServer(function(input, output) {
     #Download Search Terms:
     output$downloadStatements <- downloadHandler(
       filename = function() { # Create the file and set its name
-        paste(input$NCBIorganismList, ".csv", sep = "")
+        paste("NCBI_Search_Statements", ".csv", sep = "")
       },
       content = function(file) {
         columns <- barcodeList() # Gets the column names for the matrix
