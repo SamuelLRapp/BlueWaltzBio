@@ -427,7 +427,6 @@ shinyServer(function(input, output) {
         shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
       }
       organismList
->>>>>>> master
     })
     
 
