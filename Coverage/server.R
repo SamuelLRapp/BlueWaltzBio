@@ -527,7 +527,6 @@ shinyServer(function(input, output) {
         for(i in 1:length(barcodeList)) {
           barcodeList[[i]] <- trimws(barcodeList[[i]], "b")
         }
-        print(barcodeList)
         barcodeList[[1]]
     })
     

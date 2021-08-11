@@ -227,7 +227,6 @@ shinyUI(fluidPage(
                             # Show a plot of the generated distribution
                             DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                             # Download button
-
                             conditionalPanel( condition = "output.genomeResults",                            
                                               downloadButton('fullGenomeDownloadT',"Download Table"),
                                               downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
