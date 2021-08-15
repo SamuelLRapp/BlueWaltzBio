@@ -557,6 +557,7 @@ shinyServer(function(input, output) {
       countResults <- list() #initialize empty vector
       uids <- list()
       searchTerms <- list() #list of search terms
+      future_promise({
       for(organism in organismList){
         for(code in barcodeList()){
           # TODO: Add more sanitization to this
@@ -633,6 +634,7 @@ shinyServer(function(input, output) {
       }
       results <- list(count=countResults, ids=uids,searchTermslist = searchTerms ) #
       results
+      })
     })
     
 
