@@ -276,8 +276,9 @@ shinyServer(function(input, output, session) {
 # * CRUXStrToList -----------------------------------------------------------
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-        
-        organismList <- strsplit(cruxOrgSearch(), ",")[[1]] #separate based on commas
+      cruxOrgSearch <- cruxOrgSearch()
+        future_promise({
+        organismList <- strsplit(cruxOrgSearch, ",")[[1]] #separate based on commas
         if(input$CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
 
@@ -305,6 +306,7 @@ shinyServer(function(input, output, session) {
         } else{
             organismList #return the list as is
         }
+        })
     })
     
 # * CRUXSearch --------------------------------------------------------------------
@@ -340,14 +342,12 @@ shinyServer(function(input, output, session) {
 
     cruxCoverage <- reactive({
         
-        organismList <- cruxOrganismList()
+      cruxOrganismList() %...>% {
+        organismList <- .
         organismListLength <- length(organismList)
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
         )
-        
-        dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
-        #taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
         
         searchTerm <- ""
         searchResult <- 0
@@ -356,6 +356,7 @@ shinyServer(function(input, output, session) {
         popuplist <- c()
         err <- 0
         
+        future_promise({
         for(organism in organismList){
             search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
             if( nrow(search[[1]]) > 1) {# There are homonyms
@@ -398,35 +399,43 @@ shinyServer(function(input, output, session) {
         
         results <- list(organismList=newOrgList, data=results, popupinfo=popuplist) 
         results
+        })
+      }
     })
     
 # * matrixGetCRUX ------------------------------------------------------------
     
     matrixGetCRUX <- reactive({ # creates and returns the matrix to be displayed with the count
       dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S")
-      cruxCoverage <- cruxCoverage() # Get the results from the NCBI query
-      results <- c()
-      organismListLength <- length(cruxCoverage[[1]])
-      for (i in cruxCoverage[[2]]) {
-        results <- c(results, i)
+      cruxCoverage() %...>% {
+        cruxCoverage <- . # Get the results from the SQL queries
+        results <- c()
+        organismListLength <- length(cruxCoverage[[1]])
+        for (i in cruxCoverage[[2]]) {
+          results <- c(results, i)
+        }
+        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #convert results vector to dataframe
+        data
       }
-      data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #convert results vector to dataframe
-      data
     })
     
 # * organismListGet ------------------------------------------------------------
     
     organismListGet <- reactive({ # Returns the uids stored in the results from the NCBi query
       organismList <- c()
-      cruxCoverage <- cruxCoverage() # Get the results from the NCBI query
-      for (i in cruxCoverage[[1]]) {
-        organismList <- c(organismList, i)
+      cruxCoverage() %...>% {
+        cruxCoverage <- . # Get the results from the NCBI query
+        for (i in cruxCoverage[[1]]) {
+          organismList <- c(organismList, i)
+        }
+        # Send the alert to the user that we have found some homonyms
+        cruxOrganismList() %...>% {
+          if(length(organismList) > length(.)) {
+            shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
+          }
+        }
+        organismList
       }
-      # Send the alert to the user that we have found some homonyms
-      if(length(organismList) > length(cruxOrganismList())) {
-        shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
-      }
-      organismList
     })
     
 
@@ -454,11 +463,13 @@ shinyServer(function(input, output, session) {
         },
         content = function(file) {
             columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
-            rows <- cruxOrganismList()
-            cruxCoverage() %...>% { # Gets the matrix for the Crux results
-              colnames(.) <- columns # Adds the column names to the matrix
-              rownames(.) <- rows # Adds the row names to the matrix
-              write.csv(., file) # Writes the matrix to the CSV file
+            cruxOrganismList() %...>% {
+              rows <- .
+              cruxCoverage() %...>% { # Gets the matrix for the Crux results
+                colnames(.) <- columns # Adds the column names to the matrix
+                rownames(.) <- rows # Adds the row names to the matrix
+                write.csv(., file) # Writes the matrix to the CSV file
+              }
             }
         }
     )
