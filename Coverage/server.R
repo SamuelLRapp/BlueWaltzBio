@@ -25,7 +25,7 @@ library(ipc)
 library(mpoly)
 
 plan(multicore)
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
 
 # Full Genome -------------------------------------------------------------------  
 
@@ -485,7 +485,7 @@ shinyServer(function(input, output) {
 # * NCBIStrToList -----------------------------------------------------------
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
-        
+        future_promise({
         organismList <- strsplit(NCBISearch()[[1]], ",")[[1]] #separate based on commas
         if(input$NCBItaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
@@ -514,6 +514,7 @@ shinyServer(function(input, output) {
         } else{
             organismList #return the list as is
         }
+        })
     })
     
 
@@ -543,7 +544,8 @@ shinyServer(function(input, output) {
     
     genBankCoverage <- reactive({
       
-      organismList <- NCBIorganismList() #get species and barcode inputs
+      NCBIorganismList() %...>% {
+      organismList <- . #get species and barcode inputs
       organismListLength <- length(organismList)
       
       codeListLength <- length(barcodeList()) 
@@ -635,13 +637,15 @@ shinyServer(function(input, output) {
       results <- list(count=countResults, ids=uids,searchTermslist = searchTerms ) #
       results
       })
+      }
     })
     
 
 # * NCBIMatrix --------------------------------------------------------------
     
     matrixGet <- reactive({ # creates and returns the matrix to be displayed with the count
-        organismList <- NCBIorganismList() #get species and barcode inputs
+      NCBIorganismList() %...>% {
+        organismList <- . #get species and barcode inputs
         organismListLength <- length(organismList)
         codeListLength <- length(barcodeList())
         genBankCoverage() %...>% { # Get the results from the NCBI query
@@ -652,21 +656,24 @@ shinyServer(function(input, output) {
         data <- matrix(count, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
         data
         }
+      }
     })
 
 # * NCBITableOutput ---------------------------------------------------------
     
     matrixGetSearchTerms <- reactive({ # creates and returns the matrix to be displayed with the count
-      organismList <- NCBIorganismList() #get species and barcode inputs
-      organismListLength <- length(organismList)
-      codeListLength <- length(barcodeList())
-      genBankCoverage() %...>% { # Get the results from the NCBI query
-      SearchStatements <- c()
-      for (i in .[[3]]) { #3 is the 3rd list in genBankCovearage aka the searchterms list
-        SearchStatements <- c(SearchStatements, i)
-      }
-      data <- matrix(SearchStatements, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
-      data
+      NCBIorganismList() %...>% {
+        organismList <- . #get species and barcode inputs
+        organismListLength <- length(organismList)
+        codeListLength <- length(barcodeList())
+        genBankCoverage() %...>% { # Get the results from the NCBI query
+        SearchStatements <- c()
+        for (i in .[[3]]) { #3 is the 3rd list in genBankCovearage aka the searchterms list
+          SearchStatements <- c(SearchStatements, i)
+        }
+        data <- matrix(SearchStatements, nrow = organismListLength, ncol = codeListLength, byrow = TRUE) #convert results vector to dataframe
+        data
+        }
       }
     })
     
@@ -850,14 +857,16 @@ shinyServer(function(input, output) {
         },
         content = function(file) {
             columns <- barcodeList() # Gets the column names for the matrix
-            rows <- NCBIorganismList() #Gets the row names for the matrix
-            matrixGet() %...>% { # Gets the matrix for the NCBI results
-              future_promise({
-                colnames(.) <- columns # Adds the column names to the matrix
+            NCBIorganismList() %...>% {
+              rows <- . #Gets the row names for the matrix
+              matrixGet() %...>% { # Gets the matrix for the NCBI results
+                future_promise({
+                  colnames(.) <- columns # Adds the column names to the matrix
 
-                rownames(.) <- rows # Adds the row names to the matrix
-                write.csv(., file) # Writes the dataframe to the CSV file
-              })
+                  rownames(.) <- rows # Adds the row names to the matrix
+                  write.csv(., file) # Writes the dataframe to the CSV file
+                })
+              }
             }
         }
         
@@ -874,14 +883,16 @@ shinyServer(function(input, output) {
       content = function(file) {
         
         columns <- barcodeList() # Gets the column names for the matrix
-        rows <- NCBIorganismList() #Gets the row names for the matrix
-        matrixGetSearchTerms() %...>% { # Gets the matrix for the NCBI results
-          future_promise({
-            colnames(.) <- columns # Adds the column names to the matrix
+        NCBIorganismList() %...>% {
+          rows <- . #Gets the row names for the matrix
+          matrixGetSearchTerms() %...>% { # Gets the matrix for the NCBI results
+            future_promise({
+              colnames(.) <- columns # Adds the column names to the matrix
         
-            rownames(.) <- rows # Adds the row names to the matrix
-            write.csv(., file) # Writes the dataframe to the CSV file
-          })
+              rownames(.) <- rows # Adds the row names to the matrix
+              write.csv(., file) # Writes the dataframe to the CSV file
+            })
+          }
         }
       }
     )
