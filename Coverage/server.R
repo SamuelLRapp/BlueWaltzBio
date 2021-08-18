@@ -55,6 +55,7 @@ shinyServer(function(input, output, session) {
 # * FGenOrgSearch -----------------------------------------------------------------
   
    fGenOrgSearch <- reactive({
+    future_promise({
     genomeOrgList <- strsplit(fullGenomeSearchButton(), ",")[[1]]
     if(input$fullGenomeTaxizeOption){ #if the taxize option is selected
       taxizeGenOrgList <- c() #initialize an empty vector
@@ -62,6 +63,7 @@ shinyServer(function(input, output, session) {
       for(i in 1:length(genomeOrgList))
       {
         organism <- trimws(genomeOrgList[[i]], "b") #trim both leading and trailing whitespace
+        Sys.sleep(0.34)
         NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
         row_count <- nrow(NCBI_names) # get number of rows in dataframe
 
@@ -82,6 +84,7 @@ shinyServer(function(input, output, session) {
     } else{
       genomeOrgList #return the list as is
     }
+    })
   })
   
 # * Mitochondrial Search -------------------------------------------------------
@@ -89,92 +92,104 @@ shinyServer(function(input, output, session) {
   Organisms_with_Mitochondrial_genomes <- reactive({
 
     num_rows <- length(fGenOrgSearch())
-
-    genomeList <- fGenOrgSearch()
-    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-    uids <- c()
     
-    parameters <- "set vector up"
-
-    if(isTRUE(input$refSeq))
-    {
-      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
-      names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
-    }
-    else
-    {
-      parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
-      names(Results) <- c('Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
-    }
+    fGenOrgSearch() %...>% {
+      genomeList <- .
+      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+      uids <- c()
     
-    for(i in 1:num_rows)
-    {
-      Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
-      genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
-      Results[i,1] <- genome_result$count
-      Results[i,2] <- Mitochondrial_genome_SearchTerm
-      for(id in genome_result$ids){
-        uids <- c(uids, id)
+      parameters <- "set vector up"
+
+      if(isTRUE(input$refSeq))
+      {
+        parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
+        names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
       }
+      else
+      {
+        parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
+        names(Results) <- c('Num_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
+      }
+    
+      future_promise({
+      for(i in 1:num_rows)
+      {
+        Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
+        genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+        Results[i,1] <- genome_result$count
+        Results[i,2] <- Mitochondrial_genome_SearchTerm
+        for(id in genome_result$ids){
+          uids <- c(uids, id)
+        }
+      }
+      list(Results, uids)
+      })
     }
-    list(Results, uids)
   })
 
 # * Chloroplast Search ---------------------------------------------------------
   
   Organisms_with_Chloroplast_genomes <- reactive({
     
-    num_rows <- length(fGenOrgSearch())
-    genomeList <- fGenOrgSearch()
-    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-    uids <- c()
+    fGenOrgSearch() %...>% {
+      num_rows <- length(.)
+      genomeList <- .
+      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+      uids <- c()
     
-    parameters <- "set vector up"
+      parameters <- "set vector up"
     
-    if(isTRUE(input$refSeq))
-    {
-      parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN] AND srcdb_refseq[PROP]"
-      names(Results) <- c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide','SearchStatements')
-    }else
-    {
-      parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN]"
-      names(Results) <- c('Num_Chloroplast_Genomes_in_NCBI_Nucleotide','Chloroplast_SearchStatements')
-    }
-    
-    for(i in 1:num_rows)
-    {
-      Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
-      genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
-      Results[i,1] <- genome_result$count 
-      Results[i,2] <- Chloroplast_genome_SearchTerm
-      for(id in genome_result$ids){
-        uids <- c(uids, id)
+      if(isTRUE(input$refSeq))
+      {
+        parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN] AND srcdb_refseq[PROP]"
+        names(Results) <- c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide','SearchStatements')
+      }else
+      {
+        parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN]"
+        names(Results) <- c('Num_Chloroplast_Genomes_in_NCBI_Nucleotide','Chloroplast_SearchStatements')
       }
+    
+      future_promise({
+      for(i in 1:num_rows)
+      {
+        Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
+        genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
+        Results[i,1] <- genome_result$count 
+        Results[i,2] <- Chloroplast_genome_SearchTerm
+        for(id in genome_result$ids){
+          uids <- c(uids, id)
+        }
+      }
+      list(Results, uids)
+      })
     }
-    list(Results, uids)
   })
   
 # * Is_the_taxa_in_the_NCBI_genome_DB ------------------------------------------
   
   Is_the_taxa_in_the_NCBI_genome_DB <- reactive ({
     
-    num_rows <- length(fGenOrgSearch())
-    genomeList <- fGenOrgSearch()
-    Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-    uids <- c()
+    fGenOrgSearch() %...>% {
+      num_rows <- length(.)
+      genomeList <- .
+      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
+      uids <- c()
     
-    names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
-    for(i in 1:num_rows)
-    {
-      genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
-      genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
-      Results[i, 1] <- genome_result$count #add zero
-      Results[i, 2] <- genome_SearchTerm 
-      for(id in genome_result$ids){
-        uids <- c(uids, id)
+      names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
+      future_promise({
+      for(i in 1:num_rows)
+      {
+        genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
+        genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
+        Results[i, 1] <- genome_result$count #add zero
+        Results[i, 2] <- genome_SearchTerm 
+        for(id in genome_result$ids){
+          uids <- c(uids, id)
+        }
       }
+      list(Results, uids)
+      })
     }
-    list(Results, uids)
   })
   
 #  * selectFunction  --------------------------------------------------------------
@@ -182,23 +197,34 @@ shinyServer(function(input, output, session) {
  selectfunction <- reactive({
   if (input$gsearch == "Full mitochondrial genomes")
   {
-    genomes <- Organisms_with_Mitochondrial_genomes()
+    Organisms_with_Mitochondrial_genomes() %...>% {
+      genomes <- .
+      genomes
+    }
   }
   else if (input$gsearch == "Full chloroplast genomes") 
   {
-    genomes <- Organisms_with_Chloroplast_genomes()
+    Organisms_with_Chloroplast_genomes() %...>% {
+      genomes <- .
+      genomes
+    }
   }
   else if (input$gsearch == "Taxa availability in genome database") 
   {
-    genomes <- Is_the_taxa_in_the_NCBI_genome_DB()
+    Is_the_taxa_in_the_NCBI_genome_DB() %...>% {
+      genomes <- .
+      genomes
+    }
   }
-    genomes
  })
 
  # * Output Table render ----------------------------------------------------------
-  output$genomeResults <- DT::renderDataTable(
-    selectfunction()[[1]], rownames = fGenOrgSearch(), colnames = names(selectfunction()[[1]]) 
-  )
+  output$genomeResults <- DT::renderDataTable({
+    # selectfunction()[[1]], rownames = fGenOrgSearch(), colnames = names(selectfunction()[[1]]) 
+    promise_all(data_df = selectfunction(), rows = fGenOrgSearch()) %...>% with({
+      DT::datatable(data_df[[1]], rownames = rows, colnames = names(data_df[[1]]))
+    })
+  })
   
  # * Download Fastas ---------------------------------------------------------------
   
@@ -250,7 +276,6 @@ shinyServer(function(input, output, session) {
   
   # * Download Full Genome Results Table ----------------------------------------
   
-  # Download NCBI table
   output$fullGenomeDownloadT <- downloadHandler(
     filename = function() { # Create the file and set its name
       paste("NCBI_Full_Genomes_Search_Table", ".csv", sep = "")
