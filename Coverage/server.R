@@ -114,6 +114,7 @@ shinyServer(function(input, output, session) {
       for(i in 1:num_rows)
       {
         Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
+        Sys.sleep(0.34)
         genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
         Results[i,1] <- genome_result$count
         Results[i,2] <- Mitochondrial_genome_SearchTerm
@@ -152,6 +153,7 @@ shinyServer(function(input, output, session) {
       for(i in 1:num_rows)
       {
         Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
+        Sys.sleep(0.34)
         genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
         Results[i,1] <- genome_result$count 
         Results[i,2] <- Chloroplast_genome_SearchTerm
@@ -179,6 +181,7 @@ shinyServer(function(input, output, session) {
       for(i in 1:num_rows)
       {
         genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
+        Sys.sleep(0.34)
         genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
         Results[i, 1] <- genome_result$count #add zero
         Results[i, 2] <- genome_SearchTerm 
@@ -267,6 +270,7 @@ shinyServer(function(input, output, session) {
         future_promise({
           Vector_genbank <- c()
           for (uid in uids) {
+            Sys.sleep(0.34)
             File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
             Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
             progress$inc(amount=1)
@@ -419,6 +423,7 @@ shinyServer(function(input, output, session) {
             } else { # There are no homonyms
               newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
+                Sys.sleep(0.34)
                 searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
               }, error = function(err) {
                 results <- c(results, "error", "error", "error", "error", "error", "error", "error")
@@ -666,6 +671,7 @@ shinyServer(function(input, output, session) {
             }
           }
           searchResult <- tryCatch({
+            Sys.sleep(0.34)
             searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
           }, error = function(err) {
             results <- c(results, "error", "error", "error", "error", "error", "error", "error")
