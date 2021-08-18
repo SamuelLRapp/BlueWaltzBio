@@ -90,11 +90,10 @@ shinyServer(function(input, output, session) {
 # * Mitochondrial Search -------------------------------------------------------
    
   Organisms_with_Mitochondrial_genomes <- reactive({
-
-    num_rows <- length(fGenOrgSearch())
     
     fGenOrgSearch() %...>% {
       genomeList <- .
+      num_rows <- length(genomeList)
       Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
       uids <- c()
     
