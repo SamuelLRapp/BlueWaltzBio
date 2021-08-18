@@ -477,10 +477,12 @@ shinyServer(function(input, output, session) {
 
 # * CRUXOutput --------------------------------------------------------------
 
-    output$CRUXcoverageResults <- DT::renderDataTable(
-      matrixGetCRUX(), rownames = organismListGet(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-      
-    )
+    output$CRUXcoverageResults <- DT::renderDataTable({
+      # matrixGetCRUX(), rownames = organismListGet(), colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+      promise_all(data_df = matrixGetCRUX(), rows = organismListGet()) %...>% with({
+        DT::datatable(data_df, rownames = rows, colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S"))
+      })
+    })
     
 
 # NCBI --------------------------------------------------------------------
