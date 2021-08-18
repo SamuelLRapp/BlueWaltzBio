@@ -205,7 +205,7 @@ shinyServer(function(input, output, session) {
   # Download Full Genome table
   output$fullGenomeDownloadF <- downloadHandler(
     filename = function() { # Create the file and set its name
-      paste("TEST", ".fasta", sep = "")
+      paste("NCBI_Full_Genomes", ".fasta", sep = "")
     },
     content = function(file) {
       uids <- selectfunction()[[2]]
@@ -229,7 +229,7 @@ shinyServer(function(input, output, session) {
   
   output$fullGenomeDownloadG <- downloadHandler(
     filename = function() { # Create the file and set its name
-      paste("TEST", ".gb", sep = "")
+      paste("NCBI_Full_Genomes", ".gb", sep = "")
     },
     content = function(file) {
       uids <- selectfunction()[[2]]
@@ -253,7 +253,7 @@ shinyServer(function(input, output, session) {
   # Download NCBI table
   output$fullGenomeDownloadT <- downloadHandler(
     filename = function() { # Create the file and set its name
-      paste("TEST", ".csv", sep = "")
+      paste("NCBI_Full_Genomes_Search_Table", ".csv", sep = "")
     },
     content = function(file) {
       FullGenmatrix <- selectfunction()[[1]] # Gets the matrix for the FullGenome search results
@@ -459,7 +459,7 @@ shinyServer(function(input, output, session) {
     
     output$downloadCrux <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste(input$CRUXorganismList, ".csv", sep = "")
+            paste("CRUX_Counts_Table", ".csv", sep = "")
         },
         content = function(file) {
             columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
@@ -709,7 +709,7 @@ shinyServer(function(input, output, session) {
     # Download NCBI table
     output$fileDownloadF <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste("TEST", ".fasta", sep = "")
+            paste("NCBI_Fasta_Downloads", ".fasta", sep = "")
         },
         content = function(file) {
           uidsGet() %...>% {
@@ -738,7 +738,7 @@ shinyServer(function(input, output, session) {
     # Download NCBI Genbank
     output$fileDownloadG <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste("GenbankTEST", ".gb", sep = "")
+            paste("NCBI_Genbank_Downloads", ".gb", sep = "")
         },
         content = function(file) {
             uidsGet() %...>% {
@@ -869,7 +869,7 @@ shinyServer(function(input, output, session) {
     # Download NCBI table
     output$download <- downloadHandler(
         filename = function() { # Create the file and set its name
-            paste(input$NCBIorganismList, ".csv", sep = "")
+            paste("NCBI_Counts_Table", ".csv", sep = "")
         },
         content = function(file) {
             columns <- barcodeList() # Gets the column names for the matrix
@@ -894,7 +894,7 @@ shinyServer(function(input, output, session) {
     #Download Search Terms:
     output$downloadStatements <- downloadHandler(
       filename = function() { # Create the file and set its name
-        paste(input$NCBIorganismList, ".csv", sep = "")
+        paste("NCBI_Search_Statements", ".csv", sep = "")
       },
       content = function(file) {
         
