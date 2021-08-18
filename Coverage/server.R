@@ -833,9 +833,12 @@ shinyServer(function(input, output, session) {
     #outputs:
     output$seqLenInputs <- renderUI(seqLenList())
     
-    output$NCBIcoverageResults <- DT::renderDataTable(
-        matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
-    )
+    output$NCBIcoverageResults <- DT::renderDataTable({
+        # matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
+      promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
+        DT::datatable(data_df, rownames = rows, colnames = barcodeList())
+      })
+    })
   
 
 # * NCBInputFile ------------------------------------------------------------
