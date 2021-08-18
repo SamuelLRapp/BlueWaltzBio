@@ -233,20 +233,23 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Full_Genomes", ".fasta", sep = "")
     },
     content = function(file) {
-      uids <- selectfunction()[[2]]
-      progLength <- length(uids)
-      print(uids)
-      shiny::withProgress(message="Downloading", value=0, {
-        Vector_Fasta <- c()
-        for (uid in uids) {
-          File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
-          Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
-          shiny::incProgress(1/progLength)
-        }
-        write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
-        shiny::incProgress(1/progLength)
-      })
-      
+      selectfunction() %...>% {
+        uids <- .[[2]]
+        progLength <- length(uids)
+        progress <- AsyncProgress$new(session, min=0, max=progLength, message= "Downloading", value= 0)
+        future_promise({
+          Vector_Fasta <- c()
+          for (uid in uids) {
+            Sys.sleep(0.34)
+            File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+            Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
+            progress$inc(amount=1)
+          }
+          write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
+          progress$set(value=progLength)
+          progress$close()
+        })
+      }
     }
   )
   
@@ -257,19 +260,22 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Full_Genomes", ".gb", sep = "")
     },
     content = function(file) {
-      uids <- selectfunction()[[2]]
-      progLength <- length(uids)
-      shiny::withProgress(message="Downloading", value=0, {
-        Vector_genbank <- c()
-        for (uid in uids) {
-          File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
-          Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
-          shiny::incProgress(1/progLength)
-        }
-        write(Vector_genbank, file) # Writes the vector containing all the genbank file information into one genbank file
-        shiny::incProgress(1/progLength)
-      })
-      
+      selectfunction() %...>% {
+        uids <- .[[2]]
+        progLength <- length(uids)
+        progress <- AsyncProgress$new(session, min=0, max=progLength, message= "Downloading", value= 0)
+        future_promise({
+          Vector_genbank <- c()
+          for (uid in uids) {
+            File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
+            Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
+            progress$inc(amount=1)
+          }
+          write(Vector_genbank, file) # Writes the vector containing all the genbank file information into one genbank file
+          progress$set(value=progLength)
+          progress$close()
+        })
+      }
     }
   )
   
@@ -280,9 +286,13 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Full_Genomes_Search_Table", ".csv", sep = "")
     },
     content = function(file) {
-      FullGenmatrix <- selectfunction()[[1]] # Gets the matrix for the FullGenome search results
-      rownames(FullGenmatrix) <- fGenOrgSearch() # Adds the row names to the matrix
-      write.csv(FullGenmatrix, file) # Writes the dataframe to the CSV file
+      selectfunction() %...>% {
+        FullGenmatrix <- .[[1]] # Gets the matrix for the FullGenome search results
+        fGenOrgSearch() %...>% {
+          rownames(FullGenmatrix) <- . # Adds the row names to the matrix
+          write.csv(FullGenmatrix, file) # Writes the dataframe to the CSV file
+        }
+      }
     }
   )
 
