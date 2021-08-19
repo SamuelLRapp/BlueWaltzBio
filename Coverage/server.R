@@ -55,8 +55,9 @@ shinyServer(function(input, output, session) {
 # * FGenOrgSearch -----------------------------------------------------------------
   
    fGenOrgSearch <- reactive({
+    orgString <- fullGenomeSearchButton()
     future_promise({
-    genomeOrgList <- strsplit(fullGenomeSearchButton(), ",")[[1]]
+    genomeOrgList <- strsplit(orgString, ",")[[1]]
     if(input$fullGenomeTaxizeOption){ #if the taxize option is selected
       taxizeGenOrgList <- c() #initialize an empty vector
 
@@ -537,8 +538,9 @@ shinyServer(function(input, output, session) {
 # * NCBIStrToList -----------------------------------------------------------
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
+      orgString <- NCBISearch()
         future_promise({
-        organismList <- strsplit(NCBISearch()[[1]], ",")[[1]] #separate based on commas
+        organismList <- strsplit(orgString[[1]], ",")[[1]] #separate based on commas
         if(input$NCBItaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
 
