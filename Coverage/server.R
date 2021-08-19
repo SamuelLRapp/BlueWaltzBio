@@ -317,7 +317,7 @@ shinyServer(function(input, output, session) {
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
       cruxOrgSearch <- cruxOrgSearch()
         future_promise({
-        organismList <- strsplit(cruxOrgSearch, ",")[[1]] #separate based on commas
+        organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]] #separate based on commas
         if(input$CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
 
