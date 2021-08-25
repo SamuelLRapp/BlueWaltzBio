@@ -302,8 +302,6 @@ shinyServer(function(input, output, session) {
     }
   )
 
-
-# CRUX --------------------------------------------------------------------
   
 # CRUX ----------------------------------------------------------------------
 
@@ -317,9 +315,10 @@ shinyServer(function(input, output, session) {
     
     cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
       cruxOrgSearch <- cruxOrgSearch()
+      CRUXtaxizeOption <- input$CRUXtaxizeOption
         future_promise({
         organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]] #separate based on commas
-        if(input$CRUXtaxizeOption){ #if the taxize option is selected
+        if(CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
 
             for(i in 1:length(organismList))
@@ -394,9 +393,9 @@ shinyServer(function(input, output, session) {
         results <- c()
         newOrgList <- c()
         popuplist <- c()
-        err <- 0
         
         future_promise({
+        err <- 0
         for(organism in organismList){
             search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
             if( nrow(search[[1]]) > 1) {# There are homonyms
