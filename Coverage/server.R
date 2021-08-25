@@ -625,9 +625,9 @@ shinyServer(function(input, output, session) {
       }
       
       future_promise({
-      err <- 0 # This must be declared inside the promise, even though seemingly there is no reason
-              # why it should. However, if ever declared outside of the promise, everything breaks
-              # so here it shall stay. I think it has something to do with the try-catch
+      err <- 0              # This must be declared inside the promise, even though seemingly there is no reason
+      countResults <- list() # why it should. However, if ever declared outside of the promise, everything breaks
+                              # so here it shall stay. I think it has something to do with the try-catch
       for(organism in organismList){
         for(code in codeList){
           # TODO: Add more sanitization to this
@@ -690,7 +690,8 @@ shinyServer(function(input, output, session) {
             Sys.sleep(0.34)
             searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
           }, error = function(err) {
-            results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+            # results <- c(results, "error", "error", "error", "error", "error", "error", "error")
+            countResults <- list.append(countResults, "error", "error", "error", "error", "error", "error", "error")
             err <- 1
           })
           if(err == 1) {
