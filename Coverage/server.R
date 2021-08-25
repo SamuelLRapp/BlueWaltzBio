@@ -56,9 +56,10 @@ shinyServer(function(input, output, session) {
   
    fGenOrgSearch <- reactive({
     orgString <- fullGenomeSearchButton()
+    fullGenomeTaxizeOption <- input$fullGenomeTaxizeOption
     future_promise({
     genomeOrgList <- strsplit(orgString, ",")[[1]]
-    if(input$fullGenomeTaxizeOption){ #if the taxize option is selected
+    if(fullGenomeTaxizeOption){ #if the taxize option is selected
       taxizeGenOrgList <- c() #initialize an empty vector
 
       for(i in 1:length(genomeOrgList))
