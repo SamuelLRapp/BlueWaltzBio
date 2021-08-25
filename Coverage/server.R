@@ -24,7 +24,7 @@ library(promises)
 library(ipc)
 library(mpoly)
 
-plan(multicore)
+plan(multisession)
 shinyServer(function(input, output, session) {
 
 # Full Genome -------------------------------------------------------------------  
@@ -539,9 +539,10 @@ shinyServer(function(input, output, session) {
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
       orgString <- NCBISearch()
+      NCBItaxizeOption <- input$NCBItaxizeOption
         future_promise({
         organismList <- strsplit(orgString[[1]], ",")[[1]] #separate based on commas
-        if(input$NCBItaxizeOption){ #if the taxize option is selected
+        if(NCBItaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
 
             for(i in 1:length(organismList))
@@ -602,6 +603,7 @@ shinyServer(function(input, output, session) {
       organismList <- . #get species and barcode inputs
       organismListLength <- length(organismList)
       
+      codeList <- barcodeList()
       codeListLength <- length(barcodeList()) 
       validate( #verify that the  user has typed things into both inputs
         need(organismListLength > 0, 'Please name at least one organism'),
@@ -609,13 +611,25 @@ shinyServer(function(input, output, session) {
       )
       searchTerm <- ""
       searchResult <- 0
-      err <- 0
       countResults <- list() #initialize empty vector
       uids <- list()
       searchTerms <- list() #list of search terms
+      
+      #Temp vars for search options
+      NCBISearchOptionGene <- input$NCBISearchOptionGene
+      NCBISearchOptionOrgn <- input$NCBISearchOptionOrgn
+      seqLengthOption <- input$seqLengthOption
+      seq_len_list <- list()
+      for(code in codeList){
+        seq_len_list[[code]] <- input[[code]]
+      }
+      
       future_promise({
+      err <- 0 # This must be declared inside the promise, even though seemingly there is no reason
+              # why it should. However, if ever declared outside of the promise, everything breaks
+              # so here it shall stay. I think it has something to do with the try-catch
       for(organism in organismList){
-        for(code in barcodeList()){
+        for(code in codeList){
           # TODO: Add more sanitization to this
           # if there is a parenthesis
           code <- trimws(code)
@@ -625,11 +639,11 @@ shinyServer(function(input, output, session) {
             
             # set up a replacement string
             replacement <- ""
-            if(input$NCBISearchOptionGene){
+            if(NCBISearchOptionGene){
               replacement <- "[GENE]"
             }
             # Add organism info 
-            if(input$NCBISearchOptionOrgn){
+            if(NCBISearchOptionOrgn){
               #our query to GenBank
               replacement <- paste(replacement, " AND ", organism, "[ORGN]", sep="") 
             }
@@ -638,9 +652,9 @@ shinyServer(function(input, output, session) {
               replacement <- paste(replacement, " AND ", organism, sep="") 
             }
             # Add sequence length info
-            if(input$seqLengthOption){
+            if(seqLengthOption){
               #if the user specified sequence length
-              replacement <- paste(replacement, " AND ", input[[code]],":99999999[SLEN]", sep="")
+              replacement <- paste(replacement, " AND ", seq_len_list[[code]],":99999999[SLEN]", sep="")
             }
             # Add the tail to the replacement string
             replacement <- paste(replacement, ") OR (", sep="")
@@ -656,20 +670,20 @@ shinyServer(function(input, output, session) {
             searchTerm <- substring(searchTerm, 1, nchar(searchTerm)-5)
             
           }else {
-            if(input$NCBISearchOptionOrgn){
+            if(NCBISearchOptionOrgn){
               searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
             }
             else {
               searchTerm <- paste(organism, " AND ", sep="") #our non-Metadata query to GenBank
             }
-            if(input$NCBISearchOptionGene) {
+            if(NCBISearchOptionGene) {
               searchTerm <- paste(searchTerm, code, "[GENE]", sep="") #our query to GenBank
             }
             else {
               searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
             }
-            if(input$seqLengthOption){
-              searchTerm <- paste(searchTerm, " AND ", input[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
+            if(seqLengthOption){
+              searchTerm <- paste(searchTerm, " AND ", seq_len_list[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
             }
           }
           searchResult <- tryCatch({
@@ -877,8 +891,9 @@ shinyServer(function(input, output, session) {
     
     output$NCBIcoverageResults <- DT::renderDataTable({
         # matrixGet(), rownames = NCBIorganismList(), colnames = barcodeList()
+      barcodes <- barcodeList()
       promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
-        DT::datatable(data_df, rownames = rows, colnames = barcodeList())
+        DT::datatable(data_df, rownames = rows, colnames = barcodes)
       })
     })
   
