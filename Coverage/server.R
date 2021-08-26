@@ -691,7 +691,8 @@ shinyServer(function(input, output, session) {
             searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
           }, error = function(err) {
             # results <- c(results, "error", "error", "error", "error", "error", "error", "error")
-            countResults <- list.append(countResults, "error", "error", "error", "error", "error", "error", "error")
+            countResults <- list.append(countResults, "error")
+            searchTerms <- list.append(searchTerms, searchTerm)
             err <- 1
           })
           if(err == 1) {
