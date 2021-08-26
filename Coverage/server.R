@@ -610,10 +610,9 @@ shinyServer(function(input, output, session) {
         need(codeListLength > 0, 'Please choose at least one barcode')
       )
       searchTerm <- ""
-      searchResult <- 0
       countResults <- list() #initialize empty vector
       uids <- list()
-      searchTerms <- list() #list of search terms
+      searchResult <- 0
       
       #Temp vars for search options
       NCBISearchOptionGene <- input$NCBISearchOptionGene
@@ -625,9 +624,10 @@ shinyServer(function(input, output, session) {
       }
       
       future_promise({
-      err <- 0              # This must be declared inside the promise, even though seemingly there is no reason
+      err <- 0              # These must be declared inside the promise, even though seemingly there is no reason
       countResults <- list() # why it should. However, if ever declared outside of the promise, everything breaks
-                              # so here it shall stay. I think it has something to do with the try-catch
+      searchTerms <- list()   # so here they shall stay. I think it has something to do with the try-catch
+      
       for(organism in organismList){
         for(code in codeList){
           # TODO: Add more sanitization to this
