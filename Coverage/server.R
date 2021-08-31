@@ -390,14 +390,20 @@ shinyServer(function(input, output, session) {
         
         searchTerm <- ""
         searchResult <- 0
-        results <- c()
-        newOrgList <- c()
         popuplist <- c()
         
         future_promise({
+        newOrgList <- c()
         err <- 0
+        results <- c()
         for(organism in organismList){
             search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
+            print(search[[1]])
+            if(is.null(search[[1]])){
+              results <- c(results, "0", "0", "0", "0", "0", "0", "0")
+              newOrgList <- c(newOrgList, organism)
+              next
+            }
             if( nrow(search[[1]]) > 1) {# There are homonyms
               popuplist <- c(popuplist, organism)
               # Process the 
