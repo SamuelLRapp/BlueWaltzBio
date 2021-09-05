@@ -116,13 +116,18 @@ shinyServer(function(input, output, session) {
       for(i in 1:num_rows)
       {
         Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
-        Sys.sleep(0.34)
-        genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
-        Results[i,1] <- genome_result$count
-        Results[i,2] <- Mitochondrial_genome_SearchTerm
-        for(id in genome_result$ids){
-          uids <- c(uids, id)
-        }
+        searchResult <- tryCatch({
+          Sys.sleep(0.34)
+          genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+          Results[i,1] <- genome_result$count
+          Results[i,2] <- Mitochondrial_genome_SearchTerm
+          for(id in genome_result$ids){
+            uids <- c(uids, id)
+          }
+        }, error = function(err) {
+          Results[i,1] <- "Error"
+          Results[i,2] <- "Error"
+        })
       }
       list(Results, uids)
       })
@@ -155,13 +160,18 @@ shinyServer(function(input, output, session) {
       for(i in 1:num_rows)
       {
         Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
-        Sys.sleep(0.34)
-        genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
-        Results[i,1] <- genome_result$count 
-        Results[i,2] <- Chloroplast_genome_SearchTerm
-        for(id in genome_result$ids){
-          uids <- c(uids, id)
-        }
+        searchResult <- tryCatch({
+          Sys.sleep(0.34)
+          genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
+          Results[i,1] <- genome_result$count 
+          Results[i,2] <- Chloroplast_genome_SearchTerm
+          for(id in genome_result$ids){
+            uids <- c(uids, id)
+          }
+        }, error = function(err) {
+          Results[i,1] <- "Error"
+          Results[i,2] <- "Error"
+        })
       }
       list(Results, uids)
       })
@@ -183,13 +193,18 @@ shinyServer(function(input, output, session) {
       for(i in 1:num_rows)
       {
         genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
-        Sys.sleep(0.34)
-        genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
-        Results[i, 1] <- genome_result$count #add zero
-        Results[i, 2] <- genome_SearchTerm 
-        for(id in genome_result$ids){
-          uids <- c(uids, id)
-        }
+        searchResult <- tryCatch({
+          Sys.sleep(0.34)
+          genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
+          Results[i, 1] <- genome_result$count #add zero
+          Results[i, 2] <- genome_SearchTerm 
+          for(id in genome_result$ids){
+            uids <- c(uids, id)
+          }
+        }, error = function(err) {
+          Results[i,1] <- "Error"
+          Results[i,2] <- "Error"
+        })
       }
       list(Results, uids)
       })
@@ -245,8 +260,16 @@ shinyServer(function(input, output, session) {
         future_promise({
           Vector_Fasta <- c()
           for (uid in uids) {
-            Sys.sleep(0.34)
-            File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+            err <- 1
+            while(err == 1){
+              File_fasta <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+                Sys.sleep(0.34)
+                File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+                err <- 0
+              }, error = function(err) {
+                err <<- 1
+              })
+            }
             Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
             progress$inc(amount=1)
           }
@@ -391,23 +414,35 @@ shinyServer(function(input, output, session) {
         searchTerm <- ""
         searchResult <- 0
         popuplist <- c()
+
         
         future_promise({
+        errorPopupList <- c() # Error when trying to find if there are homonyms
+        errorPopupListFound <- c() # Error when we know there are homonyms but we could not finish the search
         newOrgList <- c()
         err <- 0
         results <- c()
+        search <- c()
         for(organism in organismList){
-            search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
-            print(search[[1]])
-            if(is.null(search[[1]])){
+            errorHomonym <- 0
+            search <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+              Sys.sleep(0.34)
+              search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
+              stop("This is what an error looks like")
+            }, error = function(err) {
+              errorHomonym <<- 1
+              errorPopupList <<- c(errorPopupList, organism)
+            })
+            if(is.null(search[[1]])){ 
               results <- c(results, "0", "0", "0", "0", "0", "0", "0")
               newOrgList <- c(newOrgList, organism)
               next
             }
-            if( nrow(search[[1]]) > 1) {# There are homonyms
+            if( errorHomonym != 1 && nrow(search[[1]]) > 1) {# There are homonyms
               popuplist <- c(popuplist, organism)
               # Process the 
               for (i in 1:nrow(search[[1]])) { # tax_name
+                errorHomonym <- 0
                 # if there are more than 5 homonyms then break we are not interested in more than 5
                 if(i > 5) { 
                   break
@@ -416,7 +451,17 @@ shinyServer(function(input, output, session) {
                 newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
                 newOrgList <- c(newOrgList, newOrg)
                 # Creating the same format as the other organisms so the Crux search can be performed correctly
-                hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]]
+                
+                hierarchy <- tryCatch({ # Try catch for when we know there are homonyms but we dont know which homonyms yet, if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
+                  Sys.sleep(0.34)
+                  hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Check to see if there are homonyms
+                }, error = function(err) {
+                  errorPopupListFound <<- c(errorPopupListFound, organism)
+                  errorHomonym <<- 1
+                })
+                if(errorHomonym == 1) {
+                  next
+                }
                 match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
                 query <- c("db", "query", "genus", "family", "order", "class","phylum", "domain")
                 match <- c("ncbi", organism, match)
@@ -428,13 +473,14 @@ shinyServer(function(input, output, session) {
                 results <- cruxSearch(results, searchTerm, organism)
               }
             } else { # There are no homonyms
+              print("Hello 2")
               newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
                 Sys.sleep(0.34)
                 searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
               }, error = function(err) {
-                results <- c(results, "error", "error", "error", "error", "error", "error", "error")
-                err <- 1
+                results <<- c(results, "error", "error", "error", "error", "error", "error", "error")
+                err <<- 1
               })
               if(err == 1) {
                 next
@@ -442,7 +488,11 @@ shinyServer(function(input, output, session) {
               results <- cruxSearch(results, searchTerm, organism)
             }
         }
-        
+        if(length(errorPopupList) != 0) { # Create popup with information on the failures if any
+          #shinyalert("Homonyms for the following species could not be checked properly try again later", errorPopupList, type = "error")
+          print("WOW ERROR")
+          #shinyalert("We have found Homonyms", "WELP", type = "warning")
+        }
         results <- list(organismList=newOrgList, data=results, popupinfo=popuplist) 
         results
         })
@@ -697,9 +747,9 @@ shinyServer(function(input, output, session) {
             searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
           }, error = function(err) {
             # results <- c(results, "error", "error", "error", "error", "error", "error", "error")
-            countResults <- list.append(countResults, "error")
-            searchTerms <- list.append(searchTerms, searchTerm)
-            err <- 1
+            countResults <<- list.append(countResults, "error")
+            searchTerms <<- list.append(searchTerms, searchTerm)
+            err <<- 1
           })
           if(err == 1) {
             err <- 0
