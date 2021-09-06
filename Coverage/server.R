@@ -878,8 +878,6 @@ shinyServer(function(input, output) {
         write.csv(NCBImatrix, file) # Writes the dataframe to the CSV file
       }
     )
-    
-})
 
 # * DownloadSummaryReport ----------------------------------------------
 
@@ -1053,3 +1051,5 @@ which_rows_are_empty_and_arenot <- function(dataframe, Which_Column)
   }
   results
 }
+    
+})
