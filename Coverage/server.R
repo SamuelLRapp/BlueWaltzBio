@@ -587,7 +587,9 @@ shinyServer(function(input, output, session) {
     barcodeList <- reactive({
         # Detect that there is a parenthesis then do not change and keep it together
         barcodeList <- strsplit(NCBISearch()[[2]], ",") #separate based on comma
-        barcodeList <- unique(barcodeList[barcodeList != ""])
+        print(barcodeList)
+        barcodeList[[1]] <- unique(barcodeList[[1]][barcodeList[[1]] != ""])
+        print(barcodeList)
         barcodeList[[1]]
     })
     
