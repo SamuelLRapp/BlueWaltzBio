@@ -480,16 +480,12 @@ shinyServer(function(input, output, session) {
                 
                 hierarchy <- tryCatch({ # Try catch for when we know there are homonyms but we dont know which homonyms yet, if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
                   Sys.sleep(0.34)
-                  stop("HELLO")
                   hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Check to see if there are homonyms
                 }, error = function(err) {
-                  print("ERROR")
                   print(errorPopupListFound)
                   errorPopupListFound <<- unique(c(errorPopupListFound, organism))
                   errorHomonym <<- 1
                 })
-                print("AFTER ERROR")
-                print(errorPopupListFound)
                 if(errorHomonym == 1) {
                   next
                 }
