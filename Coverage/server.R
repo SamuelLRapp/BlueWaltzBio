@@ -64,9 +64,18 @@ shinyServer(function(input, output, session) {
 
       for(i in 1:length(genomeOrgList))
       {
+        err <- 1
         organism <- trimws(genomeOrgList[[i]], "b") #trim both leading and trailing whitespace
-        Sys.sleep(0.34)
-        NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+        while(err == 1) {
+          NCBI_names <- tryCatch({
+            Sys.sleep(0.34)
+            NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+            err <- 0
+            NCBI_names
+          }, error = function(err) {
+            err <<- 1
+          })
+        }
         row_count <- nrow(NCBI_names) # get number of rows in dataframe
 
         if(row_count > 0) #If a legitimate name was found
@@ -262,7 +271,7 @@ shinyServer(function(input, output, session) {
           for (uid in uids) {
             err <- 1
             while(err == 1){
-              File_fasta <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+              File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
                 Sys.sleep(0.34)
                 File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
                 err <- 0
@@ -295,8 +304,16 @@ shinyServer(function(input, output, session) {
         future_promise({
           Vector_genbank <- c()
           for (uid in uids) {
-            Sys.sleep(0.34)
-            File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
+            err <- 1
+            while(err == 1){
+              File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+                Sys.sleep(0.34)
+                File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
+                err <- 0
+              }, error = function(err) {
+                err <<- 1
+              })
+            }
             Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
             progress$inc(amount=1)
           }
@@ -346,9 +363,19 @@ shinyServer(function(input, output, session) {
 
             for(i in 1:length(organismList))
             {
-                Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                err <- 1
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
-                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+                while(err == 1) {
+                  NCBI_names <- tryCatch({
+                    Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                    NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+                    err <- 0
+                    NCBI_names
+                  }, error = function(err) {
+                    err <<- 1
+                  })
+                }
+
                 row_count <- nrow(NCBI_names) # get number of rows in dataframe
 
                 if(row_count > 0) #If a legitimate name was found
@@ -428,7 +455,6 @@ shinyServer(function(input, output, session) {
             search <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
               Sys.sleep(0.34)
               search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
-              stop("This is what an error looks like")
             }, error = function(err) {
               errorHomonym <<- 1
               errorPopupList <<- c(errorPopupList, organism)
@@ -454,11 +480,16 @@ shinyServer(function(input, output, session) {
                 
                 hierarchy <- tryCatch({ # Try catch for when we know there are homonyms but we dont know which homonyms yet, if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
                   Sys.sleep(0.34)
+                  stop("HELLO")
                   hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Check to see if there are homonyms
                 }, error = function(err) {
-                  errorPopupListFound <<- c(errorPopupListFound, organism)
+                  print("ERROR")
+                  print(errorPopupListFound)
+                  errorPopupListFound <<- unique(c(errorPopupListFound, organism))
                   errorHomonym <<- 1
                 })
+                print("AFTER ERROR")
+                print(errorPopupListFound)
                 if(errorHomonym == 1) {
                   next
                 }
@@ -488,12 +519,9 @@ shinyServer(function(input, output, session) {
               results <- cruxSearch(results, searchTerm, organism)
             }
         }
-        if(length(errorPopupList) != 0) { # Create popup with information on the failures if any
-          #shinyalert("Homonyms for the following species could not be checked properly try again later", errorPopupList, type = "error")
-          print("WOW ERROR")
-          #shinyalert("We have found Homonyms", "WELP", type = "warning")
-        }
-        results <- list(organismList=newOrgList, data=results, popupinfo=popuplist) 
+        print(errorPopupList)
+        print(errorPopupListFound)
+        results <- list(organismList=newOrgList, data=results, popupinfo=popuplist, errorPopupList = errorPopupList, errorPopupListFound = errorPopupListFound) 
         results
         })
       }
@@ -528,6 +556,12 @@ shinyServer(function(input, output, session) {
         cruxOrganismList() %...>% {
           if(length(organismList) > length(.)) {
             shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
+          }
+          if(length(cruxCoverage[[4]]) > 0) {
+            shinyalert("Homonyms for the following species could not be checked properly try again later", cruxCoverage[[4]], type = "error")
+          }
+          if(length(cruxCoverage[[5]]) > 0) {
+            shinyalert("Homonyms for the following species were found but were not able to be processed correctly", cruxCoverage[[5]], type = "error")
           }
         }
         organismList
@@ -603,9 +637,18 @@ shinyServer(function(input, output, session) {
 
             for(i in 1:length(organismList))
             {
-                Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                err <- 1
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
-                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+                while(err == 1) {
+                  NCBI_names <- tryCatch({
+                    Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                    NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+                    err <- 0
+                    NCBI_names
+                  }, error = function(err) {
+                    err <<- 1
+                  })
+                }
                 row_count <- nrow(NCBI_names)# get number of rows in dataframe
 
                 if(row_count > 0)#If a legitimate name was found
@@ -820,7 +863,7 @@ shinyServer(function(input, output, session) {
 
 # * NCBIDownloadFASTA -------------------------------------------------------
   
-    # Download NCBI table
+    # Download Fasta Files
     output$fileDownloadF <- downloadHandler(
         filename = function() { # Create the file and set its name
             paste("NCBI_Fasta_Downloads", ".fasta", sep = "")
@@ -832,8 +875,16 @@ shinyServer(function(input, output, session) {
             future_promise({
                   Vector_Fasta <- c()
                   for (uid in .) {
-                      Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
-                      File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+                      err <- 1
+                      while(err == 1){
+                        File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+                          Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                          File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
+                          err <- 0
+                        }, error = function(err) {
+                          err <<- 1
+                        })
+                      }
                       Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
                       progress$inc(amount=1)
                   }
@@ -849,7 +900,7 @@ shinyServer(function(input, output, session) {
 
 # * NCBIDownloadGenbank -----------------------------------------------------
 
-    # Download NCBI Genbank
+    # Download NCBI Genbank Files
     output$fileDownloadG <- downloadHandler(
         filename = function() { # Create the file and set its name
             paste("NCBI_Genbank_Downloads", ".gb", sep = "")
@@ -861,8 +912,16 @@ shinyServer(function(input, output, session) {
               future_promise({
                   Vector_genbank <- c()
                   for (uid in .) {
-                      Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
-                      File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb")  # Get the genbank file with that uid
+                      err <- 1
+                      while(err == 1){
+                        File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+                          Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                          File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb")  # Get the genbank file with that uid
+                          err <- 0
+                        }, error = function(err) {
+                          err <<- 1
+                        })
+                      }
                       Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
                       progress$inc(amount=1)
                   }
