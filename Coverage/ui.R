@@ -66,7 +66,9 @@ shinyUI(fluidPage(
                             # Show a plot of the generated distribution
                             DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
                             # Download button
-                            downloadButton('downloadCrux',"Download table"),
+                            conditionalPanel( condition = "output.CRUXcoverageResults",
+                                              downloadButton('downloadCrux',"Download table"),
+                                              downloadButton("CRUXfileDownloadSD","Download Summary Data"))
                           )
                         ),
                         ),
@@ -155,10 +157,12 @@ shinyUI(fluidPage(
               mainPanel(  
                 DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
                 # Download button
-                downloadButton('downloadStatements',"Download Search Terms table"),
-                downloadButton('download',"Download Counts table"),
-                downloadButton("fileDownloadF","Download FASTA Files"),
-                downloadButton("fileDownloadG","Download Genbank Files"),
+                conditionalPanel( condition = "output.NCBIcoverageResults",
+                                  downloadButton('downloadStatements',"Download Search Terms table"),
+                                  downloadButton('download',"Download Counts table"),
+                                  downloadButton("fileDownloadF","Download FASTA Files"),
+                                  downloadButton("fileDownloadG","Download Genbank Files"),
+                                  downloadButton("NCBIfileDownloadSD","Download Summary Data"))
                 #add_busy_spinner(spin = "fading-circle")
               )
             )
@@ -223,9 +227,10 @@ shinyUI(fluidPage(
                             # Show a plot of the generated distribution
                             DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                             # Download button
-                            downloadButton('fullGenomeDownloadT',"Download Table"),
-                            downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
-                            downloadButton('fullGenomeDownloadG', "Download Genbank Files"),
+                            conditionalPanel( condition = "output.genomeResults",                            
+                                              downloadButton('fullGenomeDownloadT',"Download Table"),
+                                              downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
+                                              downloadButton('fullGenomeDownloadG', "Download Genbank Files"))
                           )
                         )
                ))),
