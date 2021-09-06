@@ -59,6 +59,7 @@ shinyServer(function(input, output, session) {
     fullGenomeTaxizeOption <- input$fullGenomeTaxizeOption
     future_promise({
     genomeOrgList <- strsplit(orgString, ",")[[1]]
+    genomeOrgList <- unique(genomeOrgList[genomeOrgList != ""])
     if(fullGenomeTaxizeOption){ #if the taxize option is selected
       taxizeGenOrgList <- c() #initialize an empty vector
 
@@ -318,6 +319,7 @@ shinyServer(function(input, output, session) {
       CRUXtaxizeOption <- input$CRUXtaxizeOption
         future_promise({
         organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]] #separate based on commas
+        organismList <- unique(organismList[organismList != ""])
         if(CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
 
@@ -548,6 +550,7 @@ shinyServer(function(input, output, session) {
       NCBItaxizeOption <- input$NCBItaxizeOption
         future_promise({
         organismList <- strsplit(orgString[[1]], ",")[[1]] #separate based on commas
+        organismList <- unique(organismList[organismList != ""])
         if(NCBItaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
 
@@ -584,6 +587,7 @@ shinyServer(function(input, output, session) {
     barcodeList <- reactive({
         # Detect that there is a parenthesis then do not change and keep it together
         barcodeList <- strsplit(NCBISearch()[[2]], ",") #separate based on comma
+        barcodeList <- unique(barcodeList[barcodeList != ""])
         barcodeList[[1]]
     })
     
