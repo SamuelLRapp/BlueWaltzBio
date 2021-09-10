@@ -39,7 +39,7 @@ shinyUI(fluidPage(
                tabPanel("Search",
                         # Application title
                         titlePanel("Find CRUX database coverage of your species of interest"),
-                          img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                          # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         
                         # Usage instructions
                         fluidRow(
