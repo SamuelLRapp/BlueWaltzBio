@@ -1001,8 +1001,6 @@ shinyServer(function(input, output, session) {
         }
       }
     )
-    
-})
 
 # * DownloadSummaryReport ----------------------------------------------
 
@@ -1176,3 +1174,5 @@ which_rows_are_empty_and_arenot <- function(dataframe, Which_Column)
   }
   results
 }
+    
+})
