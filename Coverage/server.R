@@ -101,7 +101,12 @@ shinyServer(function(input, output, session) {
 # * Mitochondrial Search -------------------------------------------------------
    
   Organisms_with_Mitochondrial_genomes <- reactive({
-    
+    # File <- tryCatch({
+    #   vec <- c()
+    #   err <- 0
+    # }, error = function(err) {
+    #   err <<- 1
+    # })
     fGenOrgSearch() %...>% {
       genomeList <- .
       num_rows <- length(genomeList)
@@ -134,8 +139,8 @@ shinyServer(function(input, output, session) {
             uids <- c(uids, id)
           }
         }, error = function(err) {
-          Results[i,1] <- "Error"
-          Results[i,2] <- "Error"
+          Results[i,1] <<- "Error"
+          Results[i,2] <<- "Error"
         })
       }
       list(Results, uids)
@@ -171,15 +176,15 @@ shinyServer(function(input, output, session) {
         Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
         searchResult <- tryCatch({
           Sys.sleep(0.34)
-          genome_result<- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
+          genome_result <- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
           Results[i,1] <- genome_result$count 
           Results[i,2] <- Chloroplast_genome_SearchTerm
           for(id in genome_result$ids){
             uids <- c(uids, id)
           }
         }, error = function(err) {
-          Results[i,1] <- "Error"
-          Results[i,2] <- "Error"
+          Results[i,1] <<- "Error"
+          Results[i,2] <<- "Error"
         })
       }
       list(Results, uids)
@@ -196,7 +201,6 @@ shinyServer(function(input, output, session) {
       genomeList <- .
       Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
       uids <- c()
-    
       names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
       future_promise({
       for(i in 1:num_rows)
@@ -211,8 +215,8 @@ shinyServer(function(input, output, session) {
             uids <- c(uids, id)
           }
         }, error = function(err) {
-          Results[i,1] <- "Error"
-          Results[i,2] <- "Error"
+          Results[i,1] <<- "Error"
+          Results[i,2] <<- "Error"
         })
       }
       list(Results, uids)
@@ -457,8 +461,10 @@ shinyServer(function(input, output, session) {
               search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
             }, error = function(err) {
               errorHomonym <<- 1
-              errorPopupList <<- c(errorPopupList, organism)
             })
+            if(errorHomonym == 1){
+              errorPopupList <- c(errorPopupList, organism)
+            }
             if(is.null(search[[1]])){ 
               results <- c(results, "0", "0", "0", "0", "0", "0", "0")
               newOrgList <- c(newOrgList, organism)
@@ -477,16 +483,16 @@ shinyServer(function(input, output, session) {
                 newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
                 newOrgList <- c(newOrgList, newOrg)
                 # Creating the same format as the other organisms so the Crux search can be performed correctly
-                
                 hierarchy <- tryCatch({ # Try catch for when we know there are homonyms but we dont know which homonyms yet, if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
                   Sys.sleep(0.34)
                   hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Check to see if there are homonyms
+                  hierarchy
                 }, error = function(err) {
-                  print(errorPopupListFound)
-                  errorPopupListFound <<- unique(c(errorPopupListFound, organism))
                   errorHomonym <<- 1
                 })
                 if(errorHomonym == 1) {
+                  errorPopupListFound <- unique(c(errorPopupListFound, newOrg))
+                  results <- c(results, "error", "error", "error", "error", "error", "error", "error")
                   next
                 }
                 match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
@@ -500,23 +506,22 @@ shinyServer(function(input, output, session) {
                 results <- cruxSearch(results, searchTerm, organism)
               }
             } else { # There are no homonyms
-              print("Hello 2")
               newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
                 Sys.sleep(0.34)
                 searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
+                searchTerm
               }, error = function(err) {
                 results <<- c(results, "error", "error", "error", "error", "error", "error", "error")
                 err <<- 1
               })
               if(err == 1) {
+                err <- 0
                 next
               }
               results <- cruxSearch(results, searchTerm, organism)
             }
         }
-        print(errorPopupList)
-        print(errorPopupListFound)
         results <- list(organismList=newOrgList, data=results, popupinfo=popuplist, errorPopupList = errorPopupList, errorPopupListFound = errorPopupListFound) 
         results
         })
@@ -753,7 +758,6 @@ shinyServer(function(input, output, session) {
             }
             # Add the tail to the replacement string
             replacement <- paste(replacement, ") OR (", sep="")
-            print(replacement)
             # Now we finally set searchTerm by replacing the ;s.
             searchTerm <- gsub(";", replacement, code)
             # But the last synonym won't have a ; after it! Sub in one last time:
@@ -784,6 +788,7 @@ shinyServer(function(input, output, session) {
           searchResult <- tryCatch({
             Sys.sleep(0.34)
             searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
+            searchResult
           }, error = function(err) {
             # results <- c(results, "error", "error", "error", "error", "error", "error", "error")
             countResults <<- list.append(countResults, "error")
@@ -929,7 +934,6 @@ shinyServer(function(input, output, session) {
         }
     )
     
-
 # * NCBIBarcodeButtons -----------------------------------------------------
 
     observeEvent(input$barcodeOptionCO1,{ # Detects when the specific barcode (in this case CO1) button has been pressed
@@ -1048,7 +1052,6 @@ shinyServer(function(input, output, session) {
               matrixGet() %...>% { # Gets the matrix for the NCBI results
                 future_promise({
                   colnames(.) <- columns # Adds the column names to the matrix
-
                   rownames(.) <- rows # Adds the row names to the matrix
                   write.csv(., file) # Writes the dataframe to the CSV file
                 })
