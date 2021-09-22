@@ -135,7 +135,7 @@ shinyUI(fluidPage(
                 actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
                 textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
                 checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
-                checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by Metadata", value = TRUE),
+                checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE),
                 
                 textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
                 fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
@@ -149,7 +149,7 @@ shinyUI(fluidPage(
                   column(width = 4, actionButton(inputId = "barcodeOptiontrnl", label = "trnl")),
                   column(width = 4, actionButton(inputId = "barcodeOptionITS1", label = "ITS1"))
                 ),
-                checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by Metadata", value = TRUE),
+                checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by the [GENE] Metadata field", value = TRUE),
                 checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
                 uiOutput("seqLenInputs"),
                 actionButton("NCBIsearchButton", "Search"),
