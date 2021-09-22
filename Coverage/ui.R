@@ -68,7 +68,7 @@ shinyUI(fluidPage(
                             # Download button
                             conditionalPanel( condition = "output.CRUXcoverageResults",
                                               downloadButton('downloadCrux',"Download table"),
-                                              downloadButton("CRUXfileDownloadSD","Download Summary Data"))
+                                              downloadButton("CRUXfileDownloadSD","Download summary data"))
                           )
                         ),
                         ),
@@ -136,6 +136,8 @@ shinyUI(fluidPage(
                 textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
                 checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                 checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by Metadata", value = TRUE),
+                
+                textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
                 fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
                          column(width = 3, actionButton("barcodeOption16S", "16S")),
                          column(width = 3, actionButton(inputId = "barcodeOption12S", label = "12S")),
@@ -147,7 +149,6 @@ shinyUI(fluidPage(
                   column(width = 4, actionButton(inputId = "barcodeOptiontrnl", label = "trnl")),
                   column(width = 4, actionButton(inputId = "barcodeOptionITS1", label = "ITS1"))
                 ),
-                textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
                 checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by Metadata", value = TRUE),
                 checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
                 uiOutput("seqLenInputs"),
@@ -158,11 +159,11 @@ shinyUI(fluidPage(
                 DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
                 # Download button
                 conditionalPanel( condition = "output.NCBIcoverageResults",
-                                  downloadButton('downloadStatements',"Download Search Terms table"),
-                                  downloadButton('download',"Download Counts table"),
-                                  downloadButton("fileDownloadF","Download FASTA Files"),
-                                  downloadButton("fileDownloadG","Download Genbank Files"),
-                                  downloadButton("NCBIfileDownloadSD","Download Summary Data"))
+                                  downloadButton('downloadStatements',"Download search terms table"),
+                                  downloadButton('download',"Download counts table"),
+                                  downloadButton("fileDownloadF","Download FASTA files"),
+                                  downloadButton("fileDownloadG","Download Genbank files"),
+                                  downloadButton("NCBIfileDownloadSD","Download summary data"))
                 #add_busy_spinner(spin = "fading-circle")
               )
             )
@@ -228,9 +229,9 @@ shinyUI(fluidPage(
                             DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                             # Download button
                             conditionalPanel( condition = "output.genomeResults",                            
-                                              downloadButton('fullGenomeDownloadT',"Download Table"),
-                                              downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
-                                              downloadButton('fullGenomeDownloadG', "Download Genbank Files"))
+                                              downloadButton('fullGenomeDownloadT',"Download table"),
+                                              downloadButton('fullGenomeDownloadF', "Download Fasta files"),
+                                              downloadButton('fullGenomeDownloadG', "Download Genbank files"))
                           )
                         )
                ))),
