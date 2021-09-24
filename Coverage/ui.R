@@ -18,7 +18,7 @@ library(shinyalert) # popup library
 
 shinyUI(fluidPage(
   
-  navbarPage("Coverage",
+  navbarPage("Reference Sequence Browser",
 
     #CRUX tab
     tabPanel("Home", 
