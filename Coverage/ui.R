@@ -207,7 +207,7 @@ shinyUI(fluidPage(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
                             selectInput("gsearch", "Choose which genome to search for:", 
-                                        choices = c("Full mitochondrial genomes", "Full chloroplast genomes", "Taxa availability in genome database")),
+                                        choices = c("Full mitochondrial genomes in NCBI Nucleotide", "Full chloroplast genomes in NCBI Nucleotide", "Number of entries per taxa in NCBI Genome")),
                             helpText("Select a function"),
                             
                             fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv")),

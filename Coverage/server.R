@@ -200,21 +200,21 @@ shinyServer(function(input, output, session) {
 #  * selectFunction  --------------------------------------------------------------
 
  selectfunction <- reactive({
-  if (input$gsearch == "Full mitochondrial genomes")
+  if (input$gsearch == "Full mitochondrial genomes in NCBI Nucleotide")
   {
     Organisms_with_Mitochondrial_genomes() %...>% {
       genomes <- .
       genomes
     }
   }
-  else if (input$gsearch == "Full chloroplast genomes") 
+  else if (input$gsearch == "Full chloroplast genomes in NCBI Nucleotide") 
   {
     Organisms_with_Chloroplast_genomes() %...>% {
       genomes <- .
       genomes
     }
   }
-  else if (input$gsearch == "Taxa availability in genome database") 
+  else if (input$gsearch == "Number of entries per taxa in NCBI Genome") 
   {
     Is_the_taxa_in_the_NCBI_genome_DB() %...>% {
       genomes <- .
