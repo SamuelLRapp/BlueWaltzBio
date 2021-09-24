@@ -38,7 +38,7 @@ shinyUI(fluidPage(
              
                tabPanel("Search",
                         # Application title
-                        titlePanel("Find CRUX database coverage of your species of interest"),
+                        titlePanel("Find CRUX database coverage of your organisms of interest"),
                           # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         
                         # Usage instructions
@@ -58,7 +58,7 @@ shinyUI(fluidPage(
                             useShinyalert(), #this line is needed for the popup,
                             fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
                             actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                            textAreaInput(inputId = "CRUXorganismList", label = "Species Names"),
+                            textAreaInput(inputId = "CRUXorganismList", label = "Organism Names"),
                             checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                             actionButton("searchButton", "Search")
                           ), 
@@ -74,7 +74,7 @@ shinyUI(fluidPage(
                         ),
                tabPanel("Information",
                         # Application title
-                        titlePanel("Find CRUX database coverage of your species of interest"),
+                        titlePanel("Find CRUX database coverage of your organisms of interest"),
                         embed_youtube("DNS7i2m4sB0", width = 560, height = 315, frameborder= 0, allowfullscreen = TRUE),
                         
                         # Usage instructions
@@ -116,12 +116,12 @@ shinyUI(fluidPage(
 
         tabsetPanel(
           tabPanel("Search", 
-            titlePanel("Find NCBI records of your species and barcodes of interest"),
+            titlePanel("Find NCBI records of your organisms and barcodes of interest"),
             fluidRow(
               mainPanel(
                 h4("Descriptions of each Search Field"),
-                dropdown(label="Species List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
-                dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your species names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
+                dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
+                dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
                 dropdown(label="Barcodes of Interest (Text box)", p("A comma separated list of the genes you want to search. Common genes used as organism barcodes include: CO1, 16S, 18S, rbcL, matK, ITS, FITS, trnL, Vert12S."), p("Note: naming conventions in NCBI may vary, thus one gene may be found under multiple names. Cytochrome Oxidase subunit 1, for example, may be found under the names COI, CO1, COXI, and COX1.")),
                 dropdown(label="Minimum sequence lengths", p("When searching for barcodes, A NCBI database record may only be useful for identifying an organism if it is above a certain base pair length. This varies from gene to gene and thus the tool allows each gene’s minimum base pair length to be specified individually."), p("By checking this box users can set a minimum base pair length filter. Entries that are below the specified base pair length, won’t appear in the coverage matrix output.")),
                 p("")
@@ -133,7 +133,7 @@ shinyUI(fluidPage(
               sidebarPanel(
                 fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
                 actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
-                textAreaInput(inputId = "NCBIorganismList", label = "Species Names"),
+                textAreaInput(inputId = "NCBIorganismList", label = "Organism Names"),
                 checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                 checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE),
                 
@@ -170,13 +170,13 @@ shinyUI(fluidPage(
 
           ),
           tabPanel("Information", 
-            titlePanel("Find NCBI records of your species and barcodes of interest"),
+            titlePanel("Find NCBI records of your organisms and barcodes of interest"),
             embed_youtube("DNS7i2m4sB0", width = 560, height = 315, frameborder= 0, allowfullscreen = TRUE),
             fluidRow(
               mainPanel(
                 h4("What does the tool do?"),
-                p("The ‘NCBI Nucleotide Coverage Matrix’ was designed to screen the Nucleotide database for genetic barcode coverage prior to environmental DNA metabarcoding studies. Before conducting a metabarcoding study, scientists need to be aware of which organisms have reference sequences at known genetic barcoding loci. The tool finds out if the Nucleotide database contains sequences labeled with a specific gene and organism name. Numerous searches can be done in parallel instead of manually searching for each species-gene combination on the NCBI Nucleotide website."),
-                p("The ‘NCBI Nucleotide Coverage Matrix’ tool takes in a list of species and genes of interest and then queries the Nucleotide database to find how many records match the search. The tool then produces a table where the organism names are rows, gene names are columns, and each intersection of a row and column shows how many records are in the NCBI Nucleotide database. All of the search options are detailed in the ‘Search fields' section below. The power and flexibility of this tool allows scientists to check the NCBI Nucleotide database for genetic coverage in ways that aren’t possible without knowledge of the NCBI Entrez coding package."),
+                p("The ‘NCBI Nucleotide Coverage Matrix’ was designed to screen the Nucleotide database for genetic barcode coverage prior to environmental DNA metabarcoding studies. Before conducting a metabarcoding study, scientists need to be aware of which organisms have reference sequences at known genetic barcoding loci. The tool finds out if the Nucleotide database contains sequences labeled with a specific gene and organism name. Numerous searches can be done in parallel instead of manually searching for each organism-gene combination on the NCBI Nucleotide website."),
+                p("The ‘NCBI Nucleotide Coverage Matrix’ tool takes in a list of organisms and genes of interest and then queries the Nucleotide database to find how many records match the search. The tool then produces a table where the organism names are rows, gene names are columns, and each intersection of a row and column shows how many records are in the NCBI Nucleotide database. All of the search options are detailed in the ‘Search fields' section below. The power and flexibility of this tool allows scientists to check the NCBI Nucleotide database for genetic coverage in ways that aren’t possible without knowledge of the NCBI Entrez coding package."),
                 
                 h4("Limitations:"),
                 p("This tool may not find all possible entries that the user desires. Some limitations of this text based search include, but are not limited to:"),
@@ -196,8 +196,8 @@ shinyUI(fluidPage(
                           mainPanel(
                             
                             h4("Descriptions of each Search Field"),
-                            dropdown(label="Species List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
-                            dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your species names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
+                            dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
+                            dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
                             p("")
                             
                           ),
@@ -213,7 +213,7 @@ shinyUI(fluidPage(
                             fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv")),
                             
                             actionButton(inputId = "uploadGenomeButton", label = "Upload file to textboxes"),
-                            textAreaInput(inputId = "genomeOrganismList", label = "Species Names"),
+                            textAreaInput(inputId = "genomeOrganismList", label = "Organism Names"),
                             
                             checkboxInput(inputId = "refSeq", label = "Search for reference sequences", value = TRUE),
                             checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
