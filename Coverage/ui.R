@@ -75,7 +75,7 @@ shinyUI(fluidPage(
                tabPanel("Information",
                         # Application title
                         titlePanel("Find CRUX database coverage of your organisms of interest"),
-                        embed_youtube("DNS7i2m4sB0", width = 560, height = 315, frameborder= 0, allowfullscreen = TRUE),
+                        # embed_youtube("DNS7i2m4sB0", width = 560, height = 315, frameborder= 0, allowfullscreen = TRUE),
                         
                         # Usage instructions
                         fluidRow(
@@ -171,7 +171,7 @@ shinyUI(fluidPage(
           ),
           tabPanel("Information", 
             titlePanel("Find NCBI records of your organisms and barcodes of interest"),
-            embed_youtube("DNS7i2m4sB0", width = 560, height = 315, frameborder= 0, allowfullscreen = TRUE),
+            # embed_youtube("DNS7i2m4sB0", width = 560, height = 315, frameborder= 0, allowfullscreen = TRUE),
             fluidRow(
               mainPanel(
                 h4("What does the tool do?"),
