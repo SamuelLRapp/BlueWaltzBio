@@ -101,12 +101,6 @@ shinyServer(function(input, output, session) {
 # * Mitochondrial Search -------------------------------------------------------
    
   Organisms_with_Mitochondrial_genomes <- reactive({
-    # File <- tryCatch({
-    #   vec <- c()
-    #   err <- 0
-    # }, error = function(err) {
-    #   err <<- 1
-    # })
     fGenOrgSearch() %...>% {
       genomeList <- .
       num_rows <- length(genomeList)
@@ -364,7 +358,6 @@ shinyServer(function(input, output, session) {
         organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]] #separate based on commas
         if(CRUXtaxizeOption){ #if the taxize option is selected
             taxize_organism_list <- c() #initialize an empty vector
-
             for(i in 1:length(organismList))
             {
                 err <- 1
@@ -465,7 +458,7 @@ shinyServer(function(input, output, session) {
             if(errorHomonym == 1){
               errorPopupList <- c(errorPopupList, organism)
             }
-            if(is.null(search[[1]])){ 
+            else if(is.null(search[[1]])){
               results <- c(results, "0", "0", "0", "0", "0", "0", "0")
               newOrgList <- c(newOrgList, organism)
               next
@@ -611,10 +604,10 @@ shinyServer(function(input, output, session) {
         paste("CRUX_Summary_Report", ".csv", sep = "")
       },
       content = function(file) {
-        summary_data <- summary_report(cruxCoverage(), 0)
-        write.csv(summary_data, file) # Writes the dataframe to the CSV file
+        promise_all(data_df = summary_report(0)) %...>% with({
+          write.csv(data_df, file) # Writes the dataframe to the CSV file
+        })
       })
-    
 
 # * CRUXOutput --------------------------------------------------------------
 
@@ -953,8 +946,9 @@ shinyServer(function(input, output, session) {
         paste("NCBI_Summary_Report", ".csv", sep = "")
       },
       content = function(file) {
-          summary_data <- summary_report(matrixGet(), 1)
-          write.csv(summary_data, file) # Writes the dataframe to the CSV file
+          promise_all(data_df = summary_report(1)) %...>% with({
+            write.csv(data_df, file) # Writes the dataframe to the CSV file
+          })
         })
 
 # * NCBIBarcodeButtons -----------------------------------------------------
@@ -1109,31 +1103,44 @@ shinyServer(function(input, output, session) {
       }
     )
 
-# * DownloadSummaryReport ----------------------------------------------
-
-summary_report <- function(dataframe, databaseFlag)
-{
-  if(databaseFlag == 1) {
-    columns <- barcodeList() # Gets the column names for the matrix
-    NCBIdata <- matrixGet() # Gets the matrix for the NCBI results
-    colnames(NCBIdata) <- columns # Adds the column names to the matrix
-    rownames(NCBIdata) <- NCBIorganismList() # Adds the row names to the matrix
-    NCBIdata <- as.data.frame(NCBIdata) # Convert to Dataframe
+# * SummaryReport ----------------------------------------------
     
-    dataframe <- NCBIdata
+summary_report <- function(databaseFlag) {
+  if(databaseFlag == 1) {
+    matrixGet() %...>% {
+      NCBIdata <- .
+      NCBIorganismList() %...>% {
+        columns <- barcodeList() # Gets the column names for the matrix
+        colnames(NCBIdata) <- columns # Adds the column names to the matrix
+        rownames(NCBIdata) <- . # Adds the row names to the matrix
+        NCBIdata <- as.data.frame(NCBIdata) # Convert to Dataframe
+        dataframe <- NCBIdata
+        summary_report_dataframe(dataframe)
+      }
+    }
   } else {
-    columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
-    CRUXmatrix <- matrixGetCRUX() # Gets the matrix for the Crux results
-    colnames(CRUXmatrix) <- columns # Adds the column names to the matrix
-    rownames(CRUXmatrix) <- organismListGet() # Adds the row names to the matrix
-    dataframe <- CRUXmatrix
-    #calls convert_CRUX()s
-    dataframe <- convert_CRUX(dataframe)
+    matrixGetCRUX() %...>% {
+      CRUXmatrix <- . # Gets the matrix for the Crux results
+      organismListGet() %...>% {
+        columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
+        colnames(CRUXmatrix) <- columns # Adds the column names to the matrix
+        rownames(CRUXmatrix) <- . # Adds the row names to the matrix
+        dataframe <- CRUXmatrix
+        #calls convert_CRUX()s
+        dataframe <- convert_CRUX(dataframe)
+        summary_report_dataframe(dataframe)
+      }
+    }
   }
+}
+    
+# * * DownloadDataframe ----------------------------------------------
+
+summary_report_dataframe <- function(dataframe)
+{
   class(dataframe)
   class(dataframe[,1])
   options(scipen=999) #scientific notion
-  
   new_row_names <- "total"
   new_row_names<-  c(new_row_names, colnames(dataframe))#doesn't include column with taxa snames
   
@@ -1177,6 +1184,7 @@ summary_report <- function(dataframe, databaseFlag)
   }
   statistics_df
 }
+  
 
 # * * DownloadConvertCrux ----------------------------------------------
 
@@ -1188,7 +1196,7 @@ convert_CRUX <- function(crux_output #take a crux output matrix and  turn the ch
   crux_without_taxonomic_names <- crux_output
   crux_without_taxonomic_names<-  na.omit(crux_without_taxonomic_names)
   
-  non_number_values <- c('genus', 'family', 'class', 'order')
+  non_number_values <- c('genus', 'family', 'class', 'order', 'error')
   
   ncols <- ncol(crux_output)
   nrows <- nrow(crux_output)
@@ -1211,9 +1219,13 @@ convert_CRUX <- function(crux_output #take a crux output matrix and  turn the ch
   firstcolumn <- crux_without_taxonomic_names[,1]
   
   crux_without_taxonomic_names <- as.matrix(crux_without_taxonomic_names)
-  
-  crux_without_taxonomic_names <- as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric))
-  
+  if(nrows > 1){
+    crux_without_taxonomic_names <- as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) #apply(crux_without_taxonomic_names, 2, as.numeric)
+  } else {
+    crux_without_taxonomic_names <- as.data.frame(t(as.numeric(crux_without_taxonomic_names)))
+    columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
+    colnames(crux_without_taxonomic_names) <- columns # Adds the column names to the matrix
+  }
   crux_without_taxonomic_names
 }
 
