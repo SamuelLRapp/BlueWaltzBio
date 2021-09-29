@@ -513,7 +513,7 @@ shinyServer(function(input, output, session) {
             columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
             cruxOrganismList() %...>% {
               rows <- .
-              cruxCoverage() %...>% { # Gets the matrix for the Crux results
+              matrixGetCRUX() %...>% { # Gets the matrix for the Crux results
                 colnames(.) <- columns # Adds the column names to the matrix
                 rownames(.) <- rows # Adds the row names to the matrix
                 write.csv(., file) # Writes the matrix to the CSV file
