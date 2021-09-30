@@ -642,6 +642,7 @@ shinyServer(function(input, output, session) {
       #Temp vars for search options
       NCBISearchOptionGene <- input$NCBISearchOptionGene
       NCBISearchOptionOrgn <- input$NCBISearchOptionOrgn
+      downloadNumber <- input$obs
       seqLengthOption <- input$seqLengthOption
       seq_len_list <- list()
       for(code in codeList){
@@ -717,7 +718,7 @@ shinyServer(function(input, output, session) {
           }
           searchResult <- tryCatch({
             Sys.sleep(0.34)
-            searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
+            searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = downloadNumber) #only get back the number of search results
           }, error = function(err) {
             # results <- c(results, "error", "error", "error", "error", "error", "error", "error")
             countResults <- list.append(countResults, "error")

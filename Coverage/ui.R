@@ -152,6 +152,7 @@ shinyUI(fluidPage(
                 checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by the [GENE] Metadata field", value = TRUE),
                 checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
                 uiOutput("seqLenInputs"),
+                numericInput("NumDownloads", "Number of Sequences to Download per Cell:", 5, min = 1, max = 500),
                 actionButton("NCBIsearchButton", "Search"),
               ),
 
