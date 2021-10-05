@@ -223,21 +223,21 @@ shinyServer(function(input, output, session) {
 #  * selectFunction  --------------------------------------------------------------
 
  selectfunction <- reactive({
-  if (input$gsearch == "Full mitochondrial genomes")
+  if (input$gsearch == "Full mitochondrial genomes in NCBI Nucleotide")
   {
     Organisms_with_Mitochondrial_genomes() %...>% {
       genomes <- .
       genomes
     }
   }
-  else if (input$gsearch == "Full chloroplast genomes") 
+  else if (input$gsearch == "Full chloroplast genomes in NCBI Nucleotide") 
   {
     Organisms_with_Chloroplast_genomes() %...>% {
       genomes <- .
       genomes
     }
   }
-  else if (input$gsearch == "Taxa availability in genome database") 
+  else if (input$gsearch == "Number of entries per taxa in NCBI Genome") 
   {
     Is_the_taxa_in_the_NCBI_genome_DB() %...>% {
       genomes <- .
@@ -694,9 +694,13 @@ shinyServer(function(input, output, session) {
 
     seqLenList <- reactive({ #list of sequence length specifications
         if(input$seqLengthOption){ #only present if the option is selected
+          barcodeList <- strsplit(input$barcodeList, ",") #separate based on comma
+          barcodeList[[1]] <- trimws(barcodeList[[1]], "b")
+          barcodeList[[1]] <- unique(barcodeList[[1]][barcodeList[[1]] != ""])
+          
             textList <- list()
-            for(marker in barcodeList()){ #allow the user to specify a different length for every barcode
-                textList <- list(textList, numericInput(marker, paste("Minimum sequence length for", marker), 500, min= 0)) #add a numeric input
+            for(marker in barcodeList[[1]]){ #allow the user to specify a different length for every barcode
+                textList <- list(textList, numericRangeInput(inputId=marker, label=paste("Min/max sequence length for", marker), value=c(0,2000))) #add a numeric input
             }
             textList #return the list of numeric inputs
         }
@@ -725,6 +729,7 @@ shinyServer(function(input, output, session) {
       #Temp vars for search options
       NCBISearchOptionGene <- input$NCBISearchOptionGene
       NCBISearchOptionOrgn <- input$NCBISearchOptionOrgn
+      downloadNumber <- input$obs
       seqLengthOption <- input$seqLengthOption
       seq_len_list <- list()
       for(code in codeList){
@@ -762,7 +767,7 @@ shinyServer(function(input, output, session) {
             # Add sequence length info
             if(seqLengthOption){
               #if the user specified sequence length
-              replacement <- paste(replacement, " AND ", seq_len_list[[code]],":99999999[SLEN]", sep="")
+              replacement <- paste(replacement, " AND ", seq_len_list[[code]][1],":", seq_len_list[[code]][2], "[SLEN]", sep="")
             }
             # Add the tail to the replacement string
             replacement <- paste(replacement, ") OR (", sep="")
@@ -778,26 +783,29 @@ shinyServer(function(input, output, session) {
             searchTerm <- substring(searchTerm, 1, nchar(searchTerm)-5)
             
           }else {
+            print("Entering else block")
             if(NCBISearchOptionOrgn){
               searchTerm <- paste(organism, "[ORGN] AND ", sep="") #our query to GenBank
             }
             else {
               searchTerm <- paste(organism, " AND ", sep="") #our non-Metadata query to GenBank
             }
+            print("past NCBISearchOptionOrgn")
             if(NCBISearchOptionGene) {
               searchTerm <- paste(searchTerm, code, "[GENE]", sep="") #our query to GenBank
             }
             else {
               searchTerm <- paste(searchTerm, code, sep="") #our query to GenBank
             }
+            print("entering seqLenghtOption")
             if(seqLengthOption){
-              searchTerm <- paste(searchTerm, " AND ", seq_len_list[[code]],":99999999[SLEN]", sep="") #if the user specified sequence length
+              searchTerm <- paste(searchTerm, " AND ", seq_len_list[[code]][1],":", seq_len_list[[code]][2], "[SLEN]", sep="") #if the user specified sequence length
             }
+            print("Past seqLengthOption")
           }
           searchResult <- tryCatch({
             Sys.sleep(0.34)
-            searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = 5) #only get back the number of search results
-            searchResult
+            searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = downloadNumber) #only get back the number of search results
           }, error = function(err) {
             # results <- c(results, "error", "error", "error", "error", "error", "error", "error")
             countResults <<- list.append(countResults, "error")
