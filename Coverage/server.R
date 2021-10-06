@@ -729,7 +729,7 @@ shinyServer(function(input, output, session) {
       #Temp vars for search options
       NCBISearchOptionGene <- input$NCBISearchOptionGene
       NCBISearchOptionOrgn <- input$NCBISearchOptionOrgn
-      downloadNumber <- input$obs
+      downloadNumber <- input$downloadNum
       seqLengthOption <- input$seqLengthOption
       seq_len_list <- list()
       for(code in codeList){
