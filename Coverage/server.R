@@ -1305,4 +1305,12 @@ which_rows_are_empty_and_arenot <- function(dataframe, Which_Column)
   results
 }
     
+    
+# Searching Down from Higher Taxa --------------------------------------------------
+    
+# * Taxa Search Button
+    taxaSearch <- eventReactive(input$taxasearchButton, { #When searchButton clicked, update taxaOrgSearch to return the value input into taxaOrganismList 
+      input$higherTaxaOrganismList #Returns as a string
+    })
+    
 })
