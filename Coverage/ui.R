@@ -236,6 +236,32 @@ shinyUI(fluidPage(
                         )
                ))),
     
+    
+    
+    tabPanel("Find species from higher taxa",
+               tabPanel("Search", 
+                  titlePanel("Find a list of species from one or more higher taxas of interest"),
+                        fluidRow(
+                          # Sidebar with a text area for organisms and bar code
+                          sidebarPanel(
+                            textAreaInput(inputId = "higherTaxaOrganismList", label = "Insert your Genuses(or higher ranks) here"),
+
+                            actionButton("taxaSearchButton", "Search"),
+                          ),
+                          
+                          mainPanel(
+                            
+                            # # Show a plot of the generated distribution
+                            # DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
+                            # # Download button
+                            # conditionalPanel( condition = "output.genomeResults",                            
+                            #                   downloadButton('fullGenomeDownloadT',"Download table"),
+                            #                   downloadButton('fullGenomeDownloadF', "Download Fasta files"),
+                            #                   downloadButton('fullGenomeDownloadG', "Download Genbank files"))
+                          )
+                        )
+               )),
+    
    tabPanel("Contact Us", 
             
             titlePanel("Contact us"),
