@@ -1317,7 +1317,10 @@ which_rows_are_empty_and_arenot <- function(dataframe, Which_Column)
       taxaList <- strsplit(taxaSearch(), ", ")[[1]]
       taxaList <- unique(taxaList[taxaList != ""])
       matrix <- downstream(taxaList, db = 'ncbi', downto = 'species')
-      matrix['taxonname']
+      species <- matrix['taxonname']
+      paste(species, sep = ', ', collapse = '')
     })
+    
+    output$taxaOutput <- renderText({ taxaOrgSearchResults() })
     
 })
