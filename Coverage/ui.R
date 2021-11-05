@@ -251,7 +251,7 @@ shinyUI(fluidPage(
                           
                           mainPanel(
                             
-                            textOutput("taxaOutput")
+                            textOutput("taxaOutput")  %>% withSpinner(color="#0dc5c1")
                             # # Show a plot of the generated distribution
                             # DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                             # # Download button

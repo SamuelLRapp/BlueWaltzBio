@@ -1314,10 +1314,13 @@ which_rows_are_empty_and_arenot <- function(dataframe, Which_Column)
     })
     
     taxaOrgSearchResults <- reactive({
-      taxaList <- strsplit(taxaSearch(), ", ")[[1]]
+      taxaString <- taxaSearch()
+      print("Calling taxaOrgSearchResults")
+      taxaList <- strsplit(input$higherTaxaOrganismList, ", ")[[1]]
       taxaList <- unique(taxaList[taxaList != ""])
       matrix <- downstream(taxaList, db = 'ncbi', downto = 'species')
       species <- matrix['taxonname']
+      print("Returning final value")
       paste(species, sep = ', ', collapse = '')
     })
     
