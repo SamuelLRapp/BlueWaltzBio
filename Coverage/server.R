@@ -629,6 +629,22 @@ shinyServer(function(input, output, session) {
     NCBISearch <- eventReactive(input$NCBIsearchButton, { #When searchButton clicked, update NCBIOrgSearch to return the value input into NCBIorganismList 
         list(input$NCBIorganismList, input$barcodeList) #Returns as a string
     })
+
+# * NCBI_Key --------------------------------------------------------
+    NCBIKeyFlag <- FALSE
+    observeEvent(input$SetKey, { #When NCBIKey is inputed 
+      key <- 0
+      NCBI_names <- tryCatch({
+        searchResult <- entrez_search(db = "nucleotide", term = "Gallus Gallus", api_key = input$NCBIKey)
+      }, error = function(err) {
+        shinyalert("Your API key has been rejected, please make sure it is correct", type = "warning")
+        key <- 1
+      })
+      if(key == 0) {
+        set_entrez_key(input$NCBIKey)
+        NCBIKeyFlag <- TRUE
+      }
+    })
     
 
 # * NCBIStrToList -----------------------------------------------------------
@@ -648,7 +664,9 @@ shinyServer(function(input, output, session) {
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 while(err == 1) {
                   NCBI_names <- tryCatch({
-                    Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                    if(!NCBIKeyFlag) {
+                      Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                    }
                     NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
                     err <- 0
                     NCBI_names
@@ -710,7 +728,6 @@ shinyServer(function(input, output, session) {
 # * NCBICoverage ------------------------------------------------------------
     
     genBankCoverage <- reactive({
-      
       NCBIorganismList() %...>% {
       organismList <- . #get species and barcode inputs
       organismListLength <- length(organismList)
@@ -804,7 +821,9 @@ shinyServer(function(input, output, session) {
             print("Past seqLengthOption")
           }
           searchResult <- tryCatch({
-            Sys.sleep(0.34)
+            if(!NCBIKeyFlag) {
+              Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+            }
             searchResult <- entrez_search(db = "nucleotide", term = searchTerm, retmax = downloadNumber) #only get back the number of search results
           }, error = function(err) {
             # results <- c(results, "error", "error", "error", "error", "error", "error", "error")
@@ -896,7 +915,9 @@ shinyServer(function(input, output, session) {
                       err <- 1
                       while(err == 1){
                         File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
-                          Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                          if(!NCBIKeyFlag) {
+                            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                          }
                           File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
                           err <- 0
                         }, error = function(err) {
@@ -933,7 +954,9 @@ shinyServer(function(input, output, session) {
                       err <- 1
                       while(err == 1){
                         File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
-                          Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                          if(!NCBIKeyFlag) {
+                            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                          }
                           File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb")  # Get the genbank file with that uid
                           err <- 0
                         }, error = function(err) {
