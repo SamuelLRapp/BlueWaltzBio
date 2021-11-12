@@ -1309,19 +1309,31 @@ which_rows_are_empty_and_arenot <- function(dataframe, Which_Column)
 # Searching Down from Higher Taxa --------------------------------------------------
     
 # * Taxa Search Button
-    taxaSearch <- eventReactive(input$taxasearchButton, { #When searchButton clicked, update taxaOrgSearch to return the value input into taxaOrganismList 
+    taxaSearch <- eventReactive(input$taxaSearchButton, { #When searchButton clicked, update taxaOrgSearch to return the value input into taxaOrganismList 
       input$higherTaxaOrganismList #Returns as a string
     })
     
     taxaOrgSearchResults <- reactive({
+      Sys.sleep(1)
       taxaString <- taxaSearch()
-      print("Calling taxaOrgSearchResults")
-      taxaList <- strsplit(input$higherTaxaOrganismList, ", ")[[1]]
+      Sys.sleep(1)
+      print(taxaString)
+      taxaList <- strsplit(taxaString, ", ")[[1]]
+      print(taxaList)
       taxaList <- unique(taxaList[taxaList != ""])
-      matrix <- downstream(taxaList, db = 'ncbi', downto = 'species')
-      species <- matrix['taxonname']
-      print("Returning final value")
-      paste(species, sep = ', ', collapse = '')
+      print(taxaList)
+      speciesList <- ""
+      for(taxa in taxaList){
+        matrix <- downstream(sci_id=get_uid(taxa), db = 'ncbi', downto = 'species')[[1]]
+        print(matrix)
+        # print(nrows(matrix))
+        species <- matrix['childtaxa_name']
+        print(species)
+        species <- paste(species, sep = ', ', collapse = '')
+        speciesList <- paste(speciesList, species)
+      }
+      speciesList
+      
     })
     
     output$taxaOutput <- renderText({ taxaOrgSearchResults() })
