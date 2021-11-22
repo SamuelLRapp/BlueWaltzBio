@@ -20,9 +20,11 @@ shinyUI(fluidPage(
   useShinyalert(), #this line is needed for the popup,
   navbarPage("Reference Sequence Browser",
 
-    #CRUX tab
+    #Home tab
     tabPanel("Home", 
              titlePanel("Welcome to the Reference Sequence Browser"),
+             textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
+             actionButton(inputId = "SetKey", label = "Set Key"),
              p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
  Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
 " ),
@@ -130,8 +132,8 @@ shinyUI(fluidPage(
             fluidRow(
               # Sidebar with a text area for organisms and bar code
               sidebarPanel(
-                textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
-                actionButton(inputId = "SetKey", label = "Set Key"),
+                #textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
+                #actionButton(inputId = "SetKey", label = "Set Key"),
                 fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
                 actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
                 textAreaInput(inputId = "NCBIorganismList", label = "Organism Names"),

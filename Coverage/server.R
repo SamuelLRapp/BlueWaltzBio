@@ -69,7 +69,9 @@ shinyServer(function(input, output, session) {
         organism <- trimws(genomeOrgList[[i]], "b") #trim both leading and trailing whitespace
         while(err == 1) {
           NCBI_names <- tryCatch({
-            Sys.sleep(0.34)
+            if(!NCBIKeyFlag) {
+              Sys.sleep(0.34)
+            }
             NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
             err <- 0
             NCBI_names
@@ -126,7 +128,9 @@ shinyServer(function(input, output, session) {
       {
         Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
         searchResult <- tryCatch({
-          Sys.sleep(0.34)
+          if(!NCBIKeyFlag) {
+            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+          }
           genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
           Results[i,1] <- genome_result$count
           Results[i,2] <- Mitochondrial_genome_SearchTerm
@@ -170,7 +174,9 @@ shinyServer(function(input, output, session) {
       {
         Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
         searchResult <- tryCatch({
-          Sys.sleep(0.34)
+          if(!NCBIKeyFlag) {
+            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+          }
           genome_result <- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
           Results[i,1] <- genome_result$count 
           Results[i,2] <- Chloroplast_genome_SearchTerm
@@ -203,7 +209,9 @@ shinyServer(function(input, output, session) {
       {
         genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
         searchResult <- tryCatch({
-          Sys.sleep(0.34)
+          if(!NCBIKeyFlag) {
+            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+          }
           genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
           Results[i, 1] <- genome_result$count #add zero
           Results[i, 2] <- genome_SearchTerm 
@@ -256,7 +264,7 @@ shinyServer(function(input, output, session) {
   
  # * Download Fastas ---------------------------------------------------------------
   
-  # Download Full Genome table
+  # Download Full Genome Fasta File
   output$fullGenomeDownloadF <- downloadHandler(
     filename = function() { # Create the file and set its name
       paste("Full_Genome_Fasta_File", ".fasta", sep = "")
@@ -272,7 +280,9 @@ shinyServer(function(input, output, session) {
             err <- 1
             while(err == 1){
               File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
-                Sys.sleep(0.34)
+                if(!NCBIKeyFlag) {
+                  Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                }
                 File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
                 err <- 0
               }, error = function(err) {
@@ -292,6 +302,7 @@ shinyServer(function(input, output, session) {
   
   # * Download Genbank files --------------------------------------------------------
   
+  #Download Full Genome Genbank files
   output$fullGenomeDownloadG <- downloadHandler(
     filename = function() { # Create the file and set its name
       paste("Full_Genome_Genbank_File", ".gb", sep = "")
@@ -307,7 +318,9 @@ shinyServer(function(input, output, session) {
             err <- 1
             while(err == 1){
               File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
-                Sys.sleep(0.34)
+                if(!NCBIKeyFlag) {
+                  Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                }
                 File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
                 err <- 0
               }, error = function(err) {
@@ -367,7 +380,9 @@ shinyServer(function(input, output, session) {
                 organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
                 while(err == 1) {
                   NCBI_names <- tryCatch({
-                    Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                    if(!NCBIKeyFlag) {
+                      Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                    }
                     NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
                     err <- 0
                     NCBI_names
@@ -452,7 +467,9 @@ shinyServer(function(input, output, session) {
         for(organism in organismList){
             errorHomonym <- 0
             search <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
-              Sys.sleep(0.34)
+              if(!NCBIKeyFlag) {
+                Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+              }
               search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
             }, error = function(err) {
               errorHomonym <<- 1
@@ -479,7 +496,9 @@ shinyServer(function(input, output, session) {
                 newOrgList <- c(newOrgList, newOrg)
                 # Creating the same format as the other organisms so the Crux search can be performed correctly
                 hierarchy <- tryCatch({ # Try catch for when we know there are homonyms but we dont know which homonyms yet, if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
-                  Sys.sleep(0.34)
+                  if(!NCBIKeyFlag) {
+                    Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                  }
                   hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Check to see if there are homonyms
                   hierarchy
                 }, error = function(err) {
@@ -503,7 +522,9 @@ shinyServer(function(input, output, session) {
             } else { # There are no homonyms
               newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
-                Sys.sleep(0.34)
+                if(!NCBIKeyFlag) {
+                  Sys.sleep(0.34)
+                }
                 searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
                 searchTerm
               }, error = function(err) {
@@ -641,6 +662,7 @@ shinyServer(function(input, output, session) {
         key <- 1
       })
       if(key == 0) {
+        print("EHLO")
         set_entrez_key(input$NCBIKey)
         NCBIKeyFlag <- TRUE
       }
@@ -651,6 +673,7 @@ shinyServer(function(input, output, session) {
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
       orgString <- NCBISearch()
+      print(Sys.getenv('NCBI_KEY'))
       NCBItaxizeOption <- input$NCBItaxizeOption
         future_promise({
         organismList <- strsplit(orgString[[1]], ",")[[1]] #separate based on commas
