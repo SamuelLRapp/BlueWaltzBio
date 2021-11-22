@@ -659,11 +659,11 @@ shinyServer(function(input, output, session) {
         searchResult <- entrez_search(db = "nucleotide", term = "Gallus Gallus", api_key = input$NCBIKey)
       }, error = function(err) {
         shinyalert("Your API key has been rejected, please make sure it is correct", type = "warning")
-        key <- 1
+        key <<- 1
       })
       if(key == 0) {
-        print("EHLO")
         set_entrez_key(input$NCBIKey)
+        shinyalert("Your API key has been accepted", type = "success")
         NCBIKeyFlag <- TRUE
       }
     })
