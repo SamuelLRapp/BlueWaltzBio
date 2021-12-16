@@ -589,8 +589,9 @@ shinyServer(function(input, output, session) {
         },
         content = function(file) {
             columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") # Gets the column names for the matrix
-            cruxOrganismList() %...>% {
-              rows <- .
+            cruxCoverage() %...>% {
+              cruxCoverage <- .
+              rows <- cruxCoverage[[1]]
               matrixGetCRUX() %...>% { # Gets the matrix for the Crux results
                 colnames(.) <- columns # Adds the column names to the matrix
                 rownames(.) <- rows # Adds the row names to the matrix
@@ -599,6 +600,8 @@ shinyServer(function(input, output, session) {
             }
         }
     )
+    
+    
     
 # * CRUXSummaryReportDownload ------------------------------------------------------------    
     output$CRUXfileDownloadSD <- downloadHandler(
@@ -610,6 +613,8 @@ shinyServer(function(input, output, session) {
           write.csv(data_df, file) # Writes the dataframe to the CSV file
         })
       })
+    
+    
 
 # * CRUXOutput --------------------------------------------------------------
 
