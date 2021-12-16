@@ -132,8 +132,6 @@ shinyUI(fluidPage(
             fluidRow(
               # Sidebar with a text area for organisms and bar code
               sidebarPanel(
-                #textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
-                #actionButton(inputId = "SetKey", label = "Set Key"),
                 fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
                 actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
                 textAreaInput(inputId = "NCBIorganismList", label = "Organism Names"),

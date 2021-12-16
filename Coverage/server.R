@@ -673,7 +673,6 @@ shinyServer(function(input, output, session) {
 
     NCBIorganismList <- reactive({ #Converts string from NCBIorganismList into a list of Strings
       orgString <- NCBISearch()
-      print(Sys.getenv('NCBI_KEY'))
       NCBItaxizeOption <- input$NCBItaxizeOption
         future_promise({
         organismList <- strsplit(orgString[[1]], ",")[[1]] #separate based on commas
