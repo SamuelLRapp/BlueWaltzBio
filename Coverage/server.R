@@ -1322,18 +1322,18 @@ which_rows_are_empty_and_arenot <- function(dataframe, Which_Column)
       print(taxaList)
       taxaList <- unique(taxaList[taxaList != ""])
       print(taxaList)
-      speciesList <- ""
+      speciesString <- ""
       for(taxa in taxaList){
         matrix <- downstream(sci_id=get_uid(taxa), db = 'ncbi', downto = 'species')[[1]]
         print(matrix)
         # print(nrows(matrix))
         species <- matrix['childtaxa_name']
         print(species)
-        species <- paste(species, sep = ', ', collapse = '')
-        speciesList <- paste(speciesList, species)
+        for(item in species){
+          speciesString <- paste(speciesString, item, sep=', ')
+        }
       }
-      speciesList
-      
+      speciesString
     })
     
     output$taxaOutput <- renderText({ taxaOrgSearchResults() })
