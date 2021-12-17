@@ -403,29 +403,32 @@ shinyServer(function(input, output, session) {
       dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
       taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
       #results <- c()
-      for(table in dbList){
-        #
-        location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
-        if(nrow(location)==0){
-          location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
+        for(table in dbList){
+          #
+          location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
           if(nrow(location)==0){
-            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
+            location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where genus= :x"), params=list(x=searchTerm[1,3]))
             if(nrow(location)==0){
-              location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,5]))
+              location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where familia= :x"), params=list(x=searchTerm[1,4]))
               if(nrow(location)==0){
-                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,6]))
+                location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where ordo= :x"), params=list(x=searchTerm[1,5]))
                 if(nrow(location)==0){
-                  location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,7]))
-                  results <- c(results, nrow(location))
-                } else { results <- c(results, "class")}
-              } else {results <- c(results, "order")}
-            } else {results <- c(results, "family")}
-          }else {results <- c(results, "genus") }
-        } else {results <- c(results, toString(nrow(location)))}
+                  location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where classis= :x"), params=list(x=searchTerm[1,6]))
+                  if(nrow(location)==0){
+                    location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where phylum= :x"), params=list(x=searchTerm[1,7]))
+                    if(nrow(location==0)){
+                      location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x"), params=list(x=searchTerm[1,8]))
+                      if(nrow(location==0)){results <- c(results, 0)} else {results <- c(results, "kingdom")}
+                    } else{ results <- c(results, "phylum") }
+                  } else { results <- c(results, "class")}
+                } else {results <- c(results, "order")}
+              } else {results <- c(results, "family")}
+            }else {results <- c(results, "genus") }
+          } else {results <- c(results, toString(nrow(location)))}
+        }
+        dbDisconnect(taxaDB)
+        results
       }
-      dbDisconnect(taxaDB)
-      results
-    }
     
 # * CRUXCoverage ------------------------------------------------------------
 
