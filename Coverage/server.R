@@ -405,6 +405,7 @@ shinyServer(function(input, output, session) {
       #results <- c()
         for(table in dbList){
           #
+          if(table=="MB12S") print(searchTerm)
           location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
           if(nrow(location)==0){
             location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where genus= :x"), params=list(x=searchTerm[1,3]))
@@ -416,9 +417,9 @@ shinyServer(function(input, output, session) {
                   location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where classis= :x"), params=list(x=searchTerm[1,6]))
                   if(nrow(location)==0){
                     location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where phylum= :x"), params=list(x=searchTerm[1,7]))
-                    if(nrow(location==0)){
+                    if(nrow(location)==0){
                       location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x"), params=list(x=searchTerm[1,8]))
-                      if(nrow(location==0)){results <- c(results, 0)} else {results <- c(results, "kingdom")}
+                      if(nrow(location)==0){results <- c(results, 0)} else {results <- c(results, "kingdom")}
                     } else{ results <- c(results, "phylum") }
                   } else { results <- c(results, "class")}
                 } else {results <- c(results, "order")}
