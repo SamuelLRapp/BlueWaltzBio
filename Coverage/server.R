@@ -469,7 +469,7 @@ shinyServer(function(input, output, session) {
               newOrgList <- c(newOrgList, organism)
               next
             }
-            if( errorHomonym != 1 && nrow(search[[1]]) > 1) {# There are homonyms
+            if( errorHomonym != 1 && nrow(search[[1]]) > 1) {# If there are homonyms AND we didn't have an error
               popuplist <- c(popuplist, organism)
               # Process the 
               for (i in 1:nrow(search[[1]])) { # tax_name
@@ -504,7 +504,7 @@ shinyServer(function(input, output, session) {
                 # Perform the CruxSearch
                 results <- cruxSearch(results, searchTerm, organism)
               }
-            } else { # There are no homonyms
+            } else { # There are no homonyms OR there was an error
               newOrgList <- c(newOrgList, organism)
               searchTerm <- tryCatch({
                 Sys.sleep(0.34)
@@ -558,7 +558,7 @@ shinyServer(function(input, output, session) {
             shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
           }
           if(length(cruxCoverage[[4]]) > 0) {
-            shinyalert("Homonyms for the following species could not be checked properly try again later", cruxCoverage[[4]], type = "error")
+            shinyalert("Homonyms for the following species could not be checked properly. Try again later", cruxCoverage[[4]], type = "error")
           }
           if(length(cruxCoverage[[5]]) > 0) {
             shinyalert("Homonyms for the following species were found but were not able to be processed correctly", cruxCoverage[[5]], type = "error")
