@@ -23,7 +23,6 @@ library(future)
 library(promises)
 library(ipc)
 library(mpoly)
-library(modules)
 
 plan(multisession)
 shinyServer(function(input, output, session) {
@@ -345,8 +344,6 @@ shinyServer(function(input, output, session) {
 
   
 # CRUX ----------------------------------------------------------------------
-  cruxHelper <- modules::use("cruxHelper.R")
-  
 
 # * CRUXSearchButton --------------------------------------------------------
 
@@ -467,9 +464,7 @@ shinyServer(function(input, output, session) {
             if(errorHomonym == 1){
               errorPopupList <- c(errorPopupList, organism)
             }
-            
-            
-            if(is.null(search[[1]])){
+            else if(is.null(search[[1]])){
               results <- c(results, "0", "0", "0", "0", "0", "0", "0")
               newOrgList <- c(newOrgList, organism)
               next
@@ -478,23 +473,34 @@ shinyServer(function(input, output, session) {
               popuplist <- c(popuplist, organism)
               # Process the 
               for (i in 1:nrow(search[[1]])) { # tax_name
+                errorHomonym <- 0
                 # if there are more than 5 homonyms then break we are not interested in more than 5
                 if(i > 5) { 
                   break
                 }
-                
                 # create new organism list since new organism are added
                 newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
                 newOrgList <- c(newOrgList, newOrg)
-                
-                searchTermVector = cruxHelper$getHomonymSearchTerm(organism, search)
-                searchTerm = searchTermVector[0]
-                
-                if(searchTermVector[1] == 1) {
+                # Creating the same format as the other organisms so the Crux search can be performed correctly
+                hierarchy <- tryCatch({ # Try catch for when we know there are homonyms but we dont know which homonyms yet, if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
+                  Sys.sleep(0.34)
+                  hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Check to see if there are homonyms
+                  hierarchy
+                }, error = function(err) {
+                  errorHomonym <<- 1
+                })
+                if(errorHomonym == 1) {
                   errorPopupListFound <- unique(c(errorPopupListFound, newOrg))
                   results <- c(results, "error", "error", "error", "error", "error", "error", "error")
                   next
                 }
+                match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
+                query <- c("db", "query", "genus", "family", "order", "class","phylum", "domain")
+                match <- c("ncbi", organism, match)
+                searchTerm <- stats::setNames(
+                  data.frame(t(match), stringsAsFactors = FALSE), 
+                  query
+                )
                 # Perform the CruxSearch
                 results <- cruxSearch(results, searchTerm, organism)
               }
