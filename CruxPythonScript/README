@@ -1,0 +1,31 @@
+
+Last Updated Wednesday January 12th 2022.
+
+Packages need to run this script:
+
+Package         Version
+--------------- -------
+numpy           1.22.0
+pandas          1.3.5
+pip             21.1.2
+python-dateutil 2.8.2
+pytz            2021.3
+setuptools      57.0.0
+six             1.16.0
+wheel           0.36.2
+
+Before running this script you will need the following files:
+
+    1. For any barcode you want to verify you will need its corresponding CSV file (You can create this file using the R script that is in this folder)
+    2. You also need a taxonomy file
+    3. and a file contained the CRUX results that our tool generated
+
+Once installed to run simply execute the script with:
+
+    - python3 dataVerification.py
+
+After it has executed it should have created 2 files:
+
+    1. The logger file to help debug if necessary
+    2. The CSV with the result verification (this file will contain an ERROR column which will let you know if there have been any ERRORS)
+
