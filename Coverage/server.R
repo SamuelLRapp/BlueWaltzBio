@@ -24,6 +24,8 @@ library(promises)
 library(ipc)
 library(mpoly)
 
+orgListHelper <- modules::use("orgListHelper.R")
+
 plan(multisession)
 shinyServer(function(input, output, session) {
 
