@@ -8,10 +8,10 @@ logger = logging.getLogger()
 
 # Set manual variable:
 debugFlag = False # Default should be False but if you want more detail then make it true to see prints in the logger file
-fileNameCrux = 'Raw_CRUX_results.csv' # CruxResults filename
-TaxonomyNames = 'ALL_taxonomic_names.csv' # Taxonomy filename
+fileNameCrux = 'Data/Raw_CRUX_results.csv' # CruxResults filename
+TaxonomyNames = 'Data/ALL_taxonomic_names.csv' # Taxonomy filename
 BarcodeToCheck = input('Please input which Barcode you wish to verify: ')
-CSVCruxName = BarcodeToCheck + '_CSV.csv' # Generate the CSV CRUX Name
+CSVCruxName = "Data/" + BarcodeToCheck + '_CSV.csv' # Generate the CSV CRUX Name
 
 CRUXresults = pd.read_csv(fileNameCrux) # Load the CRUX results csv file
 taxonomyNames = pd.read_csv(TaxonomyNames) # Load the taxonomic csv file
@@ -148,6 +148,5 @@ logger.info("--------------------------------------")
 finalData = finalData.sort_values(by=BarcodeToCheck)
 
 # Write to CSV
-finalData.to_csv(BarcodeToCheck + 'resultsVerification.csv')
-
+finalData.to_csv("Results/" + BarcodeToCheck + 'resultsVerification.csv')
 

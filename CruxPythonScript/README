@@ -20,6 +20,8 @@ Before running this script you will need the following files:
     2. You also need a taxonomy file
     3. and a file contained the CRUX results that our tool generated
 
+Important Note: The files above can be downloaded to this link: https://drive.google.com/drive/u/0/folders/1u0v5_ByM3VG9BcCLzTzMaB2P10SYJ32P and downloading the Data.zip file
+
 Once installed to run simply execute the script with:
 
     - python3 dataVerification.py
