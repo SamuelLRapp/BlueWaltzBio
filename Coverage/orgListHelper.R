@@ -5,13 +5,11 @@ library(shiny)
 library(rentrez)
 library(taxize)
 
-taxizeHelper <- function(){
-  cruxOrgSearch <- cruxOrgSearch()
-  CRUXtaxizeOption <- input$CRUXtaxizeOption
+taxizeHelper <- function(orgSearch, taxizeSelected){
   future_promise({
-    organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]] #separate based on commas
+    organismList <- strsplit(orgSearch[[1]], ",")[[1]] #separate based on commas
     organismList <- unique(organismList[organismList != ""])
-    if(CRUXtaxizeOption){ #if the taxize option is selected
+    if(taxizeSelected){ #if the taxize option is selected
       taxize_organism_list <- c() #initialize an empty vector
       for(i in 1:length(organismList))
       {
