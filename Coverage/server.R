@@ -23,6 +23,7 @@ library(future)
 library(promises)
 library(ipc)
 library(mpoly)
+library(modules)
 
 orgListHelper <- modules::use("orgListHelper.R")
 
