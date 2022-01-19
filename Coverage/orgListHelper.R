@@ -1,9 +1,9 @@
-library(future)
-library(promises)
-library(ipc)
-library(shiny)
-library(rentrez)
-library(taxize)
+import(future)
+import(promises)
+import(ipc)
+import(shiny)
+import(rentrez)
+import(taxize)
 
 taxizeHelper <- function(orgSearch, taxizeSelected){
   future_promise({
