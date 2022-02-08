@@ -17,10 +17,10 @@ library(shinyalert) # popup library
 #library(shinybusy)
 
 shinyUI(fluidPage(
-  useShinyalert(), #this line is needed for the popup,
+  useShinyalert(), # This line is needed for the popup
   navbarPage("Reference Sequence Browser",
 
-    #Home tab
+    # Home tab
     tabPanel("Home", 
              titlePanel("Welcome to the Reference Sequence Browser"),
              textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
@@ -97,18 +97,6 @@ shinyUI(fluidPage(
                         ),
                   )
                ),
-               
-
-         
-
-           
-           # # Download button
-           # downloadButton('downloadCrux',"Download table"),
-           # 
-           # fluidRow(
-           #   # Show a plot of the generated distribution
-           #   DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1")
-           # )
     ),
   
 

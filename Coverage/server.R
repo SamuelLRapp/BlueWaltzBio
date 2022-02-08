@@ -32,7 +32,7 @@ shinyServer(function(input, output, session) {
 # * FullGenomeSearchButton --------------------------------------------------------
   
   fullGenomeSearchButton <- eventReactive(input$genomeSearchButton, { 
-    #When searchButton clicked, update fGenOrgSearch to return the value input into genomeOrganismList 
+    # When searchButton clicked, update fGenOrgSearch to return the value input into genomeOrganismList 
     input$genomeOrganismList #Returns as a string
   })
   
@@ -40,7 +40,8 @@ shinyServer(function(input, output, session) {
   
   inputFileCrux <- observeEvent(input$uploadGenomeButton,{
     isolate({
-      req(input$uploadGenomeFile, file.exists(input$uploadGenomeFile$datapath))
+      req(input$uploadGenomeFile, file.exists(input$uploadGenomeFile$datapath)) # It requires a file to be uploaded first
+      # Read the CSV and write all the Organism Names into the Text Area Input
       uploadinfo <- read.csv(input$uploadGenomeFile$datapath, header = TRUE)
       if(input$genomeOrganismList[[1]] != "") {
         updateTextAreaInput(getDefaultReactiveDomain(), "genomeOrganismList", value = c(head(uploadinfo$OrganismNames, -1), input$genomeOrganismList))
@@ -54,49 +55,52 @@ shinyServer(function(input, output, session) {
 
 # * FGenOrgSearch -----------------------------------------------------------------
   
+   # Split the string by commas to create a list of Species and do the Taxize operations
    fGenOrgSearch <- reactive({
     orgString <- fullGenomeSearchButton()
+    # Get the string of all the species
     fullGenomeTaxizeOption <- input$fullGenomeTaxizeOption
     future_promise({
+    # Break up the string using commas and delete an empty indexes in the list
     genomeOrgList <- strsplit(orgString, ",")[[1]]
     genomeOrgList <- unique(genomeOrgList[genomeOrgList != ""])
-    if(fullGenomeTaxizeOption){ #if the taxize option is selected
-      taxizeGenOrgList <- c() #initialize an empty vector
+    if(fullGenomeTaxizeOption){ # If the taxize option is selected
+      taxizeGenOrgList <- c() # Initialize an empty vector
 
       for(i in 1:length(genomeOrgList))
       {
         err <- 1
-        organism <- trimws(genomeOrgList[[i]], "b") #trim both leading and trailing whitespace
-        while(err == 1) {
+        organism <- trimws(genomeOrgList[[i]], "b") # Trim both leading and trailing whitespace
+        while(err == 1) { # Repeat the search until we get some results 
           NCBI_names <- tryCatch({
             if(!NCBIKeyFlag) {
-              Sys.sleep(0.34)
+              Sys.sleep(0.34) # Sleep to prevent Rate Limiting
             }
-            NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+            NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) # Help user with various naming issues (spelling, synonyms, etc.)
             err <- 0
-            NCBI_names
+            NCBI_names # Return this variable
           }, error = function(err) {
             err <<- 1
           })
         }
-        row_count <- nrow(NCBI_names) # get number of rows in dataframe
+        row_count <- nrow(NCBI_names) # Get number of rows in dataframe
 
-        if(row_count > 0) #If a legitimate name was found
+        if(row_count > 0) # If a legitimate name was found
         {
           for(j in 1:row_count)
           {
-            taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
-            taxizeGenOrgList <- c(taxizeGenOrgList, taxa_name) #update the vector with all the taxa_names.
+            taxa_name <- NCBI_names[[j,3]] # Store each matched name in taxa_name
+            taxizeGenOrgList <- c(taxizeGenOrgList, taxa_name) # Update the vector with all the taxa_names.
           }
         }
         else
         {
-          taxizeGenOrgList <- c(taxizeGenOrgList, organism) #just append organism to the list, and return taxizeGenOrgList
+          taxizeGenOrgList <- c(taxizeGenOrgList, organism) # Just append organism to the list, and return taxizeGenOrgList
         }
       }
       taxizeGenOrgList
     } else{
-      genomeOrgList #return the list as is
+      genomeOrgList # Return the list as is
     }
     })
   })
@@ -105,14 +109,14 @@ shinyServer(function(input, output, session) {
    
   Organisms_with_Mitochondrial_genomes <- reactive({
     fGenOrgSearch() %...>% {
-      genomeList <- .
+      genomeList <- . # Get the list returned by fGenOrgSearch
       num_rows <- length(genomeList)
-      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-      uids <- c()
+      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows)) # Create dataframe for Results
+      uids <- c() # Vector for unique IDs
   
       parameters <- "set vector up"
 
-      if(isTRUE(input$refSeq))
+      if(isTRUE(input$refSeq)) # If the Reference Sequences option is selected
       {
         parameters <- " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
         names(Results) <- c('Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide','SearchStatements')
@@ -126,23 +130,25 @@ shinyServer(function(input, output, session) {
       future_promise({
       for(i in 1:num_rows)
       {
-        Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'')
+        Mitochondrial_genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]',parameters,'') # Set up the Search Term
         searchResult <- tryCatch({
           if(!NCBIKeyFlag) {
-            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+            Sys.sleep(0.34) # Sleep to prevent Rate Limiting
           }
-          genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5)
+          genome_result <- entrez_search(db = "nucleotide", term = Mitochondrial_genome_SearchTerm, retmax = 5) # Search in NCBI
+
           Results[i,1] <- genome_result$count
           Results[i,2] <- Mitochondrial_genome_SearchTerm
           for(id in genome_result$ids){
-            uids <- c(uids, id)
+            uids <- c(uids, id)  # Save all the UIDs needed for downloading
           }
         }, error = function(err) {
+          # If an error occurred we mark it in the results so the user knows
           Results[i,1] <<- "Error"
           Results[i,2] <<- "Error"
         })
       }
-      list(Results, uids)
+      list(Results, uids) # Create a list containing the two vectors and return
       })
     }
   })
@@ -153,13 +159,13 @@ shinyServer(function(input, output, session) {
     
     fGenOrgSearch() %...>% {
       num_rows <- length(.)
-      genomeList <- .
-      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-      uids <- c()
+      genomeList <- . # Get the list returned by fGenOrgSearch
+      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows)) # Create dataframe for Results
+      uids <- c() # Vector for unique IDs
     
       parameters <- "set vector up"
     
-      if(isTRUE(input$refSeq))
+      if(isTRUE(input$refSeq)) # If the Reference Sequences option is selected
       {
         parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN] AND srcdb_refseq[PROP]"
         names(Results) <- c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide','SearchStatements')
@@ -172,18 +178,19 @@ shinyServer(function(input, output, session) {
       future_promise({
       for(i in 1:num_rows)
       {
-        Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'')
+        Chloroplast_genome_SearchTerm <- paste0('',genomeList[i],'[ORGN]',parameters,'') # Set up the Search Term
         searchResult <- tryCatch({
           if(!NCBIKeyFlag) {
-            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+            Sys.sleep(0.34) # Sleep to prevent Rate Limiting
           }
-          genome_result <- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5)
-          Results[i,1] <- genome_result$count 
+          genome_result <- entrez_search(db = "nucleotide", term = Chloroplast_genome_SearchTerm, retmax = 5) # Search in NCBI
+          Results[i,1] <- genome_result$count # Get the count of the results that NCBI returned
           Results[i,2] <- Chloroplast_genome_SearchTerm
           for(id in genome_result$ids){
-            uids <- c(uids, id)
+            uids <- c(uids, id) # Save all the UIDs needed for downloading
           }
         }, error = function(err) {
+          # If an error occurred we mark it in the results so the User Knows
           Results[i,1] <<- "Error"
           Results[i,2] <<- "Error"
         })
@@ -199,31 +206,32 @@ shinyServer(function(input, output, session) {
     
     fGenOrgSearch() %...>% {
       num_rows <- length(.)
-      genomeList <- .
-      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-      uids <- c()
+      genomeList <- .  # Get the list returned by fGenOrgSearch
+      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows)) # Create dataframe for Results
+      uids <- c() # Vector for unique IDs
       
       names(Results) <- c('present_in_NCBI_Genome','GenomeDB_SearchStatements')
       future_promise({
       for(i in 1:num_rows)
       {
-        genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','')
+        genome_SearchTerm <- paste0('', genomeList[i],'[ORGN]','') # Set up the Search Term
         searchResult <- tryCatch({
           if(!NCBIKeyFlag) {
-            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+            Sys.sleep(0.34) # Sleep to prevent Rate Limiting
           }
-          genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5)
-          Results[i, 1] <- genome_result$count #add zero
-          Results[i, 2] <- genome_SearchTerm 
+          genome_result<- entrez_search(db = "genome", term = genome_SearchTerm, retmax = 5) # Search in NCBI
+          Results[i, 1] <- genome_result$count # Get and save the count of the results that NCBI returned
+          Results[i, 2] <- genome_SearchTerm # Save the search term in the results dataframe
           for(id in genome_result$ids){
-            uids <- c(uids, id)
+            uids <- c(uids, id) # Save all the UIDs needed for downloading
           }
         }, error = function(err) {
+          # If an error occurred we mark it in the results so the User Knows
           Results[i,1] <<- "Error"
           Results[i,2] <<- "Error"
         })
       }
-      list(Results, uids)
+      list(Results, uids) # Create a list containing the two vectors and return
       })
     }
   })
@@ -231,32 +239,34 @@ shinyServer(function(input, output, session) {
 #  * selectFunction  --------------------------------------------------------------
 
  selectfunction <- reactive({
+  # See which option has been selected call the right function and return the list
   if (input$gsearch == "Full mitochondrial genomes in NCBI Nucleotide")
   {
     Organisms_with_Mitochondrial_genomes() %...>% {
       genomes <- .
-      genomes
+      genomes # list that gets returned if the if is entered
     }
   }
   else if (input$gsearch == "Full chloroplast genomes in NCBI Nucleotide") 
   {
     Organisms_with_Chloroplast_genomes() %...>% {
       genomes <- .
-      genomes
+      genomes # list that gets returned if the if is entered
     }
   }
   else if (input$gsearch == "Number of entries per taxa in NCBI Genome") 
   {
     Is_the_taxa_in_the_NCBI_genome_DB() %...>% {
       genomes <- .
-      genomes
+      genomes # list that gets returned if the if is entered
     }
   }
  })
 
  # * Output Table render ----------------------------------------------------------
+ 
+ # Output function which shows the table with the results to the User
   output$genomeResults <- DT::renderDataTable({
-    # selectfunction()[[1]], rownames = fGenOrgSearch(), colnames = names(selectfunction()[[1]]) 
     promise_all(data_df = selectfunction(), rows = fGenOrgSearch()) %...>% with({
       DT::datatable(data_df[[1]], rownames = rows, colnames = names(data_df[[1]]))
     })
@@ -264,24 +274,25 @@ shinyServer(function(input, output, session) {
   
  # * Download Fastas ---------------------------------------------------------------
   
-  # Download Full Genome Fasta File
+  # Download Full Genome Fasta Files
   output$fullGenomeDownloadF <- downloadHandler(
-    filename = function() { # Create the file and set its name
+    filename = function() { # Create the file
       paste("Full_Genome_Fasta_File", ".fasta", sep = "")
     },
     content = function(file) {
       selectfunction() %...>% {
-        uids <- .[[2]]
+        uids <- .[[2]] # Get the Unique IDs from the selectfunction returned list
         progLength <- length(uids)
+        # Progress bar for the UI
         progress <- AsyncProgress$new(session, min=0, max=progLength, message= "Downloading", value= 0)
         future_promise({
           Vector_Fasta <- c()
-          for (uid in uids) {
+          for (uid in uids) { # Loop through the uids, download them and store them in a vector
             err <- 1
-            while(err == 1){
-              File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+            while(err == 1){ # Repeat the search until we get some results
+              File <- tryCatch({ # Try catch for determining if an error occurred while fetching NCBI data
                 if(!NCBIKeyFlag) {
-                  Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                  Sys.sleep(0.34) # Sleep to prevent NCBI rate limiting
                 }
                 File_fasta <- entrez_fetch(db = "nucleotide", id = uid, rettype = "fasta") # Get the fasta file with that uid
                 err <- 0
@@ -290,10 +301,10 @@ shinyServer(function(input, output, session) {
               })
             }
             Vector_Fasta <- c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
-            progress$inc(amount=1)
+            progress$inc(amount=1) # Increase the progress bar
           }
           write(Vector_Fasta, file) # Writes the vector containing all the fasta file information into one fasta file
-          progress$set(value=progLength)
+          progress$set(value=progLength) # Close progress bar
           progress$close()
         })
       }
@@ -302,24 +313,25 @@ shinyServer(function(input, output, session) {
   
   # * Download Genbank files --------------------------------------------------------
   
-  #Download Full Genome Genbank files
+  # Download Full Genome Genbank Files
   output$fullGenomeDownloadG <- downloadHandler(
-    filename = function() { # Create the file and set its name
+    filename = function() { # Create the file
       paste("Full_Genome_Genbank_File", ".gb", sep = "")
     },
     content = function(file) {
       selectfunction() %...>% {
-        uids <- .[[2]]
+        uids <- .[[2]] # Get the Unique IDs from the selectfunction returned list
         progLength <- length(uids)
+        # Progress bar for the UI
         progress <- AsyncProgress$new(session, min=0, max=progLength, message= "Downloading", value= 0)
         future_promise({
           Vector_genbank <- c()
-          for (uid in uids) {
+          for (uid in uids) { # Loop through the uids, download them and store them in a vector
             err <- 1
-            while(err == 1){
-              File <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
+            while(err == 1){ # Repeat the search until we get some results
+              File <- tryCatch({ # Try catch for determining if an error occurred while fetching NCBI data
                 if(!NCBIKeyFlag) {
-                  Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                  Sys.sleep(0.34) # Sleep to prevent NCBI rate limiting
                 }
                 File_genbank <- entrez_fetch(db = "nucleotide", id = uid, rettype = "gb") # Get the genbank file with that uid
                 err <- 0
@@ -328,11 +340,11 @@ shinyServer(function(input, output, session) {
               })
             }
             Vector_genbank <- c(Vector_genbank, File_genbank) # Append the genbank file to a vector
-            progress$inc(amount=1)
+            progress$inc(amount=1) # Increase the progress bar
           }
           write(Vector_genbank, file) # Writes the vector containing all the genbank file information into one genbank file
           progress$set(value=progLength)
-          progress$close()
+          progress$close() # Close the progress bar
         })
       }
     }
@@ -340,6 +352,7 @@ shinyServer(function(input, output, session) {
   
   # * Download Full Genome Results Table ----------------------------------------
   
+  # Download Full Genome Table
   output$fullGenomeDownloadT <- downloadHandler(
     filename = function() { # Create the file and set its name
       paste("Full_Genome_Table", ".csv", sep = "")
@@ -360,30 +373,30 @@ shinyServer(function(input, output, session) {
 
 # * CRUXSearchButton --------------------------------------------------------
 
-    cruxOrgSearch <- eventReactive(input$searchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
-        input$CRUXorganismList #Returns as a string
+    cruxOrgSearch <- eventReactive(input$searchButton, { # When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
+        input$CRUXorganismList # Returns as a string
     })
 
 # * CRUXStrToList -----------------------------------------------------------
     
-    cruxOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-      cruxOrgSearch <- cruxOrgSearch()
-      CRUXtaxizeOption <- input$CRUXtaxizeOption
+    cruxOrganismList <- reactive({ # Converts string from cruxOrgSearch into a list of Strings
+      cruxOrgSearch <- cruxOrgSearch() # Get list of species
+      CRUXtaxizeOption <- input$CRUXtaxizeOption # Variable to store the user selection for the taxize option
         future_promise({
-        organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]] #separate based on commas
-        organismList <- unique(organismList[organismList != ""])
-        if(CRUXtaxizeOption){ #if the taxize option is selected
-            taxize_organism_list <- c() #initialize an empty vector
+        organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]] # Separate based on commas
+        organismList <- unique(organismList[organismList != ""]) # Delete any empty 'species'
+        if(CRUXtaxizeOption){ # If the taxize option is selected
+            taxize_organism_list <- c() # Initialize an empty vector
             for(i in 1:length(organismList))
             {
                 err <- 1
-                organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
+                organism <- trimws(organismList[[i]], "b") # Trim both leading and trailing whitespace
                 while(err == 1) {
                   NCBI_names <- tryCatch({
                     if(!NCBIKeyFlag) {
-                      Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                      Sys.sleep(0.34) # Sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
                     }
-                    NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+                    NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) # Help user with various naming issues (spelling, synonyms, etc.)
                     err <- 0
                     NCBI_names
                   }, error = function(err) {
@@ -391,37 +404,37 @@ shinyServer(function(input, output, session) {
                   })
                 }
 
-                row_count <- nrow(NCBI_names) # get number of rows in dataframe
+                row_count <- nrow(NCBI_names) # Get number of rows in dataframe
 
-                if(row_count > 0) #If a legitimate name was found
+                if(row_count > 0) # If a legitimate name was found
                 {
                     for(j in 1:row_count)
                     {
-                        taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
-                        taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
+                        taxa_name <- NCBI_names[[j,3]] # Store each matched name in taxa_name
+                        taxize_organism_list <- c(taxize_organism_list, taxa_name) # Update the vector with all the taxa_names.
                     }
                 }
                 else
                 {
-                    taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
+                    taxize_organism_list <- c(taxize_organism_list, organism) # Just append organism to the list, and return taxize_organism_list
                 }
             }
             taxize_organism_list
         } else{
-            organismList #return the list as is
+            organismList # Return the list as is
         }
         })
     })
     
 # * CRUXSearch --------------------------------------------------------------------
     cruxSearch <- function(results, searchTerm, organism) {
-      dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
-      taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") #connect to the db
-      #results <- c()
+      dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") # List of db tables each representing a marker
+      taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") # Connect to the db
       for(table in dbList){
-        #
+        # First check if the organism can be found at any level in the CRUX database
         location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=organism))
         if(nrow(location)==0){
+          # If not found go up by one level i.e. now search using the genus instead of Species Genus, when found only write which level it is not the number of results
           location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,3]))
           if(nrow(location)==0){
             location <- dbGetQuery(taxaDB, paste("SELECT * from ",table," where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"), params=list(x=searchTerm[1,4]))
@@ -438,8 +451,8 @@ shinyServer(function(input, output, session) {
           }else {results <- c(results, "genus") }
         } else {results <- c(results, toString(nrow(location)))}
       }
-      dbDisconnect(taxaDB)
-      results
+      dbDisconnect(taxaDB) # Disconnect from the database
+      results # Return results
     }
     
 # * CRUXCoverage ------------------------------------------------------------
@@ -447,9 +460,9 @@ shinyServer(function(input, output, session) {
     cruxCoverage <- reactive({
         
       cruxOrganismList() %...>% {
-        organismList <- .
+        organismList <- . # Get Organism list already processed by taxize if option was checked
         organismListLength <- length(organismList)
-        validate(
+        validate( # Make sure at least one organism is being searched
             need(organismListLength > 0, 'Please name at least one organism')
         )
         
@@ -468,47 +481,50 @@ shinyServer(function(input, output, session) {
             errorHomonym <- 0
             search <- tryCatch({ # Try catch for determining if homonyms exist, if they do fill up the errorPopupList and activate the errorHomonym Flag
               if(!NCBIKeyFlag) {
-                Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                Sys.sleep(0.34) # Sleep to avoid rate limiting
               }
               search <- get_uid_(sci_com = organism) # Check to see if there are homonyms
             }, error = function(err) {
               errorHomonym <<- 1
             })
             if(errorHomonym == 1){
-              errorPopupList <- c(errorPopupList, organism)
+              errorPopupList <- c(errorPopupList, organism) # There was an error add to pop up list
             }
-            else if(is.null(search[[1]])){
+            else if(is.null(search[[1]])){ # If search ran into an error or it returned null 
               results <- c(results, "0", "0", "0", "0", "0", "0", "0")
               newOrgList <- c(newOrgList, organism)
               next
             }
-            if( errorHomonym != 1 && nrow(search[[1]]) > 1) {# There are homonyms
-              popuplist <- c(popuplist, organism)
-              # Process the 
-              for (i in 1:nrow(search[[1]])) { # tax_name
+            if( errorHomonym != 1 && nrow(search[[1]]) > 1) { # There are homonyms
+              popuplist <- c(popuplist, organism) # Add to the pop up list to inform the user of the homonyms
+              for (i in 1:nrow(search[[1]])) { # Loop through the tax_names
                 errorHomonym <- 0
                 # if there are more than 5 homonyms then break we are not interested in more than 5
                 if(i > 5) { 
                   break
                 }
-                # create new organism list since new organism are added
+                # Create new organism list since new organism are added
                 newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
                 newOrgList <- c(newOrgList, newOrg)
                 # Creating the same format as the other organisms so the Crux search can be performed correctly
-                hierarchy <- tryCatch({ # Try catch for when we know there are homonyms but we dont know which homonyms yet, if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
+                # Try catch for when we know there are homonyms but we dont know which homonyms yet,
+                # if there is an error fill up errorPopupListFound and activate the errorHomonym Flag
+                hierarchy <- tryCatch({
                   if(!NCBIKeyFlag) {
-                    Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
+                    Sys.sleep(0.34) # Sleep to avoid rate limiting
                   }
-                  hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Check to see if there are homonyms
+                  hierarchy <- classification(search[[1]]$uid[i], db = "ncbi")[[1]] # Get information on those homonyms
                   hierarchy
                 }, error = function(err) {
                   errorHomonym <<- 1
                 })
                 if(errorHomonym == 1) {
+                  # If an error happened during the search add to the error pop up list and mark the errors so the user knows
                   errorPopupListFound <- unique(c(errorPopupListFound, newOrg))
                   results <- c(results, "error", "error", "error", "error", "error", "error", "error")
                   next
                 }
+                # Set the right format with all the information necessary for the CRUX search
                 match <- hierarchy$name[match(tolower(c("genus", "family", "order", "class","phylum", "domain")), tolower(hierarchy$rank))]
                 query <- c("db", "query", "genus", "family", "order", "class","phylum", "domain")
                 match <- c("ncbi", organism, match)
@@ -520,14 +536,15 @@ shinyServer(function(input, output, session) {
                 results <- cruxSearch(results, searchTerm, organism)
               }
             } else { # There are no homonyms
-              newOrgList <- c(newOrgList, organism)
+              newOrgList <- c(newOrgList, organism) # Add to the new org list
               searchTerm <- tryCatch({
                 if(!NCBIKeyFlag) {
-                  Sys.sleep(0.34)
+                  Sys.sleep(0.34) # Sleep to avoid rate limiting
                 }
                 searchTerm <- tax_name(query= organism, get = c("genus", "family", "order", "class","phylum", "domain"), db= "ncbi", messages = FALSE)
                 searchTerm
               }, error = function(err) {
+                # Mark the errors if the search didn't work
                 results <<- c(results, "error", "error", "error", "error", "error", "error", "error")
                 err <<- 1
               })
@@ -535,9 +552,10 @@ shinyServer(function(input, output, session) {
                 err <- 0
                 next
               }
-              results <- cruxSearch(results, searchTerm, organism)
+              results <- cruxSearch(results, searchTerm, organism) # Perform the CruxSearch
             }
         }
+        # Create list with all the necessary information
         results <- list(organismList=newOrgList, data=results, popupinfo=popuplist, errorPopupList = errorPopupList, errorPopupListFound = errorPopupListFound) 
         results
         })
@@ -546,16 +564,16 @@ shinyServer(function(input, output, session) {
     
 # * matrixGetCRUX ------------------------------------------------------------
     
-    matrixGetCRUX <- reactive({ # creates and returns the matrix to be displayed with the count
+    matrixGetCRUX <- reactive({ # Creates and returns the matrix to be displayed with the count
       dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S")
       cruxCoverage() %...>% {
         cruxCoverage <- . # Get the results from the SQL queries
         results <- c()
         organismListLength <- length(cruxCoverage[[1]])
-        for (i in cruxCoverage[[2]]) {
+        for (i in cruxCoverage[[2]]) { # Extract the results 
           results <- c(results, i)
         }
-        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) #convert results vector to dataframe
+        data <- matrix(results, nrow = organismListLength, ncol = length(dbList), byrow = TRUE) # Convert results vector to dataframe
         data
       }
     })
@@ -566,10 +584,10 @@ shinyServer(function(input, output, session) {
       organismList <- c()
       cruxCoverage() %...>% {
         cruxCoverage <- . # Get the results from the NCBI query
-        for (i in cruxCoverage[[1]]) {
+        for (i in cruxCoverage[[1]]) { # Extract the new organism list
           organismList <- c(organismList, i)
         }
-        # Send the alert to the user that we have found some homonyms
+        # Send the alert to the user related to homonyms
         cruxOrganismList() %...>% {
           if(length(organismList) > length(.)) {
             shinyalert("We have found Homonyms", cruxCoverage[[3]], type = "warning")
@@ -588,9 +606,10 @@ shinyServer(function(input, output, session) {
 
 # * CRUXInputCSV -----------------------------------------------------------
     
-    inputFileCrux <- observeEvent(input$uploadCRUXButton,{
+    inputFileCrux <- observeEvent(input$uploadCRUXButton,{ # Load Input file into text box
         isolate({
-            req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
+            req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))  # It requires a file to be uploaded first
+            # Read the CSV and write all the Organism Names into the Text Area Input
             uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
             if(input$CRUXorganismList[[1]] != "") {
                 updateTextAreaInput(getDefaultReactiveDomain(), "CRUXorganismList", value = c(head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]), input$CRUXorganismList))
@@ -604,8 +623,9 @@ shinyServer(function(input, output, session) {
 
 # * CRUXDownload ------------------------------------------------------------
     
+    # Download CRUX table
     output$downloadCrux <- downloadHandler(
-        filename = function() { # Create the file and set its name
+        filename = function() { # Create the file
           paste("CRUX_Table", ".csv", sep = "")
         },
         content = function(file) {
@@ -625,8 +645,10 @@ shinyServer(function(input, output, session) {
     
     
 # * CRUXSummaryReportDownload ------------------------------------------------------------    
+    
+    # Download CRUX Summary Report
     output$CRUXfileDownloadSD <- downloadHandler(
-      filename = function() { # Create the file and set its name
+      filename = function() { # Create the file
         paste("CRUX_Summary_Report", ".csv", sep = "")
       },
       content = function(file) {
