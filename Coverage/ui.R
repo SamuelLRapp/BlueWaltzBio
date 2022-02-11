@@ -17,12 +17,14 @@ library(shinyalert) # popup library
 #library(shinybusy)
 
 shinyUI(fluidPage(
-  useShinyalert(), #this line is needed for the popup,
+  useShinyalert(), # This line is needed for the popup
   navbarPage("Reference Sequence Browser",
 
-    #CRUX tab
+    # Home tab
     tabPanel("Home", 
              titlePanel("Welcome to the Reference Sequence Browser"),
+             textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
+             actionButton(inputId = "SetKey", label = "Set Key"),
              p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
  Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
 " ),
@@ -95,18 +97,6 @@ shinyUI(fluidPage(
                         ),
                   )
                ),
-               
-
-         
-
-           
-           # # Download button
-           # downloadButton('downloadCrux',"Download table"),
-           # 
-           # fluidRow(
-           #   # Show a plot of the generated distribution
-           #   DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1")
-           # )
     ),
   
 
