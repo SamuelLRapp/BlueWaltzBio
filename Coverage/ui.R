@@ -192,7 +192,7 @@ shinyUI(fluidPage(
                             
                           ),
                         ),
-                        
+
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
@@ -224,7 +224,9 @@ shinyUI(fluidPage(
                                               downloadButton('fullGenomeDownloadG', "Download Genbank files"))
                           )
                         )
-               ))),
+               ),
+               tabPanel("Information")
+               )),
     
    tabPanel("Contact Us", 
             
