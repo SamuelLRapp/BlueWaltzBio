@@ -17,7 +17,10 @@ library(shinyalert) # popup library
 #library(shinybusy)
 
 shinyUI(fluidPage(
-  useShinyalert(), # This line is needed for the popup
+  #IDE says this call is now unnecessary
+  #but if the call is still wanted, 
+  #pass the force=TRUE argument.
+  useShinyalert(force=TRUE), # This line is needed for the popup
   navbarPage("Reference Sequence Browser",
 
     # Home tab
@@ -93,6 +96,12 @@ shinyUI(fluidPage(
                             p("1) The number of sequences in a database, if direct matches are found",  HTML("<br/>"), "2) If no direct matches are found, the next most specific taxonomic rank found", HTML("<br/>"), "3) “0” if nothing is found at any taxonomic rank."),#The list
                             p(), #empty space 
                             
+                            #copied from the twitter icon implementation
+                            #in the contact us code.
+                            CruxUserGuide.icon <- tags$a(href='https://docs.google.com/document/d/1A1_4d21JKkk98WujeqVp51epxDzPrTSr9--_CnM5M5E/edit',
+                                                   icon("book"),
+                                                   'CRUX User Guide', target="_blank"),
+                            p(), #for aesthetics
                           ),
                         ),
                   )

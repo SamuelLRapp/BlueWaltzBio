@@ -1,1 +1,2 @@
 Coverage/taxa-db.sqlite filter=lfs diff=lfs merge=lfs -text
+*.R filter=lfs diff=lfs merge=lfs -text
