@@ -170,7 +170,7 @@ shinyUI(fluidPage(
                 
                 #User Guide: Added by Zia Truong Feb 19 2022
                 h4("User Guide"),
-                tags$a(href="https://docs.google.com/document/d/1-VbO7nzPHY27xDZ714Kzu8xemG2Hsg-Gu5iE8-Da5C8/edit#heading=h.zd4rqn9aw2h",
+                tags$a(href="https://docs.google.com/document/d/1-VbO7nzPHY27xDZ714Kzu8xemG2Hsg-Gu5iE8-Da5C8/edit?usp=sharing",
                        icon("question-circle"), #icon from fa v4, please change to circle-question if you update fa version to latest
                        "Click this link to read the user guide"),
                 
