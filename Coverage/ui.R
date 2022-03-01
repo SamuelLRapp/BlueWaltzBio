@@ -17,7 +17,10 @@ library(shinyalert) # popup library
 #library(shinybusy)
 
 shinyUI(fluidPage(
-  useShinyalert(), # This line is needed for the popup
+  #IDE says this call is now unnecessary
+  #but if the call is still wanted, 
+  #pass the force=TRUE argument.
+  useShinyalert(force=TRUE), # This line is needed for the popup
   navbarPage("Reference Sequence Browser",
 
     # Home tab
@@ -93,6 +96,12 @@ shinyUI(fluidPage(
                             p("1) The number of sequences in a database, if direct matches are found",  HTML("<br/>"), "2) If no direct matches are found, the next most specific taxonomic rank found", HTML("<br/>"), "3) “0” if nothing is found at any taxonomic rank."),#The list
                             p(), #empty space 
                             
+                            #copied from the twitter icon implementation
+                            #in the contact us code.
+                            CruxUserGuide.icon <- tags$a(href='https://docs.google.com/document/d/1A1_4d21JKkk98WujeqVp51epxDzPrTSr9--_CnM5M5E/edit',
+                                                   icon("book"),
+                                                   'CRUX User Guide', target="_blank"),
+                            p(), #for aesthetics
                           ),
                         ),
                   )
@@ -168,6 +177,12 @@ shinyUI(fluidPage(
                 p("The ‘NCBI Nucleotide Coverage Matrix’ was designed to screen the Nucleotide database for genetic barcode coverage prior to environmental DNA metabarcoding studies. Before conducting a metabarcoding study, scientists need to be aware of which organisms have reference sequences at known genetic barcoding loci. The tool finds out if the Nucleotide database contains sequences labeled with a specific gene and organism name. Numerous searches can be done in parallel instead of manually searching for each organism-gene combination on the NCBI Nucleotide website."),
                 p("The ‘NCBI Nucleotide Coverage Matrix’ tool takes in a list of organisms and genes of interest and then queries the Nucleotide database to find how many records match the search. The tool then produces a table where the organism names are rows, gene names are columns, and each intersection of a row and column shows how many records are in the NCBI Nucleotide database. All of the search options are detailed in the ‘Search fields' section below. The power and flexibility of this tool allows scientists to check the NCBI Nucleotide database for genetic coverage in ways that aren’t possible without knowledge of the NCBI Entrez coding package."),
                 
+                #User Guide: Added by Zia Truong Feb 19 2022
+                h4("User Guide"),
+                tags$a(href="https://docs.google.com/document/d/1-VbO7nzPHY27xDZ714Kzu8xemG2Hsg-Gu5iE8-Da5C8/edit?usp=sharing",
+                       icon("question-circle"), #icon from fa v4, please change to circle-question if you update fa version to latest
+                       "Click this link to read the user guide"),
+                
                 h4("Limitations:"),
                 p("This tool may not find all possible entries that the user desires. Some limitations of this text based search include, but are not limited to:"),
                 p("1) Alternative names of the listed gene in NCBI Nucleotide database",  HTML("<br/>"), "2) Incorrect or missing metadata", HTML("<br/>"), "3) Full genomes entries with unlabeled individual genes"),#The list
@@ -192,7 +207,7 @@ shinyUI(fluidPage(
                             
                           ),
                         ),
-                        
+
                         fluidRow(
                           # Sidebar with a text area for organisms and bar code
                           sidebarPanel(
@@ -224,7 +239,9 @@ shinyUI(fluidPage(
                                               downloadButton('fullGenomeDownloadG', "Download Genbank files"))
                           )
                         )
-               ))),
+               ),
+               tabPanel("Information")
+               )),
     
    tabPanel("Contact Us", 
             
