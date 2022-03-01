@@ -585,8 +585,8 @@ shinyServer(function(input, output, session) {
         }
       })
     })
-  
-  # * CRUXSearch ---------------------------------------------------------------
+    
+# * CRUXSearch --------------------------------------------------------------------
   cruxSearch <- function(results, searchTerm, organism) {
     # Make a list of db tables, each representing a marker
     dbList <-
@@ -596,11 +596,11 @@ shinyServer(function(input, output, session) {
            "MBCO1",
            "MBFITS",
            "MBtrnL",
-           "MB12S") 
+           "MB12S")
     # Connect to the db
-    taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite") 
+    taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
     for (table in dbList) {
-      # First check if the organism can be found at any level in the 
+      # First check if the organism can be found at any level in the
       # CRUX database
       location <-
         dbGetQuery(
@@ -613,64 +613,56 @@ shinyServer(function(input, output, session) {
           params = list(x = organism)
         )
       if (nrow(location) == 0) {
-        # If not found go up by one level i.e. now search using the genus 
-        # instead of Species Genus, when found only write which level it is 
+        # If not found go up by one level i.e. now search using the genus
+        # instead of Species Genus, when found only write which level it is
         # not the number of results
         location <-
-          dbGetQuery(
-            taxaDB,
-            paste(
-              "SELECT * from ",
-              table,
-              " where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"
-            ),
-            params = list(x = searchTerm[1, 3])
-          )
+          dbGetQuery(taxaDB,
+                     paste("SELECT * from ", table, " where genus= :x"),
+                     params = list(x = searchTerm[1, 3]))
         if (nrow(location) == 0) {
           location <-
             dbGetQuery(
               taxaDB,
-              paste(
-                "SELECT * from ",
-                table,
-                " where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"
-              ),
+              paste("SELECT * from ", table, " where familia= :x"),
               params = list(x = searchTerm[1, 4])
             )
           if (nrow(location) == 0) {
             location <-
               dbGetQuery(
                 taxaDB,
-                paste(
-                  "SELECT * from ",
-                  table,
-                  " where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"
-                ),
+                paste("SELECT * from ", table, " where ordo= :x"),
                 params = list(x = searchTerm[1, 5])
               )
             if (nrow(location) == 0) {
               location <-
                 dbGetQuery(
                   taxaDB,
-                  paste(
-                    "SELECT * from ",
-                    table,
-                    " where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"
-                  ),
+                  paste("SELECT * from ", table, " where classis= :x"),
                   params = list(x = searchTerm[1, 6])
                 )
               if (nrow(location) == 0) {
                 location <-
                   dbGetQuery(
                     taxaDB,
-                    paste(
-                      "SELECT * from ",
-                      table,
-                      " where regio= :x or phylum= :x or classis= :x or ordo= :x or familia= :x or genus= :x or genusspecies= :x"
-                    ),
+                    paste("SELECT * from ", table, " where phylum= :x"),
                     params = list(x = searchTerm[1, 7])
                   )
-                results <- c(results, nrow(location))
+                if (nrow(location) == 0) {
+                  location <-
+                    dbGetQuery(
+                      taxaDB,
+                      paste("SELECT * from ", table, " where regio= :x"),
+                      params = list(x = searchTerm[1, 8])
+                    )
+                  if (nrow(location) == 0) {
+                    results <- c(results, 0)
+                  } else {
+                    results <- c(results, "kingdom")
+                  }
+                } else{
+                  results <- c(results, "phylum")
+                }
               } else {
                 results <- c(results, "class")
               }
@@ -687,8 +679,10 @@ shinyServer(function(input, output, session) {
         results <- c(results, toString(nrow(location)))
       }
     }
-    dbDisconnect(taxaDB) # Disconnect from the database
-    results # Return results
+    # Disconnect from the database
+    dbDisconnect(taxaDB)
+    # Return results
+    results
   }
   
   # * CRUXCoverage -------------------------------------------------------------
