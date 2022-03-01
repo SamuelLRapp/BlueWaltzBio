@@ -519,7 +519,7 @@ shinyServer(function(input, output, session) {
     reactive({
       # Converts string from cruxOrgSearch into a list of Strings
       # Get list of species
-      cruxOrgSearch <- cruxOrgSearch() 
+      cruxOrgSearch <- cruxOrgSearch()
       # Variable to store the user selection for the taxize option
       CRUXtaxizeOption <- input$CRUXtaxizeOption 
       future_promise({
