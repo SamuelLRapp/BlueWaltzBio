@@ -240,7 +240,11 @@ shinyUI(fluidPage(
                           )
                         )
                ),
-               tabPanel("Information")
+               tabPanel("Information"),
+               h4("User Guide"),
+               full_genome_guide.icon <- tags$a(href='https://docs.google.com/document/d/1Z9qLSy1ZiHaoT2i6rC_CLM_mKbo4uN2zLxaNbkz_w7U/edit?usp=sharing',
+                                    icon("question-circle"),
+                                    "Full Genome User Guide", target="_blank")
                )),
     
    tabPanel("Contact Us", 
