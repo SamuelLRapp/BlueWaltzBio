@@ -203,7 +203,7 @@ shinyUI(fluidPage(
                            # Show a plot of the generated distribution
                            DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
                            # Download button
-                           #downloadButton('downloadCrux',"Download table"),
+                           downloadButton('downloadBoldFasta',"Download Fasta"),
                          )
                        ),
               ),
