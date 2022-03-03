@@ -543,6 +543,9 @@ shinyServer(function(input, output) {
         }
     })
     
+
+    
+    
     # * BOLDCoverage ------------------------------------------------------------
     
     boldCoverage <- reactive({
@@ -561,21 +564,19 @@ shinyServer(function(input, output) {
         results <- c()
         temp <- c()
         for(organism in organismList){
+            test_bold <- records_bold <- bold_seqspec(taxon = organism)
+            print(test_bold)
+
             records_bold <- bold_seqspec(taxon = organism)[, c('species_name',   #this vector is the dataframe's column"
                                                                     'processid',             # BOLD identifier
                                                                     'genbank_accession', 
                                                                     'lat', 
                                                                     'lon')]
-            # print(records_bold)
-            # print("HEYLLO")
-            record2 <- bold_seqspec(taxon='Osmia')
-            # print(typeof(records_bold))
-            # print(length(records_bold))
-            print(record2$processid)
-            print(length(record2$species_name))
-            print(records_bold$processid)
-            print(length(records_bold$species_name))
-            # print(length(records_bold))
+
+            #print(records_bold)
+            #print(records_bold$processid)
+            #print(length(records_bold$species_name))
+
             for(i in 1:length(records_bold$species_name)){
                 temp <- c(records_bold$processid[i], records_bold$genbank_accession[i], records_bold$lat[i], records_bold$lon[i])
                 results <- c(results, temp)
@@ -588,6 +589,41 @@ shinyServer(function(input, output) {
     
     output$BOLDcoverageResults <- DT::renderDataTable(
         boldCoverage(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','lat', 'lon')
+    )
+    
+    # * BOLDFASTADownload ------------------------------------------------------------
+    
+    output$downloadBoldFasta <- downloadHandler(
+      filename = function() {
+        paste("Test", ".fasta", sep="")
+      },
+      content = function(file) {
+          Vector_Fasta <- c()
+          organismList <- boldOrganismList()
+          for(organism in organismList){
+            res <- bold_seqspec(taxon = organism)
+            print(res)
+            for(i in 1:length(res$processid)){
+              species_name <- if(res$subspecies_name[i] == "") res$species_name[i] else res$subspecies_name[i]
+              org_vector = c(res$processid[i], species_name, res$markercode[i], res$genbank_accession[i])
+              #remove all elements with no data from vector
+              org_vector = org_vector[org_vector != '']
+              #put data into string format
+              org_data = paste(org_vector, collapse = '|')
+              #write data to file
+              Vector_Fasta <- c(Vector_Fasta, org_data)
+              Vector_Fasta <- c(Vector_Fasta, res$nucleotides[i])
+      
+            }
+
+          }
+          #print(Vector_Fasta)
+
+          write(Vector_Fasta, file)
+      }
+      
+      
+      
     )
     
 })
