@@ -23,6 +23,7 @@ library(promises)
 library(ipc)
 library(mpoly)
 library(modules)
+source("server_functions.R")
 
 orgListHelper <- modules::use("orgListHelper.R")
 
@@ -32,7 +33,7 @@ shinyServer(function(input, output, session) {
   
   # * FullGenomeSearchButton ---------------------------------------------------
   
-  
+  # returns a list of organisms as a string
   fullGenomeSearchButton <-
     eventReactive(input$genomeSearchButton, {
       # When searchButton clicked, update fGenOrgSearch to return the value 
@@ -42,33 +43,18 @@ shinyServer(function(input, output, session) {
   
   # * FullGenomeInputCSV -------------------------------------------------------
   
-  inputFileCrux <- observeEvent(input$uploadGenomeButton, {
-    isolate({
-      # It requires a file to be uploaded first
-      req(input$uploadGenomeFile,
-          file.exists(input$uploadGenomeFile$datapath)) 
-      # Read the CSV and write all the Organism Names into the Text Area Input
-      uploadinfo <-
-        read.csv(input$uploadGenomeFile$datapath, header = TRUE)
-      if (input$genomeOrganismList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "genomeOrganismList",
-          value = c(
-            head(uploadinfo$OrganismNames,-1),
-            input$genomeOrganismList
-          )
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "genomeOrganismList",
-                            value = uploadinfo$OrganismNames)
-      }
-    })
-  })
-  
-  
+  inputFileFullGenome <- observeEvent(
+    input$uploadGenomeButton, 
+    updateTextAreaInput(
+      getDefaultReactiveDomain(), 
+      inputId = "genomeOrganismList", 
+      label = "Organism Names",
+      value = parseCsvColumnForTxtBox(
+        input = input, 
+        file.index = "uploadGenomeFile",
+        column.header = "OrganismNames",
+        textbox.id = "genomeOrganismList")))
+
   # * FGenOrgSearch ------------------------------------------------------------
   
   # Split the string by commas to create a list of Species 
@@ -951,32 +937,19 @@ shinyServer(function(input, output, session) {
   
   # * CRUXInputCSV -------------------------------------------------------------
   
-  inputFileCrux <-
-    observeEvent(input$uploadCRUXButton, {
-      # Load Input file into text box
-      isolate({
-        # It requires a file to be uploaded first
-        req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
-        # Read the CSV and write all the Organism Names into the Text Area Input
-        uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
-        if (input$CRUXorganismList[[1]] != "") {
-          updateTextAreaInput(
-            getDefaultReactiveDomain(),
-            "CRUXorganismList",
-            value = c(
-              head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
-              input$CRUXorganismList
-            )
-          )
-        }
-        else {
-          updateTextAreaInput(getDefaultReactiveDomain(),
-                              "CRUXorganismList",
-                              value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
-        }
-      })
-    })
   
+  inputFileCrux <- observeEvent(
+    input$uploadCRUXButton, 
+    updateTextAreaInput(
+      getDefaultReactiveDomain(), 
+      inputId = "CRUXorganismList", 
+      label = "Organism Names",
+      value = parseCsvColumnForTxtBox(
+        input = input, 
+        file.index = "uCRUXfile", 
+        column.header = "OrganismNames",
+        textbox.id = "CRUXorganismList")))
+
   
   # * CRUXDownload -------------------------------------------------------------
   
@@ -1693,43 +1666,27 @@ shinyServer(function(input, output, session) {
   
   
   # * NCBInputFile -------------------------------------------------------------
-  
-  
-  inputFileNCBI <- observeEvent(input$uploadNCBIButton, {
-    isolate({
-      req(input$uNCBIfile,
-          file.exists(input$uNCBIfile$datapath))
-      uploadinfo <-
-        read.csv(input$uNCBIfile$datapath, header = TRUE)
-      if (input$NCBIorganismList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "NCBIorganismList",
-          value = c(
-            head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
-            input$NCBIorganismList
-          )
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "NCBIorganismList",
-                            value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
-      }
-      if (input$barcodeList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "barcodeList",
-          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != ""]), 
-                    input$barcodeList)
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "barcodeList",
-                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != ""])
-      }
-    })
+
+  inputFileNCBI <- observeEvent(
+    input$uploadNCBIButton, {
+      updateTextAreaInput(
+        getDefaultReactiveDomain(), 
+        inputId = "NCBIorganismList", 
+        label = "Organism Names",
+        value = parseCsvColumnForTxtBox(
+          input = input, 
+          file.index = "uNCBIfile", 
+          column.header = "OrganismNames",
+          textbox.id = "NCBIorganismList"))
+      updateTextAreaInput(
+        getDefaultReactiveDomain(), 
+        inputId = "barcodeList", 
+        label = "Barcodes of Interest",
+        value = parseCsvColumnForTxtBox(
+          input = input, 
+          file.index = "uNCBIfile", 
+          column.header = "Barcodes",
+          textbox.id = "barcodeList"))
   })
   
   
