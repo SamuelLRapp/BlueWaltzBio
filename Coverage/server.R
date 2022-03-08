@@ -1874,7 +1874,7 @@ shinyServer(function(input, output, session) {
                  na.omit(crux_without_taxonomic_names)
                
                non_number_values <-
-                 c('genus', 'family', 'class', 'order', 'error')
+                 c('genus', 'family', 'class', 'order', 'error', 'phylum')
                
                ncols <- ncol(crux_output)
                nrows <- nrow(crux_output)
