@@ -14,13 +14,17 @@ library(tidyverse)
 library(vembedr)
 library(shinydashboard)
 library(shinyalert) # popup library
+library(modules)
 #library(shinybusy)
+
+components <- modules::use("components.R")
 
 shinyUI(fluidPage(
   #IDE says this call is now unnecessary
   #but if the call is still wanted, 
   #pass the force=TRUE argument.
   useShinyalert(force=TRUE), # This line is needed for the popup
+  tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   navbarPage("Reference Sequence Browser",
 
     # Home tab
@@ -131,7 +135,8 @@ shinyUI(fluidPage(
               sidebarPanel(
                 fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
                 actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
-                textAreaInput(inputId = "NCBIorganismList", label = "Organism Names"),
+                textAreaInput(inputId = "NCBIorganismList", label = "Organism Names"), 
+                # components$infoIcon("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply."),
                 checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                 checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE),
                 
