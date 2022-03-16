@@ -1424,10 +1424,12 @@ shinyServer(function(input, output, session) {
       num_codes <- length(barcodeList()) #number of barcodes
       
       num_species <- length(resultsList[[3]])/num_codes #number of species
+      
+      #create list of lists of uid lists :p
       uids = c()
-      for (i in 1:num_species){ #each species = one row each barcode = one col
-        rowIds <- ((i*num_codes)-(num_codes-1)):(i*num_codes) 
-        ulist <- idsList[rowIds] #get barcodes of this species
+      for (i in 1:num_species){ 
+        idIndicesVec <- ((i*num_codes)-(num_codes-1)):(i*num_codes) #vector containing the indices of the elements containing this species' uids
+        ulist <- idsList[idIndicesVec] #list of uid lists, one for each barcode
         uids <- c(uids, list(ulist))
       }
       uids
@@ -1465,6 +1467,7 @@ shinyServer(function(input, output, session) {
   
   # TODO: [Zia - March 15, 2022]
   # Possibly change to JavaScript download if cross-browser support is an issue
+  # Change the downloads for the other databases too 
   
   # Download Fasta Files
   output$fileDownloadF <- downloadHandler(
@@ -1480,7 +1483,7 @@ shinyServer(function(input, output, session) {
         speciesNum = length(species)
         barcodeNum = length(barcodes)
 
-        #get num of cells
+        #get number of cells
         cellNum <- speciesNum*barcodeNum
         
         #create separate fasta file for each barcode
@@ -1527,9 +1530,9 @@ shinyServer(function(input, output, session) {
           print("bottom of row")
         }
 
-        for (codeIndex in 1:barcodeNum){
+        for (codeNum in 1:barcodeNum){
           #write sequences to appropriate file
-          write(holder[[codeIndex]], filenames[[codeIndex]], append = TRUE)
+          write(holder[[codeNum]], filenames[[codeNum]], append = TRUE)
         }
         
         zip(zipfile = downloadedFile, files = filenames) #output zip contains directory with fasta files
