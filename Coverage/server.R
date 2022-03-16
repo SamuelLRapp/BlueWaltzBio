@@ -1463,6 +1463,9 @@ shinyServer(function(input, output, session) {
     return(content_fasta)
   }
   
+  # TODO: [Zia - March 15, 2022]
+  # Possibly change to JavaScript download if cross-browser support is an issue
+  
   # Download Fasta Files
   output$fileDownloadF <- downloadHandler(
     filename <- function() {
