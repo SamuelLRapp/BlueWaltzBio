@@ -1472,10 +1472,10 @@ shinyServer(function(input, output, session) {
   # Download Fasta Files
   output$fileDownloadF <- downloadHandler(
     filename <- function() {
-      paste("output", "zip", sep=".")
+      paste("NCBI_Fasta", "zip", sep=".")
     },
     content <- function(downloadedFile) {
-        dir.create(file.path("gen_files"), recursive = TRUE)
+        dir.create(file.path("NCBI_eDNA_files"), recursive = TRUE)
         print("make fasta files")
         uids = uidsGet()
         barcodes = barcodeList()
@@ -1489,7 +1489,7 @@ shinyServer(function(input, output, session) {
         #create separate fasta file for each barcode
         filenames <- c()
         for (code in barcodes) {
-          file_path <- paste0("gen_files/", code, "_sequences.fasta")
+          file_path <- paste0("NCBI_eDNA_files/","NCBI_", code, "_sequences.fasta")
           filenames <- c(filenames, file_path)
           file.create(file_path)
         }
@@ -1537,7 +1537,7 @@ shinyServer(function(input, output, session) {
         
         zip(zipfile = downloadedFile, files = filenames) #output zip contains directory with fasta files
         # delete temp file directory
-        unlink("gen_files", recursive=TRUE) # recursive=true deletes all files in directory too
+        unlink("NCBI_eDNA_files", recursive=TRUE) # recursive=true deletes all files in directory too
     },
     contentType = "application/zip"
   )
