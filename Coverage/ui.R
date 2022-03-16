@@ -121,12 +121,12 @@ shinyUI(fluidPage(
                                    sidebarPanel(
                                      fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
                                      actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
-                                     textAreaInput(inputId = "NCBIorganismList", label = tags$div("Organism Names", tags$a(id="orgNameHelp",icon("question-circle")))),
+                                     textAreaInput(inputId = "NCBIorganismList", label = list("Organism Names", tags$a(id="orgNameHelp",icon("question-circle")))),
                                      bsPopover(id="orgNameHelp", title="Help", content='<p>A comma-separated list of the names for your organism(s) of interest. All taxonomic ranks apply.</p><p>(Click <i class="fa fa-question-circle"></i> again to close)</p>', trigger="click"),
                                      checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                                      checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE),
                                      
-                                     textAreaInput(inputId = "barcodeList", label = tags$div("Barcodes of Interest", tags$a(id="barcodeListHelp",icon("question-circle")))),
+                                     textAreaInput(inputId = "barcodeList", label = list("Barcodes of Interest", tags$a(id="barcodeListHelp",icon("question-circle")))),
                                      bsPopover(id="barcodeListHelp", title="Help", content = paste0(
                                        "<p>A comma-separated list of the genes you want to search.</p>",
                                        "<p>Common genes used as organism barcodes include: <i>CO1</i>, <i>16S</i>, <i>18S</i>, <i>rbcL</i>, <i>matK</i>, <i>ITS</i>, <i>FITS</i>, <i>trnL</i>, <i>Vert12S</i>.</p>",
