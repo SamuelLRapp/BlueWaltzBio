@@ -122,215 +122,50 @@ shinyServer(function(input, output, session) {
   # * Mitochondrial Search -----------------------------------------------------
   
   Organisms_with_Mitochondrial_genomes <- reactive({
-    fGenOrgSearch() %...>% {
-      # Get the list returned by fGenOrgSearch
-      genomeList <- . 
-      num_rows <- length(genomeList)
-      # Create dataframe for Results
-      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-      # Create a vector to store the unique IDs
-      uids <- c()
-      
-      parameters <- "set vector up"
-      
-      # If the Reference Sequences option is selected
-      if (isTRUE(input$refSeq))
-      {
-        parameters <-
-          " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN] AND srcdb_refseq[PROP]"
-        names(Results) <-
-          c(
-            'Num_RefSeq_Mitochondrial_Genomes_in_NCBI_Nucleotide',
-            'SearchStatements'
-          )
-      }
-      else
-      {
-        parameters <-
-          " AND (mitochondrial[TITL] or mitochondrion[TITL]) AND 16000:17000[SLEN]"
-        names(Results) <-
-          c('Num_Mitochondrial_Genomes_in_NCBI_Nucleotide',
-            'SearchStatements')
-      }
-      
-      future_promise({
-        for (i in 1:num_rows)
-        {
-          # Set up the Search Term
-          Mitochondrial_genome_SearchTerm <-
-            paste0('', genomeList[i], '[ORGN]', parameters, '') 
-          searchResult <- tryCatch({
-            if (!NCBIKeyFlag) {
-              # Sleep to prevent Rate Limiting
-              Sys.sleep(0.34)
-            }
-            # Search in NCBI
-            genome_result <-
-              entrez_search(db = "nucleotide",
-                            term = Mitochondrial_genome_SearchTerm,
-                            retmax = 5) 
-            
-            Results[i, 1] <- genome_result$count
-            Results[i, 2] <- Mitochondrial_genome_SearchTerm
-            # Save all the UIDs needed for downloading
-            for (id in genome_result$ids) {
-              uids <- c(uids, id) 
-            }
-          }, error = function(err) {
-            # If an error occurred we mark it in the results so the user knows
-            Results[i, 1] <<- "Error"
-            Results[i, 2] <<- "Error"
-          })
-        }
-        # Create a list containing the two vectors and return
-        list(Results, uids) 
-      })
+      fGenOrgSearch() %...>% getNcbiSearchResults(
+        resultsDfColumnNames = c('Num_Mitochondrial_Genomes_in_NCBI_Nucleotide', 'SearchStatements'),
+        databaseName = "nucleotide",
+        genomeList = .,
+        parameters = getNcbiSearchParameters('mitochondrial', isTRUE(input$refSeq))
+      )
     }
-  })
+  )
   
   # * Chloroplast Search -------------------------------------------------------
   
   Organisms_with_Chloroplast_genomes <- reactive({
-    fGenOrgSearch() %...>% {
-      num_rows <- length(.)
-      # Get the list returned by fGenOrgSearch
-      genomeList <- . 
-      # Create dataframe for Results
-      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows))
-      # Create a vector to store the unique IDs
-      uids <- c() 
-      
-      parameters <- "set vector up"
-      
-      # If the Reference Sequences option is selected
-      if (isTRUE(input$refSeq))
-      {
-        parameters <-
-          " AND Chloroplast[TITL] AND 120000:170000[SLEN] AND srcdb_refseq[PROP]"
-        names(Results) <-
-          c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide',
-            'SearchStatements')
-      } else
-      {
-        parameters <- " AND Chloroplast[TITL] AND 120000:170000[SLEN]"
-        names(Results) <-
-          c(
-            'Num_Chloroplast_Genomes_in_NCBI_Nucleotide',
-            'Chloroplast_SearchStatements'
-          )
-      }
-      
-      future_promise({
-        for (i in 1:num_rows)
-        {
-          # Set up the Search Term
-          Chloroplast_genome_SearchTerm <-
-            paste0('', genomeList[i], '[ORGN]', parameters, '') 
-          searchResult <- tryCatch({
-            if (!NCBIKeyFlag) {
-              # Sleep to prevent Rate Limiting
-              Sys.sleep(0.34) 
-            }
-            # Search in NCBI
-            genome_result <-
-              entrez_search(db = "nucleotide",
-                            term = Chloroplast_genome_SearchTerm,
-                            retmax = 5)
-            # Get the count of the results that NCBI returned
-            Results[i, 1] <- genome_result$count 
-            Results[i, 2] <- Chloroplast_genome_SearchTerm
-            
-            # Save all the UIDs needed for downloading
-            for (id in genome_result$ids) {
-              uids <- c(uids, id) 
-            }
-          }, error = function(err) {
-            # If an error occurred we mark it in the results so the User Knows
-            Results[i, 1] <<- "Error"
-            Results[i, 2] <<- "Error"
-          })
-        }
-        list(Results, uids)
-      })
+      # Reference Sequences option is selected
+      fGenOrgSearch() %...>% getNcbiSearchResults(
+        resultsDfColumnNames = c('Num_RefSeq_Chloroplast_Genomes_in_NCBI_Nucleotide', 'SearchStatements'),
+        databaseName = "nucleotide",
+        genomeList = .,
+        parameters = getNcbiSearchParameters('chloroplast', isTRUE(input$refSeq))
+      )
     }
-  })
+  )
+  
   
   # * Is_the_taxa_in_the_NCBI_genome_DB ----------------------------------------
   
-  Is_the_taxa_in_the_NCBI_genome_DB <- reactive ({
-    fGenOrgSearch() %...>% {
-      num_rows <- length(.)
-      # Get the list returned by fGenOrgSearch
-      genomeList <- . 
-      # Create dataframe for Results
-      Results <- data.frame(matrix(0, ncol = 2, nrow = num_rows)) 
-      # Create a vector to store the unique IDs
-      uids <- c() 
-      
-      names(Results) <-
-        c('present_in_NCBI_Genome', 'GenomeDB_SearchStatements')
-      future_promise({
-        for (i in 1:num_rows)
-        {
-          # Set up the Search Term
-          genome_SearchTerm <- paste0('', genomeList[i], '[ORGN]', '')
-          searchResult <- tryCatch({
-            if (!NCBIKeyFlag) {
-              # Sleep to prevent Rate Limiting
-              Sys.sleep(0.34) 
-            }
-            # Search in NCBI
-            genome_result <-
-              entrez_search(db = "genome",
-                            term = genome_SearchTerm,
-                            retmax = 5) 
-            # Get and save the count of the results that NCBI returned
-            Results[i, 1] <- genome_result$count 
-            # Save the search term in the results dataframe
-            Results[i, 2] <- genome_SearchTerm 
-            # Save all the UIDs needed for downloading
-            for (id in genome_result$ids) {
-              uids <- c(uids, id) 
-            }
-          }, error = function(err) {
-            # If an error occurred we mark it in the results so the User Knows
-            Results[i, 1] <<- "Error"
-            Results[i, 2] <<- "Error"
-          })
-        }
-        # Create a list containing the two vectors and return
-        list(Results, uids)
-      })
-    }
+  Is_the_taxa_in_the_NCBI_genome_DB <- reactive({
+    fGenOrgSearch() %...>% getNcbiSearchResults(
+      resultsDfColumnNames = c('present_in_NCBI_Genome', 'GenomeDB_SearchStatements'),
+      databaseName = "genome",
+      genomeList = .
+    )
   })
+  
   
   #  * selectFunction  ---------------------------------------------------------
   
-  selectfunction <- reactive({
-    # See which option has been selected call the right function and return 
-    # the list
-    if (input$gsearch == "Full mitochondrial genomes in NCBI Nucleotide")
-    {
-      Organisms_with_Mitochondrial_genomes() %...>% {
-        genomes <- .
-        genomes # list that gets returned if the if is entered
-      }
-    }
-    else if (input$gsearch == "Full chloroplast genomes in NCBI Nucleotide")
-    {
-      Organisms_with_Chloroplast_genomes() %...>% {
-        genomes <- .
-        genomes # list that gets returned if the if is entered
-      }
-    }
-    else if (input$gsearch == "Number of entries per taxa in NCBI Genome")
-    {
-      Is_the_taxa_in_the_NCBI_genome_DB() %...>% {
-        genomes <- .
-        genomes # list that gets returned if the if is entered
-      }
-    }
-  })
+  # possibly use a switch, more succint
+  selectfunction <- reactive(
+    switch(
+      input$gsearch,
+      "Full mitochondrial genomes in NCBI Nucleotide" = Organisms_with_Mitochondrial_genomes(),
+      "Full chloroplast genomes in NCBI Nucleotide" = Organisms_with_Chloroplast_genomes(),
+      "Number of entries per taxa in NCBI Genome" = Is_the_taxa_in_the_NCBI_genome_DB()))
+  
   
   # * Output Table render ------------------------------------------------------
   
@@ -343,6 +178,7 @@ shinyServer(function(input, output, session) {
                     colnames = names(data_df[[1]]))
     })
   })
+  
   
   # * Download Fastas ----------------------------------------------------------
   
@@ -404,6 +240,7 @@ shinyServer(function(input, output, session) {
       }
     }
   )
+  
   
   # * Download Genbank files ---------------------------------------------------
   
@@ -468,6 +305,7 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  
   # * Download Full Genome Results Table ---------------------------------------
   
   # Download Full Genome Table
@@ -501,6 +339,7 @@ shinyServer(function(input, output, session) {
       # input into CRUXorganismList
       input$CRUXorganismList # Returns as a string
     })
+  
   
   # * CRUXStrToList -----------------------------------------------------------
   
