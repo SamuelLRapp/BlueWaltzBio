@@ -1085,7 +1085,7 @@ shinyServer(function(input, output, session) {
       #Converts string from NCBIorganismList into a list of Strings
       orgString <- NCBISearch()
       NCBItaxizeOption <- input$NCBItaxizeOption
-     # future_promise({
+      future_promise({
         #separate based on commas
         organismList <- strsplit(orgString[[1]], ",")[[1]]
         organismList <- unique(organismList[organismList != ""])
@@ -1143,7 +1143,7 @@ shinyServer(function(input, output, session) {
           res<-organismList 
         }
         res
-      #})
+      })
     })
   
   
@@ -1192,9 +1192,9 @@ shinyServer(function(input, output, session) {
   # * NCBICoverage -------------------------------------------------------------
   
   genBankCoverage <- reactive({
-    
+    NCBIorganismList() %...>% {
       #get species and barcode inputs
-      organismList <- NCBIorganismList()
+      organismList <- .
       organismListLength <- length(organismList)
       
       codeList <- barcodeList()
@@ -1220,7 +1220,7 @@ shinyServer(function(input, output, session) {
         seq_len_list[[code]] <- input[[code]]
       }
       
-
+      future_promise({
         err <- 0              
         countResults <- list() 
         searchTerms <- list()   
@@ -1351,7 +1351,8 @@ shinyServer(function(input, output, session) {
                ids = uids,
                searchTermslist = searchTerms)
         results
-    
+      })
+    }
   })
   
   
@@ -1360,15 +1361,15 @@ shinyServer(function(input, output, session) {
   matrixGet <-
     reactive({
       # creates and returns the matrix to be displayed with the count
-     
+      NCBIorganismList() %...>% {
         #get species and barcode inputs
-        organismList <-  NCBIorganismList()
+        organismList <- .
         organismListLength <- length(organismList)
         codeListLength <- length(barcodeList())
-        gbc <- genBankCoverage()
+        genBankCoverage() %...>% {
           # Get the results from the NCBI query
           count <- c()
-          for (i in gbc[[1]]) {
+          for (i in .[[1]]) {
             count <- c(count, i)
           }
   
@@ -1379,6 +1380,8 @@ shinyServer(function(input, output, session) {
                    ncol = codeListLength,
                    byrow = TRUE)
           data
+        }
+      }
     })
   
   # * NCBITableOutput ----------------------------------------------------------
@@ -1387,14 +1390,14 @@ shinyServer(function(input, output, session) {
     reactive({
       # creates and returns the matrix to be displayed with the count
         #get species and barcode inputs
-        organismList <- NCBIorganismList()
+      NCBIorganismList() %...>% {
+        organismList <- .
         organismListLength <- length(organismList)
         codeListLength <- length(barcodeList())
-        gbc <- genBankCoverage()
-        
+        genBankCoverage() %...>% {
           # Get the results from the NCBI query
           SearchStatements <- c()
-          for (i in gbc[[3]]) {
+          for (i in .[[3]]) {
             #3 is the 3rd list in genBankCovearage aka the searchterms list
             SearchStatements <- c(SearchStatements, i)
           }
@@ -1408,8 +1411,8 @@ shinyServer(function(input, output, session) {
               byrow = TRUE
             )
           data
-        
-      
+        }
+      }
     })
   
   
@@ -1417,22 +1420,24 @@ shinyServer(function(input, output, session) {
   
   uidsGet <-
     reactive({
-      
+      # Returns the uids stored in the results from the NCBI query
+      genBankCoverage() %...>% {
       # Get the results from the NCBI query
-      resultsList <- genBankCoverage() # Returns the uids stored in the results from the NCBI query
-      idsList <- resultsList[[2]]
-      num_codes <- length(barcodeList()) #number of barcodes
-      
-      num_species <- length(resultsList[[3]])/num_codes #number of species
-      
-      #create list of lists of uid lists :p
-      uids = c()
-      for (i in 1:num_species){ 
-        idIndicesVec <- ((i*num_codes)-(num_codes-1)):(i*num_codes) #vector containing the indices of the elements containing this species' uids
-        ulist <- idsList[idIndicesVec] #list of uid lists, one for each barcode
-        uids <- c(uids, list(ulist))
+        resultsList <- .
+        idsList <- resultsList[[2]]
+        num_codes <- length(barcodeList()) #number of barcodes
+        
+        num_species <- length(resultsList[[3]])/num_codes #number of species
+        
+        #create list of lists of uid lists :p
+        uids = c()
+        for (i in 1:num_species){ 
+          idIndicesVec <- ((i*num_codes)-(num_codes-1)):(i*num_codes) #vector containing the indices of the elements containing this species' uids
+          ulist <- idsList[idIndicesVec] #list of uid lists, one for each barcode
+          uids <- c(uids, list(ulist))
+        }
+        uids
       }
-      uids
     })
   
   
@@ -1464,8 +1469,8 @@ shinyServer(function(input, output, session) {
     }
     return(content_fasta)
   }
-  
-  # TODO: [Zia - March 15, 2022]
+ 
+  # TODO: [Zia - March 18, 2022]
   # Possibly change to JavaScript download if cross-browser support is an issue
   # Change the downloads for the other databases too 
   
@@ -1475,69 +1480,87 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Fasta", "zip", sep=".")
     },
     content <- function(downloadedFile) {
-        dir.create(file.path("NCBI_eDNA_files"), recursive = TRUE)
+        
         print("make fasta files")
-        uids = uidsGet()
-        barcodes = barcodeList()
-        species = NCBIorganismList()
-        speciesNum = length(species)
-        barcodeNum = length(barcodes)
+        promise_all(uidsGet(), NCBIorganismList()) %...>% {
+          uids = .[[1]]
+          barcodes = barcodeList()
+          species = .[[2]]
+          speciesNum = length(species)
+          barcodeNum = length(barcodes)
+  
+          #get number of cells
+          cellNum <- speciesNum*barcodeNum
+          
+          #create a list to hold vectors with seq information
+          holder <- rep(list(character()), barcodeNum) #character() creates empty string vector
+          #initialize progress bar
+          # Create a Progress object
+          progress <-
+            AsyncProgress$new(
+              session,
+              min = 0,
+              max = cellNum,
+              detail = "Beginning download...",
+              value = 0
+            )
 
-        #get number of cells
-        cellNum <- speciesNum*barcodeNum
-        
-        #create separate fasta file for each barcode
-        filenames <- c()
-        for (code in barcodes) {
-          file_path <- paste0("NCBI_eDNA_files/","NCBI_", code, "_sequences.fasta")
-          filenames <- c(filenames, file_path)
-          file.create(file_path)
-        }
-        
-        #create a list to hold vectors with seq information
-        holder <- rep(list(character()), barcodeNum) #character() creates empty string vector
-
-        #initialize progress bar
-        # Create a Progress object
-        progress <- shiny::Progress$new()
-        on.exit(progress$close()) # Make sure it closes on downloadHandler exit, even if there's an error
-
-        #download sequences
-        for (i in 1:speciesNum) {
-          print("row start")
-          # do stuff with row
-          row <- uids[[i]]
-          for (j in 1:barcodeNum) {
-            cellIds <- row[[j]]
-            print(cellIds)
-            #check if there are no uids for this barcode for this species
-            empty <- FALSE 
-            if (length(cellIds) == 0){
-              empty <- TRUE
-            }
-            #download sequences for each UID
-            if (empty == FALSE){
-              content_fasta <- getFastaContent(cellIds)
-              holder[[j]] <- c(holder[[j]], content_fasta) #add to holder vector if seqs exist
-            }
-            #do nothing if empty == true
-            
-            print("uid downloaded")
-            #increment progress bar
-            progress$inc(1/cellNum, detail = paste("Downloading", barcodes[[j]], "sequences for", species[[i]], sep=" "))
-            print("bottom of column")
+          # create temp file directory
+          
+          #create separate fasta file for each barcode
+          filenames <- c()
+          tempDir = tempdir()
+          setwd(tempDir) #program auto returns to home dir on exit
+          for (code in barcodes) {
+            filename <- paste0("NCBI_", code, "_sequence")
+            file_path <- paste0(filename, ".fasta")
+            file.create(file_path)
+            filenames <- c(filenames, file_path)
           }
-          print("bottom of row")
-        }
 
-        for (codeNum in 1:barcodeNum){
-          #write sequences to appropriate file
-          write(holder[[codeNum]], filenames[[codeNum]], append = TRUE)
-        }
-        
-        zip(zipfile = downloadedFile, files = filenames) #output zip contains directory with fasta files
-        # delete temp file directory
-        unlink("NCBI_eDNA_files", recursive=TRUE) # recursive=true deletes all files in directory too
+          future_promise({
+            #download sequences
+            for (i in 1:speciesNum) {
+              print("row start")
+              # do stuff with row
+              row <- uids[[i]]
+              for (j in 1:barcodeNum) {
+                #update progress bar message
+                progress$set(detail = paste("Downloading", barcodes[[j]], "sequences for", species[[i]], sep=" "))
+                
+                cellIds <- row[[j]]
+                print(cellIds)
+                #check if there are no uids for this barcode for this species
+                empty <- FALSE 
+                if (length(cellIds) == 0){
+                  empty <- TRUE
+                }
+                #download sequences for each UID
+                if (empty == FALSE){
+                  content_fasta <- getFastaContent(cellIds)
+                  holder[[j]] <- c(holder[[j]], content_fasta) #add to holder vector if seqs exist
+                }
+                #do nothing if empty == true
+
+                print("uid downloaded")
+                
+                #increment progress bar
+                progress$inc(amount = 1)
+                
+                print("bottom of column")
+              }
+              print("bottom of row")
+            }
+    
+            for (codeNum in 1:barcodeNum){
+              #write sequences to appropriate file
+              write(holder[[codeNum]], file=filenames[[codeNum]], append = TRUE)
+            }
+            progress$set(value = cellNum) 
+            progress$close()
+            zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
+          })
+      }
     },
     contentType = "application/zip"
   )
@@ -1741,9 +1764,9 @@ shinyServer(function(input, output, session) {
   
   output$NCBIcoverageResults <- DT::renderDataTable({
     barcodes <- barcodeList()
-    rows <- NCBIorganismList()
-    data_df = matrixGet()
-    DT::datatable(data_df, rownames = rows, colnames = barcodes)
+    promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
+      DT::datatable(data_df, rownames = rows, colnames = barcodes)
+    })
   })
   
   
