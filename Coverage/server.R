@@ -1349,7 +1349,10 @@ shinyServer(function(input, output, session) {
         results <-
           list(count = countResults,
                ids = uids,
-               searchTermslist = searchTerms)
+               searchTermslist = searchTerms,
+               orgn = organismList,
+               barcodes = codeList
+               )
         results
       })
     }
@@ -1422,21 +1425,15 @@ shinyServer(function(input, output, session) {
     reactive({
       # Returns the uids stored in the results from the NCBI query
       genBankCoverage() %...>% {
-      # Get the results from the NCBI query
+        # Get the results from the NCBI query
         resultsList <- .
-        idsList <- resultsList[[2]]
-        num_codes <- length(barcodeList()) #number of barcodes
+        idsList <- resultsList[["ids"]]
+        num_codes <- length(resultsList[["barcodes"]]) #number of barcodes
         
-        num_species <- length(resultsList[[3]])/num_codes #number of species
+        num_species <- length(resultsList[["orgn"]]) #number of species
         
-        #create list of lists of uid lists :p
-        uids = c()
-        for (i in 1:num_species){ 
-          idIndicesVec <- ((i*num_codes)-(num_codes-1)):(i*num_codes) #vector containing the indices of the elements containing this species' uids
-          ulist <- idsList[idIndicesVec] #list of uid lists, one for each barcode
-          uids <- c(uids, list(ulist))
-        }
-        uids
+        P <- matrix(idsList, nrow = num_species, byrow = TRUE, dimnames = list(resultsList[["orgn"]], resultsList[["barcodes"]]))
+        P
       }
     })
   
@@ -1480,86 +1477,85 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Fasta", "zip", sep=".")
     },
     content <- function(downloadedFile) {
+      print("make fasta files")
+      uidsGet() %...>% {
+        uidsMatrix <- .
         
-        print("make fasta files")
-        promise_all(uidsGet(), NCBIorganismList()) %...>% {
-          uids = .[[1]]
-          barcodes = barcodeList()
-          species = .[[2]]
-          speciesNum = length(species)
-          barcodeNum = length(barcodes)
-  
-          #get number of cells
-          cellNum <- speciesNum*barcodeNum
-          
-          #create a list to hold vectors with seq information
-          holder <- rep(list(character()), barcodeNum) #character() creates empty string vector
-          #initialize progress bar
-          # Create a Progress object
-          progress <-
-            AsyncProgress$new(
-              session,
-              min = 0,
-              max = cellNum,
-              detail = "Beginning download...",
-              value = 0
-            )
-
-          # create temp file directory
+        barcodes <- colnames(uidsMatrix)
+        species <- rownames(uidsMatrix)
+        
+        speciesNum <- length(species)
+        barcodeNum <- length(barcodes)
+        
+        #get number of cells
+        cellNum <- speciesNum*barcodeNum
+        
+        # initialize progress bar
+        # Create a Progress object
+        progress <-
+          AsyncProgress$new(
+            session,
+            min = 0,
+            max = cellNum,
+            detail = "Beginning download...",
+            value = 0
+          )
+        future_promise({
+          # create temp file directory to hold files
+          tempDir <- tempdir()
+          # enter temp file dir
+          setwd(tempDir) #program auto returns to home dir on exit
           
           #create separate fasta file for each barcode
           filenames <- c()
-          tempDir = tempdir()
-          setwd(tempDir) #program auto returns to home dir on exit
           for (code in barcodes) {
             filename <- paste0("NCBI_", code, "_sequence")
             file_path <- paste0(filename, ".fasta")
             file.create(file_path)
             filenames <- c(filenames, file_path)
           }
-
-          future_promise({
-            #download sequences
-            for (i in 1:speciesNum) {
-              print("row start")
-              # do stuff with row
-              row <- uids[[i]]
-              for (j in 1:barcodeNum) {
-                #update progress bar message
-                progress$set(detail = paste("Downloading", barcodes[[j]], "sequences for", species[[i]], sep=" "))
-                
-                cellIds <- row[[j]]
-                print(cellIds)
-                #check if there are no uids for this barcode for this species
-                empty <- FALSE 
-                if (length(cellIds) == 0){
-                  empty <- TRUE
-                }
-                #download sequences for each UID
-                if (empty == FALSE){
-                  content_fasta <- getFastaContent(cellIds)
-                  holder[[j]] <- c(holder[[j]], content_fasta) #add to holder vector if seqs exist
-                }
-                #do nothing if empty == true
-
-                print("uid downloaded")
-                
-                #increment progress bar
-                progress$inc(amount = 1)
-                
-                print("bottom of column")
+          #create a list to hold vectors with seq information
+          holder <- rep(list(character()), barcodeNum) #character() creates empty string vector
+          
+          #download sequences
+          for (i in 1:speciesNum) {
+            print("row start")
+            # do stuff with row
+            for (j in 1:barcodeNum) {
+              #update progress bar message
+              progress$set(detail = paste("Downloading", barcodes[[j]], "sequences for", species[[i]], sep=" "))
+              
+              cellIds <- uidsMatrix[i,j][[1]]
+              print(cellIds)
+              #check if there are no uids for this barcode for this species
+              empty <- FALSE
+              if (length(cellIds) == 0){
+                empty <- TRUE
               }
-              print("bottom of row")
+              #download sequences for each UID
+              if (empty == FALSE){
+                content_fasta <- getFastaContent(cellIds)
+                holder[[j]] <- c(holder[[j]], content_fasta) #add to holder vector if seqs exist
+              }
+              #do nothing if empty == true
+              
+              print("uid downloaded")
+              
+              #increment progress bar
+              progress$inc(amount = 1)
+              
+              print("bottom of column")
             }
-    
-            for (codeNum in 1:barcodeNum){
-              #write sequences to appropriate file
-              write(holder[[codeNum]], file=filenames[[codeNum]], append = TRUE)
-            }
-            progress$set(value = cellNum) 
-            progress$close()
-            zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
-          })
+            print("bottom of row")
+          }
+          for (codeNum in 1:barcodeNum){
+            #write sequences to appropriate file
+            write(holder[[codeNum]], file=filenames[[codeNum]], append = TRUE)
+          }
+          progress$set(value = cellNum)
+          progress$close()
+          zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
+        })
       }
     },
     contentType = "application/zip"
