@@ -1090,6 +1090,7 @@ shinyServer(function(input, output, session) {
         organismList <- strsplit(orgString[[1]], ",")[[1]]
         organismList <- unique(organismList[organismList != ""])
         
+        res <- list()
         #if the taxize option is selected
         if (NCBItaxizeOption) {
           #initialize an empty vector
@@ -1136,11 +1137,12 @@ shinyServer(function(input, output, session) {
               taxize_organism_list <- c(taxize_organism_list, organism) 
             }
           }
-          taxize_organism_list
+          res <- taxize_organism_list
         } else{
           #return the list as is
-          organismList 
+          res<-organismList 
         }
+        res
       })
     })
   
@@ -1192,7 +1194,7 @@ shinyServer(function(input, output, session) {
   genBankCoverage <- reactive({
     NCBIorganismList() %...>% {
       #get species and barcode inputs
-      organismList <- . 
+      organismList <- .
       organismListLength <- length(organismList)
       
       codeList <- barcodeList()
@@ -1347,7 +1349,10 @@ shinyServer(function(input, output, session) {
         results <-
           list(count = countResults,
                ids = uids,
-               searchTermslist = searchTerms)
+               searchTermslist = searchTerms,
+               orgn = organismList,
+               barcodes = codeList
+               )
         results
       })
     }
@@ -1361,7 +1366,7 @@ shinyServer(function(input, output, session) {
       # creates and returns the matrix to be displayed with the count
       NCBIorganismList() %...>% {
         #get species and barcode inputs
-        organismList <- . 
+        organismList <- .
         organismListLength <- length(organismList)
         codeListLength <- length(barcodeList())
         genBankCoverage() %...>% {
@@ -1370,7 +1375,7 @@ shinyServer(function(input, output, session) {
           for (i in .[[1]]) {
             count <- c(count, i)
           }
-          
+  
           #convert results vector to dataframe
           data <-
             matrix(count,
@@ -1387,9 +1392,9 @@ shinyServer(function(input, output, session) {
   matrixGetSearchTerms <-
     reactive({
       # creates and returns the matrix to be displayed with the count
-      NCBIorganismList() %...>% {
         #get species and barcode inputs
-        organismList <- . 
+      NCBIorganismList() %...>% {
+        organismList <- .
         organismListLength <- length(organismList)
         codeListLength <- length(barcodeList())
         genBankCoverage() %...>% {
@@ -1418,77 +1423,143 @@ shinyServer(function(input, output, session) {
   
   uidsGet <-
     reactive({
-      # Returns the uids stored in the results from the NCBi query
+      # Returns the uids stored in the results from the NCBI query
       genBankCoverage() %...>% {
         # Get the results from the NCBI query
-        uids <- c()
-        for (i in .[[2]]) {
-          uids <- c(uids, i)
-        }
-        uids
+        resultsList <- .
+        idsList <- resultsList[["ids"]]
+        num_codes <- length(resultsList[["barcodes"]]) #number of barcodes
+        
+        num_species <- length(resultsList[["orgn"]]) #number of species
+        
+        P <- matrix(idsList, nrow = num_species, byrow = TRUE, dimnames = list(resultsList[["orgn"]], resultsList[["barcodes"]]))
+        P
       }
     })
   
   
   # * NCBIDownloadFASTA --------------------------------------------------------
   
+  #function to retrieve fasta content list
+  getFastaContent <- function(cellIds){
+    content_fasta <- ""
+    err <- 1
+    while (err == 1) { 
+      # Try catch for determining if homonyms exist, if they do fill
+      # up the errorPopupList and activate the errorHomonym Flag
+      File <- tryCatch({
+        if (!NCBIKeyFlag) {
+          # sleeping for 0.34 seconds each time gives us 3 queries
+          # a second. If each user queries at this rate, we can
+          # service 4-8 at the same time. :(
+          Sys.sleep(0.34)
+        }
+        # Get the fasta content with that uid
+        content_fasta <-
+          entrez_fetch(db = "nucleotide",
+                       id = cellIds,
+                       rettype = "fasta")
+        err <- 0
+      }, error = function(err) {
+        err <<- 1
+      })
+    }
+    return(content_fasta)
+  }
+ 
+  # TODO: [Zia - March 18, 2022]
+  # Possibly change to JavaScript download if cross-browser support is an issue
+  # Change the downloads for the other databases too 
+  
   # Download Fasta Files
   output$fileDownloadF <- downloadHandler(
-    filename = function() {
-      # Create the file and set its name
-      paste("NCBI_Fasta_File", ".fasta", sep = "")
+    filename <- function() {
+      paste("NCBI_Fasta", "zip", sep=".")
     },
-    content = function(file) {
+    content <- function(downloadedFile) {
+      print("make fasta files")
       uidsGet() %...>% {
-        progLength <- length(.)
+        uidsMatrix <- .
+        
+        barcodes <- colnames(uidsMatrix)
+        species <- rownames(uidsMatrix)
+        
+        speciesNum <- length(species)
+        barcodeNum <- length(barcodes)
+        
+        #get number of cells
+        cellNum <- speciesNum*barcodeNum
+        
+        # initialize progress bar
+        # Create a Progress object
         progress <-
           AsyncProgress$new(
             session,
             min = 0,
-            max = progLength,
-            message = "Downloading",
+            max = cellNum,
+            detail = "Beginning download...",
             value = 0
           )
         future_promise({
-          Vector_Fasta <- c()
-          for (uid in .) {
-            err <- 1
-            while (err == 1) {
-              File <-
-                tryCatch({
-                  # Try catch for determining if homonyms exist, if they do fill
-                  # up the errorPopupList and activate the errorHomonym Flag
-                  if (!NCBIKeyFlag) {
-                    # sleeping for 1/3 of a second each time gives us 3 queries 
-                    # a second. If each user queries at this rate, we can 
-                    # service 4-8 at the same time.
-                    Sys.sleep(0.34) 
-                  }
-                  # Get the fasta file with that uid
-                  File_fasta <-
-                    entrez_fetch(db = "nucleotide",
-                                 id = uid,
-                                 rettype = "fasta") 
-                  err <- 0
-                }, error = function(err) {
-                  err <<- 1
-                })
-            }
-            Vector_Fasta <-
-              c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
-            progress$inc(amount = 1)
+          # create temp file directory to hold files
+          tempDir <- tempdir()
+          # enter temp file dir
+          setwd(tempDir) #program auto returns to home dir on exit
+          
+          #create separate fasta file for each barcode
+          filenames <- c()
+          for (code in barcodes) {
+            filename <- paste0("NCBI_", code, "_sequence")
+            file_path <- paste0(filename, ".fasta")
+            file.create(file_path)
+            filenames <- c(filenames, file_path)
           }
-          # Writes the vector containing all the fasta file information into 
-          # one fasta file
-          write(Vector_Fasta, file) 
-          progress$set(value = progLength)
+          #create a list to hold vectors with seq information
+          holder <- rep(list(character()), barcodeNum) #character() creates empty string vector
+          
+          #download sequences
+          for (i in 1:speciesNum) {
+            print("row start")
+            # do stuff with row
+            for (j in 1:barcodeNum) {
+              #update progress bar message
+              progress$set(detail = paste("Downloading", barcodes[[j]], "sequences for", species[[i]], sep=" "))
+              
+              cellIds <- uidsMatrix[i,j][[1]]
+              print(cellIds)
+              #check if there are no uids for this barcode for this species
+              empty <- FALSE
+              if (length(cellIds) == 0){
+                empty <- TRUE
+              }
+              #download sequences for each UID
+              if (empty == FALSE){
+                content_fasta <- getFastaContent(cellIds)
+                holder[[j]] <- c(holder[[j]], content_fasta) #add to holder vector if seqs exist
+              }
+              #do nothing if empty == true
+              
+              print("uid downloaded")
+              
+              #increment progress bar
+              progress$inc(amount = 1)
+              
+              print("bottom of column")
+            }
+            print("bottom of row")
+          }
+          for (codeNum in 1:barcodeNum){
+            #write sequences to appropriate file
+            write(holder[[codeNum]], file=filenames[[codeNum]], append = TRUE)
+          }
+          progress$set(value = cellNum)
           progress$close()
+          zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
         })
       }
-    }
+    },
+    contentType = "application/zip"
   )
-  
-  
   # * NCBIDownloadGenbank ------------------------------------------------------
   
   # Download NCBI Genbank Files
