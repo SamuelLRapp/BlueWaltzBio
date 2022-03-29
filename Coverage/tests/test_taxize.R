@@ -17,6 +17,7 @@ orgListHelper <- modules::use("Coverage/orgListHelper.R")
 
 function_template <- function(expectedOutput, inputString, inputBool, funcName){
   orgListHelper$taxizeHelper(inputString, inputBool) %...>%{
+    print("------------------------------------")
     taxizeHelperOutput <- .
     fileName <- paste("Coverage/tests/test_output/", funcName, ".csv", sep="")
     write.table(taxizeHelperOutput, 
@@ -27,6 +28,7 @@ function_template <- function(expectedOutput, inputString, inputBool, funcName){
     print(taxizeHelperOutput)
     print(orgVector)
     print(expectedOutput)
+    print(paste("results of test ", funcName, ":"))
     print(identical(orgVector, expectedOutput))
   }
 }
@@ -36,4 +38,45 @@ function_template(c("Homo saapiens", "Homo sapiens"),
                   "Homo saapiens, Homo sapiens",
                   FALSE,
                   "boolean_off")
+
+# empty_string -----------------------------------------------------------------
+function_template(c(""),
+                  "",
+                  TRUE,
+                  "empty_string")
+
+# simple_test ------------------------------------------------------------------
+function_template(c("Homo sapiens", 
+                    "Homo sapiens subsp. Denisova"),
+                  "Homo saapiens",
+                  TRUE,
+                  "simple_test")
+
+# duplicates_bool_on -----------------------------------------------------------
+function_template(c("Gallus gallus"),
+                  "Gallus gallus, Gallus gallus",
+                  TRUE,
+                  "duplicates_bool_on")
+
+# duplicates_bool_off ----------------------------------------------------------
+function_template(c("Homo saapiens"),
+                  "Homo saapiens, Homo saapiens",
+                  FALSE,
+                  "duplicates_bool_off")
+
+# double_comma_bool_on ---------------------------------------------------------
+function_template(c("Homo saapiens", 
+                    "Homo sapiens", 
+                    "Homo sapiens subsp. Denisova", 
+                    "Gallus gallus"),
+                  "Homo saapiens,, Gallus gallus",
+                  TRUE,
+                  "double_comma_bool_on")
+
+# double_comma_bool_off --------------------------------------------------------
+function_template(c("Homo saapiens", "Gallus gallus"),
+                  "Homo saapiens,, Gallus gallus",
+                  FALSE,
+                  "double_comma_bool_off")
+
 
