@@ -16,19 +16,24 @@ orgListHelper <- modules::use("Coverage/orgListHelper.R")
 
 
 function_template <- function(expectedOutput, inputString, inputBool, funcName){
-  expectedOutput <- expectedOutput
   orgListHelper$taxizeHelper(inputString, inputBool) %...>%{
     taxizeHelperOutput <- .
-    fileName <- paste("Coverage/tests/test_output/", funcName, ".csv")
-    write.table(taxizeHelperOutput, file=fileName, row.names=FALSE, col.names = FALSE)
-    orgVector <- read.csv(fileName)[1]
+    fileName <- paste("Coverage/tests/test_output/", funcName, ".csv", sep="")
+    write.table(taxizeHelperOutput, 
+                file=fileName,
+                row.names = FALSE,
+                col.name = FALSE)
+    orgVector <- read.table(fileName)[1]$V1
+    print(taxizeHelperOutput)
     print(orgVector)
+    print(expectedOutput)
+    print(identical(orgVector, expectedOutput))
   }
 }
 
-
-function_template(c("Homo saapiens"),
-                  "Homo saapiens",
+# boolean_off ------------------------------------------------------------------
+function_template(c("Homo saapiens", "Homo sapiens"),
+                  "Homo saapiens, Homo sapiens",
                   FALSE,
                   "boolean_off")
 
