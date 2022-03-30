@@ -15,15 +15,23 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
     }
     # deduplicate
     organismList <- unique(organismList[organismList != ""])
-    if(taxizeSelected){ #if the taxize option is selected
-      taxize_organism_list <- c() #initialize an empty vector
+    
+    #if the taxize option is selected
+    if(taxizeSelected){ 
+      #initialize an empty vector
+      taxize_organism_list <- c() 
+      
       for(organism in organismList)
       {
         err <- 1
         while(err == 1) {
           NCBI_names <- tryCatch({
-            Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
-            NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+            # sleeping for 1/3 of a second each time gives us 3 queries a 
+            # second. If each user queries at this rate, we can service 4-8 at 
+            # the same time.
+            Sys.sleep(0.34) 
+            # help user with various naming issues (spelling, synonyms, etc.)
+            NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) 
             err <- 0
             NCBI_names
           }, error = function(err) {
@@ -31,24 +39,31 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
           })
         }
         
-        row_count <- nrow(NCBI_names) # get number of rows in dataframe
+        # get number of rows in dataframe
+        row_count <- nrow(NCBI_names)
         
-        if(row_count > 0) #If a legitimate name was found
+        #If a legitimate name was found
+        if(row_count > 0) 
         {
           for(j in 1:row_count)
           {
-            taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
-            taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
+            #Store each matched name in taxa_name
+            taxa_name <- NCBI_names[[j,3]] 
+            #update the vector with all the taxa_names.
+            taxize_organism_list <- c(taxize_organism_list, taxa_name) 
           }
         }
         else
         {
-          taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
+          #just append organism to the list, and return taxize_organism_list
+          taxize_organism_list <- c(taxize_organism_list, organism) 
         }
       }
       taxize_organism_list
+      
     } else{
-      organismList #return the list as is
+      #if the checkbox wasn't selected, return the list as is
+      organismList 
     }
   })
 }
