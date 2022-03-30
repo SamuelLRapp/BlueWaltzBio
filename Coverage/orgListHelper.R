@@ -7,14 +7,19 @@ import(taxize)
 
 taxizeHelper <- function(orgSearch, taxizeSelected){
   future_promise({
-    organismList <- strsplit(orgSearch[[1]], ",")[[1]] #separate based on commas
+    # separate based on commas
+    organismList <- strsplit(orgSearch[[1]], ",")[[1]]
+    # trim both leading and trailing whitespace
+    for(i in 1:length(organismList)){
+      organismList[[i]] <- trimws(organismList[[i]], "b")
+    }
+    # deduplicate
     organismList <- unique(organismList[organismList != ""])
     if(taxizeSelected){ #if the taxize option is selected
       taxize_organism_list <- c() #initialize an empty vector
-      for(i in 1:length(organismList))
+      for(organism in organismList)
       {
         err <- 1
-        organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
         while(err == 1) {
           NCBI_names <- tryCatch({
             Sys.sleep(0.34) #sleeping for 1/3 of a second each time gives us 3 queries a second. If each user queries at this rate, we can service 4-8 at the same time.
