@@ -65,8 +65,7 @@ function_template(c("Homo saapiens"),
                   "duplicates_bool_off")
 
 # double_comma_bool_on ---------------------------------------------------------
-function_template(c("Homo saapiens", 
-                    "Homo sapiens", 
+function_template(c("Homo sapiens", 
                     "Homo sapiens subsp. Denisova", 
                     "Gallus gallus"),
                   "Homo saapiens,, Gallus gallus",
