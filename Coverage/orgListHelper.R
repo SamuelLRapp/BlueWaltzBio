@@ -7,6 +7,9 @@ import(taxize)
 
 taxizeHelper <- function(orgSearch, taxizeSelected){
   future_promise({
+    if(orgSearch == ""){
+      return(c())
+    }
     # separate based on commas
     organismList <- strsplit(orgSearch[[1]], ",")[[1]]
     # trim both leading and trailing whitespace

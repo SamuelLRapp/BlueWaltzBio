@@ -24,7 +24,10 @@ function_template <- function(expectedOutput, inputString, inputBool, funcName){
                 file=fileName,
                 row.names = FALSE,
                 col.name = FALSE)
-    orgVector <- read.table(fileName)[1]$V1
+    orgVector <- c()
+    if(file.info(fileName)$size != 0){
+      orgVector <- read.table(fileName)[1]$V1
+    }
     print(taxizeHelperOutput)
     print(orgVector)
     print(expectedOutput)
@@ -40,7 +43,7 @@ function_template(c("Homo saapiens", "Homo sapiens"),
                   "boolean_off")
 
 # empty_string -----------------------------------------------------------------
-function_template(c(""),
+function_template(c(),
                   "",
                   TRUE,
                   "empty_string")
