@@ -15,11 +15,58 @@ library(vembedr)
 library(shinydashboard)
 library(shinyalert) # popup library
 #library(shinybusy)
+library(shinyjs)
+jsCode <- paste0('shinyjs.clickBtn = function(params){
+                    console.log("btn clicked");
+                    var defaultParams = {
+                       btnId : ""
+                    };
+                    params = shinyjs.getParams(params, defaultParams);
+                    btn = $("#"+params.btnId);
+                    console.log(btn);
+                    btn[0].click();
+                  }
+                 
+                  shinyjs.chooseTab = function(params){
+                    var defaultParams = {
+                       tabName: ""
+                    };
+                    params = shinyjs.getParams(params, defaultParams);
+                    tabName = params.tabName;
+                    selector = `a[data-toggle="tab"][data-value=${tabName}]`
+                    tab = $(selector);
+                    console.log(tab);
+                    tab.click();
+                  }
+                 ')
 
-shinyUI(fluidPage(
+  onInitJs <- 
+  '$(document).ready(function() {
+      console.log( "ready!" );
+      
+
+      // The mutation observer
+      
+      $(document).on("shiny:connected", function(event) {
+    
+        tabBtn = $("#prt");
+        console.log(tabBtn);
+        tabBtn.click();
+        
+      });
+    
+  });'
+
+shinyUI(
+  fluidPage(
   #IDE says this call is now unnecessary
   #but if the call is still wanted, 
   #pass the force=TRUE argument.
+  
+  useShinyjs(),
+  extendShinyjs(text = onInitJs, functions = c()),
+  extendShinyjs(text = jsCode, functions = c("clickBtn", "chooseTab")),
+  
   useShinyalert(force=TRUE), # This line is needed for the popup
   navbarPage("Reference Sequence Browser",
 
@@ -28,6 +75,7 @@ shinyUI(fluidPage(
              titlePanel("Welcome to the Reference Sequence Browser"),
              textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
              actionButton(inputId = "SetKey", label = "Set Key"),
+             
              p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
  Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
 " ),
@@ -111,11 +159,54 @@ shinyUI(fluidPage(
 
       tabPanel("NCBI",          #NCBI Tab    
         # Application title
-
+        tags$style('
+          .flex-btn-grid{
+            display: inline-flex;
+            flex-wrap: wrap;
+          }
+          .flex-btn-grid.test-panel button {
+            margin: 6px;
+          }
+          .flex-btn-grid.barcode button {
+            margin: 2px;
+          }
+          #ncbi-dwn{
+            cursor: default;
+            position:absolute;
+            top: 0;
+            left:0;
+            width:1px;
+            height:1px;
+            z-index: -1;
+            opacity:0;
+          }
+        '),
         tabsetPanel(
           tabPanel("Search", 
             titlePanel("Find NCBI records of your organisms and barcodes of interest"),
             fluidRow(
+              ##
+              #Panel just for testing
+              mainPanel(
+                div(style="padding: 1rem;background:hsl(40, 90%, 60%)",
+                  h4(
+                    "***Buttons for testing caching***",
+                  ),
+                  #HTML('<a id="dlink" href="" target="_blank">download link</a>'),
+                  div(class="flex-btn-grid test-panel",
+                      actionButton("prt", "js tester"),
+                      actionButton("eft", "loop comparison"),
+                      actionButton("get-data-test", "just get data (no download)", style = "border: 1px dashed #555"),
+                      actionButton("cache-log", "log cache file paths", style = "border: 1px dashed #555"),
+                      actionButton("mt-file", "empty file cache", class = "btn-danger"),
+                      actionButton("mt-entire", "empty entire cache", class = "btn-danger"),
+                      downloadButton("ncbi-dwn",""),
+                      actionButton(inputId="ncbi-dwn-trigger", label=list(icon("download"), "download FASTA files"), class = "btn-primary")
+                  )
+                )
+              ),
+              #end test panel
+              ##
               mainPanel(
                 h4("Descriptions of each Search Field"),
                 dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
@@ -135,16 +226,16 @@ shinyUI(fluidPage(
                 checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
                 checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE),
                 textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
-                fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
-                         column(width = 3, actionButton("barcodeOption16S", "16S")),
-                         column(width = 3, actionButton(inputId = "barcodeOption12S", label = "12S")),
-                         column(width = 3, actionButton(inputId = "barcodeOption18S", label = "18S"))
-                         
-                ),
-                fluidRow(
-                  column(width = 4, actionButton(inputId = "barcodeOptionITS2", label = "ITS2")),
-                  column(width = 4, actionButton(inputId = "barcodeOptiontrnl", label = "trnl")),
-                  column(width = 4, actionButton(inputId = "barcodeOptionITS1", label = "ITS1"))
+
+                div(class="flex-btn-grid barcode",
+                  actionButton(inputId = "barcodeOptionCO1", label = "CO1"),
+                  actionButton(inputId = "barcodeOption16S", label = "16S"),
+                  actionButton(inputId = "barcodeOption12S", label = "12S"),
+                  actionButton(inputId = "barcodeOption18S", label = "18S"),
+                  actionButton(inputId = "barcodeOptionITS2", label = "ITS2"),
+                  actionButton(inputId = "barcodeOptiontrnl", label = "trnl"),
+                  actionButton(inputId = "barcodeOptionITS1", label = "ITS1"),
+                  actionButton(inputId = "barcodeClear", label = "Clear", class="btn-danger")
                 ),
                 checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by the [GENE] Metadata field", value = TRUE),
                 checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
@@ -160,6 +251,7 @@ shinyUI(fluidPage(
                                   downloadButton('downloadStatements',"Download search terms table"),
                                   downloadButton('download',"Download counts table"),
                                   downloadButton("fileDownloadF","Download FASTA files"),
+                                  
                                   downloadButton("fileDownloadG","Download Genbank files"),
                                   downloadButton("NCBIfileDownloadSD","Download summary data"))
                 #add_busy_spinner(spin = "fading-circle")
