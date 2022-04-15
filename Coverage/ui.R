@@ -195,17 +195,32 @@ shinyUI(fluidPage(
                        fluidRow(
                          # Sidebar with a text area for organisms and bar code
                          sidebarPanel(
-                           textAreaInput(inputId = "BOLDorganismList", label = "Species Names"),
-                           checkboxInput(inputId = "BOLDtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+                           textAreaInput("BOLDorganismList", label = "Species Names"),
+                           checkboxInput("BOLDtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+                           # add ncbi option remove genome
+                           checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE),
                            actionButton("BOLDsearchButton", "Search")
                          ), 
                          mainPanel(
-                           # Show a plot of the generated distribution
-                           DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                           # Download button
-                           downloadButton('downloadBoldFasta',"Download Fasta"),
-                         )
-                       ),
+                           # remove genbank accessions
+                           conditionalPanel (
+                             #print("in true condition"),
+                             #print(input.removeNCBI),
+                             condition = "input.removeNCBI == true",
+                             DT::dataTableOutput("removeNCBIResults") %>% withSpinner(color="#0dc5c1")
+                             
+                           ),
+                           # keep genbank accession --> og data 
+                           conditionalPanel(
+                             #print("in false condition"),
+                             #print(input.removeNCBI),
+                             condition = "input.removeNCBI == false",
+                             DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1")
+                           ),
+                          # Download button
+                          downloadButton('downloadBoldFasta',"Download Fasta")
+                        )
+                      ),
               ),
               tabPanel("Information",
                        # Application title
