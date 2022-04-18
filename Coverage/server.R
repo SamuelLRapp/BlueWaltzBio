@@ -1617,14 +1617,13 @@ shinyServer(function(input, output, session) {
       }) %...>% {
         print("done!")
         progress$close()
+        callbck()
         
-        js$clickBtn("ncbi-dwn")
-        # ncbi_rv$hasdata = TRUE
-        shinyjs::enable("ncbi-dwn-trigger")
       }
     return(NULL)
   }
   observeEvent(input[["get-data-test"]], {
+    shinyjs::disable("get-data-test")
     cache <- createCache("NCBI")
     if ( cache$exists("uids-matrix") ) {
       print("cache detected")
@@ -1636,7 +1635,10 @@ shinyServer(function(input, output, session) {
       uncached <- setdiff(1:total_cells, getCachedCells())
       print("uncached")
       print(uncached)
-      getFileContent(uids_matrix, uncached_cells = uncached)
+      getFileContent(uids_matrix, callbck=function(){
+        print("data retrieved! a cache was detected")
+        print("just_get_data was clicked so no fasta file download will start")
+      }, uncached_cells = uncached)
     } else {
       print("no cache detected")
       
@@ -1645,7 +1647,9 @@ shinyServer(function(input, output, session) {
         setCache("uids-matrix", uidsMatrix, "NCBI")
         
         getFileContent(uidsMatrix, callbck = function(){
-          print("data retrieved!")
+          print("data retrieved! no cache was detected")
+          print("just_get_data was clicked so no fasta file download will start")
+          shinyjs::enable("get-data-test")
         }) 
       }
     }
@@ -1664,12 +1668,12 @@ shinyServer(function(input, output, session) {
       uncached <- setdiff(1:total_cells, getCachedCells())
       print("uncached")
       print(uncached)
-      f <- function(){
-        print("starting download...")
+      content_callback <- function(){
+        print("starting fasta file download...")
         js$clickBtn("ncbi-dwn")
         shinyjs::enable("ncbi-dwn-trigger")
       }
-      getFileContent(uids_matrix,f, uncached_cells = uncached)
+      getFileContent(uids_matrix,content_callback, uncached_cells = uncached)
     } else {
       print("no cache detected")
       
@@ -1677,7 +1681,7 @@ shinyServer(function(input, output, session) {
         uidsMatrix <- .
         setCache("uids-matrix", uidsMatrix, "NCBI")
         zz <- function(){
-          print("starting download...")
+          print("starting data test download...")
           js$clickBtn("ncbi-dwn")
           shinyjs::enable("ncbi-dwn-trigger")
         }
@@ -1705,8 +1709,7 @@ shinyServer(function(input, output, session) {
       print("cache empty")
     }
   })
-  # TODO: [Zia - April 11, 2022]
-  # Possibly change to JavaScript download if cross-browser support is an issue
+  # TODO: [Zia - April 18, 2022]
   # Change the downloads for the other databases too 
   # Save downloaded data in case of crash
   
@@ -1744,7 +1747,7 @@ shinyServer(function(input, output, session) {
             getCache(key, cache_name)
           })
           #write sequences to appropriate file
-          write(content_vec, file=filenames[[codeNum]])
+          write(content_vec, file=filenames[[codeNum]], append=T)
         })
         #emptyCache("NCBI")
         zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
