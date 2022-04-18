@@ -5,9 +5,8 @@ testPanelUI <- function(id){
   mainPanel(
     div(style="padding: 1rem;background:hsl(40, 90%, 60%)",
       h4(
-        "***Buttons for testing caching***",
+        "***Buttons for testing caching***"
       ),
-      
       div(class="flex-btn-grid test-panel",
           actionButton(ns("tab-switcher"), "js tester"),
           actionButton(ns("get-data-test"), "just get data (no download)", style = "border: 1px dashed #555"),

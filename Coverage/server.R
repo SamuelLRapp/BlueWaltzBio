@@ -1428,6 +1428,44 @@ shinyServer(function(input, output, session) {
       }
     })
   
+  # * General Cache Helper Functions ------------------------
+  getCachePath <- function(cache_name){
+    rappdirs::user_cache_dir(cache_name)
+  }
+  #createCache is actually a bad name, it should be more like "getCacheObject" or something
+  createCache <- function(cache_name){
+    cache_path <- getCachePath(cache_name)
+    cachem::cache_disk(dir = cache_path)
+  }
+  setCache <- function(key, value, cache_name){
+    cache <- createCache(cache_name)
+    cache$set(key, value)
+  }
+  setFileCache <- function(file_num, cell_num, content){
+    cache_name <- paste("NCBI","files",file_num, sep="/")
+    setCache(as.character(cell_num), content, cache_name)
+  }
+  getCache <- function(key, cache_name){
+    cache <- createCache(cache_name)
+    cache$get(key)
+  }
+  getFileCache <- function(db="NCBI", file_num, cell_num){
+    cache_name <- paste(db,"files",file_num, sep="/")
+    cache_path <- getCachePath(cache_name)
+    getCache(as.character(cell_num), cache_path)
+  }
+  listCacheDir <- function(db="NCBI", subdir="", recur=F, showdir=T){
+    cache_name <- paste(db, subdir, sep="/")
+    d <- getCachePath(cache_name)
+    list.files(d, recursive=recur, include.dirs = showdir)
+  }
+  emptyCache <- function(cache_name){
+    #unlink will delete all the contents of the cache
+    unlink(paste0(getCachePath(cache_name),"/*"),recursive=TRUE,force=TRUE)
+  }
+  
+ 
+  
   
   # * NCBIDownloadFASTA --------------------------------------------------------
   
@@ -1457,61 +1495,12 @@ shinyServer(function(input, output, session) {
     }
     content_fasta
   }
-  getCachePath <- function(cache_name){
-    rappdirs::user_cache_dir(cache_name)
-  }
-  createCache <- function(cache_name){
-    cache_path <- getCachePath(cache_name)
-    cachem::cache_disk(dir = cache_path)
-  }
-  setCache <- function(key, value, cache_name){
-    cache <- createCache(cache_name)
-    cache$set(key, value)
-  }
-  setFileCache <- function(file_num, cell_num, content){
-    cache_name <- paste("NCBI","files",file_num, sep="/")
-    setCache(as.character(cell_num), content, cache_name)
-  }
-  getCache <- function(key, cache_name){
-    cache <- createCache(cache_name)
-    cache$get(key)
-  }
-  getFileCache <- function(file_num, cell_num){
-    cache_name <- paste("NCBI","files",file_num, sep="/")
-    cache_path <- getCachePath(cache_name)
-    getCache(as.character(cell_num), cache_path)
-  }
   
-  listCacheDir <- function(subdir="", recur=F, showdir=T){
-    cache_name <- paste("NCBI", subdir, sep="/")
-    d <- getCachePath(cache_name)
-    list.files(d, recursive=recur, include.dirs = showdir)
-  }
-  emptyCache <- function(cache_name){
-    unlink(paste0(getCachePath(cache_name),"/*"),recursive=TRUE,force=TRUE)
-  }
-
   getCachedCells <- function() {
     cells_dwn <- listCacheDir(subdir="files", recur=T, showdir = F)
-    cell_list <- gregexpr("[0-9]+(?=[.])", cells_dwn, perl=T)
+    cell_list <- gregexpr("[0-9]+(?=[.])", cells_dwn, perl=T) #regex gets the number before the file extension
     cell_list = unlist(regmatches(cells_dwn, cell_list))
   }
-
-  # for auto-filling inputs during testing
-  autofillInputs <- function(){
-    updateTextAreaInput(
-      getDefaultReactiveDomain(),
-      "NCBIorganismList",
-      value = "gallus gallus, cygnus, bos taurus"
-    )
-    updateTextAreaInput(
-      getDefaultReactiveDomain(),
-      "barcodeList",
-      value = "trnl, (CO1; COI; COX1)"
-    )
-  }
-  
-  autofillInputs()
   
   getFileContent <- function(uidsMatrix, callbck, uncached_cells = NULL ){
     # initialize progress bar
@@ -1524,7 +1513,7 @@ shinyServer(function(input, output, session) {
         value = 0
       )
       future_promise({
-        #
+        
         barcodes <- colnames(uidsMatrix)
         species <- rownames(uidsMatrix)
         
@@ -1564,7 +1553,7 @@ shinyServer(function(input, output, session) {
             content_fasta <- getFastaContent(cellIds)
           }
           setFileCache(cur_col, cellNum, content_fasta)
-          progress$inc(1/total_retr_cells)
+          progress$inc(1/total_retr_cells) #this works somehow
           print("uid downloaded")
           print("cell end")
           
@@ -1577,6 +1566,23 @@ shinyServer(function(input, output, session) {
       }
     return(NULL) # this makes sure RShiny won't wait for the promise to finish before doing other stuff
   }
+  ### stuff for test panel 
+  
+  # for auto-filling inputs during testing
+  autofillInputs <- function(){
+    updateTextAreaInput(
+      getDefaultReactiveDomain(),
+      "NCBIorganismList",
+      value = "gallus gallus, cygnus, bos taurus"
+    )
+    updateTextAreaInput(
+      getDefaultReactiveDomain(),
+      "barcodeList",
+      value = "trnl, (CO1; COI; COX1)"
+    )
+  }
+  
+  autofillInputs()
   observeEvent(input[["get-data-test"]], {
     shinyjs::disable("get-data-test") #disable button
     cache <- createCache("NCBI")
@@ -1611,17 +1617,17 @@ shinyServer(function(input, output, session) {
   })
   observeEvent(input[["ncbi-dwn-trigger"]], {
     shinyjs::disable("ncbi-dwn-trigger")
-    #fileNum <- length(list.files( getCachePath("NCBI/files") ))
+    #get the cache for NCBI stuff
     cache <- createCache("NCBI")
     if ( cache$exists("uids-matrix") ) {
       print("cache detected")
       uids_matrix <- cache$get("uids-matrix")
-      total_cells <- nrow(uids_matrix)*ncol(uids_matrix)
-      print(1:total_cells)
-      print("cached")
+      total_cells <- nrow(uids_matrix)*ncol(uids_matrix) #integer vector with the ids of every cached cell
+   
+      print("cached cells:")
       print(getCachedCells())
       uncached <- setdiff(1:total_cells, getCachedCells())
-      print("uncached")
+      print("uncached cells:")
       print(uncached)
       content_callback <- function(){
         print("starting fasta file download...")
@@ -1667,6 +1673,7 @@ shinyServer(function(input, output, session) {
   # TODO: [Zia - April 18, 2022]
   # Change the downloads for the other databases too 
   # Save downloaded data in case of crash
+  # Cache search box contents
   
   # Download Fasta Files
 

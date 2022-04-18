@@ -48,11 +48,7 @@ jsCode <- paste0('shinyjs.clickBtn = function(params){
       // The mutation observer
       
       $(document).on("shiny:connected", function(event) {
-    
-        tabBtn = $("#prt");
-        console.log(tabBtn);
-        tabBtn.click();
-        
+        shinyjs.chooseTab("NCBI");
       });
     
   });'
@@ -194,8 +190,6 @@ shinyUI(
                   ),
 
                   div(class="flex-btn-grid test-panel",
-                      actionButton("prt", "js tester"),
-                      actionButton("eft", "loop comparison"),
                       actionButton("get-data-test", "just get data (no download)", style = "border: 1px dashed #555"),
                       actionButton("cache-log", "log cache file paths", style = "border: 1px dashed #555"),
                       actionButton("mt-file", "empty file cache", class = "btn-danger"),
