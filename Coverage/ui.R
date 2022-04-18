@@ -192,7 +192,7 @@ shinyUI(
                   h4(
                     "***Buttons for testing caching***",
                   ),
-                  #HTML('<a id="dlink" href="" target="_blank">download link</a>'),
+
                   div(class="flex-btn-grid test-panel",
                       actionButton("prt", "js tester"),
                       actionButton("eft", "loop comparison"),

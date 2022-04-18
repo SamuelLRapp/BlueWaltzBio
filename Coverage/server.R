@@ -1491,49 +1491,6 @@ shinyServer(function(input, output, session) {
     unlink(paste0(getCachePath(cache_name),"/*"),recursive=TRUE,force=TRUE)
   }
 
-  jkl <- function(f){
-    if (!is.function(f)) stop("argument FUN is not a function!")
-    f()
-  }
-  observeEvent(input$prt, {
-    js$chooseTab("NCBI")
-    # this makes sure RShiny won't wait for the promise to finish before doing other stuff
-  })
-  
-  fmet <- function(n){
-    k <- c()
-    for (o in n){
-      k <- c(k, as.integer(o))
-    }
-  }
-  
-  smet <- function(n){
-    k <- sapply(n, function(o){
-      as.integer(o)
-    })
-    k
-  }
-  lmet <- function(n){
-    k <- lapply(X=n, FUN = function(o){
-      as.integer(o)
-    })
-    k
-  }
-  vmet <- function(n){
-    k <- vapply(X=n, FUN.VALUE = integer(1), FUN = function(o){
-      as.integer(o)
-    })
-    k
-  }
-  observeEvent(input$eft, {
-    S <- 10000
-    v <- as.character(1:S)
-    system.time( replicate( 20, R.1 <<- fmet(v) ) )
-    system.time( replicate( 20, R.2 <<- smet(v) ) )
-    system.time( replicate( 20, R.3 <<- vmet(v) ) )
-    system.time( replicate( 20, R.4 <<- lmet(v) ) )
-  })
-
   getCachedCells <- function() {
     cells_dwn <- listCacheDir(subdir="files", recur=T, showdir = F)
     cell_list <- gregexpr("[0-9]+(?=[.])", cells_dwn, perl=T)
@@ -1555,8 +1512,6 @@ shinyServer(function(input, output, session) {
   }
   
   autofillInputs()
-  
-  ncbi_rv <- reactiveValues(hasdata = NULL)
   
   getFileContent <- function(uidsMatrix, callbck, uncached_cells = NULL ){
     # initialize progress bar
@@ -1620,20 +1575,20 @@ shinyServer(function(input, output, session) {
         callbck()
         
       }
-    return(NULL)
+    return(NULL) # this makes sure RShiny won't wait for the promise to finish before doing other stuff
   }
   observeEvent(input[["get-data-test"]], {
-    shinyjs::disable("get-data-test")
+    shinyjs::disable("get-data-test") #disable button
     cache <- createCache("NCBI")
     if ( cache$exists("uids-matrix") ) {
       print("cache detected")
       uids_matrix <- cache$get("uids-matrix")
       total_cells <- nrow(uids_matrix)*ncol(uids_matrix)
-      print(1:total_cells)
-      print("cached")
+  
+      print("cached cell ids:")
       print(getCachedCells())
       uncached <- setdiff(1:total_cells, getCachedCells())
-      print("uncached")
+      print("uncached cell ids:")
       print(uncached)
       getFileContent(uids_matrix, callbck=function(){
         print("data retrieved! a cache was detected")
@@ -1649,7 +1604,7 @@ shinyServer(function(input, output, session) {
         getFileContent(uidsMatrix, callbck = function(){
           print("data retrieved! no cache was detected")
           print("just_get_data was clicked so no fasta file download will start")
-          shinyjs::enable("get-data-test")
+          shinyjs::enable("get-data-test") #re-enable button
         }) 
       }
     }
@@ -1673,7 +1628,7 @@ shinyServer(function(input, output, session) {
         js$clickBtn("ncbi-dwn")
         shinyjs::enable("ncbi-dwn-trigger")
       }
-      getFileContent(uids_matrix,content_callback, uncached_cells = uncached)
+      getFileContent(uids_matrix, content_callback, uncached_cells = uncached)
     } else {
       print("no cache detected")
       
