@@ -26,6 +26,7 @@ shinyUI(fluidPage(
   useShinyalert(force=TRUE), # This line is needed for the popup
   tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   navbarPage("Reference Sequence Browser",
+             id = "mainPage",
 
     # Home tab
     tabPanel("Home", 
@@ -44,42 +45,58 @@ shinyUI(fluidPage(
              ),
     tabPanel("CRUX",
              tabsetPanel(
-             
-               tabPanel("Search",
+               id = "CRUXpage",
+               tabPanel("Start Your Crux Search",
                         # Application title
                         titlePanel("Find CRUX database coverage of your organisms of interest"),
-                          # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                        
-                        # Usage instructions
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        h4("Additional Information:"),
+                        dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
+                        dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
+                        p(), #empty space 
                         fluidRow(
-                          mainPanel(
-                            h4("Additional Information:"),
-                            dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
-                            dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
-                            p(), #empty space 
-                            
-                          ),
-                        ),
+                          column(6, align="center", offset = 3,
+                                 fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
+                                 actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
+                                 actionButton("Button", "Start Your NCBI Search"),
+                                 tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
+                                 )),
                         
+                        ),
+               tabPanel("Organism Names",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         fluidRow(
-                          # Sidebar with a text area for organisms and bar code
-                          sidebarPanel(
-                            fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
-                            actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                            textAreaInput(inputId = "CRUXorganismList", label = "Organism Names"),
-                            checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
-                            actionButton("searchButton", "Search")
-                          ), 
-                          mainPanel(
-                            # Show a plot of the generated distribution
-                            DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                            # Download button
-                            conditionalPanel( condition = "output.CRUXcoverageResults",
-                                              downloadButton('downloadCrux',"Download table"),
-                                              downloadButton("CRUXfileDownloadSD","Download summary data"))
-                          )
-                        ),
-                        ),
+                          column(6, align="center", offset = 3,
+                                 textAreaInput(inputId = "CRUXorganismList", label = "Organism Names", width = 500, height = 200),
+                                 checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE, width = 500),
+                                 actionButton("searchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
+                                 #tags$style(type='text/css', "#CRUXorganismList { vertical-align- middle; height- 100px; width- 100%; font-size- 200px;}"),
+                                 #tags$style(type='text/css', "#CRUXtaxizeOption { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 #tags$style(type='text/css', "#searchButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
+                          )),
+               ),
+               tabPanel("Results",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                          # Show a plot of the generated distribution
+                          DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                          # Download button
+                          conditionalPanel( condition = "output.CRUXcoverageResults",
+                                            downloadButton('downloadCrux',"Download table"),
+                                            actionButton("SummaryDataButton", "Check Summary Data"))
+               ),
+               tabPanel("Summary Results",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        # Show a plot of the generated distribution
+                        DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
+                        # Download button
+                        conditionalPanel( condition = "output.CRUXSummaryResults",
+                                          downloadButton("CRUXfileDownloadSD","Download summary data"))
+               ),
                tabPanel("Information",
                         # Application title
                         titlePanel("Find CRUX database coverage of your organisms of interest"),

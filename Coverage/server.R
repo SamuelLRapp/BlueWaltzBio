@@ -26,6 +26,11 @@ library(mpoly)
 
 plan(multisession)
 shinyServer(function(input, output, session) {
+  
+  hideTab("CRUXpage", "Results")
+  hideTab("CRUXpage", "Organism Names")
+  hideTab("CRUXpage", "Summary Results")
+ 
   # Full Genome ----------------------------------------------------------------
   
   # * FullGenomeSearchButton ---------------------------------------------------
@@ -511,8 +516,27 @@ shinyServer(function(input, output, session) {
     eventReactive(input$searchButton, {
       # When searchButton clicked, update CruxOrgSearch to return the value 
       # input into CRUXorganismList
+      updateTabsetPanel(session, "CRUXpage", selected = "Results")
       input$CRUXorganismList # Returns as a string
     })
+  
+  
+  observeEvent(input$searchButton, {
+      updateTabsetPanel(session, "CRUXpage", selected = "Results")
+      showTab("CRUXpage", "Results")
+  })
+  
+  observeEvent(input$Button,
+  {
+      updateTabsetPanel(session, "CRUXpage", selected = "Organism Names")
+      showTab("CRUXpage", "Organism Names")
+  })
+  
+  observeEvent(input$SummaryDataButton,
+  {
+      updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
+      showTab("CRUXpage", "Summary Results")
+  })
   
   # * CRUXStrToList -----------------------------------------------------------
   
@@ -1041,6 +1065,15 @@ shinyServer(function(input, output, session) {
         colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
       )
     })
+  })
+  
+  output$CRUXSummaryResults <- DT::renderDataTable({
+    promise_all(data_df = summary_report(0), 
+                rows = organismListGet()) %...>% with({
+                  DT::datatable(
+                    data_df
+                  )
+                })
   })
   
   
