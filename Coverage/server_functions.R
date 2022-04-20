@@ -1,3 +1,11 @@
+import(future)
+import(promises)
+import(ipc)
+import(rentrez)
+orgListHelper <- modules::use("orgListHelper.R")
+
+# GENERAL FUNCTIONS ------------------------------------------------------------
+
 # parse a csv file and append the list from column column.header
 # to what's already in the text box.
 parseCsvColumnForTxtBox <- function(input, file.index, column.header, textbox.id) {
@@ -18,6 +26,29 @@ parseCsvColumnForTxtBox <- function(input, file.index, column.header, textbox.id
   c(input[[textbox.id]], head(uploadinfo[[column.header]][uploadinfo[[column.header]] != ""]))
 }
 
+
+# NCBI still rate limits with a key, to 10/s
+sleep <- function() {
+  if (ncbiKeyIsValid) {
+    Sys.sleep(0.1)
+  } else {
+    Sys.sleep(0.34)
+  }
+}
+
+
+# Sets local variable ncbiKeyIsValid.
+# Does not check if the provided key
+# is valid, this should be done 
+# before calling this function.
+ncbiKeyIsValid <- FALSE
+setNcbiKeyIsValid <- function(validity = TRUE) {
+  ncbiKeyIsValid <<- validity
+}
+
+
+
+# FULL GENOME TAB FUNCTIONS ----------------------------------------------------
 
 # returns the search parameters depending on which genome
 # is selected and whether search for reference sequences
@@ -94,47 +125,6 @@ getNcbiSearchResults <-
   }
 
 
-# NCBI still rate limits with a key, to 10/s
-sleep <- function() {
-  if (ncbiKeyIsValid) {
-    Sys.sleep(0.1)
-  } else {
-    Sys.sleep(0.34)
-  }
-}
-
-
-# returns orgList after taxizing it.
-taxize <-  function(orgList) {
-  taxizeGenOrgList <- c()
-    for (i in 1:length(orgList)) {
-      organism <- trimws(orgList[[i]], "b")
-      sleep()
-      ncbiNames <- gnr_resolve(sci = organism, data_source_ids = 4)
-      if (nrow(ncbiNames) > 0) {
-        for (j in 1:nrow(ncbiNames)){
-          taxizeGenOrgList <- c(taxizeGenOrgList, ncbiNames[[j, 3]])
-        }
-      } else {
-        taxizeGenOrgList <- c(taxizeGenOrgList, organism)
-      }
-    }
-    taxizeGenOrgList
-}
-
-
-# returns a vector of genomes from csv string orgList.
-# The list is taxized if taxizeOptionSelected is true.
-getGenomeList <- function(orgList, taxizeOptionSelected = FALSE) {
-  organismList <- strsplit(orgList[[1]], ",")[[1]]
-  organismList <- unique(organismList[organismList != ""])
-  if (taxizeOptionSelected) {
-    taxize(organismList)
-  } else {
-    organismList
-  }
-}
-
 
 # returns either "nucleotide" or "genome,"
 # based on which option is selected on the full 
@@ -160,29 +150,24 @@ getDbToSearch <- function(selectedOption){
 # value is the vector of organism names processed from the 
 # organism name text box. This function returns a future.
 getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqChecked) {
-  future_promise({
-    databaseOption <- getDbToSearch(dbOption)
-    genomeList <- getGenomeList(orgList, taxizeOption)
-    dfColumnNames <- getColumnNames(dbOption)
-    parameters <- getNcbiSearchParameters(dbOption, refSeqChecked)
-    list(getNcbiSearchResults(
-      databaseOption,
-      genomeList,
-      parameters,
-      dfColumnNames),
-      genomeList)
-  })
+  databaseOption <- getDbToSearch(dbOption)
+  dfColumnNames <- getColumnNames(dbOption)
+  parameters <- getNcbiSearchParameters(dbOption, refSeqChecked)
+  orgListHelper$taxizeHelper(orgList, taxizeOption) %...>% {
+    organismList <- .
+    future_promise({
+      list(getNcbiSearchResults(
+        databaseOption,
+        organismList,
+        parameters,
+        dfColumnNames),
+        organismList)
+    })
+  }
 }
 
 
-# Sets local variable ncbiKeyIsValid.
-# Does not check if the provided key
-# is valid, this should be done 
-# before calling this function.
-ncbiKeyIsValid <- FALSE
-setNcbiKeyIsValid <- function(validity = TRUE) {
-  ncbiKeyIsValid <<- validity
-}
+
 
 
 # Downloads the file of filetype for each id
@@ -211,6 +196,10 @@ downloadFileFromNcbi <- function(uid, filetype, db="nucleotide") {
     id = uid,
     rettype = filetype)
 }
+
+
+
+# CRUX TAB FUNCTIONS -----------------------------------------------------------
 
 
 # Takes orgList, the raw list from the organism names text box,
