@@ -23,7 +23,8 @@ library(promises)
 library(ipc)
 library(mpoly)
 library(modules)
-source("server_functions.R")
+orgListHelper <- modules::use("orgListHelper.R")
+server_functions <- modules::use("server_functions.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
@@ -64,7 +65,7 @@ shinyServer(function(input, output, session) {
   # Gets the full results returned from the search
   # to feed to the output datatable
   fullGenomeSearch <- eventReactive(input$genomeSearchButton, {
-    getGenomeSearchFullResults(
+    server_functions$getGenomeSearchFullResults(
       dbOption = input$gsearch, 
       orgList = input$genomeOrganismList, 
       taxizeOption = input$fullGenomeTaxizeOption,
@@ -80,7 +81,7 @@ shinyServer(function(input, output, session) {
       getDefaultReactiveDomain(), 
       inputId = "genomeOrganismList", 
       label = "Organism Names",
-      value = parseCsvColumnForTxtBox(
+      value = server_functions$parseCsvColumnForTxtBox(
         input = input, 
         file.index = "uploadGenomeFile",
         column.header = "OrganismNames",
@@ -286,7 +287,7 @@ shinyServer(function(input, output, session) {
   # * CRUXCoverage -------------------------------------------------------------
   
   cruxCoverage <- function (){
-      organismList <- getGenomeList(
+      organismList <- orgListHelper$taxizeHelper(
         input$CRUXorganismList, 
         input$CRUXtaxizeOption)
       validate(
