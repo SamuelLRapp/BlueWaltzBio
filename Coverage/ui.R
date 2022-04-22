@@ -30,17 +30,16 @@ shinyUI(fluidPage(
 
     # Home tab
     tabPanel("Home", 
-             titlePanel("Welcome to the Reference Sequence Browser"),
-             textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
-             actionButton(inputId = "SetKey", label = "Set Key"),
-             p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
- Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
-" ),
-             p(HTML('&emsp;'), "This rShiny app was built to bridge the gap between ecologists and computer scientists by providing efficient and intuitive access to NCBI and CRUX databases without the user having to write a single line of code. If you would like to learn more details about either the NBCI or CRUX search browser specific design and function click on the relevant tab above. Assemble a list of organisms and get started! 
-" ),
-             p(HTML('&emsp;'), "The diagram represents how the two search portals function in the back end."),
-             img(src='backend.png',  align = "center", height = 450, width = 900),
-          
+             column(12, align="center", offset = 0,
+                    titlePanel("Welcome to the Reference Sequence Browser"),
+                    p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases."),
+                    p(HTML('&emsp;'), "Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases."),
+                    p(HTML('&emsp;'), "This rShiny app was built to bridge the gap between ecologists and computer scientists by providing efficient and intuitive access to NCBI and CRUX databases without the user having to write a single line of code. If you would like to learn more details about either the NBCI or CRUX search browser specific design and function click on the relevant tab above. Assemble a list of organisms and get started! " ),
+                    p(HTML('&emsp;'), "The diagram represents how the two search portals function in the back end."),
+                    img(src='backend.png',  align = "center", height = 350, width = 700),
+                    textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
+                    actionButton(inputId = "SetKey", label = "Set Key"),
+             ),
                           
              ),
     tabPanel("CRUX",
@@ -49,6 +48,21 @@ shinyUI(fluidPage(
                tabPanel("Start Your Crux Search",
                         # Application title
                         titlePanel("Find CRUX database coverage of your organisms of interest"),
+                        mainPanel(
+                          h4("What does the CRUX Coverage Matrix do?"),
+                          p(HTML('&emsp;'), "The ‘CRUX Coverage Matrix’ returns a value that represents how many reference sequences exist for the user’s organism search term(s) in each public database. When direct matches are not found in a database, the tool will instead search for lower taxonomic ranks until a match is found. When a metabarcoding study is being performed, it is critical to confirm the existence of and obtain the reference sequences of organisms of interest, as well as the taxonomic resolution of said sequences, and what metabarcoding loci the reference sequences belong to. (See additional information for more details) CRUX databases are designed to be shared, and this tool allows users to assess whether the public CRUX databases meet their study’s taxonomic requirements. "),
+                          p(HTML('&emsp;'), "The ‘CRUX Coverage Matrix’ searches by taxonomic ranks: domain, phylum, class, order, family, genus, genus-spp.The rows of the table produced are the organism search terms, and the columns are CRUX databases: 16S,  12S, 18S, PITS, CO1, FITS, trnL, Vertebrate."),
+                          p("The cells will show one of the following: "),
+                          p("1) The number of sequences in a database, if direct matches are found",  HTML("<br/>"), "2) If no direct matches are found, the next most specific taxonomic rank found", HTML("<br/>"), "3) “0” if nothing is found at any taxonomic rank."),#The list
+                          p(), #empty space 
+                          
+                          #copied from the twitter icon implementation
+                          #in the contact us code.
+                          CruxUserGuide.icon <- tags$a(href='https://docs.google.com/document/d/1A1_4d21JKkk98WujeqVp51epxDzPrTSr9--_CnM5M5E/edit',
+                                                       icon("book"),
+                                                       'CRUX User Guide', target="_blank"),
+                          p(), #for aesthetics
+                        ),
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         h4("Additional Information:"),
                         dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
@@ -56,12 +70,12 @@ shinyUI(fluidPage(
                         p(), #empty space 
                         fluidRow(
                           column(6, align="center", offset = 3,
-                                 fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
-                                 actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
+                                 fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
+                                 #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
                                  actionButton("Button", "Start Your NCBI Search"),
-                                 tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
-                                 tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
-                                 tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
+                                 #tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 #tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 #tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
                                  )),
                         
                         ),
@@ -70,9 +84,11 @@ shinyUI(fluidPage(
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         fluidRow(
                           column(6, align="center", offset = 3,
-                                 textAreaInput(inputId = "CRUXorganismList", label = "Organism Names", width = 500, height = 200),
+                                 titlePanel("Organism Names"),
+                                 textAreaInput(inputId = "CRUXorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
                                  checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE, width = 500),
                                  actionButton("searchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
+                                 tags$div(id = 'CRUXtaxizeOption', style ='font-size:120%'),
                                  #tags$style(type='text/css', "#CRUXorganismList { vertical-align- middle; height- 100px; width- 100%; font-size- 200px;}"),
                                  #tags$style(type='text/css', "#CRUXtaxizeOption { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                  #tags$style(type='text/css', "#searchButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
@@ -81,21 +97,27 @@ shinyUI(fluidPage(
                tabPanel("Results",
                         # Application title
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                          # Show a plot of the generated distribution
-                          DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                          # Download button
-                          conditionalPanel( condition = "output.CRUXcoverageResults",
-                                            downloadButton('downloadCrux',"Download table"),
-                                            actionButton("SummaryDataButton", "Check Summary Data"))
+                          # Show a plot of the generated distribution and the corresponding buttons
+                        fluidRow(
+                          column(12, align="center", style='padding-top:15px',
+                                 DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                                 conditionalPanel( condition = "output.CRUXcoverageResults",
+                                 downloadButton('downloadCrux',"Download table"),
+                                 actionButton("SummaryDataButton", "Check Summary Data"))
+                          )),
+                        
                ),
                tabPanel("Summary Results",
                         # Application title
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         # Show a plot of the generated distribution
-                        DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
-                        # Download button
-                        conditionalPanel( condition = "output.CRUXSummaryResults",
-                                          downloadButton("CRUXfileDownloadSD","Download summary data"))
+                        fluidRow(
+                          column(12, align="center", style='padding-top:15px',
+                          DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
+                          conditionalPanel( condition = "output.CRUXcoverageResults",
+                          downloadButton("CRUXfileDownloadSD","Download summary data"))
+                        )),
+
                ),
                tabPanel("Information",
                         # Application title

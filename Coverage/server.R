@@ -530,6 +530,28 @@ shinyServer(function(input, output, session) {
   {
       updateTabsetPanel(session, "CRUXpage", selected = "Organism Names")
       showTab("CRUXpage", "Organism Names")
+      # It requires a file to be uploaded first
+      req(input$uploadGenomeFile, file.exists(input$uploadGenomeFile$datapath)) 
+      isolate({
+        # Read the CSV and write all the Organism Names into the Text Area Input
+        uploadinfo <-
+          read.csv(input$uploadGenomeFile$datapath, header = TRUE)
+        if (input$genomeOrganismList[[1]] != "") {
+          updateTextAreaInput(
+            getDefaultReactiveDomain(),
+            "genomeOrganismList",
+            value = c(
+              head(uploadinfo$OrganismNames,-1),
+              input$genomeOrganismList
+            )
+          )
+        }
+        else {
+          updateTextAreaInput(getDefaultReactiveDomain(),
+                              "genomeOrganismList",
+                              value = uploadinfo$OrganismNames)
+        }
+      })
   })
   
   observeEvent(input$SummaryDataButton,
@@ -855,7 +877,7 @@ shinyServer(function(input, output, session) {
               }
               searchTerm <-
                 tax_name(
-                  query = organism,
+                  sci = organism,
                   get = c(
                     "genus",
                     "family",
@@ -1106,6 +1128,7 @@ shinyServer(function(input, output, session) {
     })
     if (key == 0) {
       set_entrez_key(input$NCBIKey)
+      Sys.setenv(ENTREZ_KEY = input$NCBIKey)
       shinyalert("Your API key has been accepted", type = "success")
       NCBIKeyFlag <- TRUE
     }
