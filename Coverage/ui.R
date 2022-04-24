@@ -173,7 +173,6 @@ shinyUI(fluidPage(
           )
         ),
       ),
-<<<<<<< HEAD
     tabPanel("BOLD",
              tabsetPanel(
                id = "BOLDpage",
@@ -200,8 +199,6 @@ shinyUI(fluidPage(
                                  titlePanel("Organism Names"),
                                  textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
                                  checkboxInput(inputId = "BOLDtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE, width = 500),
-                                 # add ncbi option remove genome
-                                 checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
                                  actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                           )),
                ),
@@ -225,6 +222,8 @@ shinyUI(fluidPage(
                                    DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1")
                                  ),
                                  conditionalPanel( condition = "output.BOLDcoverageResults",
+                                                   # add ncbi option remove genome
+                                                   checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
                                                    downloadButton('downloadBoldFasta',"Download Fasta"),
                           )),
                         
