@@ -23,9 +23,11 @@ library(rlist)
 require("bold") 
 
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
     
-
+  hideTab("BOLDpage", "Results")
+  hideTab("BOLDpage", "Organism Names")
+  
 # CRUX --------------------------------------------------------------------
 
 
@@ -504,10 +506,32 @@ shinyServer(function(input, output) {
 
 # * BOLDSearchButton ------------------------------------------------------
 
-    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList 
-        input$BOLDorganismList #Returns as a string
+    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
+      input$BOLDorganismList #Returns as a string
     })
     
+    observeEvent(input$BOLDsearchButton, {
+      updateTabsetPanel(session, "BOLDpage", selected = "Results")
+      showTab("BOLDpage", "Results")
+    })
+    
+    observeEvent(input$BOLDStartButton,
+   {
+     updateTabsetPanel(session, "BOLDpage", selected = "Organism Names")
+     showTab("BOLDpage", "Organism Names")
+     # It requires a file to be uploaded first
+     req(input$uBOLDfile, file.exists(input$uBOLDfile$datapath))
+     isolate({
+       uploadinfo <- read.csv(input$uBOLDfile$datapath, header = TRUE)
+       if(input$BOLDorganismList[[1]] != "") {
+         updateTextAreaInput(getDefaultReactiveDomain(), "BOLDorganismList", value = c(head(uploadinfo$OrganismNames, -1), input$CRUXorganismList))
+       }
+       else {
+         updateTextAreaInput(getDefaultReactiveDomain(), "BOLDorganismList", value = uploadinfo$OrganismNames)
+       }
+     })
+   })
+
 
 # * BOLDStrToList ---------------------------------------------------------
 
