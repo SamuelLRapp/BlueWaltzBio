@@ -30,7 +30,7 @@ shinyUI(fluidPage(
 
     # Home tab
     tabPanel("Home", 
-             column(12, align="center", offset = 0,
+             column(6, align="center", offset = 3,
                     titlePanel("Welcome to the Reference Sequence Browser"),
                     p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases."),
                     p(HTML('&emsp;'), "Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases."),
@@ -45,7 +45,7 @@ shinyUI(fluidPage(
     tabPanel("CRUX",
              tabsetPanel(
                id = "CRUXpage",
-               tabPanel("Start Your Crux Search",
+               tabPanel("Start Your CRUX Search",
                         # Application title
                         titlePanel("Find CRUX database coverage of your organisms of interest"),
                         mainPanel(
@@ -72,7 +72,7 @@ shinyUI(fluidPage(
                           column(6, align="center", offset = 3,
                                  fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                  #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                                 actionButton("Button", "Start Your NCBI Search"),
+                                 actionButton("Button", "Start Your CRUX Search"),
                                  #tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                  #tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                  #tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
