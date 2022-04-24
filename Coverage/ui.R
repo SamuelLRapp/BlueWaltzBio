@@ -173,6 +173,7 @@ shinyUI(fluidPage(
           )
         ),
       ),
+<<<<<<< HEAD
     tabPanel("BOLD",
              tabsetPanel(
                id = "BOLDpage",
@@ -199,6 +200,8 @@ shinyUI(fluidPage(
                                  titlePanel("Organism Names"),
                                  textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
                                  checkboxInput(inputId = "BOLDtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE, width = 500),
+                                 # add ncbi option remove genome
+                                 checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
                                  actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                           )),
                ),
@@ -208,7 +211,19 @@ shinyUI(fluidPage(
                         # Show a plot of the generated distribution and the corresponding buttons
                         fluidRow(
                           column(12, align="center", style='padding-top:15px',
-                                 DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                                 conditionalPanel (
+                                   #print("in true condition"),
+                                   #print(input.removeNCBI),
+                                   condition = "input.removeNCBI == true",
+                                   DT::dataTableOutput("removeNCBIResults") %>% withSpinner(color="#0dc5c1")
+                                   
+                                 ),
+                                 conditionalPanel(
+                                   #print("in false condition"),
+                                   #print(input.removeNCBI),
+                                   condition = "input.removeNCBI == false",
+                                   DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1")
+                                 ),
                                  conditionalPanel( condition = "output.BOLDcoverageResults",
                                                    downloadButton('downloadBoldFasta',"Download Fasta"),
                           )),
