@@ -572,11 +572,12 @@ shinyServer(function(input, output, session) {
     
     # * BOLDCoverage ------------------------------------------------------------
     
-    boldCoverage <- reactive({
-        print("HEY STARTING COVERAGE")
+    boldCoverage <- eventReactive(input$BOLDsearchButton, {
+        print("in boldCoverage")
+        print(input$removeNCBI)
         organismList <- boldOrganismList()
         organismListLength <- length(organismList)
-        print("HEY CONTINIOUING COVERAGE")
+       # print("HEY CONTINIOUING COVERAGE")
         validate(
             need(organismListLength > 0, 'Please name at least one organism')
         )
@@ -587,9 +588,10 @@ shinyServer(function(input, output, session) {
         searchResult <- 0
         results <- c()
         temp <- c()
+
         for(organism in organismList){
-            test_bold <- records_bold <- bold_seqspec(taxon = organism)
-            print(test_bold)
+           # test_bold <- records_bold <- bold_seqspec(taxon = organism)
+           # print(test_bold)
 
             records_bold <- bold_seqspec(taxon = organism)[, c('species_name',   #this vector is the dataframe's column"
                                                                     'processid',             # BOLD identifier
@@ -598,7 +600,8 @@ shinyServer(function(input, output, session) {
                                                                     'lon')]
 
             #print(records_bold)
-            #print(records_bold$processid)
+            #print(records_bold$genbank_accession)
+            #print(input$removeNCBI)
             #print(length(records_bold$species_name))
 
             for(i in 1:length(records_bold$species_name)){
@@ -611,9 +614,12 @@ shinyServer(function(input, output, session) {
         data #return data matrix
     })
     
-    output$BOLDcoverageResults <- DT::renderDataTable(
-        boldCoverage(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','lat', 'lon')
-    )
+      output$BOLDcoverageResults <- 
+            DT::renderDataTable(
+            boldCoverage(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','lat', 'lon'))
+         
+        
+    # why is remove_ncbi getting called after boldCoverage() when removeNCBI == FALSE?
     
     # * BOLDFASTADownload ------------------------------------------------------------
     
@@ -650,4 +656,37 @@ shinyServer(function(input, output, session) {
       
     )
     
+    # * BOLD remove ncbi genomes ------------------------------------------------------------
+   
+     # option to remove NCBI genomes from BOLD output
+    # somehow calling boldCoverage associates that output, need to remove that output as well
+
+    remove_ncbi <- eventReactive(input$BOLDsearchButton,{
+      records_bold = boldCoverage()
+      print(input$removeNCBI)
+      print("in remove_ncbi")
+      list <- c('processid','lat', 'lon')
+      results <- c()
+      for(i in 1:nrow(records_bold)){
+        if (records_bold[i,2] == ""){
+          #print(records_bold[i,2])
+          temp <- c(records_bold[i,1], records_bold[i,3], records_bold[i,4])
+          results <- c(results, temp)
+          #print(results)
+        }
+      }
+      # how to get rid 
+      #print("results are done")
+      #print(results)
+      data <- matrix(results, nrow = length(results)/3, ncol = length(list), byrow = TRUE) #store vector results in data matrix
+      #print(data)
+      data #return data matrix
+  })
+  
+  output$removeNCBIResults <- 
+      DT::renderDataTable(
+      remove_ncbi(), rownames = boldOrganismList(), colnames = c('processid', 'lat', 'lon'))
+    
 })
+
+
