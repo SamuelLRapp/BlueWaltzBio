@@ -30,6 +30,13 @@ shinyServer(function(input, output, session) {
   hideTab("CRUXpage", "Results")
   hideTab("CRUXpage", "Organism Names")
   hideTab("CRUXpage", "Summary Results")
+  hideTab("NCBIpage", "Organism Names")
+  hideTab("NCBIpage", "Barcodes of Interest")
+  hideTab("NCBIpage", "Results")
+  hideTab("NCBIpage", "Summary Results")
+  hideTab("FullGenomePage", "Results")
+  hideTab("FullGenomePage", "Organism Names")
+  hideTab("FullGenomePage", "Summary Results")
  
   # Full Genome ----------------------------------------------------------------
   
@@ -42,6 +49,42 @@ shinyServer(function(input, output, session) {
       # input into genomeOrganismList
       input$genomeOrganismList #Returns as a string
     })
+  
+  observeEvent(input$genomeSearchButton, {
+    updateTabsetPanel(session, "FullGenomePage", selected = "Results")
+    showTab("FullGenomePage", "Results")
+  })
+  
+  observeEvent(input$FullGenomeStart,
+  {
+    updateTabsetPanel(session, "FullGenomePage", selected = "Organism Names")
+    showTab("FullGenomePage", "Organism Names")
+    req(input$uploadGenomeFile,
+        file.exists(input$uploadGenomeFile$datapath)) 
+    isolate({
+      # It requires a file to be uploaded first
+      # Read the CSV and write all the Organism Names into the Text Area Input
+      uploadinfo <-
+        read.csv(input$uploadGenomeFile$datapath, header = TRUE)
+      if (input$genomeOrganismList[[1]] != "") {
+        updateTextAreaInput(
+          getDefaultReactiveDomain(),
+          "genomeOrganismList",
+          value = c(
+            head(uploadinfo$OrganismNames,-1),
+            input$genomeOrganismList
+          )
+        )
+      }
+      else {
+        updateTextAreaInput(getDefaultReactiveDomain(),
+                            "genomeOrganismList",
+                            value = uploadinfo$OrganismNames)
+      }
+    })
+    # It requires a file to be uploaded first
+    
+  })
   
   # * FullGenomeInputCSV -------------------------------------------------------
   
@@ -1104,12 +1147,78 @@ shinyServer(function(input, output, session) {
   
   # * NCBISearchButton ---------------------------------------------------------
   
-  NCBISearch <-
-    eventReactive(input$NCBIsearchButton, {
+  NCBISearch <- eventReactive(input$NCBIsearchButton, {
       # When searchButton clicked, update NCBIOrgSearch to return the value 
       # input into NCBIorganismList
+      updateTabsetPanel(session, "NCBIpage", selected = "Results")
       list(input$NCBIorganismList, input$barcodeList) #Returns as a string
     })
+  
+  observeEvent(input$NCBIsearchButton, {
+    updateTabsetPanel(session, "NCBIpage", selected = "Results")
+    showTab("NCBIpage", "Results")
+  })
+  
+  observeEvent(input$NCBIStartOver, {
+    updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
+    hideTab("NCBIpage", "Organism Names")
+    hideTab("NCBIpage", "Barcodes of Interest")
+    hideTab("NCBIpage", "Results")
+    hideTab("NCBIpage", "Summary Results")
+    updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
+    updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
+    
+  })
+  
+  observeEvent(input$BarcodesNext, {
+     updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
+     showTab("NCBIpage", "Barcodes of Interest")
+   })
+  
+  observeEvent(input$StartNCBIButton, {
+    updateTabsetPanel(session, "NCBIpage", selected = "Organism Names")
+    showTab("NCBIpage", "Organism Names")
+    isolate({
+      req(input$uNCBIfile,
+          file.exists(input$uNCBIfile$datapath))
+      uploadinfo <-
+        read.csv(input$uNCBIfile$datapath, header = TRUE)
+      if (input$NCBIorganismList[[1]] != "") {
+        updateTextAreaInput(
+          getDefaultReactiveDomain(),
+          "NCBIorganismList",
+          value = c(
+            head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
+            input$NCBIorganismList
+          )
+        )
+      }
+      else {
+        updateTextAreaInput(getDefaultReactiveDomain(),
+                            "NCBIorganismList",
+                            value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
+      }
+      if (input$barcodeList[[1]] != "") {
+        updateTextAreaInput(
+          getDefaultReactiveDomain(),
+          "barcodeList",
+          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != ""]), 
+                    input$barcodeList)
+        )
+      }
+      else {
+        updateTextAreaInput(getDefaultReactiveDomain(),
+                            "barcodeList",
+                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != ""])
+      }
+    })
+  })
+  
+  observeEvent(input$NCBISummaryDataButton,
+   {
+     updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
+     showTab("NCBIpage", "Summary Results")
+   })
   
   # * NCBI_Key -----------------------------------------------------------------
   NCBIKeyFlag <- FALSE
@@ -1235,7 +1344,8 @@ shinyServer(function(input, output, session) {
                numericRangeInput(
                  inputId = marker,
                  label = paste("Min/max sequence length for", marker),
-                 value = c(0, 2000)
+                 value = c(0, 2000),
+                 width = 350
                ))
       }
       #return the list of numeric inputs
@@ -1749,6 +1859,13 @@ shinyServer(function(input, output, session) {
     promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
       DT::datatable(data_df, rownames = rows, colnames = barcodes)
     })
+  })
+  
+  output$NCBISummaryResults <- DT::renderDataTable({
+    promise_all(data_df = summary_report(1), 
+                rows = NCBIorganismList()) %...>% with({
+                  DT::datatable(data_df, rownames = FALSE)
+                })
   })
   
   
