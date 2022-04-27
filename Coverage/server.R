@@ -572,51 +572,82 @@ shinyServer(function(input, output, session) {
     
     # * BOLDCoverage ------------------------------------------------------------
     
-    boldCoverage <- eventReactive(input$BOLDsearchButton, {
-        print("in boldCoverage")
-        print(input$removeNCBI)
-        organismList <- boldOrganismList()
-        organismListLength <- length(organismList)
-       # print("HEY CONTINIOUING COVERAGE")
-        validate(
-            need(organismListLength > 0, 'Please name at least one organism')
-        )
-        list <- c('processid', 'genbank_accession','lat', 'lon')
-        # dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
+    fasta_vector = c()
+    summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+    boldCoverage <- reactive({
+      print("HEY STARTING COVERAGE")
+      organismList <- boldOrganismList()
+      organismListLength <- length(organismList)
+      print("HEY CONTINIOUING COVERAGE")
+      validate(
+        need(organismListLength > 0, 'Please name at least one organism')
+      )
+      list <- c('processid', 'genbank_accession','markercode')
+      # dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
+      
+      searchTerm <- ""
+      searchResult <- 0
+      results <- c()
+      temp <- c()
+      for(organism in organismList){
+        #add a row to summary_df
+        summary_df[organism,] <<- integer(ncol(summary_df))
+      
         
-        searchTerm <- ""
-        searchResult <- 0
-        results <- c()
-        temp <- c()
+        #records_bold <- bold_seqspec(taxon = organism)[, c('species_name',   #this vector is the dataframe's column"
+        #                                                          'processid',             # BOLD identifier
+        #                                                          'genbank_accession', 
+        #                                                          'lat', 
+        #                                                          'lon')]
+        records_bold <- bold_seqspec(taxon = organism)
+        print(records_bold)
+        
 
-        for(organism in organismList){
-           # test_bold <- records_bold <- bold_seqspec(taxon = organism)
-           # print(test_bold)
-
-            records_bold <- bold_seqspec(taxon = organism)[, c('species_name',   #this vector is the dataframe's column"
-                                                                    'processid',             # BOLD identifier
-                                                                    'genbank_accession', 
-                                                                    'lat', 
-                                                                    'lon')]
-
-            #print(records_bold)
-            #print(records_bold$genbank_accession)
-            #print(input$removeNCBI)
-            #print(length(records_bold$species_name))
-
-            for(i in 1:length(records_bold$species_name)){
-                temp <- c(records_bold$processid[i], records_bold$genbank_accession[i], records_bold$lat[i], records_bold$lon[i])
-                results <- c(results, temp)
+        
+        for(i in 1:length(records_bold$species_name)){
+          #part 1, put data into fasta file
+          #parsing data into fasta file format and storing in fasta_vector
+          
+          #display species name if subspecies name is not available
+          species_name <- if(records_bold$subspecies_name[i] == "") records_bold$species_name[i] else records_bold$subspecies_name[i]
+          #put data into vector
+          org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
+          #remove empty data
+          org_fasta <- org_vector[org_vector != '']
+          org_data <- paste(org_fasta, collapse = '|')
+          org_data <- paste('>', org_data, sep = '')
+          fasta_vector <<- c(fasta_vector, org_data)
+          fasta_vector <<- c(fasta_vector, records_bold$nucleotides[i])
+          
+          #part 2, put data into results to display 
+          #display information for table
+          temp <- c(records_bold$processid[i], records_bold$genbank_accession[i], records_bold$markercode[i])
+          results <- c(results, temp)
+          
+          #part 3, add data to summary_df to get summary data
+          if (records_bold$markercode[i] != ''){
+            #if markercode is not yet in the dataframe, iniate new col
+            if (!(records_bold$markercode[i] %in% colnames(summary_df))){
+              #create a new column of 0s
+              summary_df[records_bold$markercode[i]] <<- integer(nrow(summary_df))
             }
+            #add 1 to existing count
+            summary_df[organism, records_bold$markercode[i]] <<- summary_df[organism, records_bold$markercode[i]] + 1
+            #print(summary_df)
+          }
         }
-        
-        data <- matrix(results, nrow = length(records_bold$species_name)-1, ncol = length(list), byrow = TRUE) #store vector results in data matrix
-        data #return data matrix
+      }
+      #print(summary_df)
+      #print(summary_report(2))
+      
+      
+      data <- matrix(results, nrow = length(records_bold$species_name)-1, ncol = length(list), byrow = TRUE) #store vector results in data matrix
+      data #return data matrix
     })
     
-      output$BOLDcoverageResults <- 
-            DT::renderDataTable(
-            boldCoverage(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','lat', 'lon'))
+    output$BOLDcoverageResults <- DT::renderDataTable(
+      boldCoverage(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','markercode')
+    )
          
         
     # why is remove_ncbi getting called after boldCoverage() when removeNCBI == FALSE?
@@ -625,35 +656,23 @@ shinyServer(function(input, output, session) {
     
     output$downloadBoldFasta <- downloadHandler(
       filename = function() {
-        paste("Test", ".fasta", sep="")
+        paste("BOLD", ".fasta", sep="")
       },
       content = function(file) {
-          Vector_Fasta <- c()
-          organismList <- boldOrganismList()
-          for(organism in organismList){
-            res <- bold_seqspec(taxon = organism)
-            print(res)
-            for(i in 1:length(res$processid)){
-              species_name <- if(res$subspecies_name[i] == "") res$species_name[i] else res$subspecies_name[i]
-              org_vector = c(res$processid[i], species_name, res$markercode[i], res$genbank_accession[i])
-              #remove all elements with no data from vector
-              org_vector = org_vector[org_vector != '']
-              #put data into string format
-              org_data = paste(org_vector, collapse = '|')
-              #write data to file
-              Vector_Fasta <- c(Vector_Fasta, org_data)
-              Vector_Fasta <- c(Vector_Fasta, res$nucleotides[i])
-      
-            }
-
-          }
-          #print(Vector_Fasta)
-
-          write(Vector_Fasta, file)
+        #print(fasta_vector)
+        write(fasta_vector, file)
       }
-      
-      
-      
+    )
+    
+    # * BOLDSummaryDownload ------------------------------------------------------------
+    
+    output$downloadBoldSummary <- downloadHandler(
+      filename = function() {
+        paste("BOLD_Summary_Report", ".csv", sep="")
+      },
+      content = function(file) {
+        write.csv(summary_report(2), file)
+      }
     )
     
     # * BOLD remove ncbi genomes ------------------------------------------------------------
@@ -686,6 +705,195 @@ shinyServer(function(input, output, session) {
   output$removeNCBIResults <- 
       DT::renderDataTable(
       remove_ncbi(), rownames = boldOrganismList(), colnames = c('processid', 'lat', 'lon'))
+  
+  # * SummaryReport ------------------------------------------------------------
+  
+  summary_report <- function(databaseFlag) {
+    if (databaseFlag == 1) {
+      matrixGet() %...>% {
+        NCBIdata <- .
+        NCBIorganismList() %...>% {
+          # Gets the column names for the matrix
+          columns <- barcodeList() 
+          # Adds the column names to the matrix
+          colnames(NCBIdata) <- columns 
+          # Adds the row names to the matrix
+          rownames(NCBIdata) <- . 
+          
+          # Convert to Dataframe
+          NCBIdata <- as.data.frame(NCBIdata) 
+          dataframe <- NCBIdata
+          summary_report_dataframe(dataframe)
+        }
+      }
+    } else if (databaseFlag == 0){
+      matrixGetCRUX() %...>% {
+        # Gets the matrix for the Crux results
+        CRUXmatrix <- . 
+        organismListGet() %...>% {
+          # Gets the column names for the matrix
+          columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") 
+          # Adds the column names to the matrix
+          colnames(CRUXmatrix) <- columns 
+          # Adds the row names to the matrix
+          rownames(CRUXmatrix) <- .
+          dataframe <- CRUXmatrix
+          #calls convert_CRUX()s
+          dataframe <- convert_CRUX(dataframe)
+          summary_report_dataframe(dataframe)
+        }
+      }
+    } else {
+      dataframe <- summary_df
+      summary_report_dataframe(dataframe)
+    }
+  }
+  
+  # * * DownloadDataframe ------------------------------------------------------
+  
+  summary_report_dataframe <- function(dataframe)
+  {
+    class(dataframe)
+    class(dataframe[, 1])
+    options(scipen = 999) #scientific notion
+    new_row_names <- "total"
+    # doesn't include column with taxa snames
+    new_row_names <- c(new_row_names, colnames(dataframe))
+    
+    statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
+    new_col_names <-
+      c(
+        "category",
+        "number of sequences found",
+        "percent of total sequences found",
+        "num of organism with at least one sequence",
+        "num of organisms with no sequences"
+      )
+    colnames(statistics_df) <- new_col_names
+    #get list of columns + a column called "total"
+    
+    #add row names
+    for (i in 1:length(new_row_names))
+    {
+      statistics_df[i, 1] <- new_row_names[i]
+    }
+    
+    #doesn't include column with taxa snames
+    barcodeSums <- colSums(dataframe) 
+    
+    Total_seq_found <- sum(barcodeSums)
+    
+    #hard code in the totals
+    statistics_df[1, 2] <- Total_seq_found
+    statistics_df[1, 3] <- 100
+    
+    for (i in 2:length(new_row_names))
+    {
+      x <- i - 1
+      statistics_df[i, 2] <- barcodeSums[x]
+      statistics_df[i, 3] <- (barcodeSums[x] / Total_seq_found)
+    }
+    
+    #hard code in the totals
+    output_of_which_rows_are_empty_and_arenot <-
+      which_rows_are_empty_and_arenot(dataframe,-1)
+    #list 2 is thee species without any seqs
+    statistics_df[1, 5] <-
+      length(output_of_which_rows_are_empty_and_arenot[[2]])
+    #we know list 1 is the species with some seqs
+    statistics_df[1, 4] <-
+      length(output_of_which_rows_are_empty_and_arenot[[1]])
+    
+    for (i in 2:length(new_row_names))
+    {
+      x <- i - 1
+      output_of_which_rows_are_empty_and_arenot <-
+        which_rows_are_empty_and_arenot(dataframe, Which_Column = x)
+      #list 2 is the species without any seqs
+      statistics_df[i, 5] <-
+        length(output_of_which_rows_are_empty_and_arenot[[2]])
+      #we know list 1 is the species with some seqs
+      statistics_df[i, 4] <-
+        length(output_of_which_rows_are_empty_and_arenot[[1]])
+    }
+    statistics_df
+  }
+  
+  # * * DownloadEmptyRows -----------------------------------------------------
+  
+  # if which_column = -1 it means do all rows, if a column number is given the 
+  # function will only run on said column of the dataframe returns list of 2 
+  # lists, one of species with seqs, and one of species without any sequences
+  which_rows_are_empty_and_arenot <-
+    function(dataframe, Which_Column)
+    {
+      if (is.null(Which_Column))
+      {
+        Which_Column <- -1
+      }
+      Which_Column <- Which_Column
+      #create two lists
+      haveSomeSeq <- c()
+      haveZeroSeq <- c()
+      
+      ncols <- ncol(dataframe)
+      nrows <- nrow(dataframe)
+      
+      if (Which_Column < 0) {
+        #we will skip the first column because it has names
+        for (i in 1:nrows)
+        {
+          total <- 0
+          for (j in 1:ncols)
+          {
+            total <- total + as.numeric(dataframe[i, j])
+          }
+          
+          if (!is.null(total) && total > 0)
+          {
+            #add species name to list
+            haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
+          } else
+          {
+            #add species name to list
+            haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+          }
+        }
+      } else {         #if a specific columnn
+        #we will skip the first column because it has names
+        for (i in 1:nrows)
+        {
+          seqs <- 0
+          seqs <- 0 + as.numeric(dataframe[i, Which_Column])
+          
+          if (!is.null(seqs) && seqs > 0)
+          {
+            #add species name to list
+            haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1]) 
+          } else
+          {
+            #add species name to list
+            haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+          }
+        }
+      }
+      if (Which_Column < 0) {
+        results <-
+          list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
+        results <- as.matrix(results)
+      } else
+      {
+        COLNam <- colnames(dataframe)
+        column_name <- paste0("Have", COLNam[Which_Column], "Seq")
+        results <-
+          list(
+            single_Barcode_haveSomeseq = haveSomeSeq,
+            single_Barcode_haveZeroSeqs = haveZeroSeq
+          )
+        results <- as.matrix(results)
+      }
+      results
+    }
     
 })
 
