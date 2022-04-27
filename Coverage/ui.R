@@ -225,6 +225,7 @@ shinyUI(fluidPage(
                                                    # add ncbi option remove genome
                                                    checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
                                                    downloadButton('downloadBoldFasta',"Download Fasta"),
+                                                   downloadButton('downloadBoldSummary', "Download Summary"),
                           )),
                         
                ),
