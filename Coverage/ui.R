@@ -244,8 +244,7 @@ shinyUI(
                 conditionalPanel( condition = "output.NCBIcoverageResults",
                                   downloadButton('downloadStatements',"Download search terms table"),
                                   downloadButton('download',"Download counts table"),
-                                  downloadButton("fileDownloadF","Download FASTA files"),
-                                  
+                                  actionButton("fileDownloadF",list(icon("download"),"Download FASTA files")),
                                   downloadButton("fileDownloadG","Download Genbank files"),
                                   downloadButton("NCBIfileDownloadSD","Download summary data"))
                 #add_busy_spinner(spin = "fading-circle")

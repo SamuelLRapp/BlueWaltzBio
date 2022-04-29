@@ -1641,13 +1641,13 @@ shinyServer(function(input, output, session) {
       uidsGet() %...>% {
         uidsMatrix <- .
         setCache("uids-matrix", uidsMatrix, "NCBI")
-        zz <- function(){
-          print("starting data test download...")
+        content_callback <- function(){
+          print("starting fasta file download...")
           js$clickBtn("ncbi-dwn")
           shinyjs::enable("ncbi-dwn-trigger")
         }
-        print(zz)
-        getFileContent(uidsMatrix, zz) 
+
+        getFileContent(uidsMatrix, content_callback) 
       }
     }
   })
@@ -1711,13 +1711,49 @@ shinyServer(function(input, output, session) {
           #write sequences to appropriate file
           write(content_vec, file=filenames[[codeNum]], append=T)
         })
-        #emptyCache("NCBI")
+        emptyCache("NCBI")
         zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
        })
     },
     contentType = "application/zip"
   )
   
+  observeEvent(input$fileDownloadF, {
+    shinyjs::disable("fileDownloadF")
+    #get the cache for NCBI stuff
+    cache <- createCache("NCBI")
+    if ( cache$exists("uids-matrix") ) {
+      print("cache detected")
+      uids_matrix <- cache$get("uids-matrix")
+      total_cells <- nrow(uids_matrix)*ncol(uids_matrix) #integer vector with the ids of every cached cell
+      
+      print("cached cells:")
+      print(getCachedCells())
+      uncached <- setdiff(1:total_cells, getCachedCells())
+      print("uncached cells:")
+      print(uncached)
+      content_callback <- function(){
+        print("starting fasta file download...")
+        js$clickBtn("ncbi-dwn")
+        shinyjs::enable("fileDownloadF")
+      }
+      getFileContent(uids_matrix, content_callback, uncached_cells = uncached)
+    } else {
+      print("no cache detected")
+      
+      uidsGet() %...>% {
+        uidsMatrix <- .
+        setCache("uids-matrix", uidsMatrix, "NCBI")
+        content_callback <- function(){
+          print("starting fasta file download...")
+          js$clickBtn("ncbi-dwn")
+          shinyjs::enable("fileDownloadF")
+        }
+        
+        getFileContent(uidsMatrix, content_callback) 
+      }
+    }
+  })
   # * NCBIDownloadGenbank ------------------------------------------------------
   
   # Download NCBI Genbank Files
