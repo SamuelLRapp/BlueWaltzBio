@@ -208,19 +208,14 @@ shinyUI(fluidPage(
                         # Show a plot of the generated distribution and the corresponding buttons
                         fluidRow(
                           column(12, align="center", style='padding-top:15px',
-                                 conditionalPanel (
-                                   #print("in true condition"),
-                                   #print(input.removeNCBI),
-                                   condition = "input.removeNCBI == true",
-                                   DT::dataTableOutput("removeNCBIResults") %>% withSpinner(color="#0dc5c1")
-                                   
-                                 ),
-                                 conditionalPanel(
-                                   #print("in false condition"),
-                                   #print(input.removeNCBI),
-                                   condition = "input.removeNCBI == false",
-                                   DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1")
-                                 ),
+                                 # conditionalPanel (
+                                 #   #print("in true condition"),
+                                 #   #print(input.removeNCBI),
+                                 #   condition = "input.removeNCBI == true",
+                                 #   DT::dataTableOutput("removeNCBIResults") %>% withSpinner(color="#0dc5c1")
+                                 #   
+                                 # ),
+                                 DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                  conditionalPanel( condition = "output.BOLDcoverageResults",
                                                    # add ncbi option remove genome
                                                    checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
