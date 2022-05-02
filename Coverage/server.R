@@ -645,11 +645,36 @@ shinyServer(function(input, output, session) {
       data #return data matrix
     })
     
-    output$BOLDcoverageResults <- DT::renderDataTable(
-      boldCoverage(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','markercode')
-    )
+    BoldMatrix <- reactive({ # creates and returns the matrix to be displayed with the count
+      data <- boldCoverage()
+      if(input$removeNCBI == TRUE)
+      {
+        records_bold = data
+        print(input$removeNCBI)
+        print("in remove_ncbi")
+        list <- c('processid','lat', 'lon')
+        results <- c()
+        for(i in 1:nrow(records_bold)){
+          if (records_bold[i,2] == ""){
+            #print(records_bold[i,2])
+            temp <- c(records_bold[i,1], records_bold[i,3], records_bold[i,4])
+            results <- c(results, temp)
+            #print(results)
+          }
+        }
+        # how to get rid 
+        #print("results are done")
+        #print(results)
+        data <- matrix(results, nrow = length(results)/3, ncol = length(list), byrow = TRUE) #store vector results in data matrix
+        #print(data)
+      }
+      data
+    })
+    
+      output$BOLDcoverageResults <- 
+            DT::renderDataTable(
+              BoldMatrix(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','lat', 'lon'))
          
-        
     # why is remove_ncbi getting called after boldCoverage() when removeNCBI == FALSE?
     
     # * BOLDFASTADownload ------------------------------------------------------------
