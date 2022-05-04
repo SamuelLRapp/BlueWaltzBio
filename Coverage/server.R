@@ -572,83 +572,34 @@ shinyServer(function(input, output, session) {
     
     # * BOLDCoverage ------------------------------------------------------------
     
-    fasta_vector = c()
     summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
     boldCoverage <- reactive({
       print("HEY STARTING COVERAGE")
       organismList <- boldOrganismList()
       organismListLength <- length(organismList)
-      print("HEY CONTINIOUING COVERAGE")
       validate(
         need(organismListLength > 0, 'Please name at least one organism')
       )
-      list <- c('processid', 'genbank_accession','markercode')
-      # dbList <- list("MB18S", "MB16S", "MBPITS", "MBCO1","MBFITS","MBtrnL","MB12S") #List of db tables each representing a marker
       
-      searchTerm <- ""
-      searchResult <- 0
-      results <- c()
-      temp <- c()
-      for(organism in organismList){
-        #add a row to summary_df
-        summary_df[organism,] <<- integer(ncol(summary_df))
-      
-        
-        #records_bold <- bold_seqspec(taxon = organism)[, c('species_name',   #this vector is the dataframe's column"
-        #                                                          'processid',             # BOLD identifier
-        #                                                          'genbank_accession', 
-        #                                                          'lat', 
-        #                                                          'lon')]
-        records_bold <- bold_seqspec(taxon = organism)
-        print(records_bold)
-        
 
-        
-        for(i in 1:length(records_bold$species_name)){
-          #part 1, put data into fasta file
-          #parsing data into fasta file format and storing in fasta_vector
-          
-          #display species name if subspecies name is not available
-          species_name <- if(records_bold$subspecies_name[i] == "") records_bold$species_name[i] else records_bold$subspecies_name[i]
-          #put data into vector
-          org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
-          #remove empty data
-          org_fasta <- org_vector[org_vector != '']
-          org_data <- paste(org_fasta, collapse = '|')
-          org_data <- paste('>', org_data, sep = '')
-          fasta_vector <<- c(fasta_vector, org_data)
-          fasta_vector <<- c(fasta_vector, records_bold$nucleotides[i])
-          
-          #part 2, put data into results to display 
-          #display information for table
-          temp <- c(records_bold$processid[i], records_bold$genbank_accession[i], records_bold$markercode[i])
-          results <- c(results, temp)
-          
-          #part 3, add data to summary_df to get summary data
-          if (records_bold$markercode[i] != ''){
-            #if markercode is not yet in the dataframe, iniate new col
-            if (!(records_bold$markercode[i] %in% colnames(summary_df))){
-              #create a new column of 0s
-              summary_df[records_bold$markercode[i]] <<- integer(nrow(summary_df))
-            }
-            #add 1 to existing count
-            summary_df[organism, records_bold$markercode[i]] <<- summary_df[organism, records_bold$markercode[i]] + 1
-            #print(summary_df)
-          }
-        }
+      results <- data.frame(matrix(ncol = 0, nrow = 0))
+      
+      #put each organism's matrix together
+      for(organism in organismList){
+        records_bold <- bold_seqspec(taxon = organism)
+        print(ncol(records_bold))
+        results <- rbind(results, records_bold)
       }
-      #print(summary_df)
-      #print(summary_report(2))
-      
-      
-      data <- matrix(results, nrow = length(records_bold$species_name)-1, ncol = length(list), byrow = TRUE) #store vector results in data matrix
-      data #return data matrix
+
+      results #return data matrix
     })
     
     BoldMatrix <- reactive({ # creates and returns the matrix to be displayed with the count
       data <- boldCoverage()
       if(input$removeNCBI == TRUE)
       {
+        #TODO - remove rows in data that do not have a genbank accession
+        
         records_bold = data
         print(input$removeNCBI)
         print("in remove_ncbi")
@@ -673,7 +624,7 @@ shinyServer(function(input, output, session) {
     
       output$BOLDcoverageResults <- 
             DT::renderDataTable(
-              BoldMatrix(), rownames = boldOrganismList(), colnames = c('processid', 'genbank_accession','lat', 'lon'))
+              BoldMatrix()[, c('processid', 'sampleid', 'species_name', 'country')])
          
     # why is remove_ncbi getting called after boldCoverage() when removeNCBI == FALSE?
     
@@ -684,7 +635,29 @@ shinyServer(function(input, output, session) {
         paste("BOLD", ".fasta", sep="")
       },
       content = function(file) {
-        #print(fasta_vector)
+        fasta_vector = c()
+        records_bold <- BoldMatrix()
+        for(i in 1:length(records_bold$species_name)){
+          #parsing data into fasta file format and storing in fasta_vector
+          
+          #display species name if subspecies name is not available
+          species_name <- if(records_bold$subspecies_name[i] == "") records_bold$species_name[i] else records_bold$subspecies_name[i]
+          
+          #put data into vector
+          org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
+          
+          #remove empty data
+          org_fasta <- org_vector[org_vector != '']
+          org_data <- paste(org_fasta, collapse = '|')
+          org_data <- paste('>', org_data, sep = '')
+          
+          #do not include entries with no sequences
+          if (records_bold$nucleotides[i] != ''){
+            fasta_vector <- c(fasta_vector, org_data)
+            fasta_vector <- c(fasta_vector, records_bold$nucleotides[i])
+          }
+        }
+
         write(fasta_vector, file)
       }
     )
@@ -735,6 +708,7 @@ shinyServer(function(input, output, session) {
   
   summary_report <- function(databaseFlag) {
     if (databaseFlag == 1) {
+      #NCBI
       matrixGet() %...>% {
         NCBIdata <- .
         NCBIorganismList() %...>% {
@@ -752,6 +726,7 @@ shinyServer(function(input, output, session) {
         }
       }
     } else if (databaseFlag == 0){
+      #CRUX
       matrixGetCRUX() %...>% {
         # Gets the matrix for the Crux results
         CRUXmatrix <- . 
@@ -769,8 +744,27 @@ shinyServer(function(input, output, session) {
         }
       }
     } else {
-      dataframe <- summary_df
-      summary_report_dataframe(dataframe)
+      #BOLD
+      summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+      records_bold <- BoldMatrix()
+      
+      for(i in 1:length(records_bold$species_name)){
+        #if species name not in dataframe
+        if (!(records_bold$species_name[i] %in% rownames(summary_df)))
+          #add a row to summary_df
+          summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
+        #add data to summary_df to get summary data
+        if (records_bold$markercode[i] != ''){
+          #if markercode is not yet in the dataframe, initiate new col
+          if (!(records_bold$markercode[i] %in% colnames(summary_df))){
+            #create a new column of 0s
+            summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
+          }
+          #add 1 to existing count
+          summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
+        }
+      }
+      summary_report_dataframe(summary_df)
     }
   }
   
