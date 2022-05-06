@@ -599,24 +599,21 @@ shinyServer(function(input, output, session) {
       if(input$removeNCBI == TRUE)
       {
         #TODO - remove rows in data that do not have a genbank accession
-        
         records_bold = data
-        print(input$removeNCBI)
-        print("in remove_ncbi")
-        list <- c('processid','lat', 'lon')
-        results <- c()
-        for(i in 1:nrow(records_bold)){
-          if (records_bold[i,2] == ""){
-            #print(records_bold[i,2])
-            temp <- c(records_bold[i,1], records_bold[i,3], records_bold[i,4])
-            results <- c(results, temp)
-            #print(results)
-          }
-        }
+        list <- c('processid', 'sampleid', 'species_name', 'country')
+        data <- subset(data, genbank_accession == "")
+        # Leaving this here for now but it isnt really necessary
+        # for(i in 1:nrow(records_bold)){
+        #   if (records_bold$genbank_accession == ""){
+        #     temp <- c(records_bold$processid, records_bold$sampleid, records_bold$species_name, records_bold$country)
+        #     results <- c(results, temp)
+        #     #print(results)
+        #   }
+        # }
         # how to get rid 
         #print("results are done")
         #print(results)
-        data <- matrix(results, nrow = length(results)/3, ncol = length(list), byrow = TRUE) #store vector results in data matrix
+        # data <- matrix(results, nrow = length(results)/4, ncol = length(list), byrow = TRUE) #store vector results in data matrix
         #print(data)
       }
       data
@@ -624,7 +621,7 @@ shinyServer(function(input, output, session) {
     
       output$BOLDcoverageResults <- 
             DT::renderDataTable(
-              BoldMatrix()[, c('processid', 'sampleid', 'species_name', 'country')])
+              BoldMatrix()[, c('processid', 'genbank_accession', 'species_name', 'country')])
          
     # why is remove_ncbi getting called after boldCoverage() when removeNCBI == FALSE?
     
