@@ -7,8 +7,6 @@
 #    http://shiny.rstudio.com/
 #
 
-
-
 # Imports ----------------------------------------------------------------------
 
 library(shiny)
@@ -23,11 +21,14 @@ library(promises)
 library(ipc)
 library(mpoly)
 library(modules)
-orgListHelper <- modules::use("orgListHelper.R")
 server_functions <- modules::use("server_functions.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
+ 
+  # max number of homonyms to return if any
+  # are found in the homonym check.
+  maxHomonyms <- 5L
   
   # Removed reactive functions, so use a
   # vector to hold the uids from the most recent
@@ -36,6 +37,8 @@ shinyServer(function(input, output, session) {
   
   # df to hold the matrix returned from the most 
   # recent search -- reactive functions removed.
+  # May make more sense as a reactive function, depending
+  # on 
   resultsMatrix <- NULL
   
   # Verifies the provided api key is
@@ -54,7 +57,7 @@ shinyServer(function(input, output, session) {
                  please make sure it is correct",
                  type = "warning")
     })
-    setNcbiKeyIsValid(keyValidity)
+    server_functions$setNcbiKeyIsValid(keyValidity)
   })
   
   # Full Genome ----------------------------------------------------------------
@@ -63,18 +66,24 @@ shinyServer(function(input, output, session) {
   
   # Reactive on search button call.
   # Gets the full results returned from the search
-  # to feed to the output datatable
+  # to feed to the output datatable.
   fullGenomeSearch <- eventReactive(input$genomeSearchButton, {
-    server_functions$getGenomeSearchFullResults(
-      dbOption = input$gsearch, 
-      orgList = input$genomeOrganismList, 
-      taxizeOption = input$fullGenomeTaxizeOption,
-      refSeqChecked = input$refSeq)
+    dbOption <- input$gsearch
+    orgList <- input$genomeOrganismList
+    taxizeOption <- input$fullGenomeTaxizeOption
+    refSeqChecked <- input$refSeq
+    future_promise({
+      server_functions$getGenomeSearchFullResults(
+        dbOption = dbOption, 
+        orgList = orgList, 
+        taxizeOption = taxizeOption,
+        refSeqChecked = refSeqChecked)
+    })
   })
   
   # * FullGenomeInputCSV -------------------------------------------------------
   
-  # Parses the uploaded csv into the 
+  # Parses the uploaded csv into the textbox
   inputFileFullGenome <- observeEvent(
     input$uploadGenomeButton, 
     updateTextAreaInput(
@@ -86,20 +95,6 @@ shinyServer(function(input, output, session) {
         file.index = "uploadGenomeFile",
         column.header = "OrganismNames",
         textbox.id = "genomeOrganismList")))
-  
-  
-
-  # * FGenOrgSearch ------------------------------------------------------------
-  
-  # * Mitochondrial Search -----------------------------------------------------
-  
-  # * Chloroplast Search -------------------------------------------------------
-  
-  # * Is_the_taxa_in_the_NCBI_genome_DB ----------------------------------------
-  
-  #  * selectFunction  ---------------------------------------------------------
-  
-  # * Output Table render ------------------------------------------------------
 
   # parses fullGenomeSearch return value
   # and passes the dataframe and genome list
@@ -131,7 +126,7 @@ shinyServer(function(input, output, session) {
           message = "Downloading",
           value = 0
         )
-      fullGenomeDownload(
+      server_functions$fullGenomeDownload(
         filetype = "fasta", 
         uids = statefulUids,
         filepath = file,
@@ -155,7 +150,7 @@ shinyServer(function(input, output, session) {
           message = "Downloading",
           value = 0
         )
-      fullGenomeDownload(
+      server_functions$fullGenomeDownload(
         filetype = "gb",
         uids = statefulUids,
         filepath = file,
@@ -174,509 +169,55 @@ shinyServer(function(input, output, session) {
       write.csv(resultsMatrix[[1]], file) 
       }
   )
-  
+
   # CRUX ----------------------------------------------------------------------
   
   # * CRUXSearchButton --------------------------------------------------------
   
   cruxOrgSearch <-
     eventReactive(input$searchButton, {
-      # When searchButton clicked, update CruxOrgSearch to return the value 
-      # input into CRUXorganismList
-      input$CRUXorganismList # Returns as a string
+      organismList <- input$CRUXorganismList # Returns as a string
+      cruxTaxizeOption <- input$CRUXtaxizeOption
+      # future_promise(
+      #   server_functions$getGenomeList(organismList, cruxTaxizeOption))
+      future_promise(
+        server_functions$getCruxSearchFullResults(
+          organismList, cruxTaxizeOption))
     })
-  
-  
-  # * CRUXStrToList -----------------------------------------------------------
-  
-  cruxOrganismList <-
-    reactive({
-      # Converts string from cruxOrgSearch into a list of Strings
-      # Get list of species
-      cruxOrgSearch <- cruxOrgSearch()
-      # Variable to store the user selection for the taxize option
-      CRUXtaxizeOption <- input$CRUXtaxizeOption 
-      future_promise({
-        # Separate based on commas
-        organismList <- strsplit(cruxOrgSearch[[1]], ",")[[1]]
-        # Delete any empty 'species'
-        organismList <- unique(organismList[organismList != ""]) 
-        if (CRUXtaxizeOption) {
-          # If the taxize option is selected
-          # Initialize an empty vector
-          taxize_organism_list <- c() 
-          for (i in 1:length(organismList))
-          {
-            err <- 1
-            # Trim both leading and trailing whitespace
-            organism <- trimws(organismList[[i]], "b") 
-            while (err == 1) {
-              NCBI_names <- tryCatch({
-                if (!NCBIKeyFlag) {
-                  # Sleeping for 1/3 of a second each time gives us 3 queries 
-                  # a second. If each user queries at this rate, we can service 
-                  # 4-8 at the same time.
-                  Sys.sleep(0.34) 
-                }
-                # Help user with various naming issues 
-                # (spelling, synonyms, etc.)
-                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) 
-                err <- 0
-                NCBI_names
-              }, error = function(err) {
-                err <<- 1
-              })
-            }
-            
-            # Get number of rows in dataframe
-            row_count <- nrow(NCBI_names) 
-            
-            # If a legitimate name was found
-            if (row_count > 0)
-            {
-              for (j in 1:row_count)
-              {
-                # Store each matched name in taxa_name
-                taxa_name <- NCBI_names[[j, 3]] 
-                # Update the vector with all the taxa_names.
-                taxize_organism_list <- c(taxize_organism_list, taxa_name)
-              }
-            }
-            else
-            {
-              # Just append organism to the list, and return 
-              # taxize_organism_list
-              taxize_organism_list <- c(taxize_organism_list, organism) 
-            }
-          }
-          taxize_organism_list
-        } else{
-          # Return the list as is
-          organismList 
-        }
-      })
-    })
-  
- # * CRUXSearch ---------------------------------------------------------------
-  cruxSearch <- function(results, searchTerm, organism) {
-    taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
-    
-    # Make a list of db tables, each representing a marker
-    dbList <-
-      list("MB18S",
-           "MB16S",
-           "MBPITS",
-           "MBCO1",
-           "MBFITS",
-           "MBtrnL",
-           "MB12S")
-    for (table in dbList) {
-      queryStatement <- paste(
-        "SELECT * from ",
-        table,
-        " where regio= :x or phylum= :x or classis= :x or ordo= :x
-        or familia= :x or genus= :x or genusspecies= :x")
-      results <- c(
-        results,
-        getTaxaDbQueryResults(taxaDB, queryStatement, organism, searchTerm))
-    }
-    dbDisconnect(taxaDB)
-    results
-  }
-  
-  # * CRUXCoverage -------------------------------------------------------------
-  
-  cruxCoverage <- function (){
-      organismList <- orgListHelper$taxizeHelper(
-        input$CRUXorganismList, 
-        input$CRUXtaxizeOption)
-      validate(
-        need(length(organismList) > 0, 'Please name at least one organism'))
-      # future_promise({
-        results <- c()
-        newOrganismListLength <- 0
-        for (organism in organismList) {
-          
-          # Can determine if homonyms exist with get_uid 
-          # since get_uid should return NA if no taxon is found. 
-          # Also returns NA if multiple identifiers are found and 
-          # ask=FALSE (Default option is true, prompts user for input).
-          # See docs at 
-          # https://cran.r-project.org/web/packages/taxize/taxize.pdf
-          Sys.sleep(0.34)
-          search <- get_uid(sci_com = organism, messages = FALSE)
-          if (is.na(search)) {
-            newOrganismListLength <- newOrganismListLength + 1
-            # newOrgList <- c(newOrgList, organism)
-            Sys.sleep(0.34)
-            searchTerm <- tax_name(
-              query = organism,
-              get = c("genus", "family", "order", "class", "phylum", "domain"),
-              db = "ncbi",
-              messages = FALSE)
-
-            # tax_name returned an empty dataframe, cant perform search
-            if (dim(searchTerm)[[1]] == 0) {
-              results <- c(results, "0", "0", "0", "0", "0", "0", "0")
-              next
-            }
-            Sys.sleep(0.34)
-            results <- cruxSearch(results, searchTerm, organism)
-          } else {
-            popuplist <- c(popuplist, organism)
-          
-            # search is a vector of S3 class objects
-            # representing taxonomic identifiers
-            for (i in 1:length(search)) {
-              newOrganismListLength <- newOrganismListLength + 1
-              
-              # for the sake of brevity
-              if (i > 5) {
-                break
-              }
-              browser()
-              # newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
-              # newOrgList <- c(newOrgList, newOrg)
-              searchTerm <- getSearchTerm(
-                organismUid = search[[1]],
-                organismName = organism)
-              results <- cruxSearch(results, searchTerm, organism)
-            }
-          }
-        }
-        
-        # organismList is used only for the number
-        # of organisms, as far as I can tell.
-        list(
-          #organismList = newOrgList,
-          organismListLength = newOrganismListLength,
-          data = results,
-          popupinfo = popuplist,
-          errorPopupList = errorPopupList,
-          errorPopupListFound = errorPopupListFound)
-     # })
-  }
-  
-  
-  # cruxCoverage <- reactive({
-  #   cruxOrganismList() %...>% {
-  #     organismList <-
-  #       . # Get Organism list already processed by taxize if option was checked
-  #     # Make sure at least one organism is being searched
-  #     organismListLength <- length(organismList)
-  #     validate(
-  #       need(organismListLength > 0, 'Please name at least one organism'))
-  #     
-  #     searchTerm <- ""
-  #     searchResult <- 0
-  #     popuplist <- c()
-  #     
-  #     future_promise({
-  #       # Error when trying to find if there are homonyms
-  #       errorPopupList <- c() 
-  #       # Error when we know there are homonyms but we could not finish 
-  #       # the search
-  #       errorPopupListFound <-c() 
-  #       newOrgList <- c()
-  #       err <- 0
-  #       results <- c()
-  #       search <- c()
-  #       for (organism in organismList) {
-  #         errorHomonym <- 0
-  #         search <-
-  #           tryCatch({
-  #             # Try catch for determining if homonyms exist, if they do fill up 
-  #             # the errorPopupList and activate the errorHomonym Flag
-  #             if (!NCBIKeyFlag) {
-  #               # Sleep to avoid rate limiting
-  #               Sys.sleep(0.34) 
-  #             }
-  #             # Check to see if there are homonyms
-  #             search <- get_uid_(sci_com = organism)
-  #           }, error = function(err) {
-  #             errorHomonym <<- 1
-  #           })
-  #         if (errorHomonym == 1) {
-  #           # There was an error add to pop up list
-  #           errorPopupList <- c(errorPopupList, organism) 
-  #         }
-  #         else if (is.null(search[[1]])) {
-  #           # If search ran into an error or it returned null
-  #           results <- c(results, "0", "0", "0", "0", "0", "0", "0")
-  #           newOrgList <- c(newOrgList, organism)
-  #           next
-  #         }
-  #         
-  #         # There are homonyms
-  #         if (errorHomonym != 1 && nrow(search[[1]]) > 1) {
-  #           # Add to the pop up list to inform the user of the homonyms
-  #           popuplist <- c(popuplist, organism) 
-  #           for (i in 1:nrow(search[[1]])) {
-  #             # Loop through the tax_names
-  #             errorHomonym <- 0
-  #             # if there are more than 5 homonyms then break we are not 
-  #             # interested in more than 5
-  #             if (i > 5) {
-  #               break
-  #             }
-  #             # Create new organism list since new organism are added
-  #             newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
-  #             newOrgList <- c(newOrgList, newOrg)
-  #             # Creating the same format as the other organisms so the Crux
-  #             # search can be performed correctly
-  #             
-  #             # Try catch for when we know there are homonyms but we dont know 
-  #             # which homonyms yet.
-  #             hierarchy <- tryCatch({
-  #               if (!NCBIKeyFlag) {
-  #                 # Sleep to avoid rate limiting
-  #                 Sys.sleep(0.34)
-  #               }
-  #               # Get information on those homonyms
-  #               hierarchy <-
-  #                 classification(search[[1]]$uid[i], db = "ncbi")[[1]] 
-  #               hierarchy
-  #             }, error = function(err) {
-  #               # if there is an error, fill up errorPopupListFound and activate 
-  #               # the errorHomonym Flag
-  #               errorHomonym <<- 1
-  #             })
-  #             if (errorHomonym == 1) {
-  #               # If an error happened during the search add to the error pop up
-  #               # list and mark the errors so the user knows
-  #               errorPopupListFound <- unique(c(errorPopupListFound, newOrg))
-  #               results <-
-  #                 c(
-  #                   results,
-  #                   "error",
-  #                   "error",
-  #                   "error",
-  #                   "error",
-  #                   "error",
-  #                   "error",
-  #                   "error"
-  #                 )
-  #               next
-  #             }
-  #             # Set the right format with all the information necessary for the 
-  #             # CRUX search 
-  #             match <-
-  #               hierarchy$name[match(tolower(
-  #                 c(
-  #                   "genus",
-  #                   "family",
-  #                   "order",
-  #                   "class",
-  #                   "phylum",
-  #                   "domain"
-  #                 )
-  #               ), tolower(hierarchy$rank))]
-  #             query <-
-  #               c("db",
-  #                 "query",
-  #                 "genus",
-  #                 "family",
-  #                 "order",
-  #                 "class",
-  #                 "phylum",
-  #                 "domain")
-  #             match <- c("ncbi", organism, match)
-  #             searchTerm <- stats::setNames(
-  #               data.frame(t(match), stringsAsFactors = FALSE), query)
-  #             # Perform the CruxSearch
-  #             results <- cruxSearch(results, searchTerm, organism)
-  #           }
-  #         } else {
-  #           # There are no homonyms
-  #           # Add to the new org list
-  #           newOrgList <- c(newOrgList, organism) 
-  #           searchTerm <- tryCatch({
-  #             if (!NCBIKeyFlag) {
-  #               # Sleep to avoid rate limiting
-  #               Sys.sleep(0.34) 
-  #             }
-  #             searchTerm <-
-  #               tax_name(
-  #                 query = organism,
-  #                 get = c(
-  #                   "genus",
-  #                   "family",
-  #                   "order",
-  #                   "class",
-  #                   "phylum",
-  #                   "domain"
-  #                 ),
-  #                 db = "ncbi",
-  #                 messages = FALSE
-  #               )
-  #             searchTerm
-  #           }, error = function(err) {
-  #             # Mark the errors if the search didn't work
-  #             results <<-
-  #               c(results,
-  #                 "error",
-  #                 "error",
-  #                 "error",
-  #                 "error",
-  #                 "error",
-  #                 "error",
-  #                 "error")
-  #             err <<- 1
-  #           })
-  #           if (err == 1) {
-  #             err <- 0
-  #             next
-  #           }
-  #           # Perform the CruxSearch
-  #           results <- cruxSearch(results, searchTerm, organism)
-  #         }
-  #       }
-  #       # Create list with all the necessary information
-  #       results <-
-  #         list(
-  #           organismList = newOrgList,
-  #           data = results,
-  #           popupinfo = popuplist,
-  #           errorPopupList = errorPopupList,
-  #           errorPopupListFound = errorPopupListFound
-  #         )
-  #       results
-  #     })
-  #   }
-  # })
-  
-  # * matrixGetCRUX ------------------------------------------------------------
-  
-  matrixGetCRUX <-
-    reactive({
-      # Creates and returns the matrix to be displayed with the count
-      dbList <-
-        list("MB18S",
-             "MB16S",
-             "MBPITS",
-             "MBCO1",
-             "MBFITS",
-             "MBtrnL",
-             "MB12S")
-      cruxCoverage() %...>% {
-        # Get the results from the SQL queries
-        cruxCoverage <- . 
-        results <- c()
-        # organismListLength <- length(cruxCoverage[[1]])
-        # Extract the results
-        for (i in cruxCoverage[[2]]) {
-          results <- c(results, i)
-        }
-        # Convert results vector to dataframe
-        data <-
-          matrix(
-            results,
-            nrow = cruxCoverage[[1]],
-            ncol = length(dbList),
-            byrow = TRUE
-          )
-        data
-      }
-    })
-  
-  # * organismListGet ----------------------------------------------------------
-  
-  organismListGet <-
-    reactive({
-      # Returns the uids stored in the results from the NCBi query
-      organismList <- c()
-      cruxCoverage() %...>% {
-        # Get the results from the NCBI query
-        cruxCoverage <- . 
-        for (i in cruxCoverage[[1]]) {
-          # Extract the new organism list
-          organismList <- c(organismList, i)
-        }
-        # Send the alert to the user related to homonyms
-        cruxOrganismList() %...>% {
-          if (length(organismList) > length(.)) {
-            shinyalert("We have found Homonyms", 
-                       cruxCoverage[[3]], 
-                       type = "warning")
-          }
-          if (length(cruxCoverage[[4]]) > 0) {
-            shinyalert(
-              "Homonyms for the following species could not be checked properly. Try again later",
-              cruxCoverage[[4]],
-              type = "error"
-            )
-          }
-          if (length(cruxCoverage[[5]]) > 0) {
-            shinyalert(
-              "Homonyms for the following species were found but were not able to be processed correctly",
-              cruxCoverage[[5]],
-              type = "error"
-            )
-          }
-        }
-        organismList
-      }
-    })
-  
   
   # * CRUXInputCSV -------------------------------------------------------------
   
-  inputFileCrux <-
-    observeEvent(input$uploadCRUXButton, {
-      # Load Input file into text box
-      isolate({
-        # It requires a file to be uploaded first
-        req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
-        # Read the CSV and write all the Organism Names into the Text Area Input
-        uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
-        if (input$CRUXorganismList[[1]] != "") {
-          updateTextAreaInput(
-            getDefaultReactiveDomain(),
-            "CRUXorganismList",
-            value = c(
-              head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
-              input$CRUXorganismList
-            )
-          )
-        }
-        else {
-          updateTextAreaInput(getDefaultReactiveDomain(),
-                              "CRUXorganismList",
-                              value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
-        }
-      })
+  inputFileCrux <- observeEvent(
+    input$uploadCRUXButton, {
+      newOrganismNamesList <- server_functions$parseCsvColumnForTxtBox(
+        input = input,
+        file.index = "uCRUXfile",
+        column.header = "OrganismNames",
+        textbox.id = "CRUXorganismList"
+      )
+      updateTextAreaInput(
+        session = getDefaultReactiveDomain(),
+        inputId = "CRUXorganismList",
+        value = newOrganismNamesList)
     })
-  
   
   # * CRUXDownload -------------------------------------------------------------
   
   # Download CRUX table
   output$downloadCrux <- downloadHandler(
-    filename = function() {
-      # Create the file
-      paste("CRUX_Table", ".csv", sep = "")
-    },
+    filename = "CRUX_TABLE.csv",
+    contentType = "text/csv",
     content = function(file) {
-      # Gets the column names for the matrix
-      columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-      cruxCoverage() %...>% {
-        cruxCoverage <- .
+      then(cruxOrgSearch(), function(cruxCoverage) {        
         rows <- cruxCoverage[[1]]
-        # Get the matrix for the Crux results
-        matrixGetCRUX() %...>% {
-          # Adds the column names to the matrix
-          colnames(.) <-columns
-          # Adds the row names to the matrix
-          rownames(.) <- rows 
-          
-          # Writes the matrix to the CSV file
-          write.csv(., file) 
-        }
-      }
+        outputMatrix <- cruxCoverage[[2]]
+        colnames(outputMatrix) <- list(
+          "18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+        rownames(outputMatrix) <- rows
+        write.csv(outputMatrix, file)
+      })
     }
   )
-  
-  
   
   # * CRUXSummaryReportDownload ------------------------------------------------
   
@@ -694,21 +235,20 @@ shinyServer(function(input, output, session) {
     }
   )
   
-  
-  
   # * CRUXOutput ---------------------------------------------------------------
   
   output$CRUXcoverageResults <- DT::renderDataTable({
-    promise_all(data_df = matrixGetCRUX(), 
-                rows = organismListGet()) %...>% with({
-                  DT::datatable(
-                    data_df,
-                    rownames = rows,
-                    colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-                  )
-                })
-  })
-  
+    then(cruxOrgSearch(), function(coverage){
+      resultsMatrix <- coverage[[2]]
+      genomeList <- coverage[[1]]
+      columnNames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+      DT::datatable(
+        resultsMatrix,
+        rownames = genomeList,
+        colnames = columnNames)
+      })
+    })
+
   
   # NCBI -----------------------------------------------------------------------
   
@@ -1402,7 +942,6 @@ shinyServer(function(input, output, session) {
     })
   })
   
-  
   # * NCBIDownloadTable --------------------------------------------------------
   
   # Download NCBI table
@@ -1430,8 +969,6 @@ shinyServer(function(input, output, session) {
         }
       }
     }
-    
-    
   )
   
   # * NCBIDownloadSearchTerms --------------------------------------------------
@@ -1484,22 +1021,15 @@ shinyServer(function(input, output, session) {
         }
       }
     } else {
-      matrixGetCRUX() %...>% {
-        # Gets the matrix for the Crux results
-        CRUXmatrix <- . 
-        organismListGet() %...>% {
-          # Gets the column names for the matrix
-          columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S") 
-          # Adds the column names to the matrix
-          colnames(CRUXmatrix) <- columns 
-          # Adds the row names to the matrix
-          rownames(CRUXmatrix) <- .
-          dataframe <- CRUXmatrix
-          #calls convert_CRUX()s
-          dataframe <- convert_CRUX(dataframe)
-          summary_report_dataframe(dataframe)
-        }
-      }
+      then(cruxOrgSearch(), function(coverage) {
+        organismList <- coverage[[1]]
+        cruxMatrix <- coverage[[2]]
+        columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+        colnames(cruxMatrix) <- columns
+        rownames(cruxMatrix) <- organismList
+        dataframe <- convert_CRUX(cruxMatrix)
+        summary_report_dataframe(dataframe)
+      })
     }
   }
   
