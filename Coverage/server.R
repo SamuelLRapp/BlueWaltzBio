@@ -22,11 +22,10 @@ library(ipc)
 library(mpoly)
 library(modules)
 server_functions <- modules::use("server_functions.R")
-# source("server_functions.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
-  
+ 
   # max number of homonyms to return if any
   # are found in the homonym check.
   maxHomonyms <- 5L
@@ -97,20 +96,9 @@ shinyServer(function(input, output, session) {
         column.header = "OrganismNames",
         textbox.id = "genomeOrganismList")))
 
-  # * FGenOrgSearch ------------------------------------------------------------
-  
-  # * Mitochondrial Search -----------------------------------------------------
-  
-  # * Chloroplast Search -------------------------------------------------------
-  
-  # * Is_the_taxa_in_the_NCBI_genome_DB ----------------------------------------
-  
-  #  * selectFunction  ---------------------------------------------------------
-  
-  # * Output Table render ------------------------------------------------------
-
   # parses fullGenomeSearch return value
-  # and passes it into the output data table.
+  # and passes the dataframe and genome list
+  # into the output data table.
   output$genomeResults <- DT::renderDataTable({
     then(fullGenomeSearch(), function(searchResults){
       resultsMatrix <<- searchResults[[1]]
@@ -181,8 +169,8 @@ shinyServer(function(input, output, session) {
       write.csv(resultsMatrix[[1]], file) 
       }
   )
-  
- #  # CRUX ----------------------------------------------------------------------
+
+  # CRUX ----------------------------------------------------------------------
   
   # * CRUXSearchButton --------------------------------------------------------
   
@@ -196,16 +184,6 @@ shinyServer(function(input, output, session) {
         server_functions$getCruxSearchFullResults(
           organismList, cruxTaxizeOption))
     })
-  
-  # * CRUXStrToList -----------------------------------------------------------
-  
-  # * CRUXSearch ---------------------------------------------------------------
-
-  # * CRUXCoverage -------------------------------------------------------------
-  
-  # * matrixGetCRUX ------------------------------------------------------------
-
-  # * organismListGet ----------------------------------------------------------
   
   # * CRUXInputCSV -------------------------------------------------------------
   
@@ -270,6 +248,7 @@ shinyServer(function(input, output, session) {
         colnames = columnNames)
       })
     })
+
   
   # NCBI -----------------------------------------------------------------------
   

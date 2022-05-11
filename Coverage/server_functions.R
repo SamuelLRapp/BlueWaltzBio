@@ -3,14 +3,7 @@ import(shiny)
 import(rentrez)
 import(taxize)
 import(RSQLite)
-# import(readr)
 import(dplyr)
-# import(rlist)
-# import(future)
-# import(promises)
-# import(ipc)
-# import(mpoly)
-# import(modules)
 
 # parse a csv file and append the list from column column.header
 # to what's already in the text box. Returns this value as a vector.
@@ -115,6 +108,7 @@ getDbToSearch <- function(selectedOption){
     "Number of entries per taxa in NCBI Genome" = "genome")
 }
 
+
 # Takes a db name from getDbToSearch, the genomeList
 # containing the genomes to search for, a parameters string
 # containing the parameters to pass to the entrez_search function
@@ -148,6 +142,8 @@ getNcbiSearchResults <-
           Results[i, 2] <<- "Error"
         })
       }
+
+
     }
     list(Results, uids)
   }
@@ -184,6 +180,7 @@ ncbiKeyIsValid <- FALSE
 setNcbiKeyIsValid <- function(validity = TRUE) {
   ncbiKeyIsValid <<- validity
 }
+
 
 # Downloads the file of filetype for each id
 # in uids and amalgamates them into a single file
