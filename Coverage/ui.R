@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(shinyjs)
 library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
@@ -24,6 +25,7 @@ shinyUI(fluidPage(
   #but if the call is still wanted, 
   #pass the force=TRUE argument.
   useShinyalert(force=TRUE), # This line is needed for the popup
+  useShinyjs(),
   tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   navbarPage("Reference Sequence Browser",
              id = "mainPage",
@@ -72,7 +74,7 @@ shinyUI(fluidPage(
                           column(6, align="center", offset = 3,
                                  fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                  #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                                 actionButton("Button", "Start Your CRUX Search"),
+                                 actionButton("CruxStart", "Start Your CRUX Search"),
                                  #tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                  #tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                  #tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
