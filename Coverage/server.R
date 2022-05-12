@@ -51,14 +51,17 @@ shinyServer(function(input, output, session) {
     })
   
   observeEvent(input$genomeSearchButton, {
+    # Go to the results page after clicking the search button
     updateTabsetPanel(session, "FullGenomePage", selected = "Results")
     showTab("FullGenomePage", "Results")
   })
   
   observeEvent(input$FullGenomeStart,
   {
+    # Begin Full genome pipeline
     updateTabsetPanel(session, "FullGenomePage", selected = "Organism Names")
     showTab("FullGenomePage", "Organism Names")
+    # It requires a file to be uploaded first
     req(input$uploadGenomeFile,
         file.exists(input$uploadGenomeFile$datapath)) 
     isolate({
@@ -82,38 +85,7 @@ shinyServer(function(input, output, session) {
                             value = uploadinfo$OrganismNames)
       }
     })
-    # It requires a file to be uploaded first
-    
   })
-  
-  # * FullGenomeInputCSV -------------------------------------------------------
-  
-  inputFileCrux <- observeEvent(input$uploadGenomeButton, {
-    isolate({
-      # It requires a file to be uploaded first
-      req(input$uploadGenomeFile,
-          file.exists(input$uploadGenomeFile$datapath)) 
-      # Read the CSV and write all the Organism Names into the Text Area Input
-      uploadinfo <-
-        read.csv(input$uploadGenomeFile$datapath, header = TRUE)
-      if (input$genomeOrganismList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "genomeOrganismList",
-          value = c(
-            head(uploadinfo$OrganismNames,-1),
-            input$genomeOrganismList
-          )
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "genomeOrganismList",
-                            value = uploadinfo$OrganismNames)
-      }
-    })
-  })
-  
   
   # * FGenOrgSearch ------------------------------------------------------------
   
@@ -565,40 +537,42 @@ shinyServer(function(input, output, session) {
   
   
   observeEvent(input$searchButton, {
+      # Begin CRUX search
       updateTabsetPanel(session, "CRUXpage", selected = "Results")
       showTab("CRUXpage", "Results")
   })
   
-  observeEvent(input$Button,
+  observeEvent(input$CruxStart,
   {
-      updateTabsetPanel(session, "CRUXpage", selected = "Organism Names")
-      showTab("CRUXpage", "Organism Names")
+    # Begin CRUX pipeline
+    updateTabsetPanel(session, "CRUXpage", selected = "Organism Names")
+    showTab("CRUXpage", "Organism Names")
+    isolate({
       # It requires a file to be uploaded first
-      req(input$uploadGenomeFile, file.exists(input$uploadGenomeFile$datapath)) 
-      isolate({
-        # Read the CSV and write all the Organism Names into the Text Area Input
-        uploadinfo <-
-          read.csv(input$uploadGenomeFile$datapath, header = TRUE)
-        if (input$genomeOrganismList[[1]] != "") {
-          updateTextAreaInput(
-            getDefaultReactiveDomain(),
-            "genomeOrganismList",
-            value = c(
-              head(uploadinfo$OrganismNames,-1),
-              input$genomeOrganismList
-            )
+      req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
+      # Read the CSV and write all the Organism Names into the Text Area Input
+      uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
+      if (input$CRUXorganismList[[1]] != "") {
+        updateTextAreaInput(
+          getDefaultReactiveDomain(),
+          "CRUXorganismList",
+          value = c(
+            head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
+            input$CRUXorganismList
           )
-        }
-        else {
-          updateTextAreaInput(getDefaultReactiveDomain(),
-                              "genomeOrganismList",
-                              value = uploadinfo$OrganismNames)
-        }
-      })
+        )
+      }
+      else {
+        updateTextAreaInput(getDefaultReactiveDomain(),
+                            "CRUXorganismList",
+                            value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
+      }
+    })
   })
   
   observeEvent(input$SummaryDataButton,
   {
+      # Go to summary results
       updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
       showTab("CRUXpage", "Summary Results")
   })
@@ -1042,35 +1016,6 @@ shinyServer(function(input, output, session) {
     })
   
   
-  # * CRUXInputCSV -------------------------------------------------------------
-  
-  inputFileCrux <-
-    observeEvent(input$uploadCRUXButton, {
-      # Load Input file into text box
-      isolate({
-        # It requires a file to be uploaded first
-        req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
-        # Read the CSV and write all the Organism Names into the Text Area Input
-        uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
-        if (input$CRUXorganismList[[1]] != "") {
-          updateTextAreaInput(
-            getDefaultReactiveDomain(),
-            "CRUXorganismList",
-            value = c(
-              head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
-              input$CRUXorganismList
-            )
-          )
-        }
-        else {
-          updateTextAreaInput(getDefaultReactiveDomain(),
-                              "CRUXorganismList",
-                              value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
-        }
-      })
-    })
-  
-  
   # * CRUXDownload -------------------------------------------------------------
   
   # Download CRUX table
@@ -1155,11 +1100,13 @@ shinyServer(function(input, output, session) {
     })
   
   observeEvent(input$NCBIsearchButton, {
+    # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Results")
     showTab("NCBIpage", "Results")
   })
   
   observeEvent(input$NCBIStartOver, {
+    # Start NCBI search all over again
     updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
     hideTab("NCBIpage", "Organism Names")
     hideTab("NCBIpage", "Barcodes of Interest")
@@ -1167,15 +1114,19 @@ shinyServer(function(input, output, session) {
     hideTab("NCBIpage", "Summary Results")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
+    reset('uNCBIfile')
+    input$uNCBIfile$datapath <- NULL
     
   })
   
   observeEvent(input$BarcodesNext, {
+    # Go the barcodes tab to allow user to input them
      updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
      showTab("NCBIpage", "Barcodes of Interest")
    })
   
   observeEvent(input$StartNCBIButton, {
+    # Begin the NCBI pipeline button
     updateTabsetPanel(session, "NCBIpage", selected = "Organism Names")
     showTab("NCBIpage", "Organism Names")
     isolate({
@@ -1216,6 +1167,7 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$NCBISummaryDataButton,
    {
+     # Check the summary data
      updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
      showTab("NCBIpage", "Summary Results")
    })
@@ -1866,47 +1818,6 @@ shinyServer(function(input, output, session) {
                 rows = NCBIorganismList()) %...>% with({
                   DT::datatable(data_df, rownames = FALSE)
                 })
-  })
-  
-  
-  # * NCBInputFile -------------------------------------------------------------
-  
-  
-  inputFileNCBI <- observeEvent(input$uploadNCBIButton, {
-    isolate({
-      req(input$uNCBIfile,
-          file.exists(input$uNCBIfile$datapath))
-      uploadinfo <-
-        read.csv(input$uNCBIfile$datapath, header = TRUE)
-      if (input$NCBIorganismList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "NCBIorganismList",
-          value = c(
-            head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
-            input$NCBIorganismList
-          )
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "NCBIorganismList",
-                            value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
-      }
-      if (input$barcodeList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "barcodeList",
-          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != ""]), 
-                    input$barcodeList)
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "barcodeList",
-                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != ""])
-      }
-    })
   })
   
   
