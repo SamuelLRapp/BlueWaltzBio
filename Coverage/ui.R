@@ -29,6 +29,7 @@ shinyUI(fluidPage(
              id = "mainPage",
 
     # Home tab
+    #img(src='backend.png',  align = "center", height = 350, width = 700), Image in HOME page leaving it here just in case
     tabPanel("Home", 
              column(6, align="center", offset = 3,
                     titlePanel("Welcome to the Reference Sequence Browser"),
@@ -36,7 +37,6 @@ shinyUI(fluidPage(
                     p(HTML('&emsp;'), "Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases."),
                     p(HTML('&emsp;'), "This rShiny app was built to bridge the gap between ecologists and computer scientists by providing efficient and intuitive access to NCBI and CRUX databases without the user having to write a single line of code. If you would like to learn more details about either the NBCI or CRUX search browser specific design and function click on the relevant tab above. Assemble a list of organisms and get started! " ),
                     p(HTML('&emsp;'), "The diagram represents how the two search portals function in the back end."),
-                    img(src='backend.png',  align = "center", height = 350, width = 700),
                     textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
                     actionButton(inputId = "SetKey", label = "Set Key"),
              ),
@@ -312,6 +312,7 @@ shinyUI(fluidPage(
                           )),
                         
                ),
+               
                tabPanel("Information"),
                h4("User Guide"),
                full_genome_guide.icon <- tags$a(href='https://docs.google.com/document/d/1Z9qLSy1ZiHaoT2i6rC_CLM_mKbo4uN2zLxaNbkz_w7U/edit?usp=sharing',
