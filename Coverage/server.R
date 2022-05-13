@@ -22,7 +22,6 @@ library(future)
 library(promises)
 library(ipc)
 library(mpoly)
-source("R/cache.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
@@ -1056,6 +1055,26 @@ shinyServer(function(input, output, session) {
       # input into NCBIorganismList
       list(input$NCBIorganismList, input$barcodeList) #Returns as a string
     })
+  
+  ## cache searches
+  
+  #cache organism input contents (currently saved as string)
+  observeEvent(input$NCBIorganismList, {
+    #not sure why initializing the input value counts as a change
+    if (input$NCBIorganismList != "") {
+      setCache("organisms", input$NCBIorganismList, "NCBI/search")
+      print(getCache("organisms", "NCBI/search"))
+    }
+  })
+  
+  #cache barcode list input contents (currently saved as string)
+  observeEvent(input$barcodeList, {
+    #not sure why initializing the input value counts as a change
+    if (input$barcodeList != "") {
+      setCache("barcodes", input$barcodeList, "NCBI/search")
+      print(getCache("barcodes", "NCBI/search"))
+    }
+  })
   
   # * NCBI_Key -----------------------------------------------------------------
   NCBIKeyFlag <- FALSE
