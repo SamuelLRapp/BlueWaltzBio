@@ -96,7 +96,7 @@ shinyServer(function(input, output, session) {
                 Sys.sleep(0.34) 
               }
               # Help user with various naming issues (spelling, synonyms, etc.)
-             
+              
               NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) 
               err <- 0
               NCBI_names # Return this variable
@@ -1469,8 +1469,8 @@ shinyServer(function(input, output, session) {
     })
   
   # * General Cache Helper Functions ------------------------
-
- #5/12/2022 functions moved to R/cache.R
+  
+  #5/12/2022 functions moved to R/cache.R
   
   
   # * NCBIDownloadFASTA --------------------------------------------------------
@@ -1518,58 +1518,58 @@ shinyServer(function(input, output, session) {
         detail = "",
         value = 0
       )
-      future_promise({
-        
-        barcodes <- colnames(uidsMatrix)
-        species <- rownames(uidsMatrix)
-        
-        speciesNum <- length(species)
-        barcodeNum <- length(barcodes)
-        
-        #get number of cells
-        totalCellNum <- speciesNum*barcodeNum
-        
-        cells_to_retrieve <- uncached_cells
-        if (is.null(uncached_cells)) {
-          cells_to_retrieve <- 1:totalCellNum
-        }
-        total_retr_cells <- length(cells_to_retrieve)
-        #download sequences
-        progress$set(message="Getting data...")
-        lapply(cells_to_retrieve, function(cellNum){
-          print("cell start")
-          
-          cur_row <- ceiling(cellNum/barcodeNum)
-          cur_col <- cellNum-(cur_row-1)*barcodeNum
-          dwn_msg <- paste("Downloading", barcodes[[cur_col]], "sequences for", species[[cur_row]], sep=" ")
-          print(dwn_msg)
-          #update progress bar message
-          progress$set(detail=dwn_msg)
-          
-          content_fasta <- ""
-          cellIds <- uidsMatrix[cur_row,cur_col][[1]]
-          print(cellIds)
-          #check if there are no uids for this barcode for this species
-          empty <- FALSE
-          if (length(cellIds) == 0){
-            empty <- TRUE
-          }
-          #download sequences for each UID
-          if (empty == FALSE){
-            content_fasta <- getFastaContent(cellIds)
-          }
-          setFileCache(cur_col, cellNum, content_fasta)
-          progress$inc(1/total_retr_cells) #this works somehow
-          print("uid downloaded")
-          print("cell end")
-          
-        })
-      }) %...>% {
-        print("done!")
-        progress$close()
-        callbck()
-        
+    future_promise({
+      
+      barcodes <- colnames(uidsMatrix)
+      species <- rownames(uidsMatrix)
+      
+      speciesNum <- length(species)
+      barcodeNum <- length(barcodes)
+      
+      #get number of cells
+      totalCellNum <- speciesNum*barcodeNum
+      
+      cells_to_retrieve <- uncached_cells
+      if (is.null(uncached_cells)) {
+        cells_to_retrieve <- 1:totalCellNum
       }
+      total_retr_cells <- length(cells_to_retrieve)
+      #download sequences
+      progress$set(message="Getting data...")
+      lapply(cells_to_retrieve, function(cellNum){
+        print("cell start")
+        
+        cur_row <- ceiling(cellNum/barcodeNum)
+        cur_col <- cellNum-(cur_row-1)*barcodeNum
+        dwn_msg <- paste("Downloading", barcodes[[cur_col]], "sequences for", species[[cur_row]], sep=" ")
+        print(dwn_msg)
+        #update progress bar message
+        progress$set(detail=dwn_msg)
+        
+        content_fasta <- ""
+        cellIds <- uidsMatrix[cur_row,cur_col][[1]]
+        print(cellIds)
+        #check if there are no uids for this barcode for this species
+        empty <- FALSE
+        if (length(cellIds) == 0){
+          empty <- TRUE
+        }
+        #download sequences for each UID
+        if (empty == FALSE){
+          content_fasta <- getFastaContent(cellIds)
+        }
+        setFileCache(cur_col, cellNum, content_fasta)
+        progress$inc(1/total_retr_cells) #this works somehow
+        print("uid downloaded")
+        print("cell end")
+        
+      })
+    }) %...>% {
+      print("done!")
+      progress$close()
+      callbck()
+      
+    }
     return(NULL) # this makes sure RShiny won't wait for the promise to finish before doing other stuff
   }
   ### stuff for test panel 
@@ -1597,7 +1597,7 @@ shinyServer(function(input, output, session) {
       print("cache detected")
       uids_matrix <- cache$get("uids-matrix")
       total_cells <- nrow(uids_matrix)*ncol(uids_matrix)
-  
+      
       print("cached cell ids:")
       print(getCachedCells())
       uncached <- setdiff(1:total_cells, getCachedCells())
@@ -1630,7 +1630,7 @@ shinyServer(function(input, output, session) {
       print("cache detected")
       uids_matrix <- cache$get("uids-matrix")
       total_cells <- nrow(uids_matrix)*ncol(uids_matrix) #integer vector with the ids of every cached cell
-   
+      
       print("cached cells:")
       print(getCachedCells())
       uncached <- setdiff(1:total_cells, getCachedCells())
@@ -1653,7 +1653,7 @@ shinyServer(function(input, output, session) {
           js$clickBtn("ncbi-dwn")
           shinyjs::enable("ncbi-dwn-trigger")
         }
-
+        
         getFileContent(uidsMatrix, content_callback) 
       }
     }
@@ -1683,7 +1683,7 @@ shinyServer(function(input, output, session) {
   # Cache search box contents
   
   # Download Fasta Files
-
+  
   output[["ncbi-dwn"]] <- downloadHandler(
     filename <- function() {
       paste("NCBI_Fasta", "zip", sep=".")
@@ -1720,7 +1720,7 @@ shinyServer(function(input, output, session) {
         })
         emptyCache("NCBI")
         zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
-       })
+      })
     },
     contentType = "application/zip"
   )

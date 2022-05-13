@@ -19,7 +19,7 @@ setFileCache <- function(file_num, cell_num, content){
 }
 getCache <- function(key, cache_name){
   cache <- createCache(cache_name)
-  cache$get(key, missing=NULL)
+  cache$get(key, missing = NULL)
 }
 getFileCache <- function(db="NCBI", file_num, cell_num){
   cache_name <- paste(db,"files",file_num, sep="/")
