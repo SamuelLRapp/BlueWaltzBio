@@ -1058,6 +1058,25 @@ shinyServer(function(input, output, session) {
   
   ## cache searches
   
+  checkSearchCache <- function (){
+    orgCacheContents <- getCache("organisms", "NCBI/search")
+    if (!is.null(orgCacheContents)) {
+      updateTextAreaInput(
+        inputId = "NCBIorganismList",
+        value = orgCacheContents
+      )
+    }
+    barcodeCacheContents <- getCache("barcodes", "NCBI/search")
+    if (!is.null(barcodeCacheContents)) {
+      updateTextAreaInput(
+        inputId = "barcodeList",
+        value = barcodeCacheContents
+      )
+    }
+  }
+  
+  checkSearchCache()
+  
   #cache organism input contents (currently saved as string)
   observeEvent(input$NCBIorganismList, {
     #not sure why initializing the input value counts as a change
@@ -1075,6 +1094,8 @@ shinyServer(function(input, output, session) {
       print(getCache("barcodes", "NCBI/search"))
     }
   })
+  
+  
   
   # * NCBI_Key -----------------------------------------------------------------
   NCBIKeyFlag <- FALSE
@@ -1554,20 +1575,21 @@ shinyServer(function(input, output, session) {
   ### stuff for test panel 
   
   # for auto-filling inputs during testing
-  autofillInputs <- function(){
-    updateTextAreaInput(
-      getDefaultReactiveDomain(),
-      "NCBIorganismList",
-      value = "gallus gallus, cygnus, bos taurus"
-    )
-    updateTextAreaInput(
-      getDefaultReactiveDomain(),
-      "barcodeList",
-      value = "trnl, (CO1; COI; COX1)"
-    )
-  }
   
-  autofillInputs()
+  # autofillInputs <- function(){
+  #   updateTextAreaInput(
+  #     getDefaultReactiveDomain(),
+  #     "NCBIorganismList",
+  #     value = "gallus gallus, cygnus, bos taurus"
+  #   )
+  #   updateTextAreaInput(
+  #     getDefaultReactiveDomain(),
+  #     "barcodeList",
+  #     value = "trnl, (CO1; COI; COX1)"
+  #   )
+  # }
+  
+  # autofillInputs()
   observeEvent(input[["get-data-test"]], {
     shinyjs::disable("get-data-test") #disable button
     cache <- createCache("NCBI")

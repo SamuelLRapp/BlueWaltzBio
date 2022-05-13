@@ -3,6 +3,8 @@ getCachePath <- function(cache_name){
   rappdirs::user_cache_dir(cache_name)
 }
 #createCache is actually a bad name, it should be more like "getCacheObject" or something
+#because this file is in the R directory, it will automatically be imported/sourced
+
 createCache <- function(cache_name){
   cache_path <- getCachePath(cache_name)
   cachem::cache_disk(dir = cache_path)
@@ -17,7 +19,7 @@ setFileCache <- function(file_num, cell_num, content){
 }
 getCache <- function(key, cache_name){
   cache <- createCache(cache_name)
-  cache$get(key)
+  cache$get(key, missing=NULL)
 }
 getFileCache <- function(db="NCBI", file_num, cell_num){
   cache_name <- paste(db,"files",file_num, sep="/")
