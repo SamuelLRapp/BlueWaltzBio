@@ -1114,9 +1114,6 @@ shinyServer(function(input, output, session) {
     hideTab("NCBIpage", "Summary Results")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
-    reset('uNCBIfile')
-    input$uNCBIfile$datapath <- NULL
-    
   })
   
   observeEvent(input$BarcodesNext, {
