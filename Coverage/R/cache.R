@@ -1,10 +1,10 @@
+#because this file is in the R directory, it will automatically be imported/sourced
+
 library(memoise)
 getCachePath <- function(cache_name){
   rappdirs::user_cache_dir(cache_name)
 }
 #createCache is actually a bad name, it should be more like "getCacheObject" or something
-#because this file is in the R directory, it will automatically be imported/sourced
-
 createCache <- function(cache_name){
   cache_path <- getCachePath(cache_name)
   cachem::cache_disk(dir = cache_path)
