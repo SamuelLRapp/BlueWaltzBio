@@ -58,7 +58,7 @@ shinyUI(
   #IDE says this call is now unnecessary
   #but if the call is still wanted, 
   #pass the force=TRUE argument.
-  
+    tags$link(rel = "stylesheet", type = "text/css", href = "flex-btn-grid.css"),
   useShinyjs(),
   extendShinyjs(text = onInitJs, functions = c()),
   extendShinyjs(text = jsCode, functions = c("clickBtn", "chooseTab")),
@@ -155,52 +155,17 @@ shinyUI(
 
       tabPanel("NCBI",          #NCBI Tab    
         # Application title
-        tags$style('
-          .flex-btn-grid{
-            display: inline-flex;
-            flex-wrap: wrap;
-          }
-          .flex-btn-grid.test-panel button {
-            margin: 6px;
-          }
-          .flex-btn-grid.barcode button {
-            margin: 2px;
-          }
-          #ncbi-dwn{
-            cursor: default;
-            position:absolute;
-            top: 0;
-            left:0;
-            width:1px;
-            height:1px;
-            z-index: -1;
-            opacity:0;
-          }
-        '),
         tabsetPanel(
           tabPanel("Search", 
             titlePanel("Find NCBI records of your organisms and barcodes of interest"),
             fluidRow(
               ##
-              #Panel just for testing
-              mainPanel(
-                div(style="padding: 1rem;background:hsl(40, 90%, 60%)",
-                  h4(
-                    "***Buttons for testing caching***",
-                  ),
-
-                  div(class="flex-btn-grid test-panel",
-                      actionButton("get-data-test", "just get data (no download)", style = "border: 1px dashed #555"),
-                      actionButton("cache-log", "log cache file paths", style = "border: 1px dashed #555"),
-                      actionButton("mt-file", "empty file cache", class = "btn-danger"),
-                      actionButton("mt-entire", "empty entire cache", class = "btn-danger"),
-                      downloadButton("ncbi-dwn",""),
-                      actionButton(inputId="ncbi-dwn-trigger", label=list(icon("download"), "download FASTA files"), class = "btn-primary")
-                  )
-                )
-              ),
+              #Panel just for testing (remove cacheTestUI and cacheTestServer in server.R when done testing)
+              cacheTestUI(id = "cachetest"),
               #end test panel
               ##
+              downloadButton("ncbi-dwn","", class="hidden-dwn"),
+
               mainPanel(
                 h4("Descriptions of each Search Field"),
                 dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
