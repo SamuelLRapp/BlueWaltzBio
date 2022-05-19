@@ -311,33 +311,70 @@ shinyServer(function(input, output, session) {
   
   # * NCBISequenceLength -------------------------------------------------------
   
-  seqLenList <- reactive({
-    #list of sequence length specifications
-    
-    #only present if the option is selected
+  
+
+  seqLenList <- eventReactive(input$seqLengthOption, {
     if (input$seqLengthOption) {
-      #separate based on comma
       barcodeList <- strsplit(input$barcodeList, ",")
       barcodeList[[1]] <- trimws(barcodeList[[1]], "b")
       barcodeList[[1]] <-
         unique(barcodeList[[1]][barcodeList[[1]] != ""])
-      
-      #allow the user to specify a different length for every barcode
-      textList <- list()
-      for (marker in barcodeList[[1]]) {
-        #add a numeric input
-        textList <-
-          list(textList,
-               numericRangeInput(
-                 inputId = marker,
-                 label = paste("Min/max sequence length for", marker),
-                 value = c(0, 2000)
-               ))
-      }
-      #return the list of numeric inputs
-      textList
+      getRangeList_MarkerSequenceLength(barcodeList[[1]])
     }
   })
+  
+  # returns a list of numeric ranges
+  # by barcode marker to solicit the 
+  # user for input on the min/max sequence
+  # length for that marker.
+  # seqLenList <- reactive({
+  #   #list of sequence length specifications
+  #   #only present if the option is selected
+  #   if (input$seqLengthOption) {
+  #     #separate based on comma
+  #     barcodeList <- strsplit(input$barcodeList, ",")
+  #     barcodeList[[1]] <- trimws(barcodeList[[1]], "b")
+  #     barcodeList[[1]] <-
+  #       unique(barcodeList[[1]][barcodeList[[1]] != ""])
+  #     getRangeList_MarkerSequenceLength(barcodeList[[1]])
+  #     # 
+  #     # #allow the user to specify a different length for every barcode
+  #     # textList <- list()
+  #     # for (marker in barcodeList[[1]]) {
+  #     #   #add a numeric input
+  #     #   textList <-
+  #     #     list(textList,
+  #     #          numericRangeInput(
+  #     #            inputId = marker,
+  #     #            label = paste("Min/max sequence length for", marker),
+  #     #            value = c(0, 2000)
+  #     #          ))
+  #     # }
+  #     # #return the list of numeric inputs
+  #     # textList
+  #   }
+  # })
+
+  
+  # Takes a list of barcode markers and 
+  # returns a list of numeric ranges
+  # by marker to solicit the 
+  # user for input on the min/max sequence
+  # length for that marker.
+  getRangeList_MarkerSequenceLength <- function(barcodeList){
+    textList <- list()
+    for (marker in barcodeList) {
+      #add a numeric input
+      textList <- list(
+        textList, 
+        numericRangeInput(
+          inputId = marker,
+          label = paste("Min/max sequence length for", marker),
+          value = c(0, 2000)))
+    }
+    #return the list of numeric inputs
+    textList
+  }
   
   
   # * NCBICoverage -------------------------------------------------------------
