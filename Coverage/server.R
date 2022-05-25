@@ -522,7 +522,7 @@ shinyServer(function(input, output, session) {
      # It requires a file to be uploaded first
      req(input$uBOLDfile, file.exists(input$uBOLDfile$datapath))
      isolate({
-       uploadinfo <- read.csv(input$uBOLDfile$datapath, header = TRUE)
+       uploadinfo <- read.csv(input$uBOLDfile$datapath, quote = "", header = TRUE)
        if(input$BOLDorganismList[[1]] != "") {
          updateTextAreaInput(getDefaultReactiveDomain(), "BOLDorganismList", value = c(head(uploadinfo$OrganismNames, -1), input$CRUXorganismList))
        }
@@ -577,6 +577,7 @@ shinyServer(function(input, output, session) {
       print("HEY STARTING COVERAGE")
       organismList <- boldOrganismList()
       organismListLength <- length(organismList)
+      print(organismListLength)
       validate(
         need(organismListLength > 0, 'Please name at least one organism')
       )
@@ -587,7 +588,7 @@ shinyServer(function(input, output, session) {
       #put each organism's matrix together
       for(organism in organismList){
         records_bold <- bold_seqspec(taxon = organism)
-        print(ncol(records_bold))
+        print(organism)
         results <- rbind(results, records_bold)
       }
 
@@ -641,18 +642,24 @@ shinyServer(function(input, output, session) {
           #parsing data into fasta file format and storing in fasta_vector
           
           #display species name if subspecies name is not available
-          species_name <- if(records_bold$subspecies_name[i] == "") records_bold$species_name[i] else records_bold$subspecies_name[i]
+
+          species_name <- if(is.na(records_bold$subspecies_name[i])) records_bold$species_name[i] else records_bold$subspecies_name[i]
           
           #put data into vector
           org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
-          
           #remove empty data
           org_fasta <- org_vector[org_vector != '']
           org_data <- paste(org_fasta, collapse = '|')
           org_data <- paste('>', org_data, sep = '')
           
           #do not include entries with no sequences
-          if (records_bold$nucleotides[i] != ''){
+
+          #isequal <- !is.na(records_bold$nucleotides[i]) == (records_bold$nucleotides[i] != '')
+          #print(isequal)
+          #if(!isequal) {
+          #  print(records_bold$nucleotides[i])    
+          #}
+          if (records_bold$nucleotides[i] != '' && !is.na(records_bold$nucleotides[i])){
             fasta_vector <- c(fasta_vector, org_data)
             fasta_vector <- c(fasta_vector, records_bold$nucleotides[i])
           }
