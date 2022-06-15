@@ -22,6 +22,10 @@ library(rlist)
 #install.packages("bold")    # R package to pull sequences from BOLD
 require("bold") 
 
+require("treemap")
+library(plotly)
+library(treemapify)
+library(ggplot2)
 
 shinyServer(function(input, output, session) {
     
@@ -536,94 +540,128 @@ shinyServer(function(input, output, session) {
 # * BOLDStrToList ---------------------------------------------------------
 
     boldOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-        print("HEY")
-        organismList <- strsplit(BOLDOrgSearch(), ",")[[1]] #separate based on commas
-        if(input$BOLDtaxizeOption){ #if the taxize option is selected
-            taxize_organism_list <- c() #initialize an empty vector
-            
-            for(i in 1:length(organismList))
+      print("HEY")
+      organismList <- strsplit(BOLDOrgSearch(), ",")[[1]] #separate based on commas
+      if(input$BOLDtaxizeOption){ #if the taxize option is selected
+        taxize_organism_list <- c() #initialize an empty vector
+        
+        for(i in 1:length(organismList))
+        {
+          organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
+          NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+          row_count <- nrow(NCBI_names) # get number of rows in dataframe
+          
+          if(row_count > 0) #If a legitimate name was found
+          {
+            for(j in 1:row_count)
             {
-                organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
-                NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
-                row_count <- nrow(NCBI_names) # get number of rows in dataframe
-                
-                if(row_count > 0) #If a legitimate name was found
-                {
-                    for(j in 1:row_count)
-                    {
-                        taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
-                        taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
-                    }
-                }
-                else
-                {
-                    taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
-                }
+              taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
+              taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
             }
-            print(taxize_organism_list)
-            taxize_organism_list  
-        } else{
-            organismList #return the list as is
+          }
+          else
+          {
+            taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
+          }
         }
+        print(taxize_organism_list)
+        taxize_organism_list  
+      } else{
+        organismList #return the list as is
+      }
     })
-    
-
-    
     
     # * BOLDCoverage ------------------------------------------------------------
     
     summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    boldCoverage <- reactive({
-      print("HEY STARTING COVERAGE")
+    boldCoverage <- reactive ({
+      print("WTF BROOOO")
       organismList <- boldOrganismList()
       organismListLength <- length(organismList)
+      countries <- c()
+      
       validate(
         need(organismListLength > 0, 'Please name at least one organism')
       )
-      
 
-      results <- data.frame(matrix(ncol = 0, nrow = 0))
-      
-      #put each organism's matrix together
+      results <- data.frame(matrix(ncol=0, nrow=0))
+
       for(organism in organismList){
         records_bold <- bold_seqspec(taxon = organism)
-        print(ncol(records_bold))
+        countries <- c(countries, records_bold$country)
         results <- rbind(results, records_bold)
       }
-
+      updateSelectInput(session,"geo", label="Filter by Countries", choices=countries, selected=NULL)
+      results <- list(results=results, countries=countries)
       results #return data matrix
     })
     
-    BoldMatrix <- reactive({ # creates and returns the matrix to be displayed with the count
-      data <- boldCoverage()
-      if(input$removeNCBI == TRUE)
-      {
-        #TODO - remove rows in data that do not have a genbank accession
-        records_bold = data
-        list <- c('processid', 'sampleid', 'species_name', 'country')
+    BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
+      input$geo #Returns as a string
+    })
+    
+    
+    # BOLD MATRIX----------------
+    BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
+      list <- boldCoverage()
+      data <- list$results
+      
+      # remove ncbi
+      if (input$removeNCBI == TRUE){
         data <- subset(data, genbank_accession == "")
-        # Leaving this here for now but it isnt really necessary
-        # for(i in 1:nrow(records_bold)){
-        #   if (records_bold$genbank_accession == ""){
-        #     temp <- c(records_bold$processid, records_bold$sampleid, records_bold$species_name, records_bold$country)
-        #     results <- c(results, temp)
-        #     #print(results)
-        #   }
-        # }
-        # how to get rid 
-        #print("results are done")
-        #print(results)
-        # data <- matrix(results, nrow = length(results)/4, ncol = length(list), byrow = TRUE) #store vector results in data matrix
-        #print(data)
       }
+
       data
     })
     
-      output$BOLDcoverageResults <- 
-            DT::renderDataTable(
-              BoldMatrix()[, c('processid', 'genbank_accession', 'species_name', 'country')])
-         
-    # why is remove_ncbi getting called after boldCoverage() when removeNCBI == FALSE?
+    BOLDCountryFilter <- reactive ({
+      if (!is.null(BOLDOrgCountries())){
+        print("started filter")
+        records_bold <- boldCoverage()$results
+        data <- subset(records_bold, country %in% BOLDOrgCountries())
+        print(data$country)
+        print("ending filter")
+      }
+      print("finished with the country filter")
+      data
+    })
+  
+    # for the treemap
+    output$treemap <- renderPlot({ 
+      if (!is.null(input$geo)){
+        records_bold <- boldCoverage()$results
+        countries_values <- list()
+        vals <- c()
+        countries = c(unique(records_bold$country))
+        # replace the empty str w/ no country listed
+        for (i in 1:length(countries)){
+          if (countries[i] == ""){
+            countries[i] = "no country listed"
+          }
+        }
+        
+        for (i in unique(records_bold$country)){
+          x <- lengths(subset(records_bold, country == i))
+          countries_values[[i]] = x[[1]]
+          vals <- append(vals, x[[1]])
+        }
+        
+        xf <- data.frame(country = countries, values = vals)
+        # treemap(xf, index="country", vSize="values", type="value",
+        #         title = "Distriution of the records by country",
+        #         title.legend = "Legend")
+        ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
+          geom_treemap()
+        # how to change the colors + get a legend ? 
+      }}, height = 800, width = 800)
+    
+    output$BOLDcoverageResults <- 
+      DT::renderDataTable(
+        BoldMatrix()[, c('processid', 'sampleid', 'genbank_accession', 'species_name', 'country')])
+    
+    output$BOLDFilterByCountry <- 
+      DT::renderDataTable(
+        BOLDCountryFilter()[, c('processid', 'sampleid', 'genbank_accession', 'species_name', 'country')])
     
     # * BOLDFASTADownload ------------------------------------------------------------
     
@@ -669,37 +707,6 @@ shinyServer(function(input, output, session) {
         write.csv(summary_report(2), file)
       }
     )
-    
-    # * BOLD remove ncbi genomes ------------------------------------------------------------
-   
-     # option to remove NCBI genomes from BOLD output
-    # somehow calling boldCoverage associates that output, need to remove that output as well
-
-    remove_ncbi <- eventReactive(input$BOLDsearchButton,{
-      records_bold = boldCoverage()
-      print(input$removeNCBI)
-      print("in remove_ncbi")
-      list <- c('processid','lat', 'lon')
-      results <- c()
-      for(i in 1:nrow(records_bold)){
-        if (records_bold[i,2] == ""){
-          #print(records_bold[i,2])
-          temp <- c(records_bold[i,1], records_bold[i,3], records_bold[i,4])
-          results <- c(results, temp)
-          #print(results)
-        }
-      }
-      # how to get rid 
-      #print("results are done")
-      #print(results)
-      data <- matrix(results, nrow = length(results)/3, ncol = length(list), byrow = TRUE) #store vector results in data matrix
-      #print(data)
-      data #return data matrix
-  })
-  
-  output$removeNCBIResults <- 
-      DT::renderDataTable(
-      remove_ncbi(), rownames = boldOrganismList(), colnames = c('processid', 'lat', 'lon'))
   
   # * SummaryReport ------------------------------------------------------------
   
