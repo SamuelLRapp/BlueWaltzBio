@@ -85,6 +85,8 @@ taxize <-  function(orgList) {
   taxizeGenOrgList
 }
 
+# this function takes a raw list of organism names, separated
+# by commas.
 # returns a vector of genomes from csv string orgList.
 # The list is taxized if taxizeOptionSelected is true.
 getGenomeList <- function(orgList, taxizeOptionSelected = FALSE) {
@@ -416,3 +418,112 @@ getSearchTerm <- function(organismUid, organismName) {
   }
 }
 
+# Takes a list of barcode markers and 
+# the numericRangeInput function because
+# i dont know which library that came from.
+# Returns a list of numeric ranges
+# by marker to solicit the 
+# user for input on the min/max sequence
+# length for that marker.
+getRangeList_MarkerSequenceLength <- function(barcodeList, numericRangeInput){
+  textList <- list()
+  for (marker in barcodeList) {
+    #add a numeric input
+    textList <- list(
+      textList, 
+      numericRangeInput(
+        inputId = marker,
+        label = paste("Min/max sequence length for", marker),
+        value = c(0, 2000)))
+  }
+  #return the list of numeric inputs
+  textList
+}
+
+# remove parens and internal whitespace
+# replace semicolons with commas
+# return a list of individual barcodes
+splitCodeList <- function(codeList) {
+  code <- trimws(code)
+  code <- gsub("[(, ,)]", "", code)
+  code <- gsub(";", ",", code)
+  strsplit(code, ";")
+}
+
+# builds the search terms to send to the api for each organism entered 
+# and code selected. Returns a list of search terms
+getNcbiSearchTerms <- function(organismList, codeList, NCBISearchOptionGene, NCBISearchOptionOrgn, seq_len_list, seqLengthOption) {
+  searchTerm <- ""
+  searchTerms <- list()
+  browser()
+  for (organism in organismList) {
+    for (code in codeList) {
+      # TODO: Add more sanitization to this
+      code <- trimws(code)
+      code <- gsub("[(, ,)]", "", code)
+      code <- strsplit(code, ";")
+      replacement <- ""
+      if (NCBISearchOptionGene) {
+        replacement <- "[GENE]"
+      }
+      replacement <- paste(replacement, " AND ", organism, sep = "")
+      if (NCBISearchOptionOrgn) {
+        replacement <- paste(replacement, "[ORGN]", sep = "")
+      }
+      if (seqLengthOption) {
+        replacement <-
+          paste(
+            replacement,
+            " AND ",
+            seq_len_list[[code]][1], ":", seq_len_list[[code]][2],
+            "[SLEN]",
+            sep = "")
+      }
+      # iteratively build search term
+      
+      for (co in code[[1]]) {
+        searchTerm <- paste(
+          searchTerm,
+          "(", co, replacement, ")",
+          sep = "",
+          collapse = "")
+        if (co != tail(code[[1]], 1)){
+          searchTerm <- paste(searchTerm, " OR ", sep = "")
+        }
+      }
+      searchTerms <- append(searchTerms, searchTerm)
+    }
+  }
+  searchTerms
+}
+
+
+# takes a list of search terms and and the number of sequences
+# to download per cell. Returns a 
+# tuple of the count of results found and their uids
+getNcbiSearchResults <- function(searchTerms, downloadNumber) {
+  uids <- c()
+  countResults <- c()
+  browser()
+  for (searchTerm in searchTerms){
+    Sys.sleep(0.34)
+    searchResult <- entrez_search(
+      db = "nucleotide",
+      term = searchTerm,
+      retmax = downloadNumber)
+    uids <- append(uids, searchResult$ids)
+    countResults <- append(countResults, searchResult$count)
+  }
+  list(countResults, uids)
+}
+
+# Returns a list of barcodes from the 
+# barcodes of interest text box. Takes the 
+# raw list from the textbox as input
+parseBarcodeList <- function(barcodeList){
+  # separate based on comma
+  barcodeList <- strsplit(barcodeList, ",") 
+  barcodeList[[1]] <- trimws(barcodeList[[1]], "b")
+  barcodeList[[1]] <- unique(barcodeList[[1]][barcodeList[[1]] != ""])
+  barcodeList[[1]]
+}
