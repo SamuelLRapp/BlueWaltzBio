@@ -622,7 +622,9 @@ shinyServer(function(input, output, session) {
     
       output$BOLDcoverageResults <- 
             DT::renderDataTable(
-              BoldMatrix()[, c('processid', 'genbank_accession', 'species_name', 'country')])
+              #BoldMatrix()[, c('processid', 'genbank_accession', 'species_name', 'country')])
+              reduce_barcode_summary(barcode_summary()))
+      
          
     # why is remove_ncbi getting called after boldCoverage() when removeNCBI == FALSE?
     
@@ -710,6 +712,41 @@ shinyServer(function(input, output, session) {
   
   # * SummaryReport ------------------------------------------------------------
   
+  barcode_summary <- function() {
+    summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+    records_bold <- BoldMatrix()
+    
+    for(i in 1:length(records_bold$species_name)){
+      #if species name not in dataframe
+      if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
+        #add a row to summary_df
+        summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
+      #add data to summary_df to get summary data
+      if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != ''){
+        #if markercode is not yet in the dataframe, initiate new col
+        if (!(records_bold$markercode[i] %in% colnames(summary_df))){
+          #create a new column of 0s
+          summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
+        }
+        #add 1 to existing count
+        summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
+      }
+    }
+    print(summary_df)
+    summary_df
+  }
+  
+  reduce_barcode_summary <- function(summary) {
+    #number of non-zeros in each column
+    count <- apply(summary, 2, function(c)sum(c!=0))
+    #find most representative columns
+    count <- rev(sort(count))
+    if (ncol(summary) > 3){
+      summary <- subset(summary, select = c(names(count[1]), names(count[2]), names(count[3])))
+    }
+    summary
+  }
+  
   summary_report <- function(databaseFlag) {
     if (databaseFlag == 1) {
       #NCBI
@@ -749,26 +786,7 @@ shinyServer(function(input, output, session) {
       }
     } else {
       #BOLD
-      summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-      records_bold <- BoldMatrix()
-      
-      for(i in 1:length(records_bold$species_name)){
-        #if species name not in dataframe
-        if (!(records_bold$species_name[i] %in% rownames(summary_df)))
-          #add a row to summary_df
-          summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-        #add data to summary_df to get summary data
-        if (records_bold$markercode[i] != ''){
-          #if markercode is not yet in the dataframe, initiate new col
-          if (!(records_bold$markercode[i] %in% colnames(summary_df))){
-            #create a new column of 0s
-            summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
-          }
-          #add 1 to existing count
-          summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
-        }
-      }
-      summary_report_dataframe(summary_df)
+      summary_report_dataframe(barcode_summary())
     }
   }
   
