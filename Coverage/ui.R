@@ -208,23 +208,36 @@ shinyUI(fluidPage(
                         # Show a plot of the generated distribution and the corresponding buttons
                         fluidRow(
                           column(12, align="center", style='padding-top:15px',
-                                 # conditionalPanel (
-                                 #   #print("in true condition"),
-                                 #   #print(input.removeNCBI),
-                                 #   condition = "input.removeNCBI == true",
-                                 #   DT::dataTableOutput("removeNCBIResults") %>% withSpinner(color="#0dc5c1")
-                                 #   
-                                 # ),
+                                 #conditionalPanel(condition = "input.geo != list()",
+                                                  #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
+                                                  #mainPanel(plotOutput("geo_pie")),
                                  DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                                 conditionalPanel( condition = "output.BOLDcoverageResults",
+                                 conditionalPanel(condition = "output.BOLDcoverageResults",
                                                    # add ncbi option remove genome
                                                    checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
+                                                   #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                                    downloadButton('downloadBoldFasta',"Download Fasta"),
                                                    downloadButton('downloadBoldSummary', "Download Summary"),
                           )),
                         
                ),
              ),
+             tabPanel("Plot",
+                mainPanel(plotOutput('treemap')),
+            ),
+            tabPanel("Filter By country",
+                     column(12, align="center", style='padding-top:15px',
+                            #conditionalPanel(condition = "input.geo != list()",
+                            #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
+                            #mainPanel(plotOutput("geo_pie")),
+                             # empty select input
+                            selectInput(inputId="geo", label="blah", choices=c("China", "India"), multiple = TRUE),
+                            actionButton('BOLDfilterCountries',"Filter Countries"),
+                            DT::dataTableOutput("BOLDFilterByCountry") %>% withSpinner(color="#0dc5c1"),
+                     ),
+             ),
+
+             
     )),
    tabPanel("Contact Us", 
             
