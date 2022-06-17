@@ -63,7 +63,6 @@ shinyUI(
   extendShinyjs(text = onInitJs, functions = c()),
   extendShinyjs(text = jsCode, functions = c("clickBtn", "chooseTab")),
   
-  useShinyalert(force=TRUE), # This line is needed for the popup
   navbarPage("Reference Sequence Browser",
 
     # Home tab
