@@ -6,7 +6,6 @@ import(rentrez)
 import(taxize)
 
 taxizeHelper <- function(orgSearch, taxizeSelected){
-  future_promise({
     if(orgSearch == ""){
       return(c())
     }
@@ -68,5 +67,4 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
       #if the checkbox wasn't selected, return the list as is
       organismList 
     }
-  })
 }
