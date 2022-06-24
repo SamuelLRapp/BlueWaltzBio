@@ -595,7 +595,7 @@ shinyServer(function(input, output, session) {
     })
     
     BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
-      input$geo #Returns as a string
+      input$geo #Returns a list of countries
     })
     
     
@@ -615,7 +615,7 @@ shinyServer(function(input, output, session) {
     BOLDCountryFilter <- reactive ({
       if (!is.null(BOLDOrgCountries())){
         print("started filter")
-        records_bold <- boldCoverage()$results
+        records_bold <- barcode_summary_country()
         data <- subset(records_bold, country %in% BOLDOrgCountries())
         print(data$country)
         print("ending filter")
@@ -737,6 +737,30 @@ shinyServer(function(input, output, session) {
     print(summary_df)
     summary_df
   }
+    
+    barcode_summary_country <- function() {
+      summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+      records_bold <- BoldMatrix()
+      
+      for(i in 1:length(records_bold$species_name)){
+        #if species name not in dataframe
+        if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
+          #add a row to summary_df
+          summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
+        #add data to summary_df to get summary data
+        if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != ''){
+          #if markercode is not yet in the dataframe, initiate new col
+          if (!(records_bold$markercode[i] %in% colnames(summary_df))){
+            #create a new column of 0s
+            summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
+          }
+          #add 1 to existing count
+          summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
+        }
+      }
+      print(summary_df)
+      summary_df
+    }
   
   reduce_barcode_summary <- function(summary) {
     #number of non-zeros in each column
@@ -744,8 +768,11 @@ shinyServer(function(input, output, session) {
     #find most representative columns
     count <- rev(sort(count))
     if (ncol(summary) > 3){
+      print(count)
       summary <- subset(summary, select = c(names(count[1]), names(count[2]), names(count[3])))
     }
+    print("THIS IS SUMMARY")
+    print(summary)
     summary
   }
   
