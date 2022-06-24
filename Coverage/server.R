@@ -323,6 +323,7 @@ shinyServer(function(input, output, session) {
   
   # * NCBIStrToList ------------------------------------------------------------
   
+  # remove this 
   NCBIorganismList <-
     reactive({
       #Converts string from NCBIorganismList into a list of Strings
@@ -347,7 +348,8 @@ shinyServer(function(input, output, session) {
   
   # * NCBISequenceLength -------------------------------------------------------
   
-
+  # returns a numericRangeInput object to display the min/max
+  # ui thing for the user to input sequence lengths
   seqLenList <- eventReactive(input$seqLengthOption, {
     if (input$seqLengthOption) {
       barcodeList <- strsplit(input$barcodeList, ",")
@@ -453,168 +455,168 @@ shinyServer(function(input, output, session) {
   }
   
   
-  genBankCoverage <- reactive({
-    NCBIorganismList() %...>% {
-      organismList <- .
-      codeList <- barcodeList()
-      validate(
-        need(length(organismList) > 0, 'Please name at least one organism'),
-        need(length(codeList) > 0, 'Please choose at least one barcode')
-      )
-      
-      searchTerm <- ""
-      countResults <- list()
-      uids <- list()
-      searchResult <- 0
-      
-      
-      #Temp vars for search options
-      NCBISearchOptionGene <- input$NCBISearchOptionGene
-      NCBISearchOptionOrgn <- input$NCBISearchOptionOrgn
-      downloadNumber <- input$downloadNum
-      seqLengthOption <- input$seqLengthOption
-      
-      
-      seq_len_list <- list()
-      for (code in codeList) {
-        seq_len_list[[code]] <- input[[code]]
-      }
-      
-      future_promise({
-        err <- 0              
-        countResults <- list() 
-        searchTerms <- list()   
-        
-        for (organism in organismList) {
-          for (code in codeList) {
-            # TODO: Add more sanitization to this
-            
-            # if there is a parenthesis
-            code <- trimws(code)
-            if (substring(code, 1, 1) == "(") {
-              # code is in the format (loci1; loci2; loci3...)
-              # We will make a combined query by substituting the ;s for 
-              # other stuff
-              
-              # set up a replacement string
-              replacement <- ""
-              if (NCBISearchOptionGene) {
-                replacement <- "[GENE]"
-              }
-              # Add organism info
-              if (NCBISearchOptionOrgn) {
-                #our query to GenBank
-                replacement <-
-                  paste(replacement, " AND ", organism, "[ORGN]", sep = "")
-              }
-              else {
-                #our non-Metadata query to GenBank
-                replacement <-
-                  paste(replacement, " AND ", organism, sep = "")
-              }
-              # Add sequence length info
-              if (seqLengthOption) {
-                #if the user specified sequence length
-                replacement <-
-                  paste(
-                    replacement,
-                    " AND ",
-                    seq_len_list[[code]][1],
-                    ":",
-                    seq_len_list[[code]][2],
-                    "[SLEN]",
-                    sep = ""
-                  )
-              }
-              # Add the tail to the replacement string
-              replacement <- paste(replacement, ") OR (", sep = "")
-              print(replacement)
-              # Now we finally set searchTerm by replacing the ;s.
-              searchTerm <- gsub(";", replacement, code)
-              # But the last synonym won't have a semicolon after it! Sub in 
-              # one last time:
-              
-              # trim last parenthesis
-              searchTerm <-
-                substring(searchTerm, 1, nchar(searchTerm) - 1)
-              # add in replacement string
-              searchTerm <- paste(searchTerm, replacement, sep = "")
-              # cut off the " OR ("
-              searchTerm <- substring(searchTerm, 1, nchar(searchTerm) - 5)
-              
-            } else {
-              print("Entering else block")
-              if (NCBISearchOptionOrgn) {
-                #our query to GenBank
-                searchTerm <- paste(organism, "[ORGN] AND ", sep = "") 
-              }
-              else {
-                #our non-Metadata query to GenBank
-                searchTerm <- paste(organism, " AND ", sep = "")
-              }
-              print("past NCBISearchOptionOrgn")
-              if (NCBISearchOptionGene) {
-                #our query to GenBank
-                searchTerm <- paste(searchTerm, code, "[GENE]", sep = "") 
-              }
-              else {
-                #our query to GenBank
-                searchTerm <- paste(searchTerm, code, sep = "") 
-              }
-              print("entering seqLenghtOption")
-              
-              #if the user specified sequence length
-              if (seqLengthOption) {
-                searchTerm <-
-                  paste(
-                    searchTerm,
-                    " AND ",
-                    seq_len_list[[code]][1],
-                    ":",
-                    seq_len_list[[code]][2],
-                    "[SLEN]",
-                    sep = ""
-                  ) 
-              }
-              print("Past seqLengthOption")
-            }
-            searchResult <- tryCatch({
-              if (!NCBIKeyFlag) {
-                # sleeping for 1/3 of a second each time gives us 3 queries a 
-                # second. If each user queries at this rate, we can service 4-8
-                # at the same time.
-                Sys.sleep(0.34) 
-              }
-              #only get back the number of search results
-              searchResult <-
-                entrez_search(db = "nucleotide",
-                              term = searchTerm,
-                              retmax = downloadNumber) 
-            }, error = function(err) {
-              countResults <<- list.append(countResults, "error")
-              searchTerms <<- list.append(searchTerms, searchTerm)
-              err <<- 1
-            })
-            
-            if (err == 1) {
-              err <- 0
-              next
-            } else {
-              uids <- list.append(uids, searchResult$ids)
-              searchTerms <- list.append(searchTerms, searchTerm) 
-              #append the count to the vector of results
-              countResults <- list.append(countResults, searchResult$count)
-            }
-          }
-        }
-        results <-
-          list(count = countResults,
-               ids = uids,
-               searchTermslist = searchTerms)
-        results
-      })
-    }
-  })
+  # genBankCoverage <- reactive({
+  #   NCBIorganismList() %...>% {
+  #     organismList <- .
+  #     codeList <- barcodeList()
+  #     validate(
+  #       need(length(organismList) > 0, 'Please name at least one organism'),
+  #       need(length(codeList) > 0, 'Please choose at least one barcode')
+  #     )
+  #     
+  #     searchTerm <- ""
+  #     countResults <- list()
+  #     uids <- list()
+  #     searchResult <- 0
+  #     
+  #     
+  #     #Temp vars for search options
+  #     NCBISearchOptionGene <- input$NCBISearchOptionGene
+  #     NCBISearchOptionOrgn <- input$NCBISearchOptionOrgn
+  #     downloadNumber <- input$downloadNum
+  #     seqLengthOption <- input$seqLengthOption
+  #     
+  #     
+  #     seq_len_list <- list()
+  #     for (code in codeList) {
+  #       seq_len_list[[code]] <- input[[code]]
+  #     }
+  #     
+  #     future_promise({
+  #       err <- 0              
+  #       countResults <- list() 
+  #       searchTerms <- list()   
+  #       
+  #       for (organism in organismList) {
+  #         for (code in codeList) {
+  #           # TODO: Add more sanitization to this
+  #           
+  #           # if there is a parenthesis
+  #           code <- trimws(code)
+  #           if (substring(code, 1, 1) == "(") {
+  #             # code is in the format (loci1; loci2; loci3...)
+  #             # We will make a combined query by substituting the ;s for 
+  #             # other stuff
+  #             
+  #             # set up a replacement string
+  #             replacement <- ""
+  #             if (NCBISearchOptionGene) {
+  #               replacement <- "[GENE]"
+  #             }
+  #             # Add organism info
+  #             if (NCBISearchOptionOrgn) {
+  #               #our query to GenBank
+  #               replacement <-
+  #                 paste(replacement, " AND ", organism, "[ORGN]", sep = "")
+  #             }
+  #             else {
+  #               #our non-Metadata query to GenBank
+  #               replacement <-
+  #                 paste(replacement, " AND ", organism, sep = "")
+  #             }
+  #             # Add sequence length info
+  #             if (seqLengthOption) {
+  #               #if the user specified sequence length
+  #               replacement <-
+  #                 paste(
+  #                   replacement,
+  #                   " AND ",
+  #                   seq_len_list[[code]][1],
+  #                   ":",
+  #                   seq_len_list[[code]][2],
+  #                   "[SLEN]",
+  #                   sep = ""
+  #                 )
+  #             }
+  #             # Add the tail to the replacement string
+  #             replacement <- paste(replacement, ") OR (", sep = "")
+  #             print(replacement)
+  #             # Now we finally set searchTerm by replacing the ;s.
+  #             searchTerm <- gsub(";", replacement, code)
+  #             # But the last synonym won't have a semicolon after it! Sub in 
+  #             # one last time:
+  #             
+  #             # trim last parenthesis
+  #             searchTerm <-
+  #               substring(searchTerm, 1, nchar(searchTerm) - 1)
+  #             # add in replacement string
+  #             searchTerm <- paste(searchTerm, replacement, sep = "")
+  #             # cut off the " OR ("
+  #             searchTerm <- substring(searchTerm, 1, nchar(searchTerm) - 5)
+  #             
+  #           } else {
+  #             print("Entering else block")
+  #             if (NCBISearchOptionOrgn) {
+  #               #our query to GenBank
+  #               searchTerm <- paste(organism, "[ORGN] AND ", sep = "") 
+  #             }
+  #             else {
+  #               #our non-Metadata query to GenBank
+  #               searchTerm <- paste(organism, " AND ", sep = "")
+  #             }
+  #             print("past NCBISearchOptionOrgn")
+  #             if (NCBISearchOptionGene) {
+  #               #our query to GenBank
+  #               searchTerm <- paste(searchTerm, code, "[GENE]", sep = "") 
+  #             }
+  #             else {
+  #               #our query to GenBank
+  #               searchTerm <- paste(searchTerm, code, sep = "") 
+  #             }
+  #             print("entering seqLenghtOption")
+  #             
+  #             #if the user specified sequence length
+  #             if (seqLengthOption) {
+  #               searchTerm <-
+  #                 paste(
+  #                   searchTerm,
+  #                   " AND ",
+  #                   seq_len_list[[code]][1],
+  #                   ":",
+  #                   seq_len_list[[code]][2],
+  #                   "[SLEN]",
+  #                   sep = ""
+  #                 ) 
+  #             }
+  #             print("Past seqLengthOption")
+  #           }
+  #           searchResult <- tryCatch({
+  #             if (!NCBIKeyFlag) {
+  #               # sleeping for 1/3 of a second each time gives us 3 queries a 
+  #               # second. If each user queries at this rate, we can service 4-8
+  #               # at the same time.
+  #               Sys.sleep(0.34) 
+  #             }
+  #             #only get back the number of search results
+  #             searchResult <-
+  #               entrez_search(db = "nucleotide",
+  #                             term = searchTerm,
+  #                             retmax = downloadNumber) 
+  #           }, error = function(err) {
+  #             countResults <<- list.append(countResults, "error")
+  #             searchTerms <<- list.append(searchTerms, searchTerm)
+  #             err <<- 1
+  #           })
+  #           
+  #           if (err == 1) {
+  #             err <- 0
+  #             next
+  #           } else {
+  #             uids <- list.append(uids, searchResult$ids)
+  #             searchTerms <- list.append(searchTerms, searchTerm) 
+  #             #append the count to the vector of results
+  #             countResults <- list.append(countResults, searchResult$count)
+  #           }
+  #         }
+  #       }
+  #       results <-
+  #         list(count = countResults,
+  #              ids = uids,
+  #              searchTermslist = searchTerms)
+  #       results
+  #     })
+  #   }
+  # })
   
   
   # * NCBIMatrix ---------------------------------------------------------------
@@ -646,26 +648,26 @@ shinyServer(function(input, output, session) {
   
   matrixGetSearchTerms <-
     reactive({
-        then(ncbiSearch(), function(value) {
-          organismList <- value[[4]]
-          organismListLength <- length(organismList)
-          codeListLength <- length(barcodeList())
-          # Get the results from the NCBI query
-          SearchStatements <- c()
-          for (i in value[[3]]) {
-            #3 is the 3rd list in genBankCovearage aka the searchterms list
-            SearchStatements <- c(SearchStatements, i)
-          }
-          #convert results vector to dataframe
-          data <-
-            matrix(
-              SearchStatements,
-              nrow = organismListLength,
-              ncol = codeListLength,
-              byrow = TRUE
-            )
-          data
-        })
+      then(ncbiSearch(), function(value) {
+        organismList <- value[[4]]
+        organismListLength <- length(organismList)
+        codeListLength <- length(barcodeList())
+        # Get the results from the NCBI query
+        SearchStatements <- c()
+        for (i in value[[3]]) {
+          #3 is the 3rd list in genBankCovearage aka the searchterms list
+          SearchStatements <- c(SearchStatements, i)
+        }
+        #convert results vector to dataframe
+        data <-
+          matrix(
+            SearchStatements,
+            nrow = organismListLength,
+            ncol = codeListLength,
+            byrow = TRUE
+          )
+        data
+      })
     })
   
   
