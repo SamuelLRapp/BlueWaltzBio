@@ -22,11 +22,11 @@ Before running this script you will need the following files:
 
 Important Note: The files above can be downloaded to this link: https://drive.google.com/drive/u/0/folders/1u0v5_ByM3VG9BcCLzTzMaB2P10SYJ32P and downloading the Data.zip file
 
-Once installed to run simply execute the script with:
+Once installed, run by simply executing the script with:
 
     - python3 dataVerification.py
 
-After it has executed it should have created 2 files:
+After it has executed, it should have created 2 files:
 
     1. The logger file to help debug if necessary
     2. The CSV with the result verification (this file will contain an ERROR column which will let you know if there have been any ERRORS)
