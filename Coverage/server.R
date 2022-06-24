@@ -22,6 +22,7 @@ library(ipc)
 library(mpoly)
 library(modules)
 server_functions <- modules::use("server_functions.R")
+orgListHelper <- modules::use("orgListHelper.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
@@ -282,7 +283,7 @@ shinyServer(function(input, output, session) {
       uids <- list()
       searchTerms <- list()
       countResults <- list()
-      organismList <- server_functions$getGenomeList(organismList, ncbiTaxizeOption)
+      organismList <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
       for (organism in organismList) {
         for (code in barcodeList_[[1]]) {
           searchTerm <- getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
@@ -328,7 +329,7 @@ shinyServer(function(input, output, session) {
       orgString <- input$NCBIorganismList
       NCBItaxizeOption <- input$NCBItaxizeOption
       future_promise({
-        server_functions$getGenomeList(orgString, NCBItaxizeOption)
+        orgListHelper$taxizeHelper(orgString, NCBItaxizeOption)
       })
     })
   
