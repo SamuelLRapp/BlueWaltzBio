@@ -16,9 +16,8 @@ orgListHelper <- modules::use("Coverage/orgListHelper.R")
 
 
 function_template <- function(expectedOutput, inputString, inputBool, funcName){
-  orgListHelper$taxizeHelper(inputString, inputBool) %...>%{
     print("------------------------------------")
-    taxizeHelperOutput <- .
+    taxizeHelperOutput <- orgListHelper$taxizeHelper(inputString, inputBool)
     fileName <- paste("Coverage/tests/test_output/", funcName, ".csv", sep="")
     write.table(taxizeHelperOutput, 
                 file=fileName,
@@ -33,7 +32,6 @@ function_template <- function(expectedOutput, inputString, inputBool, funcName){
     print(expectedOutput)
     print(paste("results of test ", funcName, ":"))
     print(identical(orgVector, expectedOutput))
-  }
 }
 
 # boolean_off ------------------------------------------------------------------

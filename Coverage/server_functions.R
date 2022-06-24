@@ -4,6 +4,10 @@ import(rentrez)
 import(taxize)
 import(RSQLite)
 import(dplyr)
+import(modules)
+
+orgListHelper <- modules::use("orgListHelper.R")
+
 
 # parse a csv file and append the list from column column.header
 # to what's already in the text box. Returns this value as a vector.
@@ -64,36 +68,6 @@ sleep <- function() {
     Sys.sleep(0.1)
   } else {
     Sys.sleep(0.34)
-  }
-}
-
-# returns orgList after taxizing it.
-taxize <-  function(orgList) {
-  taxizeGenOrgList <- c()
-  for (i in 1:length(orgList)) {
-    organism <- trimws(orgList[[i]], "b")
-    sleep()
-    ncbiNames <- gnr_resolve(sci = organism, data_source_ids = 4)
-    if (nrow(ncbiNames) > 0) {
-      for (j in 1:nrow(ncbiNames)){
-        taxizeGenOrgList <- c(taxizeGenOrgList, ncbiNames[[j, 3]])
-      }
-    } else {
-      taxizeGenOrgList <- c(taxizeGenOrgList, organism)
-    }
-  }
-  taxizeGenOrgList
-}
-
-# returns a vector of genomes from csv string orgList.
-# The list is taxized if taxizeOptionSelected is true.
-getGenomeList <- function(orgList, taxizeOptionSelected = FALSE) {
-  organismList <- strsplit(orgList[[1]], ",")[[1]]
-  organismList <- unique(organismList[organismList != ""])
-  if (orgList != "" && taxizeOptionSelected) {
-    taxize(organismList)
-  } else {
-    organismList
   }
 }
 
@@ -161,7 +135,7 @@ getNcbiSearchResults <-
 # organism name text box.
 getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqChecked) {
   databaseOption <- getDbToSearch(dbOption)
-  genomeList <- getGenomeList(orgList, taxizeOption)
+  genomeList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
   dfColumnNames <- getColumnNames(dbOption)
   parameters <- getNcbiSearchParameters(dbOption, refSeqChecked)
   list(getNcbiSearchResults(
@@ -226,7 +200,7 @@ cruxDbList <- list(
 # in case the previous homonym failure notification scheme
 # is wanted. 
 getCruxSearchFullResults <- function(orgList, taxizeOption) {
-  genomeList <- getGenomeList(orgList, taxizeOption)
+  genomeList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
   nameUidList <- getHomonyms(genomeList)
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
