@@ -586,8 +586,10 @@ shinyServer(function(input, output, session) {
 
       for(organism in organismList){
         records_bold <- bold_seqspec(taxon = organism)
-        countries <- c(countries, records_bold$country)
-        results <- rbind(results, records_bold)
+        if (!is.na(records_bold)){
+          countries <- c(countries, records_bold$country)
+          results <- rbind(results, records_bold)
+        }
       }
       updateSelectInput(session,"geo", label="Filter by Countries", choices=countries, selected=NULL)
       results <- list(results=results, countries=countries)
@@ -608,7 +610,6 @@ shinyServer(function(input, output, session) {
       if (input$removeNCBI == TRUE){
         data <- subset(data, genbank_accession == "")
       }
-      print(data)
       data
     })
     
@@ -765,11 +766,19 @@ shinyServer(function(input, output, session) {
   reduce_barcode_summary <- function(summary) {
     #number of non-zeros in each column
     count <- apply(summary, 2, function(c)sum(c!=0))
-    #find most representative columns
-    count <- rev(sort(count))
+    sums <- apply(summary, 2, sum)
+    
+    #find most representative 
+    
+    #result <- c()
+    #for (i in 1:length(sums)){
+    #    result <- sums[[i]] * count[[i]]
+   # }
+    #print(c)
+
+    calculated <- rev(sort(sums * count))
     if (ncol(summary) > 3){
-      print(count)
-      summary <- subset(summary, select = c(names(count[1]), names(count[2]), names(count[3])))
+      summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
     }
     print("THIS IS SUMMARY")
     print(summary)
