@@ -255,12 +255,47 @@ shinyServer(function(input, output, session) {
   
   # * NCBISearchButton ---------------------------------------------------------
   
-  NCBISearch <-
-    eventReactive(input$NCBIsearchButton, {
-      # When searchButton clicked, update NCBIOrgSearch to return the value 
-      # input into NCBIorganismList
-      list(input$NCBIorganismList, input$barcodeList) #Returns as a string
+  
+  # NCBISearch <-
+  #   eventReactive(input$NCBIsearchButton, {
+  #     # When searchButton clicked, update NCBIOrgSearch to return the value 
+  #     # input into NCBIorganismList
+  #     list(input$NCBIorganismList, input$barcodeList) #Returns as a string
+  #   })
+  # 
+
+  # removing reactive elements, need barcodes to be accessible
+  barcodeList_ <- NULL
+  
+  
+  ncbiSearch <- eventReactive(input$NCBIsearchButton, {
+    barcodeList_ <<- input$barcodeList
+    barcodeList_ <<- str_split(barcodeList_[[1]], ",")
+    organismList <- input$NCBIorganismList
+    searchOptionGene <- input$NCBISearchOptionGene
+    searchOptionOrgn <- input$NCBISearchOptionOrgn
+    downloadNumber <- input$downloadNum
+    seqLengthOption <- input$seqLengthOption
+    ncbiTaxizeOption <- input$NCBItaxizeOption
+    seq_len_list <- getSeqLenList(barcodeList_[[1]])
+    future_promise({
+      uids <- list()
+      searchTerms <- list()
+      countResults <- list()
+      organismList <- server_functions$getGenomeList(organismList, ncbiTaxizeOption)
+      for (organism in organismList) {
+        for (code in barcodeList_[[1]]) {
+          searchTerm <- getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
+          searchResult <- getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
+          uids <- list.append(uids, searchResult[[1]])
+          countResults <- list.append(countResults, searchResult[[2]])
+          searchTerms <- list.append(searchTerms, searchTerm) 
+        }
+      }
+      list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
     })
+  })
+  
   
   # * NCBI_Key -----------------------------------------------------------------
   NCBIKeyFlag <- FALSE
@@ -290,7 +325,7 @@ shinyServer(function(input, output, session) {
   NCBIorganismList <-
     reactive({
       #Converts string from NCBIorganismList into a list of Strings
-      orgString <- NCBISearch()
+      orgString <- input$NCBIorganismList
       NCBItaxizeOption <- input$NCBItaxizeOption
       future_promise({
         server_functions$getGenomeList(orgString, NCBItaxizeOption)
@@ -302,7 +337,7 @@ shinyServer(function(input, output, session) {
   
   barcodeList <- reactive({
     # separate based on comma
-    barcodeList <- strsplit(NCBISearch()[[2]], ",") 
+    barcodeList <- strsplit(input$barcodeList, ",") 
     barcodeList[[1]] <- trimws(barcodeList[[1]], "b")
     barcodeList[[1]] <- unique(barcodeList[[1]][barcodeList[[1]] != ""])
     barcodeList[[1]]
@@ -311,61 +346,134 @@ shinyServer(function(input, output, session) {
   
   # * NCBISequenceLength -------------------------------------------------------
   
-  seqLenList <- reactive({
-    #list of sequence length specifications
-    
-    #only present if the option is selected
+
+  seqLenList <- eventReactive(input$seqLengthOption, {
     if (input$seqLengthOption) {
-      #separate based on comma
       barcodeList <- strsplit(input$barcodeList, ",")
       barcodeList[[1]] <- trimws(barcodeList[[1]], "b")
       barcodeList[[1]] <-
         unique(barcodeList[[1]][barcodeList[[1]] != ""])
-      
-      #allow the user to specify a different length for every barcode
-      textList <- list()
-      for (marker in barcodeList[[1]]) {
-        #add a numeric input
-        textList <-
-          list(textList,
-               numericRangeInput(
-                 inputId = marker,
-                 label = paste("Min/max sequence length for", marker),
-                 value = c(0, 2000)
-               ))
-      }
-      #return the list of numeric inputs
-      textList
+      getRangeList_MarkerSequenceLength(barcodeList[[1]])
     }
   })
+
+  
+  # Takes a list of barcode markers and 
+  # returns a list of numeric ranges
+  # by marker to solicit the 
+  # user for input on the min/max sequence
+  # length for that marker.
+  getRangeList_MarkerSequenceLength <- function(barcodeList){
+    textList <- list()
+    for (marker in barcodeList) {
+      #add a numeric input
+      textList <- list(
+        textList, 
+        numericRangeInput(
+          inputId = marker,
+          label = paste("Min/max sequence length for", marker),
+          value = c(0, 2000)))
+    }
+    #return the list of numeric inputs
+    textList
+  }
   
   
   # * NCBICoverage -------------------------------------------------------------
+
+  # setup a list of sequence lengths based on the selections in the ui
+  getSeqLenList <- function(barcodeList) {
+    seq_len_list <- list()
+    for (code in barcodeList) {
+      seq_len_list[[code]] <- input[[code]]
+    }
+  }
+  
+  # creates a list of barcodes if
+  # 'code' is of the form (b1; b2; b3;...),
+  # else it's just a single element list
+  splitBarcode <- function(barcode) {
+    code <- trimws(barcode)
+    code <- gsub("[(, ,)]", "", code)
+    str_split(code, ";")
+  }
+  
+  # pings the database db with searchTerm and downloadNumber.
+  # returns a two element list containing the uids in the first
+  # position and the count in the second position.
+  getNcbiSearchFullResults <- function(db, searchTerm, downloadNumber) {
+    if (!NCBIKeyFlag){
+      Sys.sleep(0.34) 
+    }
+    searchResult <- entrez_search(db = "nucleotide",
+                                  term = searchTerm,
+                                  retmax = downloadNumber)
+    list(searchResult$ids, searchResult$count)
+  }
+  
+  
+  # sets up the search term that will be sent in a query to the database
+  getNcbiSearchTerm <- function(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seqLen) {
+    code <- splitBarcode(code)
+    searchTerm <- ""
+    replacement <- ""
+    
+    if (searchOptionGene) {
+      replacement <- "[GENE]"
+    }
+    
+    replacement <- paste(replacement, " AND ", organism, sep = "")
+    
+    if (searchOptionOrgn) {
+      replacement <-
+        paste(replacement, "[ORGN]", sep = "")
+    }
+    
+    if (seqLengthOption) {
+      replacement <-
+        paste(
+          replacement,
+          " AND ",
+          seqLen[1],
+          ":",
+          seqLen[2],
+          "[SLEN]",
+          sep = ""
+        )
+    }
+    
+    for (c in code[[1]]) {
+      searchTerm <- paste(searchTerm, "(", c, replacement, ")", sep="")
+      if (c != code[[1]][[length(code[[1]])]]) {
+        searchTerm <- paste(searchTerm, "OR ")
+      }
+    }
+    searchTerm
+  }
+  
   
   genBankCoverage <- reactive({
     NCBIorganismList() %...>% {
-      #get species and barcode inputs
-      organismList <- . 
-      organismListLength <- length(organismList)
-      
+      organismList <- .
       codeList <- barcodeList()
-      codeListLength <- length(barcodeList())
       validate(
-        #verify that the  user has typed things into both inputs
-        need(organismListLength > 0, 'Please name at least one organism'),
-        need(codeListLength > 0, 'Please choose at least one barcode')
+        need(length(organismList) > 0, 'Please name at least one organism'),
+        need(length(codeList) > 0, 'Please choose at least one barcode')
       )
+      
       searchTerm <- ""
-      #initialize empty vector
       countResults <- list()
       uids <- list()
       searchResult <- 0
+      
       
       #Temp vars for search options
       NCBISearchOptionGene <- input$NCBISearchOptionGene
       NCBISearchOptionOrgn <- input$NCBISearchOptionOrgn
       downloadNumber <- input$downloadNum
       seqLengthOption <- input$seqLengthOption
+      
+      
       seq_len_list <- list()
       for (code in codeList) {
         seq_len_list[[code]] <- input[[code]]
@@ -486,6 +594,7 @@ shinyServer(function(input, output, session) {
               searchTerms <<- list.append(searchTerms, searchTerm)
               err <<- 1
             })
+            
             if (err == 1) {
               err <- 0
               next
@@ -512,47 +621,40 @@ shinyServer(function(input, output, session) {
   matrixGet <-
     reactive({
       # creates and returns the matrix to be displayed with the count
-      NCBIorganismList() %...>% {
-        #get species and barcode inputs
-        organismList <- . 
-        organismListLength <- length(organismList)
+      then(ncbiSearch(), function(value) {
         codeListLength <- length(barcodeList())
-        genBankCoverage() %...>% {
-          # Get the results from the NCBI query
-          count <- c()
-          for (i in .[[1]]) {
-            count <- c(count, i)
-          }
-          
-          #convert results vector to dataframe
-          data <-
-            matrix(count,
-                   nrow = organismListLength,
-                   ncol = codeListLength,
-                   byrow = TRUE)
-          data
+        
+        count <- c()
+        for (i in value[[1]]) {
+          count <- c(count, i)
         }
-      }
+        
+        organismList <- value[[4]]
+        organismListLength <- length(organismList)
+        #convert results vector to dataframe
+        data <-
+          matrix(count,
+                 nrow = organismListLength,
+                 ncol = codeListLength,
+                 byrow = TRUE)
+        data
+      })
     })
   
   # * NCBITableOutput ----------------------------------------------------------
   
   matrixGetSearchTerms <-
     reactive({
-      # creates and returns the matrix to be displayed with the count
-      NCBIorganismList() %...>% {
-        #get species and barcode inputs
-        organismList <- . 
-        organismListLength <- length(organismList)
-        codeListLength <- length(barcodeList())
-        genBankCoverage() %...>% {
+        then(ncbiSearch(), function(value) {
+          organismList <- value[[4]]
+          organismListLength <- length(organismList)
+          codeListLength <- length(barcodeList())
           # Get the results from the NCBI query
           SearchStatements <- c()
-          for (i in .[[3]]) {
+          for (i in value[[3]]) {
             #3 is the 3rd list in genBankCovearage aka the searchterms list
             SearchStatements <- c(SearchStatements, i)
           }
-          
           #convert results vector to dataframe
           data <-
             matrix(
@@ -562,8 +664,7 @@ shinyServer(function(input, output, session) {
               byrow = TRUE
             )
           data
-        }
-      }
+        })
     })
   
   
@@ -572,14 +673,14 @@ shinyServer(function(input, output, session) {
   uidsGet <-
     reactive({
       # Returns the uids stored in the results from the NCBi query
-      genBankCoverage() %...>% {
+      then(ncbiSearch(), function(value) {
         # Get the results from the NCBI query
         uids <- c()
-        for (i in .[[2]]) {
+        for (i in value[[2]]) {
           uids <- c(uids, i)
         }
         uids
-      }
+      })
     })
   
   
