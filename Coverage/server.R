@@ -608,6 +608,7 @@ shinyServer(function(input, output, session) {
       
       # remove ncbi
       if (input$removeNCBI == TRUE){
+        print(data$genbank_accession)
         data <- subset(data, genbank_accession == "")
       }
       data
@@ -615,14 +616,13 @@ shinyServer(function(input, output, session) {
     
     BOLDCountryFilter <- reactive ({
       if (!is.null(BOLDOrgCountries())){
-        print("started filter")
-        records_bold <- barcode_summary_country()
-        data <- subset(records_bold, country %in% BOLDOrgCountries())
-        print(data$country)
-        print("ending filter")
+        #print("started filter")
+        records_bold <- barcode_summary(1)
+        #print(data$country)
+        #print("ending filter")
       }
       print("finished with the country filter")
-      data
+      records_bold
     })
   
     # for the treemap
@@ -656,11 +656,11 @@ shinyServer(function(input, output, session) {
     
     output$BOLDcoverageResults <- 
       DT::renderDataTable(
-        reduce_barcode_summary(barcode_summary()))
+        reduce_barcode_summary(barcode_summary(0)))
     
     output$BOLDFilterByCountry <- 
       DT::renderDataTable(
-        BOLDCountryFilter()[, c('processid', 'sampleid', 'genbank_accession', 'species_name', 'country')])
+        reduce_barcode_summary(BOLDCountryFilter()))
     
     # * BOLDFASTADownload ------------------------------------------------------------
     
@@ -715,11 +715,13 @@ shinyServer(function(input, output, session) {
   
   # * SummaryReport ------------------------------------------------------------
   
-  barcode_summary <- function() {
+  barcode_summary <- function(countryFlag) {
     summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
     records_bold <- BoldMatrix()
     
     for(i in 1:length(records_bold$species_name)){
+      if (countryFlag == 1 && !(records_bold$country[i] %in% BOLDOrgCountries()))
+        next
       #if species name not in dataframe
       if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
         #add a row to summary_df
@@ -735,33 +737,10 @@ shinyServer(function(input, output, session) {
         summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
       }
     }
+
     print(summary_df)
     summary_df
   }
-    
-    barcode_summary_country <- function() {
-      summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-      records_bold <- BoldMatrix()
-      
-      for(i in 1:length(records_bold$species_name)){
-        #if species name not in dataframe
-        if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
-          #add a row to summary_df
-          summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-        #add data to summary_df to get summary data
-        if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != ''){
-          #if markercode is not yet in the dataframe, initiate new col
-          if (!(records_bold$markercode[i] %in% colnames(summary_df))){
-            #create a new column of 0s
-            summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
-          }
-          #add 1 to existing count
-          summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
-        }
-      }
-      print(summary_df)
-      summary_df
-    }
   
   reduce_barcode_summary <- function(summary) {
     #number of non-zeros in each column
@@ -824,7 +803,7 @@ shinyServer(function(input, output, session) {
       }
     } else {
       #BOLD
-      summary_report_dataframe(barcode_summary())
+      summary_report_dataframe(barcode_summary(0))
     }
   }
   
