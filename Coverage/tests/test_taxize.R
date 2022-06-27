@@ -15,23 +15,25 @@ orgListHelper <- modules::use("Coverage/orgListHelper.R")
 # 7) 
 
 
-function_template <- function(expectedOutput, inputString, inputBool, funcName){
-    print("------------------------------------")
-    taxizeHelperOutput <- orgListHelper$taxizeHelper(inputString, inputBool)
-    fileName <- paste("Coverage/tests/test_output/", funcName, ".csv", sep="")
-    write.table(taxizeHelperOutput, 
-                file=fileName,
-                row.names = FALSE,
-                col.name = FALSE)
-    orgVector <- c()
-    if(file.info(fileName)$size != 0){
-      orgVector <- read.table(fileName)[1]$V1
-    }
-    print(taxizeHelperOutput)
-    print(orgVector)
-    print(expectedOutput)
-    print(paste("results of test ", funcName, ":"))
-    print(identical(orgVector, expectedOutput))
+function_template <- function(expectedOutput, inputString, inputBool, testName){
+  print("------------------------------------")
+  print("Beginning test ", testName)
+  taxizeHelperOutput <- orgListHelper$taxizeHelper(inputString, inputBool)
+  fileName <- paste("Coverage/tests/test_output/taxizeTestOutput/", testName, 
+                    ".csv", sep="")
+  write.table(taxizeHelperOutput, 
+              file=fileName,
+              row.names = FALSE,
+              col.name = FALSE)
+  orgVector <- c()
+  if(file.info(fileName)$size != 0){
+    orgVector <- read.table(fileName)[1]$V1
+  }
+  print(taxizeHelperOutput)
+  print(orgVector)
+  print(expectedOutput)
+  print(paste("results of test ", testName, ":"))
+  print(identical(orgVector, expectedOutput))
 }
 
 # boolean_off ------------------------------------------------------------------
