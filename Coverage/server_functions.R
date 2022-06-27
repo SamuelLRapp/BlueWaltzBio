@@ -5,6 +5,9 @@ import(taxize)
 import(RSQLite)
 import(dplyr)
 import(modules)
+import(future)
+import(promises)
+import(ipc)
 
 orgListHelper <- modules::use("orgListHelper.R")
 
