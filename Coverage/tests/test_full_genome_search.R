@@ -8,7 +8,7 @@ server_functions <- modules::use("Coverage/server_functions.R")
 # There are X possible cases
 
 
-function_template <- function(expectedOutput, inputString, inputBool, testName){
+function_template <- function(expectedOutput, dbOption, orgList, taxizeOption, refSeqChecked, testName){
   print("------------------------------------")
   print("Beginning test ", testName)
   genSearchOutput <- server_functions$getGenomeSearchFullResults()

@@ -11,6 +11,7 @@ import(ipc)
 
 orgListHelper <- modules::use("orgListHelper.R")
 
+# General ----------------------------------------------------------------------
 
 # parse a csv file and append the list from column column.header
 # to what's already in the text box. Returns this value as a vector.
@@ -27,6 +28,26 @@ parseCsvColumnForTxtBox <- function(input, file.index, column.header, textbox.id
       head(uploadinfo[[column.header]][uploadinfo[[column.header]] != ""]))
   }
 }
+
+# NCBI still rate limits with a key, to 10/s
+sleep <- function() {
+  if (ncbiKeyIsValid) {
+    Sys.sleep(0.1)
+  } else {
+    Sys.sleep(0.34)
+  }
+}
+
+# Sets local variable ncbiKeyIsValid.
+# Does not check if the provided key
+# is valid, this should be done 
+# before calling this function.
+ncbiKeyIsValid <- FALSE
+setNcbiKeyIsValid <- function(validity = TRUE) {
+  ncbiKeyIsValid <<- validity
+}
+
+# Full Genome Tab --------------------------------------------------------------
 
 # returns the search parameters depending on which genome
 # is selected and whether search for reference sequences
@@ -63,15 +84,6 @@ getColumnNames <- function(selectedOption){
         'SearchStatements'),
     "Number of entries per taxa in NCBI Genome" = 
       c('present_in_NCBI_Genome', 'GenomeDB_SearchStatements'))
-}
-
-# NCBI still rate limits with a key, to 10/s
-sleep <- function() {
-  if (ncbiKeyIsValid) {
-    Sys.sleep(0.1)
-  } else {
-    Sys.sleep(0.34)
-  }
 }
 
 # returns either "nucleotide" or "genome,"
@@ -149,16 +161,6 @@ getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqCh
     genomeList)
 }
 
-# Sets local variable ncbiKeyIsValid.
-# Does not check if the provided key
-# is valid, this should be done 
-# before calling this function.
-ncbiKeyIsValid <- FALSE
-setNcbiKeyIsValid <- function(validity = TRUE) {
-  ncbiKeyIsValid <<- validity
-}
-
-
 # Downloads the file of filetype for each id
 # in uids and amalgamates them into a single file
 # at filepath. Increments the progress indicator with
@@ -185,6 +187,8 @@ downloadFileFromNcbi <- function(uid, filetype, db="nucleotide") {
     rettype = filetype)
 }
 
+
+# CRUX Tab ---------------------------------------------------------------------
 
 # maximum number of homonyms to return to the user
 maxHomonyms <- 5L
