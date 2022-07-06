@@ -47,6 +47,152 @@ setNcbiKeyIsValid <- function(validity = TRUE) {
   ncbiKeyIsValid <<- validity
 }
 
+# Used for both crux and NCBI tabs
+summary_report_dataframe <- function(dataframe)
+{
+  class(dataframe)
+  class(dataframe[, 1])
+  options(scipen = 999) #scientific notion
+  new_row_names <- "total"
+  # doesn't include column with taxa snames
+  new_row_names <- c(new_row_names, colnames(dataframe))
+  
+  statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
+  new_col_names <-
+    c(
+      "category",
+      "number of sequences found",
+      "percent of total sequences found",
+      "num of organism with at least one sequence",
+      "num of organisms with no sequences"
+    )
+  colnames(statistics_df) <- new_col_names
+  #get list of columns + a column called "total"
+  
+  #add row names
+  for (i in 1:length(new_row_names))
+  {
+    statistics_df[i, 1] <- new_row_names[i]
+  }
+  
+  #doesn't include column with taxa snames
+  barcodeSums <- colSums(dataframe) 
+  
+  Total_seq_found <- sum(barcodeSums)
+  
+  #hard code in the totals
+  statistics_df[1, 2] <- Total_seq_found
+  statistics_df[1, 3] <- 100
+  
+  for (i in 2:length(new_row_names))
+  {
+    x <- i - 1
+    statistics_df[i, 2] <- barcodeSums[x]
+    statistics_df[i, 3] <- (barcodeSums[x] / Total_seq_found)
+  }
+  
+  #hard code in the totals
+  output_of_which_rows_are_empty_and_arenot <-
+    which_rows_are_empty_and_arenot(dataframe,-1)
+  #list 2 is thee species without any seqs
+  statistics_df[1, 5] <-
+    length(output_of_which_rows_are_empty_and_arenot[[2]])
+  #we know list 1 is the species with some seqs
+  statistics_df[1, 4] <-
+    length(output_of_which_rows_are_empty_and_arenot[[1]])
+  
+  for (i in 2:length(new_row_names))
+  {
+    x <- i - 1
+    output_of_which_rows_are_empty_and_arenot <-
+      which_rows_are_empty_and_arenot(dataframe, Which_Column = x)
+    #list 2 is the species without any seqs
+    statistics_df[i, 5] <-
+      length(output_of_which_rows_are_empty_and_arenot[[2]])
+    #we know list 1 is the species with some seqs
+    statistics_df[i, 4] <-
+      length(output_of_which_rows_are_empty_and_arenot[[1]])
+  }
+  statistics_df
+}
+
+
+# if which_column = -1 it means do all rows, if a column number is given the 
+# function will only run on said column of the dataframe returns list of 2 
+# lists, one of species with seqs, and one of species without any sequences
+which_rows_are_empty_and_arenot <-
+  function(dataframe, Which_Column)
+  {
+    if (is.null(Which_Column))
+    {
+      Which_Column <- -1
+    }
+    Which_Column <- Which_Column
+    #create two lists
+    haveSomeSeq <- c()
+    haveZeroSeq <- c()
+    
+    ncols <- ncol(dataframe)
+    nrows <- nrow(dataframe)
+    
+    if (Which_Column < 0) {
+      #we will skip the first column because it has names
+      for (i in 1:nrows)
+      {
+        total <- 0
+        for (j in 1:ncols)
+        {
+          total <- total + as.numeric(dataframe[i, j])
+        }
+        
+        if (!is.null(total) && total > 0)
+        {
+          #add species name to list
+          haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
+        } else
+        {
+          #add species name to list
+          haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+        }
+      }
+    } else {         #if a specific columnn
+      #we will skip the first column because it has names
+      for (i in 1:nrows)
+      {
+        seqs <- 0
+        seqs <- 0 + as.numeric(dataframe[i, Which_Column])
+        
+        if (!is.null(seqs) && seqs > 0)
+        {
+          #add species name to list
+          haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1]) 
+        } else
+        {
+          #add species name to list
+          haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+        }
+      }
+    }
+    if (Which_Column < 0) {
+      results <-
+        list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
+      results <- as.matrix(results)
+    } else
+    {
+      COLNam <- colnames(dataframe)
+      column_name <- paste0("Have", COLNam[Which_Column], "Seq")
+      results <-
+        list(
+          single_Barcode_haveSomeseq = haveSomeSeq,
+          single_Barcode_haveZeroSeqs = haveZeroSeq
+        )
+      results <- as.matrix(results)
+    }
+    results
+  }
+
+
+
 # Full Genome Tab --------------------------------------------------------------
 
 # returns the search parameters depending on which genome
@@ -397,3 +543,149 @@ getSearchTerm <- function(organismUid, organismName) {
   }
 }
 
+
+convert_CRUX <-
+  function(crux_output) 
+    # Take a crux output matrix and  turn the characters "genus, spp, etc" 
+    # into  0s/1s. This function is used by which_rows_are_empty_and_arenot()
+  {
+    crux_without_taxonomic_names <- crux_output
+    crux_without_taxonomic_names <-
+      na.omit(crux_without_taxonomic_names)
+    
+    non_number_values <-
+      c('genus', 'family', 'class', 'order', 'error')
+    
+    ncols <- ncol(crux_output)
+    nrows <- nrow(crux_output)
+    
+    for (i in 1:ncols)
+    {
+      for (j in 1:nrows)
+      {
+        boolean <- 
+          crux_without_taxonomic_names[j, i] %in% non_number_values
+        
+        #if true, ie it matches genus, family, class, order
+        if (isTRUE(boolean))
+        {
+          crux_without_taxonomic_names[j, i] <- as.numeric(0)
+        } else {
+          crux_without_taxonomic_names[j, i] <- 
+            as.numeric(crux_output[j, i])
+        }
+      }
+    }
+    
+    firstcolumn <- crux_without_taxonomic_names[, 1]
+    
+    crux_without_taxonomic_names <-
+      as.matrix(crux_without_taxonomic_names)
+    if (nrows > 1) {
+      crux_without_taxonomic_names <-
+        as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
+    } else {
+      crux_without_taxonomic_names <-
+        as.data.frame(t(as.numeric(crux_without_taxonomic_names)))
+      
+      # Gets the column names for the matrix
+      columns <-
+        list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+      # Adds the column names to the matrix
+      colnames(crux_without_taxonomic_names) <- columns
+    }
+    crux_without_taxonomic_names
+  }
+
+
+# NCBI Tab ---------------------------------------------------------------------
+
+
+# Takes a list of barcode markers and 
+# returns a list of numeric ranges
+# by marker to solicit the 
+# user for input on the min/max sequence
+# length for that marker.
+getRangeList_MarkerSequenceLength <- function(barcodeList){
+  textList <- list()
+  for (marker in barcodeList) {
+    #add a numeric input
+    textList <- list(
+      textList, 
+      numericRangeInput(
+        inputId = marker,
+        label = paste("Min/max sequence length for", marker),
+        value = c(0, 2000)))
+  }
+  #return the list of numeric inputs
+  textList
+}
+
+# setup a list of sequence lengths based on the selections in the ui
+getSeqLenList <- function(barcodeList, input) {
+  seq_len_list <- list()
+  for (code in barcodeList) {
+    seq_len_list[[code]] <- input[[code]]
+  }
+  seq_len_list
+}
+
+# creates a list of barcodes if
+# 'code' is of the form (b1; b2; b3;...),
+# else it's just a single element list
+splitBarcode <- function(barcode) {
+  code <- trimws(barcode)
+  code <- gsub("[(, ,)]", "", code)
+  strsplit(code, ";")
+}
+
+# pings the database db with searchTerm and downloadNumber.
+# returns a two element list containing the uids in the first
+# position and the count in the second position.
+getNcbiSearchFullResults <- function(db, searchTerm, downloadNumber) {
+  sleep()
+  searchResult <- entrez_search(db = "nucleotide",
+                                term = searchTerm,
+                                retmax = downloadNumber)
+  list(searchResult$ids, searchResult$count)
+}
+
+
+# sets up the search term that will be sent in a query to the database
+getNcbiSearchTerm <- function(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seqLen) {
+  code <- splitBarcode(code)
+  searchTerm <- ""
+  replacement <- ""
+  
+  if (searchOptionGene) {
+    replacement <- "[GENE]"
+  }
+  
+  replacement <- paste(replacement, " AND ", organism, sep = "")
+  
+  if (searchOptionOrgn) {
+    replacement <-
+      paste(replacement, "[ORGN]", sep = "")
+  }
+  
+  if (seqLengthOption) {
+    replacement <-
+      paste(
+        replacement,
+        " AND ",
+        seqLen[1],
+        ":",
+        seqLen[2],
+        "[SLEN]",
+        sep = ""
+      )
+  }
+  
+  for (c in code[[1]]) {
+    searchTerm <- paste(searchTerm, "(", c, replacement, ")", sep="")
+    if (c != code[[1]][[length(code[[1]])]]) {
+      searchTerm <- paste(searchTerm, "OR ")
+    }
+  }
+  searchTerm
+}
