@@ -12,10 +12,11 @@ library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
 library(vembedr)
+library(shinyjs)
 #library(shinybusy)
 
 shinyUI(fluidPage(
-  
+  useShinyjs(),
   navbarPage("Coverage",
     #CRUX tab
     tabPanel("Home", 
@@ -176,7 +177,7 @@ shinyUI(fluidPage(
     tabPanel("BOLD",
              tabsetPanel(
                id = "BOLDpage",
-               tabPanel("Start Your CRUX Search",
+               tabPanel("Start Your BOLD Search",
                         # Application title
                         titlePanel("Find BOLD database coverage of your organisms of interest"),
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
@@ -202,6 +203,19 @@ shinyUI(fluidPage(
                                  actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                           )),
                ),
+               tabPanel("Filter By Country",
+                        
+                        column(12, align="center", style='padding-top:15px',
+                               uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
+                               conditionalPanel(condition = "output.selectCountry",
+                                                actionButton('BOLDfilterCountries',"Filter Countries"),
+                                                actionButton('BOLDSkipFilter',"Skip Filter"),
+                                                #selectInput(inputId="geo", label="Filter by Countries", choices=c("China", "India"), multiple = TRUE, width = 500),
+                                                #selectizeInput(inputId="selectCountry", label="Filter by Countries", choices="", selected = NULL, multiple = TRUE,options = NULL, width = 500),
+                                                #actionButton('BOLDfilterCountries',"Filter Countries"),
+                               ),
+                        ),
+               ),
                tabPanel("Results",
                         # Application title
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
@@ -225,19 +239,6 @@ shinyUI(fluidPage(
              tabPanel("Plot",
                 mainPanel(plotOutput('treemap')),
             ),
-            tabPanel("Filter By country",
-                     column(12, align="center", style='padding-top:15px',
-                            #conditionalPanel(condition = "input.geo != list()",
-                            #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
-                            #mainPanel(plotOutput("geo_pie")),
-                             # empty select input
-                            selectInput(inputId="geo", label="blah", choices=c("China", "India"), multiple = TRUE),
-                            actionButton('BOLDfilterCountries',"Filter Countries"),
-                            DT::dataTableOutput("BOLDFilterByCountry") %>% withSpinner(color="#0dc5c1"),
-                     ),
-             ),
-
-             
     )),
    tabPanel("Contact Us", 
             
