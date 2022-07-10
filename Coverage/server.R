@@ -602,6 +602,7 @@ shinyServer(function(input, output, session) {
     
     
     # BOLD MATRIX----------------
+    
     BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
       list <- boldCoverage()
       data <- list[["results"]]
@@ -624,6 +625,8 @@ shinyServer(function(input, output, session) {
       print("finished with the country filter")
       records_bold
     })
+    
+    
   
     # for the treemap
     output$treemap <- renderPlot({ 
@@ -654,6 +657,7 @@ shinyServer(function(input, output, session) {
         # how to change the colors + get a legend ? 
       }}, height = 800, width = 800)
     
+    
     output$BOLDcoverageResults <- 
       DT::renderDataTable(
         reduce_barcode_summary(barcode_summary(0)))
@@ -661,7 +665,7 @@ shinyServer(function(input, output, session) {
     output$BOLDFilterByCountry <- 
       DT::renderDataTable(
         reduce_barcode_summary(BOLDCountryFilter()))
-    
+
     # * BOLDFASTADownload ------------------------------------------------------------
     
     output$downloadBoldFasta <- downloadHandler(
@@ -712,6 +716,102 @@ shinyServer(function(input, output, session) {
         write.csv(summary_report(2), file)
       }
     )
+    
+    # * BOLDCountryFilter -------------------------------------------
+    
+    country_summary <- function(){
+      summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+      records_bold <- boldCoverage()[["results"]]
+      for(i in 1:length(records_bold$species_name)){
+        if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
+          #add a row to summary_df
+          summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
+        #add data to summary_df to get summary data
+        if (!is.na(records_bold$country[i]) && records_bold$country[i] != ''){
+          #if country is not yet in the dataframe, initiate new col
+          if (!(records_bold$country[i] %in% colnames(summary_df))){
+            #create a new column of 0s
+            summary_df[records_bold$country[i]] <- integer(nrow(summary_df))
+          }
+          #add 1 to existing count
+          summary_df[records_bold$species_name[i], records_bold$country[i]] <- summary_df[records_bold$species_name[i], records_bold$country[i]] + 1
+        }
+      }
+      print("COUNTRY SUMMARY")
+      print(summary_df)
+      summary_df
+      
+      
+    }
+    
+    presentMatrix <- function(){
+      present_df <- country_summary()
+      #remove all columns that are not in filter
+      print(BOLDOrgCountries())
+      present_df <- present_df[ , which(names(present_df) %in% BOLDOrgCountries())]
+      
+      #remove all rows that have all 0s as values and return
+      #present_df <- present_df[apply(present_df[, -1], 1, function(x) !all(x==0)),]
+      present_df <- present_df[rowSums(present_df[])>0,]
+      
+      print("PRESENT MATRIX")
+      print(present_df)
+      present_df
+      
+    }
+    
+    absentMatrix <- function(){
+      all_names <- rownames(country_summary())
+      #get rownames of presentMatrix  
+      present_names <- rownames(presentMatrix())
+      #get complement of names
+      absent_names <- all_names[is.na(pmatch(all_names, present_names))]
+      print(absent_names)
+      
+      country_names <- boldCoverage()$countries[]
+      country_names <- country_names[!duplicated(country_names)]
+      country_names <- na.omit(country_names[country_names != ""])
+      summary_df <- country_summary()
+      absent_df <- data.frame(matrix(ncol = 3, nrow = 0))
+      colnames(absent_df) <- c("1st", "2nd", "3rd")
+      for(i in 1:length(absent_names)){
+        sig_countries <- c("NA" = 0,"NA" = 0,"NA" = 0)
+        for (j in 1:length(country_names)){
+          
+          val <- summary_df[absent_names[i], country_names[j]]
+          #if value is bigger than the most significant
+          if(val > sig_countries[[1]]){
+            #move col 2 to col 3
+            names(sig_countries)[3] <- names(sig_countries)[2]
+            sig_countries[[3]] <- sig_countries[[2]]
+            #move col 1 to col 2
+            names(sig_countries)[2] <- names(sig_countries)[1]
+            sig_countries[[2]] <- sig_countries[[1]]
+            #replace col 1 with new val
+            names(sig_countries)[1] <- country_names[j]
+            sig_countries[[1]] <- val
+            
+          } else if (val > sig_countries[[2]]){
+            #move col 2 to col 3
+            names(sig_countries)[3] <- names(sig_countries)[2]
+            sig_countries[[3]] <- sig_countries[[2]]
+            #replace col 2 with new val
+            names(sig_countries)[2] <- country_names[j]
+            sig_countries[[2]] <- val
+          } else if (val > sig_countries[[3]]){
+            #replace col3 with new val
+            names(sig_countries)[3] <- country_names[j]
+            sig_countries[[3]] <- val
+          }
+        }
+        absent_df[absent_names[i],] <- names(sig_countries)
+      }
+      print(absent_df)
+      absent_df
+      
+    }  
+    
+    
   
   # * SummaryReport ------------------------------------------------------------
   
