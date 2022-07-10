@@ -225,6 +225,8 @@ shinyUI(fluidPage(
              tabPanel("Plot",
                 mainPanel(plotOutput('treemap')),
             ),
+
+
             tabPanel("Filter By country",
                      column(12, align="center", style='padding-top:15px',
                             #conditionalPanel(condition = "input.geo != list()",
