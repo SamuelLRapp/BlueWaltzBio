@@ -31,6 +31,9 @@ shinyServer(function(input, output, session) {
     
   hideTab("BOLDpage", "Results")
   hideTab("BOLDpage", "Organism Names")
+  hideTab("BOLDpage", "Plot")
+  hideTab("BOLDpage", "Filter By Country")
+  hideTab("BOLDpage", "Country Data")
   
 # CRUX --------------------------------------------------------------------
 
@@ -515,8 +518,30 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$BOLDsearchButton, {
+      updateTabsetPanel(session, "BOLDpage", selected = "Filter By Country")
+      showTab("BOLDpage", "Filter By Country")
+      shinyjs::hide(id = "BOLDClearFilter")
+      shinyjs::hide(id = "BOLDfilterCountries")
+      shinyjs::hide(id = "BOLDSkipFilter")
+    })
+
+    
+    observeEvent(input$BOLDSkipFilter, {
       updateTabsetPanel(session, "BOLDpage", selected = "Results")
       showTab("BOLDpage", "Results")
+      showTab("BOLDpage", "Country Data")
+      updateSelectizeInput(inputId="selectCountry", label="Filter by Countries", choices=boldCoverage()$countries, selected = boldCoverage()$countries,options = NULL)
+      click("BOLDfilterCountries")
+    })
+    
+    observeEvent(input$BOLDfilterCountries, {
+      updateTabsetPanel(session, "BOLDpage", selected = "Results")
+      showTab("BOLDpage", "Results")
+      showTab("BOLDpage", "Country Data")
+    })
+    
+    observeEvent(input$BOLDClearFilter, {
+      updateSelectizeInput(inputId="selectCountry", selected = character(0))
     })
     
     observeEvent(input$BOLDStartButton,
@@ -572,6 +597,7 @@ shinyServer(function(input, output, session) {
     })
     
     # * BOLDCoverage ------------------------------------------------------------
+
     
     boldCoverage <- reactive ({
       print("WTF BROOOO")
@@ -583,23 +609,29 @@ shinyServer(function(input, output, session) {
       )
 
       results <- data.frame(matrix(ncol=0, nrow=0))
-
       for(organism in organismList){
-        records_bold <- bold_seqspec(taxon = organism)
+        searchResult <- tryCatch({
+          records_bold <- bold_seqspec(taxon = organism)
+        }, error = function(err) {
+          print("ERROR")
+          # POP UP TELLING USER THAT BOLD IS DOWN
+        })
         if (!is.na(records_bold)){
           countries <- c(countries, records_bold$country)
           results <- rbind(results, records_bold)
         }
       }
-      updateSelectInput(session,"geo", label="Filter by Countries", choices=countries, selected=NULL)
+      shinyjs::show(id = "BOLDClearFilter")
+      shinyjs::show(id = "BOLDfilterCountries")
+      shinyjs::show(id = "BOLDSkipFilter")
+      
       results <- list(results=results, countries=countries)
       results #return data matrix
     })
     
     BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
-      input$geo #Returns a list of countries
+      input$selectCountry #Returns a list of countries
     })
-    
     
     # BOLD MATRIX----------------
     
@@ -609,28 +641,20 @@ shinyServer(function(input, output, session) {
       
       # remove ncbi
       if (input$removeNCBI == TRUE){
-        print(data$genbank_accession)
         data <- subset(data, genbank_accession == "")
       }
-      data
-    })
-    
-    BOLDCountryFilter <- reactive ({
-      if (!is.null(BOLDOrgCountries())){
-        #print("started filter")
-        records_bold <- barcode_summary(1)
-        #print(data$country)
-        #print("ending filter")
+      country_list <- BOLDOrgCountries()
+      if(length(country_list) > 0){
+        data <- subset(data, country %in% country_list)
       }
-      print("finished with the country filter")
-      records_bold
+      data
     })
     
     
   
     # for the treemap
     output$treemap <- renderPlot({ 
-      if (!is.null(input$geo)){
+      if (!is.null(input$selectCountry)){
         records_bold <- boldCoverage()$results
         countries_values <- list()
         vals <- c()
@@ -660,11 +684,19 @@ shinyServer(function(input, output, session) {
     
     output$BOLDcoverageResults <- 
       DT::renderDataTable(
-        reduce_barcode_summary(barcode_summary(0)))
-    
-    output$BOLDFilterByCountry <- 
+        reduce_barcode_summary(barcode_summary()))
+
+    output$BOLDPresentTable <- 
       DT::renderDataTable(
-        reduce_barcode_summary(BOLDCountryFilter()))
+        presentMatrix())
+    
+    output$BOLDAbsentTable <- 
+      DT::renderDataTable(
+        absentMatrix())
+  
+    output$selectCountry <- renderUI({
+      selectizeInput(inputId="selectCountry", label="Filter by Countries", choices=boldCoverage()$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
+    })
 
     # * BOLDFASTADownload ------------------------------------------------------------
     
@@ -722,6 +754,9 @@ shinyServer(function(input, output, session) {
     country_summary <- function(){
       summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
       records_bold <- boldCoverage()[["results"]]
+      if (length(records_bold$species_name) == 0){
+        return(summary_df)
+      }
       for(i in 1:length(records_bold$species_name)){
         if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
           #add a row to summary_df
@@ -737,8 +772,8 @@ shinyServer(function(input, output, session) {
           summary_df[records_bold$species_name[i], records_bold$country[i]] <- summary_df[records_bold$species_name[i], records_bold$country[i]] + 1
         }
       }
-      print("COUNTRY SUMMARY")
-      print(summary_df)
+      #print("COUNTRY SUMMARY")
+      #print(summary_df)
       summary_df
       
       
@@ -747,15 +782,14 @@ shinyServer(function(input, output, session) {
     presentMatrix <- function(){
       present_df <- country_summary()
       #remove all columns that are not in filter
-      print(BOLDOrgCountries())
       present_df <- present_df[ , which(names(present_df) %in% BOLDOrgCountries())]
       
       #remove all rows that have all 0s as values and return
       #present_df <- present_df[apply(present_df[, -1], 1, function(x) !all(x==0)),]
       present_df <- present_df[rowSums(present_df[])>0,]
       
-      print("PRESENT MATRIX")
-      print(present_df)
+      #print("PRESENT MATRIX")
+      #print(present_df)
       present_df
       
     }
@@ -766,7 +800,6 @@ shinyServer(function(input, output, session) {
       present_names <- rownames(presentMatrix())
       #get complement of names
       absent_names <- all_names[is.na(pmatch(all_names, present_names))]
-      print(absent_names)
       
       country_names <- boldCoverage()$countries[]
       country_names <- country_names[!duplicated(country_names)]
@@ -774,6 +807,9 @@ shinyServer(function(input, output, session) {
       summary_df <- country_summary()
       absent_df <- data.frame(matrix(ncol = 3, nrow = 0))
       colnames(absent_df) <- c("1st", "2nd", "3rd")
+      if(length(absent_names) == 0){
+        return(absent_df)
+      }
       for(i in 1:length(absent_names)){
         sig_countries <- c("NA" = 0,"NA" = 0,"NA" = 0)
         for (j in 1:length(country_names)){
@@ -806,7 +842,8 @@ shinyServer(function(input, output, session) {
         }
         absent_df[absent_names[i],] <- names(sig_countries)
       }
-      print(absent_df)
+      #print("ABSENT MATRIX")
+      #print(absent_df)
       absent_df
       
     }  
@@ -815,13 +852,13 @@ shinyServer(function(input, output, session) {
   
   # * SummaryReport ------------------------------------------------------------
   
-  barcode_summary <- function(countryFlag) {
+  barcode_summary <- function() {
     summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
     records_bold <- BoldMatrix()
-    
+    if (length(records_bold$species_name) == 0){
+      return(summary_df)  
+    }
     for(i in 1:length(records_bold$species_name)){
-      if (countryFlag == 1 && !(records_bold$country[i] %in% BOLDOrgCountries()))
-        next
       #if species name not in dataframe
       if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
         #add a row to summary_df
@@ -842,8 +879,9 @@ shinyServer(function(input, output, session) {
     summary_df
   }
   
-  reduce_barcode_summary <- function(summary) {
+  reduce_barcode_summary <- function(b_summary) {
     #number of non-zeros in each column
+    summary <- b_summary
     count <- apply(summary, 2, function(c)sum(c!=0))
     sums <- apply(summary, 2, sum)
     
@@ -903,7 +941,7 @@ shinyServer(function(input, output, session) {
       }
     } else {
       #BOLD
-      summary_report_dataframe(barcode_summary(0))
+      summary_report_dataframe(barcode_summary())
     }
   }
   
