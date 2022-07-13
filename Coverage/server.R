@@ -384,27 +384,6 @@ shinyServer(function(input, output, session) {
   
   # * NCBITableOutput ----------------------------------------------------------
   
-  getNcbiSearchTermsMatrix <- function() {
-    organismList <- ncbiResultsDataframe[[4]]
-    organismListLength <- length(organismList)
-    codeListLength <- length(barcodeList_)
-    # Get the results from the NCBI query
-    SearchStatements <- c()
-    for (i in ncbiResultsDataframe[[3]]) {
-      #3 is the 3rd list in genBankCovearage aka the searchterms list
-      SearchStatements <- c(SearchStatements, i)
-    }
-    #convert results vector to dataframe
-    data <-
-      matrix(
-        SearchStatements,
-        nrow = organismListLength,
-        ncol = codeListLength,
-        byrow = TRUE
-      )
-    data
-  }
-  
   matrixGetSearchTerms <-
     function(){
       then(ncbiSearch(), function(value) {
@@ -791,24 +770,13 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Search_Statements", ".csv", sep = "")
     },
     content = function(file) {
-      # Gets the column names for the matrix
-      columns <- barcodeList_
-      # NCBIorganismList can later be replaced with ncbiResultsDataframe[[4]]
-      NCBIorganismList() %...>% {
-        #Gets the row names for the matrix
-        rows <- . 
-        matrixGetSearchTerms() %...>% {
-          # Gets the matrix for the NCBI results
-          future_promise({
-            # Adds the column names to the matrix
-            colnames(.) <- columns 
-            # Adds the row names to the matrix
-            rownames(.) <- rows 
-            # Writes the dataframe to the CSV file
-            write.csv(., file) 
-          })
-        }
-      }
+      then(ncbiSearch(), function(searchResults) {
+        rows <- searchResults[[4]] #organismList
+        df <- server_functions$getNcbiSearchTermsMatrix(searchResults)
+        colnames(df) <- columns
+        rownames(df) <- rows
+        write.csv(df, file)
+      })
     }
   )
   
