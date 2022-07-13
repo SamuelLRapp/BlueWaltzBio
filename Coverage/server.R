@@ -720,6 +720,7 @@ shinyServer(function(input, output, session) {
         colnames = barcodes
       )
     })
+  })
     
   
   # * NCBInputFile -------------------------------------------------------------
@@ -778,24 +779,6 @@ shinyServer(function(input, output, session) {
         rownames(df) <- rows
         write.csv(df, file)
       })
-      # # NCBIorganismList can be replaced with ncbiResultsDataframe[[4]]
-      # NCBIorganismList() %...>% {
-      #   #Gets the row names for the matrix
-      #   rows <- . 
-      #   # matrixGet() can be replaced with getNcbiResultsMatrix()
-      #   
-      #   matrixGet() %...>% {
-      #     # Gets the matrix for the NCBI results
-      #     future_promise({
-      #       # Adds the column names to the matrix
-      #       colnames(.) <- columns 
-      #       # Adds the row names to the matrix
-      #       rownames(.) <- rows 
-      #       # Writes the dataframe to the CSV file
-      #       write.csv(., file) 
-      #     })
-      #   }
-      # }
     }
   )
   
@@ -810,7 +793,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       # Gets the column names for the matrix
       columns <- barcodeList_
-      # NCBIorganismList can be replaced with ncbiResultsDataframe[[4]]
+      # NCBIorganismList can later be replaced with ncbiResultsDataframe[[4]]
       NCBIorganismList() %...>% {
         #Gets the row names for the matrix
         rows <- . 
@@ -842,25 +825,6 @@ shinyServer(function(input, output, session) {
         rownames(df) <- rows
         summary_report_dataframe(df)
       })
-      
-      # # matrixGet() can be replaced with getNcbiResultsMatrix()
-      # matrixGet() %...>% {
-      #   NCBIdata <- .
-      #   # NCBIorganismList can be replaced with ncbiResultsDataframe[[4]]
-      #   NCBIorganismList() %...>% {
-      #     # Gets the column names for the matrix
-      #     columns <- barcodeList_
-      #     # Adds the column names to the matrix
-      #     colnames(NCBIdata) <- columns 
-      #     # Adds the row names to the matrix
-      #     rownames(NCBIdata) <- . 
-      #     
-      #     # Convert to Dataframe
-      #     NCBIdata <- as.data.frame(NCBIdata) 
-      #     dataframe <- NCBIdata
-      #     summary_report_dataframe(dataframe)
-      #   }
-      # }
     } else {
       then(cruxOrgSearch(), function(coverage) {
         organismList <- coverage[[1]]
