@@ -630,6 +630,8 @@ getSeqLenList <- function(barcodeList, input) {
   seq_len_list
 }
 
+
+
 # creates a list of barcodes if
 # 'code' is of the form (b1; b2; b3;...),
 # else it's just a single element list
@@ -638,6 +640,8 @@ splitBarcode <- function(barcode) {
   code <- gsub("[(, ,)]", "", code)
   strsplit(code, ";")
 }
+
+
 
 # pings the database db with searchTerm and downloadNumber.
 # returns a two element list containing the uids in the first
