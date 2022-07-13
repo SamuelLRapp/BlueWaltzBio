@@ -384,30 +384,6 @@ shinyServer(function(input, output, session) {
   
   # * NCBITableOutput ----------------------------------------------------------
   
-  matrixGetSearchTerms <-
-    function(){
-      then(ncbiSearch(), function(value) {
-        organismList <- value[[4]]
-        organismListLength <- length(organismList)
-        codeListLength <- length(barcodeList_)
-        # Get the results from the NCBI query
-        SearchStatements <- c()
-        for (i in value[[3]]) {
-          #3 is the 3rd list in genBankCovearage aka the searchterms list
-          SearchStatements <- c(SearchStatements, i)
-        }
-        #convert results vector to dataframe
-        data <-
-          matrix(
-            SearchStatements,
-            nrow = organismListLength,
-            ncol = codeListLength,
-            byrow = TRUE
-          )
-        data
-      })
-    }
-  
   
   # *   NCBIGetIDs -------------------------------------------------------------
   
@@ -690,7 +666,7 @@ shinyServer(function(input, output, session) {
   
   output$NCBIcoverageResults <- DT::renderDataTable({
     then(ncbiSearch(), function(searchResults) {
-      data_df <- getNcbiResultsMatrix(searchResults)
+      data_df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList_))
       rows <- searchResults[[4]]
       barcodes <- barcodeList_
       DT::datatable(
@@ -753,7 +729,7 @@ shinyServer(function(input, output, session) {
       columns <- barcodeList_
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- server_functions$getNcbiResultsMatrix(searchResults)
+        df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList_))
         colnames(df) <- columns
         rownames(df) <- rows
         write.csv(df, file)
@@ -772,7 +748,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- server_functions$getNcbiSearchTermsMatrix(searchResults)
+        df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList_))
         colnames(df) <- columns
         rownames(df) <- rows
         write.csv(df, file)
@@ -788,7 +764,7 @@ shinyServer(function(input, output, session) {
       columns <- barcodeList_
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- server_functions$getNcbiResultsMatrix(searchResults)
+        df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList_))
         colnames(df) <- columns
         rownames(df) <- rows
         summary_report_dataframe(df)
