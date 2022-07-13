@@ -693,3 +693,26 @@ getNcbiSearchTerm <- function(organism, code, searchOptionGene, searchOptionOrgn
   }
   searchTerm
 }
+
+# converts the results object to a R matrix
+# where the rows are the organism names and 
+# columns are the barcodes. Entries are the number
+# of results found for that organism for that barcode.
+getNcbiResultsMatrix <- function(resultsDf) {
+  codeListLength <- length(barcodeList_)
+  
+  count <- c()
+  for (i in resultsDf[[1]]) {
+    count <- c(count, i)
+  }
+  
+  organismList <- resultsDf[[4]]
+  organismListLength <- length(organismList)
+  #convert results vector to dataframe
+  data <-
+    matrix(count,
+           nrow = organismListLength,
+           ncol = codeListLength,
+           byrow = TRUE)
+  data
+}

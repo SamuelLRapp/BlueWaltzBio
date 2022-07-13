@@ -265,20 +265,21 @@ shinyServer(function(input, output, session) {
   ncbiSearch <- eventReactive(input$NCBIsearchButton, {
     barcodeList_ <<- input$barcodeList
     barcodeList_ <<- strsplit(barcodeList_[[1]], ",")
+    barcodeList_ <<- barcodeList_[[1]]
     organismList <- input$NCBIorganismList
     searchOptionGene <- input$NCBISearchOptionGene
     searchOptionOrgn <- input$NCBISearchOptionOrgn
     downloadNumber <- input$downloadNum
     seqLengthOption <- input$seqLengthOption
     ncbiTaxizeOption <- input$NCBItaxizeOption
-    seq_len_list <- server_functions$getSeqLenList(barcodeList_[[1]], input)
+    seq_len_list <- server_functions$getSeqLenList(barcodeList_, input)
     future_promise({
       uids <- list()
       searchTerms <- list()
       countResults <- list()
       organismList <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
       for (organism in organismList) {
-        for (code in barcodeList_[[1]]) {
+        for (code in barcodeList_) {
           searchTerm <- server_functions$getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
           searchResult <- server_functions$getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
           uids <- list.append(uids, searchResult[[1]])
@@ -356,25 +357,7 @@ shinyServer(function(input, output, session) {
 
   
   # * NCBIMatrix ---------------------------------------------------------------
-  
-  getNcbiResultsMatrix <- function(resultsDf) {
-    codeListLength <- length(barcodeList_[[1]])
-    
-    count <- c()
-    for (i in resultsDf[[1]]) {
-      count <- c(count, i)
-    }
-    
-    organismList <- resultsDf[[4]]
-    organismListLength <- length(organismList)
-    #convert results vector to dataframe
-    data <-
-      matrix(count,
-             nrow = organismListLength,
-             ncol = codeListLength,
-             byrow = TRUE)
-    data
-  }
+
   
   matrixGet <-
     function() {
@@ -449,26 +432,18 @@ shinyServer(function(input, output, session) {
   
   # *   NCBIGetIDs -------------------------------------------------------------
   
-  uidsGet <- function() {
-    uids <- c()
-    for (i in ncbiResultsDataframe[[2]]) {
-      uids <- c(uids, i)
+  uidsGet <-
+    function(){
+      # Returns the uids stored in the results from the NCBi query
+      then(ncbiSearch(), function(value) {
+        # Get the results from the NCBI query
+        uids <- c()
+        for (i in value[[2]]) {
+          uids <- c(uids, i)
+        }
+        uids
+      })
     }
-    uids
-  }
-  
-  # uidsGet <-
-  #   function(){
-  #     # Returns the uids stored in the results from the NCBi query
-  #     then(ncbiSearch(), function(value) {
-  #       # Get the results from the NCBI query
-  #       uids <- c()
-  #       for (i in value[[2]]) {
-  #         uids <- c(uids, i)
-  #       }
-  #       uids
-  #     })
-  #   }
   
   
   # * NCBIDownloadFASTA --------------------------------------------------------
@@ -738,7 +713,7 @@ shinyServer(function(input, output, session) {
     then(ncbiSearch(), function(searchResults) {
       data_df <- getNcbiResultsMatrix(searchResults)
       rows <- searchResults[[4]]
-      barcodes <- barcodeList_[[1]]
+      barcodes <- barcodeList_
       DT::datatable(
         data_df,
         rownames = rows,
@@ -746,7 +721,6 @@ shinyServer(function(input, output, session) {
       )
     })
     
-  
   
   # * NCBInputFile -------------------------------------------------------------
   
@@ -796,25 +770,32 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Table", ".csv", sep = "")
     },
     content = function(file) {
-      # Gets the column names for the matrix
       columns <- barcodeList_
-      # NCBIorganismList can be replaced with ncbiResultsDataframe[[4]]
-      NCBIorganismList() %...>% {
-        #Gets the row names for the matrix
-        rows <- . 
-        # matrixGet() can be replaced with getNcbiResultsMatrix()
-        matrixGet() %...>% {
-          # Gets the matrix for the NCBI results
-          future_promise({
-            # Adds the column names to the matrix
-            colnames(.) <- columns 
-            # Adds the row names to the matrix
-            rownames(.) <- rows 
-            # Writes the dataframe to the CSV file
-            write.csv(., file) 
-          })
-        }
-      }
+      then(ncbiSearch(), function(searchResults) {
+        rows <- searchResults[[4]] #organismList
+        df <- server_functions$getNcbiResultsMatrix(searchResults)
+        colnames(df) <- columns
+        rownames(df) <- rows
+        write.csv(df, file)
+      })
+      # # NCBIorganismList can be replaced with ncbiResultsDataframe[[4]]
+      # NCBIorganismList() %...>% {
+      #   #Gets the row names for the matrix
+      #   rows <- . 
+      #   # matrixGet() can be replaced with getNcbiResultsMatrix()
+      #   
+      #   matrixGet() %...>% {
+      #     # Gets the matrix for the NCBI results
+      #     future_promise({
+      #       # Adds the column names to the matrix
+      #       colnames(.) <- columns 
+      #       # Adds the row names to the matrix
+      #       rownames(.) <- rows 
+      #       # Writes the dataframe to the CSV file
+      #       write.csv(., file) 
+      #     })
+      #   }
+      # }
     }
   )
   
@@ -853,24 +834,33 @@ shinyServer(function(input, output, session) {
   
   summary_report <- function(databaseFlag) {
     if (databaseFlag == 1) {
-      # matrixGet() can be replaced with getNcbiResultsMatrix()
-      matrixGet() %...>% {
-        NCBIdata <- .
-        # NCBIorganismList can be replaced with ncbiResultsDataframe[[4]]
-        NCBIorganismList() %...>% {
-          # Gets the column names for the matrix
-          columns <- barcodeList_
-          # Adds the column names to the matrix
-          colnames(NCBIdata) <- columns 
-          # Adds the row names to the matrix
-          rownames(NCBIdata) <- . 
-          
-          # Convert to Dataframe
-          NCBIdata <- as.data.frame(NCBIdata) 
-          dataframe <- NCBIdata
-          summary_report_dataframe(dataframe)
-        }
-      }
+      columns <- barcodeList_
+      then(ncbiSearch(), function(searchResults) {
+        rows <- searchResults[[4]] #organismList
+        df <- server_functions$getNcbiResultsMatrix(searchResults)
+        colnames(df) <- columns
+        rownames(df) <- rows
+        summary_report_dataframe(df)
+      })
+      
+      # # matrixGet() can be replaced with getNcbiResultsMatrix()
+      # matrixGet() %...>% {
+      #   NCBIdata <- .
+      #   # NCBIorganismList can be replaced with ncbiResultsDataframe[[4]]
+      #   NCBIorganismList() %...>% {
+      #     # Gets the column names for the matrix
+      #     columns <- barcodeList_
+      #     # Adds the column names to the matrix
+      #     colnames(NCBIdata) <- columns 
+      #     # Adds the row names to the matrix
+      #     rownames(NCBIdata) <- . 
+      #     
+      #     # Convert to Dataframe
+      #     NCBIdata <- as.data.frame(NCBIdata) 
+      #     dataframe <- NCBIdata
+      #     summary_report_dataframe(dataframe)
+      #   }
+      # }
     } else {
       then(cruxOrgSearch(), function(coverage) {
         organismList <- coverage[[1]]
