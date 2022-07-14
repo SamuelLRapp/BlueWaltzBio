@@ -25,6 +25,12 @@ library(mpoly)
 
 plan(multisession)
 shinyServer(function(input, output, session) {
+  print(Sys.getpid())
+  onStop(function() print(Sys.getpid()))
+  onSessionEnded(function() {
+    cat("Only Session stopped\n")
+    stopApp()
+  })
   # Full Genome ----------------------------------------------------------------
   
   # * FullGenomeSearchButton ---------------------------------------------------
@@ -96,6 +102,7 @@ shinyServer(function(input, output, session) {
                 Sys.sleep(0.34) 
               }
               # Help user with various naming issues (spelling, synonyms, etc.)
+              
               NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) 
               err <- 0
               NCBI_names # Return this variable
@@ -349,10 +356,10 @@ shinyServer(function(input, output, session) {
   output$genomeResults <- DT::renderDataTable({
     promise_all(data_df = selectfunction(), 
                 rows = fGenOrgSearch()) %...>% with({
-      DT::datatable(data_df[[1]],
-                    rownames = rows,
-                    colnames = names(data_df[[1]]))
-    })
+                  DT::datatable(data_df[[1]],
+                                rownames = rows,
+                                colnames = names(data_df[[1]]))
+                })
   })
   
   # * Download Fastas ----------------------------------------------------------
@@ -813,7 +820,7 @@ shinyServer(function(input, output, session) {
                   "domain")
               match <- c("ncbi", organism, match)
               searchTerm <- stats::setNames(data.frame(t(match), 
-                                            stringsAsFactors = FALSE),
+                                                       stringsAsFactors = FALSE),
                                             query)
               # Perform the CruxSearch
               results <- cruxSearch(results, searchTerm, organism)
@@ -1034,12 +1041,12 @@ shinyServer(function(input, output, session) {
   output$CRUXcoverageResults <- DT::renderDataTable({
     promise_all(data_df = matrixGetCRUX(), 
                 rows = organismListGet()) %...>% with({
-      DT::datatable(
-        data_df,
-        rownames = rows,
-        colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-      )
-    })
+                  DT::datatable(
+                    data_df,
+                    rownames = rows,
+                    colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+                  )
+                })
   })
   
   
@@ -1054,6 +1061,47 @@ shinyServer(function(input, output, session) {
       # input into NCBIorganismList
       list(input$NCBIorganismList, input$barcodeList) #Returns as a string
     })
+  
+  ## cache searches
+  
+  checkSearchCache <- function (){
+    orgCacheContents <- getCache("organisms", "NCBI/search")
+    if (!is.null(orgCacheContents)) {
+      updateTextAreaInput(
+        inputId = "NCBIorganismList",
+        value = orgCacheContents
+      )
+    }
+    barcodeCacheContents <- getCache("barcodes", "NCBI/search")
+    if (!is.null(barcodeCacheContents)) {
+      updateTextAreaInput(
+        inputId = "barcodeList",
+        value = barcodeCacheContents
+      )
+    }
+  }
+  
+  checkSearchCache()
+  
+  #cache organism input contents (currently saved as string)
+  observeEvent(input$NCBIorganismList, {
+    #not sure why initializing the input value counts as a change
+    if (input$NCBIorganismList != "") {
+      setCache("organisms", input$NCBIorganismList, "NCBI/search")
+      print(getCache("organisms", "NCBI/search"))
+    }
+  })
+  
+  #cache barcode list input contents (currently saved as string)
+  observeEvent(input$barcodeList, {
+    #not sure why initializing the input value counts as a change
+    if (input$barcodeList != "") {
+      setCache("barcodes", input$barcodeList, "NCBI/search")
+      print(getCache("barcodes", "NCBI/search"))
+    }
+  })
+  
+  
   
   # * NCBI_Key -----------------------------------------------------------------
   NCBIKeyFlag <- FALSE
@@ -1077,9 +1125,28 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  
+  rv <- reactiveValues(a=0)
+  reactive({
+    rv$a
+    print(rv$a)
+  })
   # * NCBIStrToList ------------------------------------------------------------
-  
+  shiny::observeEvent(input$helpp, {
+    orgString <- "Tursiops truncatus, Anas platyrhynchos, Loxodonta africana, Mustela putorius furo, Mus musculus, Vulpes vulpes, Otocyon megalotis, Crotalus tigris, Albizia julibrissin"
+    organismList <- strsplit(orgString[[1]], ",")[[1]]
+    print(Sys.getpid())
+    huh <- promises::future_promise({
+      rv$a <- Sys.getpid()
+      print(Sys.getpid())
+      for (organism in organismList){
+        NCBI_names <-
+          gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+        print(NCBI_names[[3]])
+        Sys.sleep(0.5)
+      }
+    })
+    print(str(huh))
+  })
   NCBIorganismList <-
     reactive({
       #Converts string from NCBIorganismList into a list of Strings
@@ -1090,17 +1157,16 @@ shinyServer(function(input, output, session) {
         organismList <- strsplit(orgString[[1]], ",")[[1]]
         organismList <- unique(organismList[organismList != ""])
         
-        res <- list()
+        res <- c()
         #if the taxize option is selected
         if (NCBItaxizeOption) {
-          #initialize an empty vector
-          taxize_organism_list <- c()
-          
-          for (i in 1:length(organismList))
+          #lapply returns list of function results
+          taxize_organism_list <- list()
+          for (organism in organismList)
           {
             err <- 1
             #trim both leading and trailing whitespace
-            organism <- trimws(organismList[[i]], "b")
+            organism <- trimws(organism, "b")
             while (err == 1) {
               NCBI_names <- tryCatch({
                 if (!NCBIKeyFlag) {
@@ -1119,25 +1185,21 @@ shinyServer(function(input, output, session) {
             }
             # get number of rows in dataframe
             row_count <- nrow(NCBI_names)
-            
             #If a legitimate name was found
+            orgn_name <- ""
             if (row_count > 0)
             {
-              #Store each matched name in taxa_name
-              for (j in 1:row_count)
-              {
-                taxa_name <- NCBI_names[[j, 3]]
-                #update the vector with all the taxa_names.
-                taxize_organism_list <- c(taxize_organism_list, taxa_name) 
-              }
+              #Return column with all organism names
+              orgn_name <- NCBI_names[[3]]
             }
             else
             {
-              #just append organism to the list, and return taxize_organism_list
-              taxize_organism_list <- c(taxize_organism_list, organism) 
+              #just append organism to the list
+              orgn_name <- organism
             }
+            taxize_organism_list <- c(taxize_organism_list, orgn_name)
           }
-          res <- taxize_organism_list
+          res <- unlist(taxize_organism_list)
         } else{
           #return the list as is
           res<-organismList 
@@ -1352,7 +1414,7 @@ shinyServer(function(input, output, session) {
                searchTermslist = searchTerms,
                orgn = organismList,
                barcodes = codeList
-               )
+          )
         results
       })
     }
@@ -1371,17 +1433,17 @@ shinyServer(function(input, output, session) {
         codeListLength <- length(barcodeList())
         genBankCoverage() %...>% {
           # Get the results from the NCBI query
-          count <- c()
-          for (i in .[[1]]) {
-            count <- c(count, i)
-          }
-  
+          count <- unlist(.[[1]]) # unlist == list to vector
+          
           #convert results vector to dataframe
           data <-
             matrix(count,
                    nrow = organismListLength,
                    ncol = codeListLength,
                    byrow = TRUE)
+          rownames(data) <- organismList
+          colnames(data) <- barcodeList()
+          setCache("uids-mx", data, "NCBI")
           data
         }
       }
@@ -1392,7 +1454,7 @@ shinyServer(function(input, output, session) {
   matrixGetSearchTerms <-
     reactive({
       # creates and returns the matrix to be displayed with the count
-        #get species and barcode inputs
+      #get species and barcode inputs
       NCBIorganismList() %...>% {
         organismList <- .
         organismListLength <- length(organismList)
@@ -1420,7 +1482,6 @@ shinyServer(function(input, output, session) {
   
   
   # *   NCBIGetIDs -------------------------------------------------------------
-  
   uidsGet <-
     reactive({
       # Returns the uids stored in the results from the NCBI query
@@ -1431,11 +1492,14 @@ shinyServer(function(input, output, session) {
         num_codes <- length(resultsList[["barcodes"]]) #number of barcodes
         
         num_species <- length(resultsList[["orgn"]]) #number of species
-        
         P <- matrix(idsList, nrow = num_species, byrow = TRUE, dimnames = list(resultsList[["orgn"]], resultsList[["barcodes"]]))
         P
       }
     })
+  
+  # * General Cache Helper Functions ------------------------
+  
+  #5/12/2022 functions moved to R/cache.R
   
   
   # * NCBIDownloadFASTA --------------------------------------------------------
@@ -1464,102 +1528,161 @@ shinyServer(function(input, output, session) {
         err <<- 1
       })
     }
-    return(content_fasta)
+    content_fasta
   }
- 
-  # TODO: [Zia - March 18, 2022]
-  # Possibly change to JavaScript download if cross-browser support is an issue
-  # Change the downloads for the other databases too 
+  
+  getCachedCells <- function() {
+    cells_dwn <- listCacheDir(subdir="files", recur=T, showdir = F)
+    cell_list <- gregexpr("[0-9]+(?=[.])", cells_dwn, perl=T) #regex gets the number before the file extension
+    cell_list = unlist(regmatches(cells_dwn, cell_list))
+  }
+  
+  getFileContent <- function(uidsMatrix, callbck, uncached_cells = NULL ){
+    # initialize progress bar
+    # Create a Progress object
+    progress <-
+      AsyncProgress$new(
+        session,
+        message = "Beginning download...",
+        detail = "",
+        value = 0
+      )
+    future_promise({
+      
+      barcodes <- colnames(uidsMatrix)
+      species <- rownames(uidsMatrix)
+      
+      speciesNum <- length(species)
+      barcodeNum <- length(barcodes)
+      
+      #get number of cells
+      totalCellNum <- speciesNum*barcodeNum
+      
+      cells_to_retrieve <- uncached_cells
+      if (is.null(uncached_cells)) {
+        cells_to_retrieve <- 1:totalCellNum
+      }
+      total_retr_cells <- length(cells_to_retrieve)
+      #download sequences
+      progress$set(message="Getting data...")
+      lapply(cells_to_retrieve, function(cellNum){
+        print("cell start")
+        
+        cur_row <- ceiling(cellNum/barcodeNum)
+        cur_col <- cellNum-(cur_row-1)*barcodeNum
+        dwn_msg <- paste("Downloading", barcodes[[cur_col]], "sequences for", species[[cur_row]], sep=" ")
+        print(dwn_msg)
+        #update progress bar message
+        progress$set(detail=dwn_msg)
+        
+        content_fasta <- ""
+        cellIds <- uidsMatrix[cur_row,cur_col][[1]]
+        print(cellIds)
+        #check if there are no uids for this barcode for this species
+        empty <- FALSE
+        if (length(cellIds) == 0){
+          empty <- TRUE
+        }
+        #download sequences for each UID
+        if (empty == FALSE){
+          content_fasta <- getFastaContent(cellIds)
+        }
+        setFileCache(cur_col, cellNum, content_fasta)
+        progress$inc(1/total_retr_cells) #this works somehow
+        print("uid downloaded")
+        print("cell end")
+        
+      })
+    }) %...>% {
+      print("done!")
+      progress$close()
+      callbck()
+      
+    }
+    return(NULL) # this makes sure RShiny won't wait for the promise to finish before doing other stuff
+  }
+  ### stuff for test panel 
+  #just remove cacheTestServer and cacheTestUI in ui.R when testing is done
+  cacheTestServer("cachetest", uidsGet, getFileContent)
   
   # Download Fasta Files
-  output$fileDownloadF <- downloadHandler(
+  output[["ncbi-dwn"]] <- downloadHandler(
     filename <- function() {
       paste("NCBI_Fasta", "zip", sep=".")
     },
     content <- function(downloadedFile) {
-      print("make fasta files")
-      uidsGet() %...>% {
-        uidsMatrix <- .
+      cache <- createCache("NCBI")
+      cached_matrix <- cache$get("uids-matrix")
+      barcodes <- colnames(cached_matrix)
+      future_promise({
+        # create temp file directory to hold files
+        tempDir <- tempdir()
+        # enter temp file dir
+        setwd(tempDir) #program auto returns to home dir on exit
         
-        barcodes <- colnames(uidsMatrix)
-        species <- rownames(uidsMatrix)
+        #create separate fasta file for each barcode
+        # sapply returns vector of function results
+        filenames <- c()
+        for (code in barcodes){
+          filename <- paste("NCBI", code, "sequence", sep = "_")
+          file_path <- paste0(filename, ".fasta")
+          file.create(file_path)
+          filenames <- c(filenames, file_path)
+        }
         
-        speciesNum <- length(species)
-        barcodeNum <- length(barcodes)
-        
-        #get number of cells
-        cellNum <- speciesNum*barcodeNum
-        
-        # initialize progress bar
-        # Create a Progress object
-        progress <-
-          AsyncProgress$new(
-            session,
-            min = 0,
-            max = cellNum,
-            detail = "Beginning download...",
-            value = 0
-          )
-        future_promise({
-          # create temp file directory to hold files
-          tempDir <- tempdir()
-          # enter temp file dir
-          setwd(tempDir) #program auto returns to home dir on exit
-          
-          #create separate fasta file for each barcode
-          filenames <- c()
-          for (code in barcodes) {
-            filename <- paste0("NCBI_", code, "_sequence")
-            file_path <- paste0(filename, ".fasta")
-            file.create(file_path)
-            filenames <- c(filenames, file_path)
-          }
-          #create a list to hold vectors with seq information
-          holder <- rep(list(character()), barcodeNum) #character() creates empty string vector
-          
-          #download sequences
-          for (i in 1:speciesNum) {
-            print("row start")
-            # do stuff with row
-            for (j in 1:barcodeNum) {
-              #update progress bar message
-              progress$set(detail = paste("Downloading", barcodes[[j]], "sequences for", species[[i]], sep=" "))
-              
-              cellIds <- uidsMatrix[i,j][[1]]
-              print(cellIds)
-              #check if there are no uids for this barcode for this species
-              empty <- FALSE
-              if (length(cellIds) == 0){
-                empty <- TRUE
-              }
-              #download sequences for each UID
-              if (empty == FALSE){
-                content_fasta <- getFastaContent(cellIds)
-                holder[[j]] <- c(holder[[j]], content_fasta) #add to holder vector if seqs exist
-              }
-              #do nothing if empty == true
-              
-              print("uid downloaded")
-              
-              #increment progress bar
-              progress$inc(amount = 1)
-              
-              print("bottom of column")
-            }
-            print("bottom of row")
-          }
-          for (codeNum in 1:barcodeNum){
-            #write sequences to appropriate file
-            write(holder[[codeNum]], file=filenames[[codeNum]], append = TRUE)
-          }
-          progress$set(value = cellNum)
-          progress$close()
-          zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
+        #write cache info to files
+        lapply(1:length(barcodes), function(codeNum){
+          cache_name <- paste("NCBI","files",codeNum,sep="/")
+          file_cache <- createCache(cache_name)
+          content_vec <- sapply(file_cache$keys(), function(key){
+            getCache(key, cache_name)
+          })
+          #write sequences to appropriate file
+          write(content_vec, file=filenames[[codeNum]], append=T)
         })
-      }
+        emptyCache("NCBI")
+        zip(zipfile = downloadedFile, files = filenames) #output zip just contains the fasta files
+      })
     },
     contentType = "application/zip"
   )
+  
+  observeEvent(input$fileDownloadF, {
+    shinyjs::disable("fileDownloadF")
+    #get the cache for NCBI stuff
+    cache <- createCache("NCBI")
+    if ( cache$exists("uids-matrix") ) {
+      print("cache detected")
+      uids_matrix <- cache$get("uids-matrix")
+      total_cells <- nrow(uids_matrix)*ncol(uids_matrix) #integer vector with the ids of every cached cell
+      
+      print("cached cells:")
+      print(getCachedCells())
+      uncached <- setdiff(1:total_cells, getCachedCells())
+      print("uncached cells:")
+      print(uncached)
+      content_callback <- function(){
+        print("starting fasta file download...")
+        js$clickBtn("ncbi-dwn")
+        shinyjs::enable("fileDownloadF")
+      }
+      getFileContent(uids_matrix, content_callback, uncached_cells = uncached)
+    } else {
+      print("no cache detected")
+      
+      uidsGet() %...>% {
+        uidsMatrix <- .
+        setCache("uids-matrix", uidsMatrix, "NCBI")
+        content_callback <- function(){
+          print("starting fasta file download...")
+          js$clickBtn("ncbi-dwn")
+          shinyjs::enable("fileDownloadF")
+        }
+        
+        getFileContent(uidsMatrix, content_callback) 
+      }
+    }
+  })
   # * NCBIDownloadGenbank ------------------------------------------------------
   
   # Download NCBI Genbank Files
@@ -1637,118 +1760,26 @@ shinyServer(function(input, output, session) {
   
   # * NCBIBarcodeButtons -------------------------------------------------------
   
-  observeEvent(input$barcodeOptionCO1, {
-    # Detects when the specific barcode (in this case CO1) button has been 
-    # pressed
-    
-    # If the input barcodeList is not empty (ie. the inputtextarea is not 
-    # empty) then use the paste function to the add the barcode/s to the 
-    # beginning
-    if (input$barcodeList[[1]] != "") {
-      # Updates the text area input adds the barcode/s to the beginning of 
-      # whatever is already in it
+  possible_barcodes <- c("CO1","16S","12S","18S","ITS1","ITS2","trnl")
+  lapply(possible_barcodes, function(barcode){
+    observeEvent(input[[paste0("barcodeOption",barcode)]], {
+      if (barcode == "CO1") {
+        barcode = "(CO1; COI; COX1)"
+      }
       updateTextAreaInput(
         getDefaultReactiveDomain(),
         "barcodeList",
-        value = paste("(CO1; COI; COX1),", input$barcodeList)
-      ) 
-    }
-    else {
-      # Here since the textarea is empty we just set its value to the barcode/s
-      updateTextAreaInput(getDefaultReactiveDomain(), 
-                          "barcodeList", 
-                          value = "(CO1; COI; COX1)") 
-    }
+        value = str_c(str_subset(c(input$barcodeList, barcode), ".+"), collapse=", ")
+      )
+    })
   })
   
-  observeEvent(input$barcodeOption16S, {
-    if (input$barcodeList[[1]] != "") {
-      updateTextAreaInput(
-        getDefaultReactiveDomain(),
-        "barcodeList",
-        value = paste("16S,", input$barcodeList)
-      )
-    }
-    else {
-      updateTextAreaInput(getDefaultReactiveDomain(), 
-                          "barcodeList", 
-                          value = "16S")
-    }
-  })
-  
-  observeEvent(input$barcodeOptionITS2, {
-    if (input$barcodeList[[1]] != "") {
-      updateTextAreaInput(
-        getDefaultReactiveDomain(),
-        "barcodeList",
-        value = paste("ITS2,", input$barcodeList)
-      )
-    }
-    else {
-      updateTextAreaInput(getDefaultReactiveDomain(), 
-                          "barcodeList", 
-                          value = "ITS2")
-    }
-  })
-  
-  observeEvent(input$barcodeOption18S, {
-    if (input$barcodeList[[1]] != "") {
-      updateTextAreaInput(
-        getDefaultReactiveDomain(),
-        "barcodeList",
-        value = paste("18S,", input$barcodeList)
-      )
-    }
-    else {
-      updateTextAreaInput(getDefaultReactiveDomain(), 
-                          "barcodeList", 
-                          value = "18S")
-    }
-  })
-  
-  observeEvent(input$barcodeOptionITS1, {
-    if (input$barcodeList[[1]] != "") {
-      updateTextAreaInput(
-        getDefaultReactiveDomain(),
-        "barcodeList",
-        value = paste("ITS1,", input$barcodeList)
-      )
-    }
-    else {
-      updateTextAreaInput(getDefaultReactiveDomain(), 
-                          "barcodeList", 
-                          value = "ITS1")
-    }
-  })
-  
-  observeEvent(input$barcodeOptiontrnl, {
-    if (input$barcodeList[[1]] != "") {
-      updateTextAreaInput(
-        getDefaultReactiveDomain(),
-        "barcodeList",
-        value = paste("trnl,", input$barcodeList)
-      )
-    }
-    else {
-      updateTextAreaInput(getDefaultReactiveDomain(), 
-                          "barcodeList", 
-                          value = "trnl")
-    }
-  })
-  
-  observeEvent(input$barcodeOption12S, {
-    if (input$barcodeList[[1]] != "") {
-      updateTextAreaInput(
-        getDefaultReactiveDomain(),
-        "barcodeList",
-        value = paste("12S,", input$barcodeList)
-      )
-    }
-    else {
-      updateTextAreaInput(getDefaultReactiveDomain(), 
-                          "barcodeList", 
-                          value = "12S")
-    }
+  observeEvent(input$barcodeClear, {
+    updateTextAreaInput(
+      getDefaultReactiveDomain(),
+      "barcodeList",
+      value = ""
+    )
   })
   
   
@@ -1759,10 +1790,16 @@ shinyServer(function(input, output, session) {
   output$seqLenInputs <- renderUI(seqLenList())
   
   output$NCBIcoverageResults <- DT::renderDataTable({
-    barcodes <- barcodeList()
-    promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
-      DT::datatable(data_df, rownames = rows, colnames = barcodes)
-    })
+    if (createCache("NCBI")$exists("uids-mx")) {
+      uids_table <- getCache("uids-mx","NCBI")
+      print(uids_table)
+      DT::datatable(uids_table, rownames = rownames(uids_table), colnames = colnames(uids_table))
+    } else {
+      barcodes <- barcodeList()
+      promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
+        DT::datatable(data_df, rownames = rows, colnames = barcodes)
+      })
+    }
   })
   
   
@@ -1913,9 +1950,9 @@ shinyServer(function(input, output, session) {
   {
     class(dataframe)
     class(dataframe[, 1])
-    options(scipen = 999) #scientific notion
+    options(scipen = 999) #scientific notation
     new_row_names <- "total"
-    # doesn't include column with taxa snames
+    # doesn't include column with taxa names
     new_row_names <- c(new_row_names, colnames(dataframe))
     
     statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
@@ -1985,132 +2022,131 @@ shinyServer(function(input, output, session) {
     function(crux_output) 
       # Take a crux output matrix and  turn the characters "genus, spp, etc" 
       # into  0s/1s. This function is used by which_rows_are_empty_and_arenot()
-             {
-               crux_without_taxonomic_names <- crux_output
-               crux_without_taxonomic_names <-
-                 na.omit(crux_without_taxonomic_names)
-               
-               non_number_values <-
-                 c('genus', 'family', 'class', 'order', 'error')
-               
-               ncols <- ncol(crux_output)
-               nrows <- nrow(crux_output)
-               
-               for (i in 1:ncols)
-               {
-                 for (j in 1:nrows)
-                 {
-                   boolean <- 
-                     crux_without_taxonomic_names[j, i] %in% non_number_values
-                   
-                   #if true, ie it matches genus, family, class, order
-                   if (isTRUE(boolean))
-                   {
-                     crux_without_taxonomic_names[j, i] <- as.numeric(0)
-                   } else {
-                     crux_without_taxonomic_names[j, i] <- 
-                       as.numeric(crux_output[j, i])
-                   }
-                 }
-               }
-               
-               firstcolumn <- crux_without_taxonomic_names[, 1]
-               
-               crux_without_taxonomic_names <-
-                 as.matrix(crux_without_taxonomic_names)
-               if (nrows > 1) {
-                 crux_without_taxonomic_names <-
-                   as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
-               } else {
-                 crux_without_taxonomic_names <-
-                   as.data.frame(t(as.numeric(crux_without_taxonomic_names)))
-                 
-                 # Gets the column names for the matrix
-                 columns <-
-                   list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-                 # Adds the column names to the matrix
-                 colnames(crux_without_taxonomic_names) <- columns
-               }
-               crux_without_taxonomic_names
-             }
-             
+    {
+      crux_without_taxonomic_names <- crux_output
+      crux_without_taxonomic_names <-
+        na.omit(crux_without_taxonomic_names)
+      
+      non_number_values <-
+        c('genus', 'family', 'class', 'order', 'error')
+      
+      ncols <- ncol(crux_output)
+      nrows <- nrow(crux_output)
+      
+      for (i in 1:ncols)
+      {
+        for (j in 1:nrows)
+        {
+          boolean <- 
+            crux_without_taxonomic_names[j, i] %in% non_number_values
+          
+          #if true, ie it matches genus, family, class, order
+          if (isTRUE(boolean))
+          {
+            crux_without_taxonomic_names[j, i] <- as.numeric(0)
+          } else {
+            crux_without_taxonomic_names[j, i] <- 
+              as.numeric(crux_output[j, i])
+          }
+        }
+      }
+      
+      firstcolumn <- crux_without_taxonomic_names[, 1]
+      
+      crux_without_taxonomic_names <-
+        as.matrix(crux_without_taxonomic_names)
+      if (nrows > 1) {
+        crux_without_taxonomic_names <-
+          as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
+      } else {
+        crux_without_taxonomic_names <-
+          as.data.frame(t(as.numeric(crux_without_taxonomic_names)))
+        
+        # Gets the column names for the matrix
+        columns <-
+          list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+        # Adds the column names to the matrix
+        colnames(crux_without_taxonomic_names) <- columns
+      }
+      crux_without_taxonomic_names
+    }
   
   
-   # * * DownloadEmptyRows -----------------------------------------------------
   
-   # if which_column = -1 it means do all rows, if a column number is given the 
-   # function will only run on said column of the dataframe returns list of 2 
-   # lists, one of species with seqs, and one of species without any sequences
-   which_rows_are_empty_and_arenot <-
-     function(dataframe, Which_Column)
-     {
-       if (is.null(Which_Column))
-       {
-         Which_Column <- -1
-       }
-       Which_Column <- Which_Column
-       #create two lists
-       haveSomeSeq <- c()
-       haveZeroSeq <- c()
-       
-       ncols <- ncol(dataframe)
-       nrows <- nrow(dataframe)
-       
-       if (Which_Column < 0) {
-         #we will skip the first column because it has names
-         for (i in 1:nrows)
-         {
-           total <- 0
-           for (j in 1:ncols)
-           {
-             total <- total + as.numeric(dataframe[i, j])
-           }
-           
-           if (!is.null(total) && total > 0)
-           {
-             #add species name to list
-             haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
-           } else
-           {
-             #add species name to list
-             haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
-           }
-         }
-       } else {         #if a specific columnn
-         #we will skip the first column because it has names
-         for (i in 1:nrows)
-         {
-           seqs <- 0
-           seqs <- 0 + as.numeric(dataframe[i, Which_Column])
-           
-           if (!is.null(seqs) && seqs > 0)
-           {
-             #add species name to list
-             haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1]) 
-           } else
-           {
-             #add species name to list
-             haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
-           }
-         }
-       }
-       if (Which_Column < 0) {
-         results <-
-           list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
-         results <- as.matrix(results)
-       } else
-       {
-         COLNam <- colnames(dataframe)
-         column_name <- paste0("Have", COLNam[Which_Column], "Seq")
-         results <-
-           list(
-             single_Barcode_haveSomeseq = haveSomeSeq,
-             single_Barcode_haveZeroSeqs = haveZeroSeq
-           )
-         results <- as.matrix(results)
-       }
-       results
-     }
-             
+  # * * DownloadEmptyRows -----------------------------------------------------
+  
+  # if which_column = -1 it means do all rows, if a column number is given the 
+  # function will only run on said column of the dataframe returns list of 2 
+  # lists, one of species with seqs, and one of species without any sequences
+  which_rows_are_empty_and_arenot <-
+    function(dataframe, Which_Column)
+    {
+      if (is.null(Which_Column))
+      {
+        Which_Column <- -1
+      }
+      Which_Column <- Which_Column
+      #create two lists
+      haveSomeSeq <- c()
+      haveZeroSeq <- c()
+      
+      ncols <- ncol(dataframe)
+      nrows <- nrow(dataframe)
+      
+      if (Which_Column < 0) {
+        #we will skip the first column because it has names
+        for (i in 1:nrows)
+        {
+          total <- 0
+          for (j in 1:ncols)
+          {
+            total <- total + as.numeric(dataframe[i, j])
+          }
+          
+          if (!is.null(total) && total > 0)
+          {
+            #add species name to list
+            haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
+          } else
+          {
+            #add species name to list
+            haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+          }
+        }
+      } else {         #if a specific columnn
+        #we will skip the first column because it has names
+        for (i in 1:nrows)
+        {
+          seqs <- 0
+          seqs <- 0 + as.numeric(dataframe[i, Which_Column])
+          
+          if (!is.null(seqs) && seqs > 0)
+          {
+            #add species name to list
+            haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1]) 
+          } else
+          {
+            #add species name to list
+            haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+          }
+        }
+      }
+      if (Which_Column < 0) {
+        results <-
+          list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
+        results <- as.matrix(results)
+      } else
+      {
+        COLNam <- colnames(dataframe)
+        column_name <- paste0("Have", COLNam[Which_Column], "Seq")
+        results <-
+          list(
+            single_Barcode_haveSomeseq = haveSomeSeq,
+            single_Barcode_haveZeroSeqs = haveZeroSeq
+          )
+        results <- as.matrix(results)
+      }
+      results
+    }
+  
 })
-  
