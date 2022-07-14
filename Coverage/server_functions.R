@@ -150,15 +150,15 @@ getNcbiSearchResults <-
 # organism name text box.
 getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqChecked) {
   databaseOption <- getDbToSearch(dbOption)
-  genomeList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
+  organismList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
   dfColumnNames <- getColumnNames(dbOption)
   parameters <- getNcbiSearchParameters(dbOption, refSeqChecked)
   list(getNcbiSearchResults(
     databaseOption,
-    genomeList,
+    organismList,
     parameters,
     dfColumnNames),
-    genomeList)
+    organismList)
 }
 
 # Downloads the file of filetype for each id
@@ -207,8 +207,8 @@ cruxDbList <- list(
 # in case the previous homonym failure notification scheme
 # is wanted. 
 getCruxSearchFullResults <- function(orgList, taxizeOption) {
-  genomeList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
-  nameUidList <- getHomonyms(genomeList)
+  organismList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
+  nameUidList <- getHomonyms(organismList)
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
