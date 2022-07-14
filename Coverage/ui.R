@@ -17,6 +17,10 @@ library(shinyalert) # popup library
 #library(shinybusy)
 
 shinyUI(fluidPage(
+  #IDE says this call is now unnecessary
+  #but if the call is still wanted, 
+  #pass the force=TRUE argument.
+  useShinyalert(force=TRUE), # This line is needed for the popup
   navbarPage("Reference Sequence Browser",
 
     # Home tab
