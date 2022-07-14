@@ -25,6 +25,12 @@ library(mpoly)
 
 plan(multisession)
 shinyServer(function(input, output, session) {
+  print(Sys.getpid())
+  onStop(function() print(Sys.getpid()))
+  onSessionEnded(function() {
+    cat("Only Session stopped\n")
+    stopApp()
+  })
   # Full Genome ----------------------------------------------------------------
   
   # * FullGenomeSearchButton ---------------------------------------------------
@@ -1119,9 +1125,28 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  
+  rv <- reactiveValues(a=0)
+  reactive({
+    rv$a
+    print(rv$a)
+  })
   # * NCBIStrToList ------------------------------------------------------------
-  
+  shiny::observeEvent(input$helpp, {
+    orgString <- "Tursiops truncatus, Anas platyrhynchos, Loxodonta africana, Mustela putorius furo, Mus musculus, Vulpes vulpes, Otocyon megalotis, Crotalus tigris, Albizia julibrissin"
+    organismList <- strsplit(orgString[[1]], ",")[[1]]
+    print(Sys.getpid())
+    huh <- promises::future_promise({
+      rv$a <- Sys.getpid()
+      print(Sys.getpid())
+      for (organism in organismList){
+        NCBI_names <-
+          gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+        print(NCBI_names[[3]])
+        Sys.sleep(0.5)
+      }
+    })
+    print(str(huh))
+  })
   NCBIorganismList <-
     reactive({
       #Converts string from NCBIorganismList into a list of Strings
@@ -1136,7 +1161,8 @@ shinyServer(function(input, output, session) {
         #if the taxize option is selected
         if (NCBItaxizeOption) {
           #lapply returns list of function results
-          taxize_organism_list <- lapply(organismList, function(organism)
+          taxize_organism_list <- list()
+          for (organism in organismList)
           {
             err <- 1
             #trim both leading and trailing whitespace
@@ -1171,8 +1197,8 @@ shinyServer(function(input, output, session) {
               #just append organism to the list
               orgn_name <- organism
             }
-            orgn_name
-          })
+            taxize_organism_list <- c(taxize_organism_list, orgn_name)
+          }
           res <- unlist(taxize_organism_list)
         } else{
           #return the list as is
@@ -1415,6 +1441,9 @@ shinyServer(function(input, output, session) {
                    nrow = organismListLength,
                    ncol = codeListLength,
                    byrow = TRUE)
+          rownames(data) <- organismList
+          colnames(data) <- barcodeList()
+          setCache("uids-mx", data, "NCBI")
           data
         }
       }
@@ -1761,10 +1790,16 @@ shinyServer(function(input, output, session) {
   output$seqLenInputs <- renderUI(seqLenList())
   
   output$NCBIcoverageResults <- DT::renderDataTable({
-    barcodes <- barcodeList()
-    promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
-      DT::datatable(data_df, rownames = rows, colnames = barcodes)
-    })
+    if (createCache("NCBI")$exists("uids-mx")) {
+      uids_table <- getCache("uids-mx","NCBI")
+      print(uids_table)
+      DT::datatable(uids_table, rownames = rownames(uids_table), colnames = colnames(uids_table))
+    } else {
+      barcodes <- barcodeList()
+      promise_all(data_df = matrixGet(), rows = NCBIorganismList()) %...>% with({
+        DT::datatable(data_df, rownames = rows, colnames = barcodes)
+      })
+    }
   })
   
   
