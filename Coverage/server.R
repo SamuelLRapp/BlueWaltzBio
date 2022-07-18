@@ -21,8 +21,9 @@ library(promises)
 library(ipc)
 library(mpoly)
 library(modules)
-server_functions <- modules::use("server_functions.R")
+
 orgListHelper <- modules::use("orgListHelper.R")
+server_functions <- modules::use("server_functions.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {

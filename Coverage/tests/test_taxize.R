@@ -17,7 +17,7 @@ orgListHelper <- modules::use("Coverage/orgListHelper.R")
 
 function_template <- function(expectedOutput, inputString, inputBool, testName){
   print("------------------------------------")
-  print("Beginning test ", testName)
+  print(paste("Beginning test ", testName))
   taxizeHelperOutput <- orgListHelper$taxizeHelper(inputString, inputBool)
   fileName <- paste("Coverage/tests/test_output/taxizeTestOutput/", testName, 
                     ".csv", sep="")
