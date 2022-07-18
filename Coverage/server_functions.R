@@ -9,7 +9,8 @@ import(future)
 import(promises)
 import(ipc)
 
-orgListHelper <- modules::use("orgListHelper.R")
+orgListHelper <- tryCatch({modules::use("orgListHelper.R")},
+                          error = function(err){modules::use("Coverage/orgListHelper.R")})
 
 # General ----------------------------------------------------------------------
 
