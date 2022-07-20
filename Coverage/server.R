@@ -295,6 +295,7 @@ shinyServer(function(input, output, session) {
   
   
   # * NCBI_Key -----------------------------------------------------------------
+  
   NCBIKeyFlag <- FALSE
   observeEvent(input$SetKey, {
     #When NCBIKey is inputed
@@ -319,7 +320,6 @@ shinyServer(function(input, output, session) {
   
   # * NCBIStrToList ------------------------------------------------------------
   
-  
   NCBIorganismList <-
     reactive({
       #Converts string from NCBIorganismList into a list of Strings
@@ -341,7 +341,6 @@ shinyServer(function(input, output, session) {
     barcodeList[[1]]
   })
   
-  
   # * NCBISequenceLength -------------------------------------------------------
   
   # returns a numericRangeInput object to display the min/max
@@ -355,36 +354,10 @@ shinyServer(function(input, output, session) {
       server_functions$getRangeList_MarkerSequenceLength(barcodeList[[1]])
     }
   })
-
   
   # * NCBIMatrix ---------------------------------------------------------------
-
-  
-  matrixGet <-
-    function() {
-      # creates and returns the matrix to be displayed with the count
-      then(ncbiSearch(), function(value) {
-        codeListLength <- length(barcodeList_)
-        
-        count <- c()
-        for (i in value[[1]]) {
-          count <- c(count, i)
-        }
-        
-        organismList <- value[[4]]
-        organismListLength <- length(organismList)
-        #convert results vector to dataframe
-        data <-
-          matrix(count,
-                 nrow = organismListLength,
-                 ncol = codeListLength,
-                 byrow = TRUE)
-        data
-      })
-    }
   
   # * NCBITableOutput ----------------------------------------------------------
-  
   
   # *   NCBIGetIDs -------------------------------------------------------------
   
@@ -523,6 +496,7 @@ shinyServer(function(input, output, session) {
   )
   
   # * NCBISummaryReportDownload ------------------------------------------------
+  
   output$NCBIfileDownloadSD <- downloadHandler(
     filename = function() {
       # Create the file and set its name
