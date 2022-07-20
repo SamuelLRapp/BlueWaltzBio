@@ -875,6 +875,7 @@ shinyServer(function(input, output, session) {
       }
     }
 
+    print("BARCODE SUMMARY")
     print(summary_df)
     summary_df
   }
@@ -893,11 +894,15 @@ shinyServer(function(input, output, session) {
    # }
     #print(c)
 
-    calculated <- rev(sort(sums * count))
-    if (ncol(summary) > 3){
-      summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
-    }
-    print("THIS IS SUMMARY")
+    
+    #calculate and sort by relavance
+    calculated <- names(rev(sort(sums * count)))
+    
+    #if (ncol(summary) > 3){
+    #  summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
+    #}
+    summary <- subset(summary, select = (calculated))
+    print("Sorted Summary")
     print(summary)
     summary
   }
