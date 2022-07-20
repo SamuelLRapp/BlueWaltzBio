@@ -7,13 +7,17 @@ library(taxize)
 
 server_functions <- modules::use("Coverage/server_functions.R")
 
-
+#UNHANDLED TEST CASES:
+# Homonyms
+# Higher taxa rank inputs than species
+# User asks for a subspecies rather than a main species
+# There were 0 found sequences
 
 function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, testName){
   print("------------------------------------")
   print(paste("Beginning test ", testName))
   genSearchOutput <- server_functions$getGenomeSearchFullResults(dbOption, orgList, taxizeOption, refSeqChecked)
-  fileName <- paste("Coverage/tests/test_output/fullGenomeSearchTestOutput/", 
+  fileName <- paste("Coverage/tests/test_output/fullGenomeScrambleTestOutput/", 
                     testName, ".csv", sep="")
   close( file( fileName, open="w" ) )
   counts <- genSearchOutput[[1]][[1]][[1]]
@@ -22,6 +26,9 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
   idIter <- 1
   correct <- TRUE
   for(orgIter in seq.int(1, length(counts))){
+    if(counts[[orgIter]] == 0){
+      next
+    }
     for(i in seq.int(1, counts[[orgIter]])){
       Sys.sleep(0.34)
       # check if the corresponding uid matches the organism name
@@ -60,6 +67,18 @@ function_template("Full mitochondrial genomes in NCBI Nucleotide",
                   TRUE,
                   "simple_test_taxize_off")
 
+# simple_test_taxize_on --------------------------------------------------------
+function_template("Full mitochondrial genomes in NCBI Nucleotide", 
+                  "Homo saapiens",
+                  TRUE,
+                  TRUE,
+                  "simple_test_taxize_on")
 
+# Animals_and_chloroplasts -----------------------------------------------------
+function_template("Full mitochondrial genomes in NCBI Nucleotide", 
+                  "Gallus gallus, Canis Lupus, Homo saapiens",
+                  TRUE,
+                  TRUE,
+                  "animals_and_chloroplasts")
 
 
