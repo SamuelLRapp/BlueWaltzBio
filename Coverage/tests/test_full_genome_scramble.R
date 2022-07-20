@@ -10,9 +10,8 @@ server_functions <- modules::use("Coverage/server_functions.R")
 #UNHANDLED TEST CASES:
 # Homonyms
 # Higher taxa rank inputs than species
-# User asks for a subspecies rather than a main species
 # The max value of sequences to be retrieved per query is not 5
-# 
+
 
 function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, testName){
   print("------------------------------------")
@@ -32,24 +31,25 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
     }
     for(i in seq.int(1, min(c(counts[[orgIter]], 5)))){     #5 needs to be replaced with # of sequences retrieved
       Sys.sleep(0.34)
+      trueTax <- get_uid_(sci_com=orgNames[[orgIter]], messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE
+      trueTaxId <- strtoi(trueTax[[orgNames[[orgIter]]]]$uid, 10)
+      trueTaxRank <- trueTax[[orgNames[[orgIter]]]]$rank
+      
       # check if the corresponding uid matches the organism name
+      Sys.sleep(0.34)
       esum <- entrez_summary(db="nucleotide", id=uids[[idIter]])
-      # print(names(esum))
-      species <- tax_name(query = esum$organism,
-                          get = c("species"),
+      foundOrg <- tax_name(query = esum$organism,
+                          get = c(trueTaxRank),
                           db = "ncbi",
-                          messages = FALSE)$species
+                          messages = FALSE)[[trueTaxRank]]
       Sys.sleep(0.34)
       
-      foundTaxId <- get_uid_(sci_com=species, messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE
-      foundTaxId <- strtoi(foundTaxId[[species]]$uid, 10)
-      
-      Sys.sleep(0.34)
-      trueTaxId <- get_uid_(sci_com=orgNames[[orgIter]], messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE
-      trueTaxId <- strtoi(trueTaxId[[orgNames[[orgIter]]]]$uid, 10)
-      # print(typeof(trueTaxId))
+      foundTax <- get_uid_(sci_com=foundOrg, messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE
+      foundTaxId <- strtoi(foundTax[[foundOrg]]$uid, 10)
+
+
       if(!identical(foundTaxId, trueTaxId)){
-        write(paste(esum$organism, ": ", foundTaxId,              # maybe we can change the "found species" printed here
+        write(paste(esum$organism, ": ", foundTaxId,              # maybe change the "found species" printed here
                     ", ", orgNames[[orgIter]], ": ", trueTaxId),
                     file=fileName, append=TRUE)
         correct <- FALSE
@@ -62,24 +62,37 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
 }
 
 # simple_test_taxize_off -------------------------------------------------------
-function_template("Full mitochondrial genomes in NCBI Nucleotide", 
+function_template("Full mitochondrial genomes in NCBI Nucleotide",
                   "Gallus gallus, Canis Lupus",
                   FALSE,
                   TRUE,
                   "simple_test_taxize_off")
 
 # simple_test_taxize_on --------------------------------------------------------
-function_template("Full mitochondrial genomes in NCBI Nucleotide", 
+function_template("Full mitochondrial genomes in NCBI Nucleotide",
                   "Homo saapiens",
                   TRUE,
                   TRUE,
                   "simple_test_taxize_on")
 
 # Animals_and_chloroplasts -----------------------------------------------------
-function_template("Full mitochondrial genomes in NCBI Nucleotide", 
+function_template("Full chloroplast genomes in NCBI Nucleotide",
                   "Gallus gallus, Canis Lupus, Homo saapiens",
                   TRUE,
                   TRUE,
                   "animals_and_chloroplasts")
 
+# Subspecies -------------------------------------------------------------------
+function_template("Full mitochondrial genomes in NCBI Nucleotide",
+                  "Canis lupus chanco",
+                  TRUE,
+                  TRUE,
+                  "subspecies")
+
+# Higher_taxa_ranks ------------------------------------------------------------
+function_template("Full mitochondrial genomes in NCBI Nucleotide", 
+                  "Haliotis",
+                  TRUE,
+                  TRUE,
+                  "higher_taxa_ranks")
 
