@@ -9,7 +9,6 @@ server_functions <- modules::use("Coverage/server_functions.R")
 
 #UNHANDLED TEST CASES:
 # Homonyms
-# Higher taxa rank inputs than species
 # The max value of sequences to be retrieved per query is not 5
 
 
