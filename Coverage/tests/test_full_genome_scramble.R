@@ -11,7 +11,8 @@ server_functions <- modules::use("Coverage/server_functions.R")
 # Homonyms
 # Higher taxa rank inputs than species
 # User asks for a subspecies rather than a main species
-# There were 0 found sequences
+# The max value of sequences to be retrieved per query is not 5
+# 
 
 function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, testName){
   print("------------------------------------")
@@ -29,7 +30,7 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
     if(counts[[orgIter]] == 0){
       next
     }
-    for(i in seq.int(1, counts[[orgIter]])){
+    for(i in seq.int(1, min(c(counts[[orgIter]], 5)))){     #5 needs to be replaced with # of sequences retrieved
       Sys.sleep(0.34)
       # check if the corresponding uid matches the organism name
       esum <- entrez_summary(db="nucleotide", id=uids[[idIter]])
