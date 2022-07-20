@@ -21,6 +21,7 @@ function_template <- function(expectedOutput, inputString, inputBool, testName){
   taxizeHelperOutput <- orgListHelper$taxizeHelper(inputString, inputBool)
   fileName <- paste("Coverage/tests/test_output/taxizeTestOutput/", testName, 
                     ".csv", sep="")
+  close( file( fileName, open="w" ) )
   write.table(taxizeHelperOutput, 
               file=fileName,
               row.names = FALSE,
