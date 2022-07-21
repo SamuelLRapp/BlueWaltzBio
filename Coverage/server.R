@@ -95,6 +95,9 @@ shinyServer(function(input, output, session) {
       value = server_functions$parseCsvColumnForTxtBox(
         input = input, 
         file.index = "uploadGenomeFile",
+        
+        
+        #beware, adding a space into the column header name causes problems
         column.header = "OrganismNames",
         textbox.id = "genomeOrganismList")))
 
@@ -194,6 +197,8 @@ shinyServer(function(input, output, session) {
       newOrganismNamesList <- server_functions$parseCsvColumnForTxtBox(
         input = input,
         file.index = "uCRUXfile",
+        
+        #beware, adding a space into the column header name causes problems
         column.header = "OrganismNames",
         textbox.id = "CRUXorganismList"
       )
