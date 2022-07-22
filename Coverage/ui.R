@@ -233,6 +233,7 @@ shinyUI(fluidPage(
                                  #conditionalPanel(condition = "input.geo != list()",
                                                   #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
                                                   #mainPanel(plotOutput("geo_pie")),
+                                 DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
                                  DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                  conditionalPanel(condition = "output.BOLDcoverageResults",
                                                    # add ncbi option remove genome

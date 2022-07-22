@@ -693,6 +693,10 @@ shinyServer(function(input, output, session) {
     output$BOLDAbsentTable <- 
       DT::renderDataTable(
         absentMatrix())
+    
+    output$BOLDSummaryData <- 
+      DT::renderDataTable(
+        summary_report(2))
   
     output$selectCountry <- renderUI({
       selectizeInput(inputId="selectCountry", label="Filter by Countries", choices=boldCoverage()$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
