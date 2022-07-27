@@ -260,8 +260,19 @@ shinyUI(fluidPage(
                         
                       ),
              ),
-             tabPanel("Plot",
-                mainPanel(plotOutput('treemap')),
+             tabPanel("Plot Total Sequences Per Country",
+                fluidRow(
+                  column(12, align="center", style='padding-top:15px',
+                    mainPanel(plotOutput('treemap')),
+                  ),
+                ),
+            ),
+            tabPanel("Plot Unique Species Per Country",
+              fluidRow(
+                column(12, align="center", style='padding-top:15px',
+                  mainPanel(plotOutput('species')),
+                ),
+              ),
             ),
 
     )),

@@ -31,7 +31,8 @@ shinyServer(function(input, output, session) {
     
   hideTab("BOLDpage", "Results")
   hideTab("BOLDpage", "Organism Names")
-  hideTab("BOLDpage", "Plot")
+  hideTab("BOLDpage", "Plot Unique Species Per Country")
+  hideTab("BOLDpage", "Plot Total Sequences Per Country")
   hideTab("BOLDpage", "Filter By Country")
   hideTab("BOLDpage", "Country Data")
   
@@ -529,6 +530,8 @@ shinyServer(function(input, output, session) {
     observeEvent(input$BOLDSkipFilter, {
       updateTabsetPanel(session, "BOLDpage", selected = "Results")
       showTab("BOLDpage", "Results")
+      showTab("BOLDpage", "Plot Unique Species Per Country")
+      showTab("BOLDpage", "Plot Total Sequences Per Country")
       showTab("BOLDpage", "Country Data")
       updateSelectizeInput(inputId="selectCountry", label="Filter by Countries", choices=boldCoverage()$countries, selected = boldCoverage()$countries,options = NULL)
       click("BOLDfilterCountries")
@@ -536,6 +539,8 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$BOLDfilterCountries, {
       updateTabsetPanel(session, "BOLDpage", selected = "Results")
+      showTab("BOLDpage", "Plot Unique Species Per Country")
+      showTab("BOLDpage", "Plot Total Sequences Per Country")
       showTab("BOLDpage", "Results")
       showTab("BOLDpage", "Country Data")
     })
@@ -650,12 +655,45 @@ shinyServer(function(input, output, session) {
       data
     })
     
+    # country summary function
+    # no. of species for all countries
+    output$species <- renderPlot ({
+      if (!is.null(BOLDOrgCountries())){
+        vals <- c()
+        countries_values <- list()
+        require(data.table)
+        records_bold <- BoldMatrix()
+        countries <- c(unique(records_bold$country))
+        for (i in 1:length(countries)){
+          if (countries[i] == ""){
+            countries[i] = "no country listed"
+          }
+          countries_values[[countries[i]]] = 0
+        }
+        presentMatrix <- presentMatrix()
+        for (i in 1:ncol(presentMatrix)) {
+          countries <- colnames(presentMatrix)
+          for (j in 1:nrow(presentMatrix)) {
+            if (presentMatrix[j,i] > 0) {
+              countries_values[[countries[i]]] = countries_values[[countries[i]]] + 1
+            }
+          }
+        }
+        # set vals
+        for (i in countries_values){
+          vals <- append(vals, i)
+        }
+
+        # plots
+        xf <- data.frame(country = countries, values = vals)
+        barplot(vals, names.arg = countries, xlab = "countries", ylab = "# unique species", col = "purple")
+      }
+    }, height = 700, width = 1000)
     
-  
     # for the treemap
     output$treemap <- renderPlot({ 
       if (!is.null(input$selectCountry)){
-        records_bold <- boldCoverage()$results
+        records_bold <- BoldMatrix()
         countries_values <- list()
         vals <- c()
         countries = c(unique(records_bold$country))
@@ -666,20 +704,30 @@ shinyServer(function(input, output, session) {
           }
         }
         
-        for (i in unique(records_bold$country)){
+        for (i in countries){
           x <- lengths(subset(records_bold, country == i))
           countries_values[[i]] = x[[1]]
           vals <- append(vals, x[[1]])
         }
         
+        # from https://stackoverflow.com/questions/25061822/ggplot-geom-text-font-size-control
+        geom.text.size = 7
+        theme.size = (14/5) * geom.text.size
+        
         xf <- data.frame(country = countries, values = vals)
-        # treemap(xf, index="country", vSize="values", type="value",
-        #         title = "Distriution of the records by country",
-        #         title.legend = "Legend")
+        #d3tree(
+        #  treemap(xf, 
+        #          index = "country", 
+        #          vSize = "values", 
+        #          vColor = "country", 
+        #          type = "value",
+        #          title.legend = "Legend"))
         ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
-          geom_treemap()
+          geom_treemap() + 
+          geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
+          theme(axis.text = element_text(size = theme.size))
         # how to change the colors + get a legend ? 
-      }}, height = 800, width = 800)
+      }}, height = 700, width = 1000)
     
     
     output$BOLDcoverageResults <- 
