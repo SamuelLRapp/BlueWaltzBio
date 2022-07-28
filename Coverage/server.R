@@ -570,7 +570,6 @@ shinyServer(function(input, output, session) {
 # * BOLDStrToList ---------------------------------------------------------
 
     boldOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-      print("HEY")
       organismList <- strsplit(BOLDOrgSearch(), ",")[[1]] #separate based on commas
       if(input$BOLDtaxizeOption){ #if the taxize option is selected
         taxize_organism_list <- c() #initialize an empty vector
@@ -594,7 +593,6 @@ shinyServer(function(input, output, session) {
             taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
           }
         }
-        print(taxize_organism_list)
         taxize_organism_list  
       } else{
         organismList #return the list as is
@@ -622,6 +620,11 @@ shinyServer(function(input, output, session) {
           # POP UP TELLING USER THAT BOLD IS DOWN
         })
         if (!is.na(records_bold)){
+          for (i in 1:nrow(records_bold)) {
+            if (records_bold$country[i] == "") {
+              records_bold$country[i] = "No Country Listed"
+            }
+          }
           countries <- c(countries, records_bold$country)
           results <- rbind(results, records_bold)
         }
@@ -629,7 +632,6 @@ shinyServer(function(input, output, session) {
       shinyjs::show(id = "BOLDClearFilter")
       shinyjs::show(id = "BOLDfilterCountries")
       shinyjs::show(id = "BOLDSkipFilter")
-      
       results <- list(results=results, countries=countries)
       results #return data matrix
     })
@@ -638,7 +640,7 @@ shinyServer(function(input, output, session) {
       input$selectCountry #Returns a list of countries
     })
     
-    # BOLD MATRIX----------------
+    # * BOLD MATRIX----------------
     
     BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
       list <- boldCoverage()
@@ -655,6 +657,7 @@ shinyServer(function(input, output, session) {
       data
     })
     
+    # * Plot: Unique Species per Country ----------
     # country summary function
     # no. of species for all countries
     output$species <- renderPlot ({
@@ -663,7 +666,7 @@ shinyServer(function(input, output, session) {
         countries_values <- list()
         require(data.table)
         records_bold <- BoldMatrix()
-        countries <- c(unique(records_bold$country))
+        countries <- c(unique(records_bold$country)) 
         for (i in 1:length(countries)){
           if (countries[i] == ""){
             countries[i] = "no country listed"
@@ -690,6 +693,7 @@ shinyServer(function(input, output, session) {
       }
     }, height = 700, width = 1000)
     
+    # * Plot: Total sequences per Country ----------
     # for the treemap
     output$treemap <- renderPlot({ 
       if (!is.null(input$selectCountry)){
@@ -810,11 +814,11 @@ shinyServer(function(input, output, session) {
         return(summary_df)
       }
       for(i in 1:length(records_bold$species_name)){
-        if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
+        if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
           #add a row to summary_df
           summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
         #add data to summary_df to get summary data
-        if (!is.na(records_bold$country[i]) && records_bold$country[i] != ''){
+        if (!is.na(records_bold$country[i]) && records_bold$country[i] != '' && (records_bold$species_name[i] != "")){
           #if country is not yet in the dataframe, initiate new col
           if (!(records_bold$country[i] %in% colnames(summary_df))){
             #create a new column of 0s
@@ -824,8 +828,8 @@ shinyServer(function(input, output, session) {
           summary_df[records_bold$species_name[i], records_bold$country[i]] <- summary_df[records_bold$species_name[i], records_bold$country[i]] + 1
         }
       }
-      #print("COUNTRY SUMMARY")
-      #print(summary_df)
+      # print("COUNTRY SUMMARY")
+      # print(summary_df)
       summary_df
       
       
@@ -840,8 +844,8 @@ shinyServer(function(input, output, session) {
       #present_df <- present_df[apply(present_df[, -1], 1, function(x) !all(x==0)),]
       present_df <- present_df[rowSums(present_df[])>0,]
       
-      #print("PRESENT MATRIX")
-      #print(present_df)
+      # print("PRESENT MATRIX")
+      # print(present_df)
       present_df
       
     }
@@ -912,11 +916,11 @@ shinyServer(function(input, output, session) {
     }
     for(i in 1:length(records_bold$species_name)){
       #if species name not in dataframe
-      if (!is.na(records_bold$species_name[i]) && !(records_bold$species_name[i] %in% rownames(summary_df)))
+      if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
         #add a row to summary_df
         summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
       #add data to summary_df to get summary data
-      if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != ''){
+      if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != '' && (records_bold$species_name[i] != "")){
         #if markercode is not yet in the dataframe, initiate new col
         if (!(records_bold$markercode[i] %in% colnames(summary_df))){
           #create a new column of 0s
@@ -927,8 +931,8 @@ shinyServer(function(input, output, session) {
       }
     }
 
-    print("BARCODE SUMMARY")
-    print(summary_df)
+    # print("BARCODE SUMMARY")
+    # print(summary_df)
     summary_df
   }
   
@@ -954,8 +958,8 @@ shinyServer(function(input, output, session) {
     #  summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
     #}
     summary <- subset(summary, select = (calculated))
-    print("Sorted Summary")
-    print(summary)
+    # print("Sorted Summary")
+    # print(summary)
     summary
   }
   
