@@ -264,6 +264,7 @@ shinyUI(fluidPage(
                 fluidRow(
                   column(12, align="center", style='padding-top:15px',
                     mainPanel(plotOutput('treemap')),
+                    downloadButton('downloadTreeGraph',"Download Graph"),
                   ),
                 ),
             ),
@@ -271,6 +272,7 @@ shinyUI(fluidPage(
               fluidRow(
                 column(12, align="center", style='padding-top:15px',
                   mainPanel(plotOutput('species')),
+                  downloadButton('downloadBarGraph',"Download Graph"),
                 ),
               ),
             ),

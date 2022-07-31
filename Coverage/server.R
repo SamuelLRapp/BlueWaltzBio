@@ -660,7 +660,8 @@ shinyServer(function(input, output, session) {
     # * Plot: Unique Species per Country ----------
     # country summary function
     # no. of species for all countries
-    output$species <- renderPlot ({
+    
+    BoldPlotBarGraph <- function(){
       if (!is.null(BOLDOrgCountries())){
         vals <- c()
         countries_values <- list()
@@ -681,21 +682,48 @@ shinyServer(function(input, output, session) {
               countries_values[[countries[i]]] = countries_values[[countries[i]]] + 1
             }
           }
-        }
-        # set vals
-        for (i in countries_values){
-          vals <- append(vals, i)
-        }
-
-        # plots
-        xf <- data.frame(country = countries, values = vals)
-        barplot(vals, names.arg = countries, xlab = "countries", ylab = "# unique species", col = "purple")
+      }}
+      # set vals
+      for (i in countries_values){
+        vals <- append(vals, i)
       }
+      vector_species <- boldOrganismList() #Getting a vector for the y-axis to avoid decimal values
+      y_axis <- c()
+      for (i in 1:length(vector_species)){
+        y_axis <- c(y_axis, i)
+        print(y_axis)
+      }
+      xf <- data.frame(country = countries, values = vals)
+      ggplot(data=xf, aes(x=country, y=values)) +
+        geom_bar(stat="identity", fill="purple") +
+        labs(y = "# unique species", x = "countries") +
+        scale_y_continuous(breaks=y_axis) +
+        theme(text = element_text(size = 17)) +
+        coord_flip()
+      #barplot(vals, names.arg = countries, xlab = "countries", ylab = "# unique species", col = "purple")
+    }
+    
+    
+    output$species <- renderPlot ({
+      BoldPlotBarGraph()
     }, height = 700, width = 1000)
+    
+    output$downloadBarGraph = downloadHandler(
+      filename = 'test.png',
+      content = function(file) {
+        device <- function(..., width, height) {
+          grDevices::png(..., width = width, height = height,
+                         res = 300, units = "in")
+        }
+        BoldPlotBarGraph()
+        ggsave(file, device = device)
+      })
+    
     
     # * Plot: Total sequences per Country ----------
     # for the treemap
-    output$treemap <- renderPlot({ 
+    
+    BoldPlotTreemap <- function(){
       if (!is.null(input$selectCountry)){
         records_bold <- BoldMatrix()
         countries_values <- list()
@@ -713,12 +741,9 @@ shinyServer(function(input, output, session) {
           countries_values[[i]] = x[[1]]
           vals <- append(vals, x[[1]])
         }
-        
-        # from https://stackoverflow.com/questions/25061822/ggplot-geom-text-font-size-control
+        xf <- data.frame(country = countries, values = vals)
         geom.text.size = 7
         theme.size = (14/5) * geom.text.size
-        
-        xf <- data.frame(country = countries, values = vals)
         #d3tree(
         #  treemap(xf, 
         #          index = "country", 
@@ -730,8 +755,26 @@ shinyServer(function(input, output, session) {
           geom_treemap() + 
           geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
           theme(axis.text = element_text(size = theme.size))
-        # how to change the colors + get a legend ? 
-      }}, height = 700, width = 1000)
+        # how to change the colors + get a legend ?
+
+    }}
+    
+    output$treemap <- renderPlot({ 
+        # from https://stackoverflow.com/questions/25061822/ggplot-geom-text-font-size-control
+        BoldPlotTreemap()
+      }, height = 700, width = 1000)
+  
+    
+    output$downloadTreeGraph = downloadHandler(
+      filename = 'test.png',
+      content = function(file) {
+        device <- function(..., width, height) {
+          grDevices::png(..., width = width, height = height,
+                         res = 300, units = "in")
+        }
+        BoldPlotTreemap()
+        ggsave(file, device = device)
+      })
     
     
     output$BOLDcoverageResults <- 
