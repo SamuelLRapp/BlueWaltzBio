@@ -350,7 +350,7 @@ shinyServer(function(input, output, session) {
   
   # returns a numericRangeInput object to display the min/max
   # ui thing for the user to input sequence lengths
-  seqLenList <- eventReactive(input$seqLengthOption, {
+  seqLenList <- reactive({
     if (input$seqLengthOption) {
       barcodeList <- strsplit(input$barcodeList, ",")
       barcodeList[[1]] <- trimws(barcodeList[[1]], "b")
