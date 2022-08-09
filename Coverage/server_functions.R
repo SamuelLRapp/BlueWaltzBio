@@ -318,11 +318,18 @@ fullGenomeDownload <- function(filetype, uids, filepath, progressIndicator) {
     for (uid in uids) {
       sleep()
       fileVector <- c(fileVector, downloadFileFromNcbi(uid, filetype))
-      progressIndicator$inc(amount = 1)
+      
+      # progressIndicator is nullable to allow testing outside
+      # of the current rshiny session
+      if (!is.null(progressIndicator)) {
+        progressIndicator$inc(amount = 1)
+      }
     }
     write(fileVector, filepath)
-    progressIndicator$set(value = length(uids))
-    progressIndicator$close()
+    if (!is.null(progressIndicator)) {
+      progressIndicator$set(value = length(uids))
+      progressIndicator$close()
+    }
   })
 }
 
