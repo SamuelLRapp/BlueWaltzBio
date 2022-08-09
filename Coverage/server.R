@@ -293,7 +293,6 @@ shinyServer(function(input, output, session) {
           searchTerms <- list.append(searchTerms, searchTerm) 
         }
       }
-      browser()
       ncbiResultsDataframe <<- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
     })
   })
