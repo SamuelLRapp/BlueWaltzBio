@@ -21,6 +21,7 @@ library(promises)
 library(ipc)
 library(mpoly)
 library(modules)
+library(shinyjs)
 
 orgListHelper <- modules::use("orgListHelper.R")
 server_functions <- modules::use("server_functions.R")
@@ -116,6 +117,32 @@ shinyServer(function(input, output, session) {
   })
   
   # * Download Fastas ----------------------------------------------------------
+  mostRecentFile <- function(dirpath) {
+    df <- file.info(list.files(dirpath, full.names = T))
+    rownames(df)[which.max(df$mtime)]
+  }
+  
+  #---Download tests start---
+  observeEvent(input$dwntest, {
+    #run JS portion of test (ui interactions)
+    js$ncbiDwnFastaTest(testOrganisms = "canis lupus, cygnus")
+    
+    #gets reference file to see if download completed later
+    reffile <- mostRecentFile("~/Downloads")
+    print("Waiting 10 secs for file to finish downloading...")
+    #runs when search complete and download button clicked
+    observeEvent(input[["ui-test-complete"]], {
+      #get the most recent file in the downloads file
+      dwnfile <- mostRecentFile("~/Downloads")
+      
+      #if download has completed then filename should have changed
+      if (dwnfile != reffile){
+        print("Test passed")
+      } else {
+        print("Test failed: file did not download")
+      }
+    })
+  })
   
   output$fullGenomeDownloadF <- downloadHandler(
     filename = function() {
