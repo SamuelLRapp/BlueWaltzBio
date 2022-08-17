@@ -317,6 +317,11 @@ fullGenomeDownload <- function(filetype, uids, filepath, progressIndicator) {
     fileVector <- c()
     for (uid in uids) {
       sleep()
+      # entrez_fetch can take a list of uids, instead of iterating
+      # over all uids and sleeping at each one, could provide a list
+      # to get all the files at once. 
+      # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
+      # for details
       fileVector <- c(fileVector, downloadFileFromNcbi(uid, filetype))
       
       # progressIndicator is nullable to allow testing outside
