@@ -621,7 +621,7 @@ shinyServer(function(input, output, session) {
         })
         if (!is.na(records_bold)){
           for (i in 1:nrow(records_bold)) {
-            if (records_bold$country[i] == "") {
+            if (is.na(records_bold$country[i]) || records_bold$country[i] == "") {
               records_bold$country[i] = "No Country Listed"
             }
           }
