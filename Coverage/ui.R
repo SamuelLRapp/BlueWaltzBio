@@ -14,15 +14,64 @@ library(tidyverse)
 library(vembedr)
 library(shinydashboard)
 library(shinyalert) # popup library
-#library(shinybusy)
+library(shinyjs)
+
+jsCode <- paste0('shinyjs.clickBtn = function(params){
+                    console.log("btn clicked");
+                    var defaultParams = {
+                       btnId : ""
+                    };
+                    params = shinyjs.getParams(params, defaultParams);
+                    btn = $("#"+params.btnId);
+                    console.log(btn);
+                    btn[0].click();
+                  }')
+
+tst <- paste0('shinyjs.ncbiDwnFastaTest = function(params){
+              var defaultParams = {
+                 dwnBtnId : "fileDownloadF",
+                 waitTimeForFileDwn: 10000,
+                 testOrganisms: "gallus gallus",
+                 testBarcodes: "(CO1; COI; COX1)"
+              };
+              params = shinyjs.getParams(params, defaultParams);
+              
+              //set search params
+              Shiny.setInputValue("NCBIorganismList", params.testOrganisms);
+              Shiny.setInputValue("barcodeList", params.testBarcodes);
+              shinyjs.clickBtn("NCBIsearchButton"); //run search
+
+              //loop to check if search complete
+              var dwnPanelVis = false;
+              console.log(dwnPanelVis);
+              var intr = setInterval(function() {
+                  
+                dwnPanelVis = $("#"+params.dwnBtnId).is(":visible");
+                //run this code after search completed
+                if (dwnPanelVis) {
+                  clearInterval(intr);
+                  console.log("loop finished");
+                  shinyjs.clickBtn(params.dwnBtnId);
+                  setTimeout(function(){
+                    //let server know to check if file has downloaded
+                      Shiny.onInputChange("ui-test-complete", true);
+                  }, params.waitTimeForFileDwn);
+                }
+              }, 1000)
+              }')
+
 
 shinyUI(fluidPage(
+  useShinyjs(),
+  extendShinyjs(text = jsCode, functions = c("clickBtn")),
+  extendShinyjs(text = tst, functions = c("ncbiDwnFastaTest")),
   navbarPage("Reference Sequence Browser",
 
     # Home tab
     tabPanel("Home", 
              titlePanel("Welcome to the Reference Sequence Browser"),
              textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
+             actionButton(inputId = "dwntest", label = "Run Download Tests"),
              actionButton(inputId = "SetKey", label = "Set Key"),
              p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
  Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
