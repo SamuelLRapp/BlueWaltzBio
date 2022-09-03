@@ -625,8 +625,10 @@ shinyServer(function(input, output, session) {
               records_bold$country[i] = "No Country Listed"
             }
           }
-          countries <- c(countries, records_bold$country)
-          results <- rbind(results, records_bold)
+          if (!is.na(records_bold$species_name)) {
+            countries <- c(countries, records_bold$country)
+            results <- rbind(results, records_bold)
+          }
         }
       }
       shinyjs::show(id = "BOLDClearFilter")
@@ -880,6 +882,9 @@ shinyServer(function(input, output, session) {
     
     presentMatrix <- function(){
       present_df <- country_summary()
+      
+      print(present_df)
+      print("I GOT HERE YEEEEE")
       #remove all columns that are not in filter
       present_df <- present_df[ , which(names(present_df) %in% BOLDOrgCountries())]
       
