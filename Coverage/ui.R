@@ -219,10 +219,15 @@ shinyUI(fluidPage(
                         column(2, align="left", style='padding-top:40px',
                                conditionalPanel(condition = "output.selectCountry",
                                                 actionButton('BOLDClearFilter',"Clear Filter")
-                               ))
+                               )),
                         
+                        
+                        column(12, align="center", style='padding-top:15px', 
+                               span(textOutput("BOLDNullSpeciesWarning"), style="color:orange"),
+                               textOutput("BOLDNullSpecies") 
+                               )
                         ),
-
+                        
                ),
                tabPanel("Results",
                         # Application title
