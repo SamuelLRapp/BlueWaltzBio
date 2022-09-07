@@ -524,6 +524,8 @@ shinyServer(function(input, output, session) {
       shinyjs::hide(id = "BOLDClearFilter")
       shinyjs::hide(id = "BOLDfilterCountries")
       shinyjs::hide(id = "BOLDSkipFilter")
+      shinyjs::hide(id = "BOLDNullSpecies")
+      shinyjs::hide(id = "BOLDNullSpeciesWarning")
     })
 
     
@@ -611,6 +613,9 @@ shinyServer(function(input, output, session) {
         need(organismListLength > 0, 'Please name at least one organism')
       )
 
+      #puts variable in global scope
+      unfound_species <<- c()
+      
       results <- data.frame(matrix(ncol=0, nrow=0))
       for(organism in organismList){
         searchResult <- tryCatch({
@@ -628,12 +633,19 @@ shinyServer(function(input, output, session) {
           if (!is.na(records_bold$species_name)) {
             countries <- c(countries, records_bold$country)
             results <- rbind(results, records_bold)
+          } else {
+            print("unfound:")
+            print(organism)
+            print(records_bold)
+            unfound_species <<- c(unfound_species, organism)
           }
         }
       }
       shinyjs::show(id = "BOLDClearFilter")
       shinyjs::show(id = "BOLDfilterCountries")
       shinyjs::show(id = "BOLDSkipFilter")
+      shinyjs::show(id = "BOLDNullSpecies")
+      shinyjs::show(id = "BOLDNullSpeciesWarning")
       results <- list(results=results, countries=countries)
       results #return data matrix
     })
@@ -795,6 +807,16 @@ shinyServer(function(input, output, session) {
       DT::renderDataTable(
         summary_report(2))
   
+    output$BOLDNullSpecies <-
+      renderText({
+        unfound_species
+        })
+    
+    output$BOLDNullSpeciesWarning <-
+      renderText({
+        "Warning: The following organisms were not found"
+      })
+    
     output$selectCountry <- renderUI({
       selectizeInput(inputId="selectCountry", label="Filter by Countries", choices=boldCoverage()$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
     })
