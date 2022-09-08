@@ -11,7 +11,6 @@ server_functions <- modules::use("Coverage/server_functions.R")
 # Homonyms
 # The max value of sequences to be retrieved per query is not 5
 
-
 function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, testName){
   print("------------------------------------")
   print(paste("Beginning test ", testName))
@@ -31,25 +30,35 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
     for(i in seq.int(1, min(c(counts[[orgIter]], 5)))){     #5 needs to be replaced with # of sequences retrieved
       Sys.sleep(0.34)
       trueTax <- get_uid_(sci_com=orgNames[[orgIter]], messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE
-      trueTaxId <- strtoi(trueTax[[orgNames[[orgIter]]]]$uid, 10)
-      trueTaxRank <- trueTax[[orgNames[[orgIter]]]]$rank
+      #gets all uids (multiple for homonyms of same rank)
+      trueTaxIds <- trueTax[[orgNames[[orgIter]]]]$uid
+     
+      #get vector with rank(s) in case of homonyms with different ranks
+      trueTaxRanks <- trueTax[[orgNames[[orgIter]]]]$rank
       
       # check if the corresponding uid matches the organism name
       Sys.sleep(0.34)
       esum <- entrez_summary(db="nucleotide", id=uids[[idIter]])
-      foundOrg <- tax_name(query = esum$organism,
-                          get = c(trueTaxRank),
-                          db = "ncbi",
-                          messages = FALSE)[[trueTaxRank]]
-      Sys.sleep(0.34)
+      #vector to hold found tax ids
+      foundTaxIds <- c()
       
-      foundTax <- get_uid_(sci_com=foundOrg, messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE
-      foundTaxId <- strtoi(foundTax[[foundOrg]]$uid, 10)
-
-
-      if(!identical(foundTaxId, trueTaxId)){
-        write(paste(esum$organism, ": ", foundTaxId,              # maybe change the "found species" printed here
-                    ", ", orgNames[[orgIter]], ": ", trueTaxId),
+      #unique(trueTaxRanks) prevents getting duplicate uids
+      for(rank in unique(trueTaxRanks)) {
+        foundOrg <- tax_name(query = esum$organism,
+                            get = c(trueTaxRank),
+                            db = "ncbi",
+                            messages = FALSE)[[trueTaxRank]]
+        Sys.sleep(0.34)
+        
+        foundTax <- get_uid_(sci_com=foundOrg, messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE
+        foundTaxId <- foundTax[[foundOrg]]$uid
+        foundTaxIds <- c(foundTaxIds, foundTaxId)
+      }
+      
+      #identical function works on vectors too
+      if(!identical(foundTaxIds, trueTaxIds)){
+        write(paste(esum$organism, ": ", foundTaxIds,              # maybe change the "found species" printed here
+                    ", ", orgNames[[orgIter]], ": ", trueTaxIds),
                     file=fileName, append=TRUE)
         correct <- FALSE
       }
@@ -94,4 +103,3 @@ function_template("Full mitochondrial genomes in NCBI Nucleotide",
                   TRUE,
                   TRUE,
                   "higher_taxa_ranks")
-
