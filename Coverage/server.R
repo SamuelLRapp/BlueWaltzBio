@@ -696,22 +696,29 @@ shinyServer(function(input, output, session) {
               countries_values[[countries[i]]] = countries_values[[countries[i]]] + 1
             }
           }
-      }}
+        }}
+
+      ## BOLD adds species/subspecies to search results
+      ## so # of species will often be more than # from boldOrganismList()
+      max_uniq_species <- max(unlist(countries_values))
+      print(max_uniq_species)
       # set vals
       for (i in countries_values){
         vals <- append(vals, i)
       }
-      vector_species <- boldOrganismList() #Getting a vector for the y-axis to avoid decimal values
-      y_axis <- c()
-      for (i in 1:length(vector_species)){
-        y_axis <- c(y_axis, i)
-        print(y_axis)
-      }
+      # vector_species <- boldOrganismList() #Getting a vector for the y-axis to avoid decimal values
+      # print("vector_species:")
+      # print(vector_species)
+      # y_axis <- c()
+      # for (i in 1:max_uniq_species){
+      #   y_axis <- c(y_axis, i)
+      #   print(y_axis)
+      # }
       xf <- data.frame(country = countries, values = vals)
-      ggplot(data=xf, aes(x=country, y=values)) +
+      ggplot(data=xf, aes(x = country, y = values)) +
         geom_bar(stat="identity", fill="purple") +
         labs(y = "# unique species", x = "countries") +
-        scale_y_continuous(breaks=y_axis) +
+        scale_y_continuous(limits = c(0, max_uniq_species)) +
         theme(text = element_text(size = 17)) +
         coord_flip()
       #barplot(vals, names.arg = countries, xlab = "countries", ylab = "# unique species", col = "purple")
