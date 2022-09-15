@@ -690,17 +690,9 @@ shinyServer(function(input, output, session) {
           countries_values[[countries[i]]] = 0
         }
        
-        for (i in 1:ncol(presentMatrix)) {
-          for (j in 1:nrow(presentMatrix)) {
-            if (presentMatrix[j,i] > 0) {
-              countries_values[[countries[i]]] = countries_values[[countries[i]]] + 1
-            }
-          }
-        }
-      
       # set vals
-      ## don't need loop, unlist() will extract values
-      vals <- unlist(countries_values)
+      ## counts # of cols for each country where cell > 0
+      vals <- colSums(presentMatrix != 0)
       
       ## BOLD adds species/subspecies to search results
       ## so # of species will often be more than # from boldOrganismList()
