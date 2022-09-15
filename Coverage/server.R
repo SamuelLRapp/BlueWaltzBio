@@ -697,22 +697,22 @@ shinyServer(function(input, output, session) {
             }
           }
         }}
-
-      ## BOLD adds species/subspecies to search results
-      ## so # of species will often be more than # from boldOrganismList()
-      max_uniq_species <- max(unlist(countries_values))
-      print(max_uniq_species)
       
       # set vals
-      ## don't need loop, unlist() will extract values
+      ## don't need for loop, unlist() will extract values
       vals <- unlist(countries_values)
+      print(countries_values)
+      
+      ## BOLD adds species/subspecies to search results
+      ## so # of species will often be more than # from boldOrganismList()
+      max_uniq_species <- max(vals)
+      print(max_uniq_species)
+  
+      # the "countries" list from above seems to exclude countries with 0 species
+      # this list won't
+      filter_countries <- names(countries_values)
 
-      # y_axis <- c()
-      # for (i in 1:max_uniq_species){
-      #   y_axis <- c(y_axis, i)
-      #   print(y_axis)
-      # }
-      xf <- data.frame(country = countries, values = vals)
+      xf <- data.frame(country = filter_countries, values = vals)
       ggplot(data=xf, aes(x = country, y = values)) +
         geom_bar(stat="identity", fill="purple") +
         labs(y = "# unique species", x = "countries") +
