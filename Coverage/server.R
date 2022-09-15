@@ -702,13 +702,11 @@ shinyServer(function(input, output, session) {
       ## so # of species will often be more than # from boldOrganismList()
       max_uniq_species <- max(unlist(countries_values))
       print(max_uniq_species)
+      
       # set vals
-      for (i in countries_values){
-        vals <- append(vals, i)
-      }
-      # vector_species <- boldOrganismList() #Getting a vector for the y-axis to avoid decimal values
-      # print("vector_species:")
-      # print(vector_species)
+      ## don't need loop, unlist() will extract values
+      vals <- unlist(countries_values)
+
       # y_axis <- c()
       # for (i in 1:max_uniq_species){
       #   y_axis <- c(y_axis, i)
@@ -719,7 +717,7 @@ shinyServer(function(input, output, session) {
         geom_bar(stat="identity", fill="purple") +
         labs(y = "# unique species", x = "countries") +
         scale_y_continuous(limits = c(0, max_uniq_species)) +
-        theme(text = element_text(size = 17)) +
+        theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
         coord_flip()
       #barplot(vals, names.arg = countries, xlab = "countries", ylab = "# unique species", col = "purple")
     }
