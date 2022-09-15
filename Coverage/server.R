@@ -680,45 +680,41 @@ shinyServer(function(input, output, session) {
         vals <- c()
         countries_values <- list()
         require(data.table)
-        records_bold <- BoldMatrix()
-        countries <- c(unique(records_bold$country)) 
+        #records_bold <- BoldMatrix()
+        presentMatrix <- presentMatrix()
+        countries <- colnames(presentMatrix)
         for (i in 1:length(countries)){
           if (countries[i] == ""){
             countries[i] = "no country listed"
           }
           countries_values[[countries[i]]] = 0
         }
-        presentMatrix <- presentMatrix()
+       
         for (i in 1:ncol(presentMatrix)) {
-          countries <- colnames(presentMatrix)
           for (j in 1:nrow(presentMatrix)) {
             if (presentMatrix[j,i] > 0) {
               countries_values[[countries[i]]] = countries_values[[countries[i]]] + 1
             }
           }
-        }}
+        }
       
       # set vals
-      ## don't need for loop, unlist() will extract values
+      ## don't need loop, unlist() will extract values
       vals <- unlist(countries_values)
-      print(countries_values)
       
       ## BOLD adds species/subspecies to search results
       ## so # of species will often be more than # from boldOrganismList()
       max_uniq_species <- max(vals)
       print(max_uniq_species)
   
-      # the "countries" list from above seems to exclude countries with 0 species
-      # this list won't
-      filter_countries <- names(countries_values)
-
-      xf <- data.frame(country = filter_countries, values = vals)
+      xf <- data.frame(country = countries, values = vals)
       ggplot(data=xf, aes(x = country, y = values)) +
         geom_bar(stat="identity", fill="purple") +
         labs(y = "# unique species", x = "countries") +
         scale_y_continuous(limits = c(0, max_uniq_species)) +
         theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
         coord_flip()
+      }
       #barplot(vals, names.arg = countries, xlab = "countries", ylab = "# unique species", col = "purple")
     }
     
