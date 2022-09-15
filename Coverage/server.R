@@ -1225,14 +1225,16 @@ shinyServer(function(input, output, session) {
                   Sys.sleep(0.34)
                 }
                 NCBI_names <-
-                  gnr_resolve(sci = organism, data_source_ids = 4) #4 = NCBI
+                  gnr_resolve(sci = organism, data_source_ids = 4, highestscore = F) #4 = NCBI
                 err <- 0
                 NCBI_names
               }, error = function(err) {
                 err <<- 1
               })
+              NCBI_names
             }
             # get number of rows in dataframe
+            print(NCBI_names)
             row_count <- nrow(NCBI_names)
             
             #If a legitimate name was found
@@ -1257,7 +1259,22 @@ shinyServer(function(input, output, session) {
           #return the list as is
           res<-organismList 
         }
-        res
+        ## check for homonyms
+        holder <- c()
+        for (k in 1:length(res)){
+          es <- entrez_search(db="taxonomy", res[[k]])
+          species_ids <- es$ids
+          if (length(species_ids) > 1) {
+            for (species_id in species_ids) {
+              holder <- c(holder, paste0("txid",species_id))
+            }
+          } else {
+            holder <- c(holder, res[[k]])
+          }
+        }
+        print(res)
+        print(holder)
+        holder
       })
     })
   
