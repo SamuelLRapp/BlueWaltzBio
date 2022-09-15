@@ -37,7 +37,7 @@ shinyServer(function(input, output, session) {
   hideTab("FullGenomePage", "Results")
   hideTab("FullGenomePage", "Organism Names")
   hideTab("FullGenomePage", "Summary Results")
- 
+  
   # Full Genome ----------------------------------------------------------------
   
   # * FullGenomeSearchButton ---------------------------------------------------
@@ -57,35 +57,35 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$FullGenomeStart,
-  {
-    # Begin Full genome pipeline
-    updateTabsetPanel(session, "FullGenomePage", selected = "Organism Names")
-    showTab("FullGenomePage", "Organism Names")
-    # It requires a file to be uploaded first
-    req(input$uploadGenomeFile,
-        file.exists(input$uploadGenomeFile$datapath)) 
-    isolate({
-      # It requires a file to be uploaded first
-      # Read the CSV and write all the Organism Names into the Text Area Input
-      uploadinfo <-
-        read.csv(input$uploadGenomeFile$datapath, header = TRUE)
-      if (input$genomeOrganismList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "genomeOrganismList",
-          value = c(
-            head(uploadinfo$OrganismNames,-1),
-            input$genomeOrganismList
-          )
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "genomeOrganismList",
-                            value = uploadinfo$OrganismNames)
-      }
-    })
-  })
+               {
+                 # Begin Full genome pipeline
+                 updateTabsetPanel(session, "FullGenomePage", selected = "Organism Names")
+                 showTab("FullGenomePage", "Organism Names")
+                 # It requires a file to be uploaded first
+                 req(input$uploadGenomeFile,
+                     file.exists(input$uploadGenomeFile$datapath)) 
+                 isolate({
+                   # It requires a file to be uploaded first
+                   # Read the CSV and write all the Organism Names into the Text Area Input
+                   uploadinfo <-
+                     read.csv(input$uploadGenomeFile$datapath, header = TRUE)
+                   if (input$genomeOrganismList[[1]] != "") {
+                     updateTextAreaInput(
+                       getDefaultReactiveDomain(),
+                       "genomeOrganismList",
+                       value = c(
+                         head(uploadinfo$OrganismNames,-1),
+                         input$genomeOrganismList
+                       )
+                     )
+                   }
+                   else {
+                     updateTextAreaInput(getDefaultReactiveDomain(),
+                                         "genomeOrganismList",
+                                         value = uploadinfo$OrganismNames)
+                   }
+                 })
+               })
   
   # * FGenOrgSearch ------------------------------------------------------------
   
@@ -370,10 +370,10 @@ shinyServer(function(input, output, session) {
   output$genomeResults <- DT::renderDataTable({
     promise_all(data_df = selectfunction(), 
                 rows = fGenOrgSearch()) %...>% with({
-      DT::datatable(data_df[[1]],
-                    rownames = rows,
-                    colnames = names(data_df[[1]]))
-    })
+                  DT::datatable(data_df[[1]],
+                                rownames = rows,
+                                colnames = names(data_df[[1]]))
+                })
   })
   
   # * Download Fastas ----------------------------------------------------------
@@ -537,45 +537,45 @@ shinyServer(function(input, output, session) {
   
   
   observeEvent(input$searchButton, {
-      # Begin CRUX search
-      updateTabsetPanel(session, "CRUXpage", selected = "Results")
-      showTab("CRUXpage", "Results")
+    # Begin CRUX search
+    updateTabsetPanel(session, "CRUXpage", selected = "Results")
+    showTab("CRUXpage", "Results")
   })
   
   observeEvent(input$CruxStart,
-  {
-    # Begin CRUX pipeline
-    updateTabsetPanel(session, "CRUXpage", selected = "Organism Names")
-    showTab("CRUXpage", "Organism Names")
-    isolate({
-      # It requires a file to be uploaded first
-      req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
-      # Read the CSV and write all the Organism Names into the Text Area Input
-      uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
-      if (input$CRUXorganismList[[1]] != "") {
-        updateTextAreaInput(
-          getDefaultReactiveDomain(),
-          "CRUXorganismList",
-          value = c(
-            head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
-            input$CRUXorganismList
-          )
-        )
-      }
-      else {
-        updateTextAreaInput(getDefaultReactiveDomain(),
-                            "CRUXorganismList",
-                            value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
-      }
-    })
-  })
+               {
+                 # Begin CRUX pipeline
+                 updateTabsetPanel(session, "CRUXpage", selected = "Organism Names")
+                 showTab("CRUXpage", "Organism Names")
+                 isolate({
+                   # It requires a file to be uploaded first
+                   req(input$uCRUXfile, file.exists(input$uCRUXfile$datapath))
+                   # Read the CSV and write all the Organism Names into the Text Area Input
+                   uploadinfo <- read.csv(input$uCRUXfile$datapath, header = TRUE)
+                   if (input$CRUXorganismList[[1]] != "") {
+                     updateTextAreaInput(
+                       getDefaultReactiveDomain(),
+                       "CRUXorganismList",
+                       value = c(
+                         head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""]),
+                         input$CRUXorganismList
+                       )
+                     )
+                   }
+                   else {
+                     updateTextAreaInput(getDefaultReactiveDomain(),
+                                         "CRUXorganismList",
+                                         value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
+                   }
+                 })
+               })
   
   observeEvent(input$SummaryDataButton,
-  {
-      # Go to summary results
-      updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
-      showTab("CRUXpage", "Summary Results")
-  })
+               {
+                 # Go to summary results
+                 updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
+                 showTab("CRUXpage", "Summary Results")
+               })
   
   # * CRUXStrToList -----------------------------------------------------------
   
@@ -877,7 +877,7 @@ shinyServer(function(input, output, session) {
                   "domain")
               match <- c("ncbi", organism, match)
               searchTerm <- stats::setNames(data.frame(t(match), 
-                                            stringsAsFactors = FALSE),
+                                                       stringsAsFactors = FALSE),
                                             query)
               # Perform the CruxSearch
               results <- cruxSearch(results, searchTerm, organism)
@@ -1069,12 +1069,12 @@ shinyServer(function(input, output, session) {
   output$CRUXcoverageResults <- DT::renderDataTable({
     promise_all(data_df = matrixGetCRUX(), 
                 rows = organismListGet()) %...>% with({
-      DT::datatable(
-        data_df,
-        rownames = rows,
-        colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-      )
-    })
+                  DT::datatable(
+                    data_df,
+                    rownames = rows,
+                    colnames = c("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+                  )
+                })
   })
   
   output$CRUXSummaryResults <- DT::renderDataTable({
@@ -1093,11 +1093,11 @@ shinyServer(function(input, output, session) {
   # * NCBISearchButton ---------------------------------------------------------
   
   NCBISearch <- eventReactive(input$NCBIsearchButton, {
-      # When searchButton clicked, update NCBIOrgSearch to return the value 
-      # input into NCBIorganismList
-      updateTabsetPanel(session, "NCBIpage", selected = "Results")
-      list(input$NCBIorganismList, input$barcodeList) #Returns as a string
-    })
+    # When searchButton clicked, update NCBIOrgSearch to return the value 
+    # input into NCBIorganismList
+    updateTabsetPanel(session, "NCBIpage", selected = "Results")
+    list(input$NCBIorganismList, input$barcodeList) #Returns as a string
+  })
   
   observeEvent(input$NCBIsearchButton, {
     # Start NCBI search button
@@ -1118,9 +1118,9 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$BarcodesNext, {
     # Go the barcodes tab to allow user to input them
-     updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
-     showTab("NCBIpage", "Barcodes of Interest")
-   })
+    updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
+    showTab("NCBIpage", "Barcodes of Interest")
+  })
   
   observeEvent(input$StartNCBIButton, {
     # Begin the NCBI pipeline button
@@ -1163,11 +1163,11 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$NCBISummaryDataButton,
-   {
-     # Check the summary data
-     updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
-     showTab("NCBIpage", "Summary Results")
-   })
+               {
+                 # Check the summary data
+                 updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
+                 showTab("NCBIpage", "Summary Results")
+               })
   
   # * NCBI_Key -----------------------------------------------------------------
   NCBIKeyFlag <- FALSE
@@ -1263,10 +1263,11 @@ shinyServer(function(input, output, session) {
         holder <- c()
         for (k in 1:length(res)){
           es <- entrez_search(db="taxonomy", res[[k]])
+          print(es)
           species_ids <- es$ids
           if (length(species_ids) > 1) {
             for (species_id in species_ids) {
-              holder <- c(holder, paste0("txid",species_id))
+              holder <- c(holder, paste0("txid", species_id))
             }
           } else {
             holder <- c(holder, res[[k]])
@@ -1485,7 +1486,7 @@ shinyServer(function(input, output, session) {
                searchTermslist = searchTerms,
                orgn = organismList,
                barcodes = codeList
-               )
+          )
         results
       })
     }
@@ -1508,7 +1509,7 @@ shinyServer(function(input, output, session) {
           for (i in .[[1]]) {
             count <- c(count, i)
           }
-  
+          
           #convert results vector to dataframe
           data <-
             matrix(count,
@@ -1525,7 +1526,7 @@ shinyServer(function(input, output, session) {
   matrixGetSearchTerms <-
     reactive({
       # creates and returns the matrix to be displayed with the count
-        #get species and barcode inputs
+      #get species and barcode inputs
       NCBIorganismList() %...>% {
         organismList <- .
         organismListLength <- length(organismList)
@@ -1599,7 +1600,7 @@ shinyServer(function(input, output, session) {
     }
     return(content_fasta)
   }
- 
+  
   # TODO: [Zia - March 18, 2022]
   # Possibly change to JavaScript download if cross-browser support is an issue
   # Change the downloads for the other databases too 
@@ -2084,132 +2085,131 @@ shinyServer(function(input, output, session) {
     function(crux_output) 
       # Take a crux output matrix and  turn the characters "genus, spp, etc" 
       # into  0s/1s. This function is used by which_rows_are_empty_and_arenot()
-             {
-               crux_without_taxonomic_names <- crux_output
-               crux_without_taxonomic_names <-
-                 na.omit(crux_without_taxonomic_names)
-               
-               non_number_values <-
-                 c('genus', 'family', 'class', 'order', 'error')
-               
-               ncols <- ncol(crux_output)
-               nrows <- nrow(crux_output)
-               
-               for (i in 1:ncols)
-               {
-                 for (j in 1:nrows)
-                 {
-                   boolean <- 
-                     crux_without_taxonomic_names[j, i] %in% non_number_values
-                   
-                   #if true, ie it matches genus, family, class, order
-                   if (isTRUE(boolean))
-                   {
-                     crux_without_taxonomic_names[j, i] <- as.numeric(0)
-                   } else {
-                     crux_without_taxonomic_names[j, i] <- 
-                       as.numeric(crux_output[j, i])
-                   }
-                 }
-               }
-               
-               firstcolumn <- crux_without_taxonomic_names[, 1]
-               
-               crux_without_taxonomic_names <-
-                 as.matrix(crux_without_taxonomic_names)
-               if (nrows > 1) {
-                 crux_without_taxonomic_names <-
-                   as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
-               } else {
-                 crux_without_taxonomic_names <-
-                   as.data.frame(t(as.numeric(crux_without_taxonomic_names)))
-                 
-                 # Gets the column names for the matrix
-                 columns <-
-                   list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
-                 # Adds the column names to the matrix
-                 colnames(crux_without_taxonomic_names) <- columns
-               }
-               crux_without_taxonomic_names
-             }
-             
+    {
+      crux_without_taxonomic_names <- crux_output
+      crux_without_taxonomic_names <-
+        na.omit(crux_without_taxonomic_names)
+      
+      non_number_values <-
+        c('genus', 'family', 'class', 'order', 'error')
+      
+      ncols <- ncol(crux_output)
+      nrows <- nrow(crux_output)
+      
+      for (i in 1:ncols)
+      {
+        for (j in 1:nrows)
+        {
+          boolean <- 
+            crux_without_taxonomic_names[j, i] %in% non_number_values
+          
+          #if true, ie it matches genus, family, class, order
+          if (isTRUE(boolean))
+          {
+            crux_without_taxonomic_names[j, i] <- as.numeric(0)
+          } else {
+            crux_without_taxonomic_names[j, i] <- 
+              as.numeric(crux_output[j, i])
+          }
+        }
+      }
+      
+      firstcolumn <- crux_without_taxonomic_names[, 1]
+      
+      crux_without_taxonomic_names <-
+        as.matrix(crux_without_taxonomic_names)
+      if (nrows > 1) {
+        crux_without_taxonomic_names <-
+          as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
+      } else {
+        crux_without_taxonomic_names <-
+          as.data.frame(t(as.numeric(crux_without_taxonomic_names)))
+        
+        # Gets the column names for the matrix
+        columns <-
+          list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
+        # Adds the column names to the matrix
+        colnames(crux_without_taxonomic_names) <- columns
+      }
+      crux_without_taxonomic_names
+    }
   
   
-   # * * DownloadEmptyRows -----------------------------------------------------
   
-   # if which_column = -1 it means do all rows, if a column number is given the 
-   # function will only run on said column of the dataframe returns list of 2 
-   # lists, one of species with seqs, and one of species without any sequences
-   which_rows_are_empty_and_arenot <-
-     function(dataframe, Which_Column)
-     {
-       if (is.null(Which_Column))
-       {
-         Which_Column <- -1
-       }
-       Which_Column <- Which_Column
-       #create two lists
-       haveSomeSeq <- c()
-       haveZeroSeq <- c()
-       
-       ncols <- ncol(dataframe)
-       nrows <- nrow(dataframe)
-       
-       if (Which_Column < 0) {
-         #we will skip the first column because it has names
-         for (i in 1:nrows)
-         {
-           total <- 0
-           for (j in 1:ncols)
-           {
-             total <- total + as.numeric(dataframe[i, j])
-           }
-           
-           if (!is.null(total) && total > 0)
-           {
-             #add species name to list
-             haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
-           } else
-           {
-             #add species name to list
-             haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
-           }
-         }
-       } else {         #if a specific columnn
-         #we will skip the first column because it has names
-         for (i in 1:nrows)
-         {
-           seqs <- 0
-           seqs <- 0 + as.numeric(dataframe[i, Which_Column])
-           
-           if (!is.null(seqs) && seqs > 0)
-           {
-             #add species name to list
-             haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1]) 
-           } else
-           {
-             #add species name to list
-             haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
-           }
-         }
-       }
-       if (Which_Column < 0) {
-         results <-
-           list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
-         results <- as.matrix(results)
-       } else
-       {
-         COLNam <- colnames(dataframe)
-         column_name <- paste0("Have", COLNam[Which_Column], "Seq")
-         results <-
-           list(
-             single_Barcode_haveSomeseq = haveSomeSeq,
-             single_Barcode_haveZeroSeqs = haveZeroSeq
-           )
-         results <- as.matrix(results)
-       }
-       results
-     }
-             
+  # * * DownloadEmptyRows -----------------------------------------------------
+  
+  # if which_column = -1 it means do all rows, if a column number is given the 
+  # function will only run on said column of the dataframe returns list of 2 
+  # lists, one of species with seqs, and one of species without any sequences
+  which_rows_are_empty_and_arenot <-
+    function(dataframe, Which_Column)
+    {
+      if (is.null(Which_Column))
+      {
+        Which_Column <- -1
+      }
+      Which_Column <- Which_Column
+      #create two lists
+      haveSomeSeq <- c()
+      haveZeroSeq <- c()
+      
+      ncols <- ncol(dataframe)
+      nrows <- nrow(dataframe)
+      
+      if (Which_Column < 0) {
+        #we will skip the first column because it has names
+        for (i in 1:nrows)
+        {
+          total <- 0
+          for (j in 1:ncols)
+          {
+            total <- total + as.numeric(dataframe[i, j])
+          }
+          
+          if (!is.null(total) && total > 0)
+          {
+            #add species name to list
+            haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
+          } else
+          {
+            #add species name to list
+            haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+          }
+        }
+      } else {         #if a specific columnn
+        #we will skip the first column because it has names
+        for (i in 1:nrows)
+        {
+          seqs <- 0
+          seqs <- 0 + as.numeric(dataframe[i, Which_Column])
+          
+          if (!is.null(seqs) && seqs > 0)
+          {
+            #add species name to list
+            haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1]) 
+          } else
+          {
+            #add species name to list
+            haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+          }
+        }
+      }
+      if (Which_Column < 0) {
+        results <-
+          list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
+        results <- as.matrix(results)
+      } else
+      {
+        COLNam <- colnames(dataframe)
+        column_name <- paste0("Have", COLNam[Which_Column], "Seq")
+        results <-
+          list(
+            single_Barcode_haveSomeseq = haveSomeSeq,
+            single_Barcode_haveZeroSeqs = haveZeroSeq
+          )
+        results <- as.matrix(results)
+      }
+      results
+    }
+  
 })
-  
