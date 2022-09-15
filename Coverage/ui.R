@@ -267,18 +267,21 @@ shinyUI(fluidPage(
              ),
              tabPanel("Plot Total Sequences Per Country",
                 fluidRow(
-                  column(12, align="center", style='padding-top:15px',
-                    mainPanel(plotOutput('treemap')),
+                  column(10, align="left", style='padding-top:15px',
+                    mainPanel(plotOutput('treemap'))
+                  ),
+                  column(2, align="right", style='padding-top:15px',
                     downloadButton('downloadTreeGraph',"Download Graph"),
                   ),
                 ),
             ),
             tabPanel("Plot Unique Species Per Country",
               fluidRow(
-                column(12, align="center", style='padding-top:15px',
-                  mainPanel(plotOutput('species')),
-                  downloadButton('downloadBarGraph',"Download Graph"),
+                column(10, align="left", style='padding-top:15px',
+                  mainPanel(plotOutput('species'))
                 ),
+                column(2, align="right", style='padding-top:15px', 
+                  downloadButton('downloadBarGraph',"Download Graph"))
               ),
             ),
 
