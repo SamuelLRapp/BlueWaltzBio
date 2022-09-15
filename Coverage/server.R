@@ -1262,13 +1262,17 @@ shinyServer(function(input, output, session) {
         ## check for homonyms
         holder <- c()
         for (k in 1:length(res)){
-          es <- entrez_search(db="taxonomy", res[[k]])
-          print(es)
+          species_name <- res[[k]]
+          es <- entrez_search(db="taxonomy", species_name)
+          # homonym_search <- get_uid_(sci_com = species_name)[[species_name]]
+          # print(homonym_search$uid)
+          # print(homonym_search$division)
           species_ids <- es$ids
           if (length(species_ids) > 1) {
             for (species_id in species_ids) {
               holder <- c(holder, paste0("txid", species_id))
             }
+            
           } else {
             holder <- c(holder, res[[k]])
           }
@@ -1460,6 +1464,8 @@ shinyServer(function(input, output, session) {
                 Sys.sleep(0.34) 
               }
               #only get back the number of search results
+              print("Search Term:")
+              print(searchTerm)
               searchResult <-
                 entrez_search(db = "nucleotide",
                               term = searchTerm,
