@@ -238,8 +238,14 @@ shinyUI(fluidPage(
                                  #conditionalPanel(condition = "input.geo != list()",
                                                   #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
                                                   #mainPanel(plotOutput("geo_pie")),
+                                 titlePanel("Summary Data"),
+                                 p("For each barcode we display the total number of sequences found and the number of organisms with at least one or no sequence"),
                                  DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
+                                 
+                                 titlePanel("Sequences Classified by Barcode"),
+                                 p("Total number of sequences found by barcode for each unique species"),
                                  DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                                 
                                  conditionalPanel(condition = "output.BOLDcoverageResults",
                                                    # add ncbi option remove genome
                                                    checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
@@ -259,6 +265,8 @@ shinyUI(fluidPage(
                                #conditionalPanel(condition = "input.geo != list()",
                                #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
                                #mainPanel(plotOutput("geo_pie")),
+                               titlePanel("Sequences Classified by Country"),
+                               p("Total number of sequences found by Country for each unique species"),
                                DT::dataTableOutput("BOLDPresentTable") %>% withSpinner(color="#0dc5c1"),
                                DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
                                ),

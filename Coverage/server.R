@@ -702,7 +702,8 @@ shinyServer(function(input, output, session) {
       xf <- data.frame(country = countries, values = vals)
       ggplot(data=xf, aes(x = country, y = values)) +
         geom_bar(stat="identity", fill="purple") +
-        labs(y = "# unique species", x = "countries") +
+        labs(y = "# unique species", x = "countries", title = "Number of Unique Species in Selected Countries
+") +
         scale_y_continuous(limits = c(0, max_uniq_species)) +
         theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
         coord_flip()
@@ -759,9 +760,12 @@ shinyServer(function(input, output, session) {
         #          type = "value",
         #          title.legend = "Legend"))
         ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
-          geom_treemap() + 
+          geom_treemap() +  
+          #labs(title = "Distribution of Sequence Records Amongst Selected Countries") +
           geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
-          theme(axis.text = element_text(size = theme.size))
+          ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
+          theme(axis.text = element_text(size = theme.size),
+                axis.title = element_text(size = 20, face = "bold")) 
         # how to change the colors + get a legend ?
 
     }}
