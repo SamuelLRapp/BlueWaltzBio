@@ -1,0 +1,108 @@
+LOCUS       XM_042926649            2199 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo zinc finger BED-type containing 1 (ZBED1),
+            transcript variant X2, mRNA.
+ACCESSION   XM_042926649
+VERSION     XM_042926649.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..2199
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..2199
+                     /gene="ZBED1"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 7 Proteins, and 100% coverage of
+                     the annotated genomic feature by RNAseq alignments,
+                     including 4 samples with support for all annotated
+                     introns"
+                     /db_xref="GeneID:122212685"
+     CDS             92..2176
+                     /gene="ZBED1"
+                     /codon_start=1
+                     /product="E3 SUMO-protein ligase ZBED1"
+                     /protein_id="XP_042782583.1"
+                     /db_xref="GeneID:122212685"
+                     /translation="MEAKGLDPSQTDLKLVAHPRAKSKVWKYFGFDTNAEGCILQWKK
+                     IYCRICMAQIAYSGNTSNLSYHLEKNHPDEFCEFVKSNTEQMREAFATAFSKLKPEAS
+                     QLAPQDTLAAKAGHGHESKRQQELTAAVLGLICEGLYPASIVDEPTFKVLLKTADPRY
+                     ELPSRKFVCSKAIPEKYGAVREAVLKELGDTSWCGISTDMWRSENQNRAYVTLAAHFL
+                     GGGAPGCLSVGSRCLKTFEVPEDNAAECITRVLYEAFIEWGIASKVFGATTDGGKDIA
+                     KACSLLDISVQMPCLGHTFNAGIQRALQLPKLAGLLGRCCKLVEYFQQSAVAMYMLYE
+                     KQKQQNVAPCMLVSNRVSWWGSTLAMLQRLREQQFVIAGVLVEDSNNHHLMLEAAEWA
+                     TIEGLVDLLQPFKQVAEMLSASKYPTISMVKPLLHMLLNTTLNIKETDCKEVSMAKEV
+                     IAKELSKTYQETPEIDMFLNVATFLDPRYKRLPFLSAFERQQVENRVVEEAKGLLDKV
+                     KEGGYRPAEDKMFALPEEPPVKKLVLASTPPPTSVINSMLAEIFCQTGGAEDQEEWHA
+                     QVVEELSNFKSQKVLGLNEDPLKWWSDRLALFPVLPKVLQKYWCVAATRVFPERLFGS
+                     SANVVSAKRNRLAPAHVDEQVFLYENARSGAEAEPEDEDEGEWGLNHEHMFPLGDAVH
+                     AGFFGIRDSGFV"
+ORIGIN      
+        1 gcagctgctg cggcgctgct tcgggggctt cgcggagcca ggtgcgcagg aatgagtgga
+       61 ggccccccag gcgggccgcg gcacagaagc catggaggcg aagggcctgg acccgtccca
+      121 gacggacctc aagttagtgg cccacccgcg cgccaaaagc aaagtgtgga agtactttgg
+      181 ctttgacacg aacgccgagg gatgcatcct gcagtggaaa aagatatact gtcgcatctg
+      241 catggctcag attgcctact ccgggaacac ctccaacctg tcctaccacc tggagaagaa
+      301 ccaccccgac gagttctgcg agttcgtcaa gagcaacacg gagcagatgc gcgaggcctt
+      361 cgccaccgcc ttctccaagc tgaagcccga ggcctcccag ctggccccgc aggacacgct
+      421 ggccgccaag gccggccacg gccacgagag caagcggcag caggagctca cggccgccgt
+      481 gctcggcctc atctgcgagg gcctgtaccc cgcctccatc gtggacgagc ccaccttcaa
+      541 ggtgctgctg aagacggccg accccaggta cgagctgccc agcaggaagt tcgtgtgcag
+      601 caaggccatc cccgagaagt acggcgccgt gcgcgaggcc gtcctcaagg agctgggcga
+      661 cacctcctgg tgcggcatct ccaccgacat gtggaggagt gagaaccaga accgggcgta
+      721 cgtgacgctg gccgcccact tcctgggcgg cggggccccc ggctgcctgt ccgtgggctc
+      781 ccgctgcctg aagacgttcg aggtccccga ggacaacgcg gccgagtgca tcacccgggt
+      841 cctgtacgag gccttcatcg agtggggcat cgccagcaag gtgttcgggg ccaccacgga
+      901 cggcggcaag gacatcgcca aggcgtgctc cctgctggac atctcggtgc agatgccctg
+      961 cctgggccac acgttcaacg cgggcatcca gcgtgccctg cagctcccca agctggccgg
+     1021 gctgctcggc cgctgctgca agctggtgga gtacttccag cagtccgcgg tggccatgta
+     1081 catgctctac gagaagcaga agcagcagaa cgtggctccc tgcatgctgg tcagcaaccg
+     1141 cgtgtcctgg tggggcagca cgctggccat gctccagcgc ctgagggagc agcagttcgt
+     1201 catcgccggc gtgctggtgg aggacagcaa caaccaccac ctgatgctgg aggcggccga
+     1261 gtgggccacc atcgagggcc tggtggacct gctgcagccc ttcaagcagg tggccgagat
+     1321 gctgtccgcc tccaagtacc ccaccatcag catggtgaag cccctgctgc acatgctgct
+     1381 gaacaccacc ctcaacatca aggagaccga ctgcaaggag gtcagcatgg ccaaggaggt
+     1441 gatcgccaag gagctgtcca agacctacca ggagacgccg gagatcgaca tgttcctcaa
+     1501 cgtggccacc ttcctggacc cccgctacaa gcgtctgccc ttcctgtccg ccttcgagag
+     1561 gcagcaggtg gagaacaggg tggtggagga ggccaagggg cttctggaca aggtcaagga
+     1621 gggcggctac cggccggcgg aggacaagat gttcgcgctg cccgaggagc ccccggtcaa
+     1681 gaagctggtg ctggcgtcca cgccgccgcc caccagcgtc atcaacagca tgctggccga
+     1741 gatcttctgc cagacggggg gcgcggagga ccaggaagag tggcacgcgc aggtggtcga
+     1801 ggagctgagc aacttcaagt cgcagaaggt gctgggtctc aacgaggacc cgctcaagtg
+     1861 gtggtccgac cgcctggccc tcttccccgt gctgcccaag gtgctgcaga aatattggtg
+     1921 cgtggcggct acccgcgtct tcccggagcg gctcttcggc tcgtccgcca acgtggtcag
+     1981 cgccaagagg aaccgcctgg cccccgcgca cgtggacgag caggtcttcc tgtacgagaa
+     2041 cgcgcgcagc ggcgcggagg ccgagcccga ggacgaggac gagggcgagt ggggcctgaa
+     2101 ccatgagcac atgttccccc tgggcgacgc cgtgcacgcc ggcttctttg gcatcaggga
+     2161 cagcggcttc gtgtagatgc cgcggtgggg gcggggggg
+//
+

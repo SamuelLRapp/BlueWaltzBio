@@ -1,0 +1,89 @@
+LOCUS       AH013677                1818 bp    DNA     linear   MAM 25-AUG-2016
+DEFINITION  Equus caballus chromosome Y SMCY gene, introns 2, 3, 7, and 17.
+ACCESSION   AH013677 AY532886 AY532887 AY532888 AY532889
+VERSION     AH013677.2
+KEYWORDS    .
+SOURCE      Equus caballus (horse)
+  ORGANISM  Equus caballus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Perissodactyla; Equidae; Equus.
+REFERENCE   1  (bases 1 to 1818)
+  AUTHORS   Lindgren,G., Backstrom,N., Swinburne,J., Hellborg,L., Einarsson,A.,
+            Sandberg,K., Cothran,G., Vila,C., Binns,M. and Ellegren,H.
+  TITLE     Limited number of patrilines in horse domestication
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 1818)
+  AUTHORS   Lindgren,G., Backstrom,N., Swinburne,J., Hellborg,L., Einarsson,A.,
+            Sandberg,K., Cothran,G., Vila,C., Binns,M. and Ellegren,H.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (14-JAN-2004) Dept. of Evolutionary Biology, EBC, Norbyv.
+            18D, Uppsala 752 36, Sweden
+COMMENT     On or before Aug 25, 2016 this sequence version replaced
+            AY532886.1, AY532887.1, AY532888.1, AY532889.1, AH013677.1.
+FEATURES             Location/Qualifiers
+     source          1..1818
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+                     /chromosome="Y"
+     gene            <1..>1818
+                     /gene="SMCY"
+     misc_feature    1..1818
+                     /gene="SMCY"
+                     /note="Original segmented set titles: Equus caballus SMCY
+                     gene, partial sequence.; Equus caballus SMCY gene, intron
+                     2.; Equus caballus SMCY gene, intron 3.; Equus caballus
+                     SMCY gene, intron 7.; Equus caballus SMCY gene, intron
+                     17."
+     intron          <1..>251
+                     /gene="SMCY"
+                     /number=2
+     gap             252..351
+                     /estimated_length=unknown
+     intron          <352..>1197
+                     /gene="SMCY"
+                     /number=3
+     gap             1198..1297
+                     /estimated_length=unknown
+     intron          <1298..>1638
+                     /gene="SMCY"
+                     /number=7
+     gap             1639..1738
+                     /estimated_length=unknown
+     intron          <1739..>1818
+                     /gene="SMCY"
+                     /number=17
+ORIGIN      
+        1 ggtaagagta cttctgtttc aaaaggaaaa acaagcaaaa aaccttggct gggagaccct
+       61 ctatagttga atattgtgtc tctgggcaag aaagaagaga atacatcctg ccaatgtttc
+      121 ttaacactgt ctttgtgtcc tgtaatggtt gccattggtg gagtgttcaa cagttatatt
+      181 ttaagcctca ttggtattta ttaggtttcc agtctgttca ctgttaatct gatccctttt
+      241 gtatcatttc annnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      301 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nggcctatgt
+      361 gattttgctg tttttgctct tatctccctt tttctgggtt tggttttttc ctcagtattc
+      421 tggatttaga gtgtcattaa gtttattaat agaagttcca ggaattggcc ctagaaaaat
+      481 tttgcagcct gtatgaagaa attttatacc tgctaggcca gctagatgag aactggagta
+      541 ttgtttccct ctatcttaga gggtttgtgt ctgctacaat ctttgtgtgg gcaagatctt
+      601 agagtagaag ctagacaaaa gcaattcgta tttcaggcca ttctccatga aaaagatcat
+      661 taattttctt aagaaattgc taaacttcct aagggtagtt caggtaaaga gaagttaggg
+      721 ataaaacttt ggtcttactt gggttaactc aggaaagagc aggaactggt ttagctttgt
+      781 ttcttaaata atgataagtt ttttggtttt atcgtttgta aagcactttt taaaactact
+      841 tgtgtatata tgtaggagtc taaatgcata tttttttaat ctacataatt ctgttagact
+      901 tgatattttt attatccctt ttcagacaag gacattggaa cacaaagaga ggtccagtgt
+      961 atttgcacaa tgcacatgaa gattaggtaa aagtccaggt tcagacctag cagtctggtt
+     1021 ccaaaggcac tgttcttcac tatgctctgc tgcttataca taagcaaagg cacagaggaa
+     1081 tatctgttcc atcattcaga gaacaagaca tactgatttg tgtaatttag agagaagtac
+     1141 aactttcatt accagagatt taggatagaa gaatcacttg gttatttgct gactgtgnnn
+     1201 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1261 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnngta gggcctgtcc agcatagatg
+     1321 ttttaaattt aattcttggt cctttcttct aatctagtct cctgctttta gaggagatag
+     1381 tgtaggtgat gagcaagaag ggttagacat actagctgta ggatggtaga cacttaaaca
+     1441 agacagagaa ggactgtaat ctagatggca tgaagcatag gaacaaagaa aaagaaatat
+     1501 gtttagtaga tgttaaagaa actcttctac ttggaaacat cagaaaaggt ggatgtatat
+     1561 cacaagatat atttctatat gttctttttg tattttttgc ctattgtgtc tgtcttcctg
+     1621 aagtattttc tattttagnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1681 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnntg
+     1741 cggtgagctc agggcccact tggaggacac agaaaagatt acagagctgg gccaaatgta
+     1801 ctttccttgc acccttcc
+//
+

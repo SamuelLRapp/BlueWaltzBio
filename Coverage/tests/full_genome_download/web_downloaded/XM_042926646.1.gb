@@ -1,0 +1,81 @@
+LOCUS       XM_042926646             873 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo uncharacterized LOC122212681
+            (LOC122212681), mRNA.
+ACCESSION   XM_042926646
+VERSION     XM_042926646.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq; includes ab initio.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+            
+            ##RefSeq-Attributes-START##
+            ab initio :: 2% of CDS bases
+            ##RefSeq-Attributes-END##
+FEATURES             Location/Qualifiers
+     source          1..873
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..873
+                     /gene="LOC122212681"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 98% coverage of the annotated
+                     genomic feature by RNAseq alignments, including 1 sample
+                     with support for all annotated introns"
+                     /db_xref="GeneID:122212681"
+     CDS             160..873
+                     /gene="LOC122212681"
+                     /codon_start=1
+                     /product="uncharacterized protein LOC122212681"
+                     /protein_id="XP_042782580.1"
+                     /db_xref="GeneID:122212681"
+                     /translation="MGLFFSYLAWAFGISLANSRSWRVWEFNSNIVSIVYIGLWEAFY
+                     FQKCSISGAIVEWPMYGRINGSWVISDEIWYGQGLILLANSLNSVVLIFGSVALVVHW
+                     IHAPYPDFLRLCYNISAFFLICSCSCTAITASWNFAVDFYGQTTRDFPLSFPIEKEML
+                     IRKCFFYVFPRGITATSLLLISATMFFCETFSIKQWSKMKPVTVVNCLKQKVSMKALL
+                     FGMAVNNSLEEMSYTYIIL"
+ORIGIN      
+        1 ctagccgtcg tcctccccag acttccgttg cgtcagagac tgcgtcactg gacagtggag
+       61 gttaaaattt cctgctgcta cgaagaatat ttaccattct ttaagcttct gcacactgga
+      121 gtccttctac atggcatatg gcacctgtac ctcaaactga tgggcctgtt tttcagttat
+      181 ctggcctggg cttttggcat cagtctagcc aacagcagat cctggcgcgt gtgggagttt
+      241 aacagcaaca ttgtttccat tgtgtacatt ggactttggg aagctttcta ctttcaaaaa
+      301 tgtagcatct ctggtgcaat tgttgagtgg cctatgtatg gcaggatcaa tggaagctgg
+      361 gtcatttcag atgaaatctg gtatgggcag ggcctgatat tgttggcaaa ttctttgaat
+      421 tctgtagtcc tgatttttgg ttcagtggca cttgtggtcc actggatcca tgccccatac
+      481 ccagatttcc ttcgattgtg ttacaacatc tctgccttct ttctcatctg tagttgtagt
+      541 tgtactgcaa ttacagcgag ctggaatttt gctgtggatt tttatggcca aaccacccgt
+      601 gatttcccac ttagttttcc cattgaaaaa gaaatgctga taaggaaatg cttcttctat
+      661 gtattcccac gaggaatcac agctacctcg ctcttgctaa taagtgccac aatgttcttc
+      721 tgtgaaacat tttccataaa acagtggagt aaaatgaaac ccgtgactgt ggtcaattgt
+      781 ctcaaacaaa aggtctcaat gaaagcccta ctgtttggaa tggctgtcaa taattctctt
+      841 gaagaaatgt cctacacata catcatattg taa
+//
+

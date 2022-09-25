@@ -1,0 +1,61 @@
+LOCUS       AH006315                1270 bp    DNA     linear   MAM 25-AUG-2016
+DEFINITION  Equus caballus.
+ACCESSION   AH006315 AF075666 AF075667
+VERSION     AH006315.2
+KEYWORDS    .
+SOURCE      Equus caballus (horse)
+  ORGANISM  Equus caballus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Perissodactyla; Equidae; Equus.
+REFERENCE   1  (bases 1 to 1270)
+  AUTHORS   Coogle,L. and Bailey,E.
+  TITLE     Equine dinucleotide repeat loci LEX049-LEX063
+  JOURNAL   Anim. Genet. 28 (5), 378 (1997)
+   PUBMED   9363613
+REFERENCE   2  (bases 1 to 1270)
+  AUTHORS   Coogle,L. and Bailey,E.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (01-JUL-1998) Veterinary Science, University of Kentucky,
+            108 Gluck Equine Research Center, Lexington, KY 40546-0099, USA
+COMMENT     On or before Aug 25, 2016 this sequence version replaced
+            AF075666.1, AF075667.1, AH006315.1.
+FEATURES             Location/Qualifiers
+     source          1..1270
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+     misc_feature    1..1270
+                     /note="Original segmented set titles: Equus caballus;
+                     Equus caballus microsatellite LEX060, 5' flanking region;
+                     Equus caballus microsatellite LEX060"
+     gap             661..760
+                     /estimated_length=unknown
+     repeat_region   975..1018
+                     /note="short tandem repeat; STR; microsatellite LEX060"
+                     /rpt_type=tandem
+                     /rpt_unit_seq="gt"
+ORIGIN      
+        1 aaaatgtcct gatgtattta ttcacttgtt catcattcag taatatttga gcgggtacta
+       61 tggtccaggc acgatgtgaa gcaccagcaa gagagcaaac aagatgggca ggcctccaga
+      121 gtcatggaga gcagtctacc atgtaaatga gtgaaaggaa attcataaat agcacatgag
+      181 aatgtgcgta aaaatggccg aaagaagatg ttattacagg gagtaagagg gaaggctttc
+      241 tagaagttcc ttttgggaca attcctttat gaaggagctc tctgctagcg atggacataa
+      301 atcagtaaat aggncaactc caatactaca tggtaactat ctgggccaga agcatgcaca
+      361 gtgtgtcatg agcacacagg acaagaagaa gctctggccc agaccagaga ctgaagcgag
+      421 gaagtcttcc tgaatgagac aagataggag ccaaattctg agtctaagtc catgttcaca
+      481 ggctaaggaa gaaggaggga aaggtaggaa tanngggatc tcatantcag taggcggagg
+      541 gaggaaaact tttgaatcta ccttctaacc tctgacaaac gagctggttt cattgttcan
+      601 ctngattggt gtgtgaactc cagattctgg agagggagag ctcactttgc cactccagga
+      661 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      721 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn atggagatag tgttttggtc
+      781 cattgcatat agaccagcat ttgccaaatt ctggagaggg agagctcact ttgcacttcc
+      841 aggagtatct ttacttctat ggagatagtg ttttggtcca ttgcatatag accagcattt
+      901 gccaaattct ggatgcactt ttgcagaagg agccaatcga ttttaccttt tcctttccat
+      961 tctctctcag ctctgtgtgt gtgtgtgtgt gtgtgtgtgt gtgtgtgtgt gtgtgtgttc
+     1021 ctttgaaatc ctgtagttgt aaaagcagaa cagagagacc atttagattt ccgaatgcct
+     1081 ttcttccctt gggggagcga gatgccccag ttcgccgctt tgtgtggatc tttccctctc
+     1141 ttccattctc tccgtttgta ggaatgccct cgcttctgtt attactgata catggagagg
+     1201 gagccagggc agagccgcct aggcagaacc taaaaggatt gtcccttggt aaggaaaggt
+     1261 tagtgaggaa
+//
+

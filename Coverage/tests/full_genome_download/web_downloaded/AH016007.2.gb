@@ -1,0 +1,186 @@
+LOCUS       AH016007                2823 bp    DNA     linear   MAM 10-JUN-2016
+DEFINITION  Equus caballus chromosome 25 inversin (INVS) gene, partial cds.
+ACCESSION   AH016007 EU595721 EU595722 EU595723 EU595724 EU595725
+VERSION     AH016007.2
+KEYWORDS    .
+SOURCE      Equus caballus (horse)
+  ORGANISM  Equus caballus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Perissodactyla; Equidae; Equus.
+REFERENCE   1  (bases 1 to 2823)
+  AUTHORS   Rosengren Pielberg,G., Golovko,A., Sundstrom,E., Curik,I.,
+            Lennartsson,J., Seltenhammer,M.H., Druml,T., Binns,M.,
+            Fitzsimmons,C., Lindgren,G., Sandberg,K., Baumung,R.,
+            Vetterlein,M., Stromberg,S., Grabherr,M., Wade,C., Lindblad-Toh,K.,
+            Ponten,F., Heldin,C.H., Solkner,J. and Andersson,L.
+  TITLE     A cis-acting regulatory mutation causes premature hair graying and
+            susceptibility to melanoma in the horse
+  JOURNAL   Nat. Genet. 40 (8), 1004-1009 (2008)
+   PUBMED   18641652
+REFERENCE   2  (bases 1 to 2823)
+  AUTHORS   Rosengren Pielberg,G., Golovko,A. and Sundstrom,E.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (27-MAR-2008) Department of Medical Biochemistry and
+            Microbiology, Uppsala University, Husargatan 3, BMC, Box 582,
+            Uppsala 75123, Sweden
+COMMENT     On or before Jun 10, 2016 this sequence version replaced
+            EU595721.1, EU595722.1, EU595723.1, EU595724.1, EU595725.1,
+            AH016007.1.
+FEATURES             Location/Qualifiers
+     source          1..2823
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+                     /chromosome="25"
+                     /collection_date="2008"
+     source          1..154
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+                     /chromosome="25"
+                     /clone="INVS_1"
+                     /collection_date="2008"
+     source          255..1093
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+                     /chromosome="25"
+                     /clone="INVS_2"
+                     /collection_date="2008"
+     source          1194..1757
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+                     /chromosome="25"
+                     /clone="INVS_3"
+                     /collection_date="2008"
+     source          1858..1914
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+                     /chromosome="25"
+                     /clone="INVS_4"
+                     /collection_date="2008"
+     source          2015..2823
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9796"
+                     /chromosome="25"
+                     /clone="INVS_UTR"
+                     /collection_date="2008"
+     gene            1..2823
+                     /gene="INVS"
+     mRNA            <1..>154
+                     /gene="INVS"
+                     /product="inversin"
+     CDS             <1..>154
+                     /gene="INVS"
+                     /codon_start=1
+                     /product="inversin"
+                     /protein_id="ACF39827.1"
+                     /translation="LLNWQDYEGRTPLHFAVADGNVTVVDVLTSYESCNITSYDNLFR
+                     TPLHWAA"
+     exon            <1..>154
+                     /gene="INVS"
+                     /number=6
+     gap             155..254
+                     /estimated_length=unknown
+     mRNA            join(<255..430,1257..>1331)
+                     /gene="INVS"
+                     /product="inversin"
+     CDS             join(<255..430,1257..>1331)
+                     /gene="INVS"
+                     /codon_start=2
+                     /product="inversin"
+                     /protein_id="ACF39828.1"
+                     /translation="GDMDRWNQECMVLLLQVWRKELQVKPPKIIPVSRTTKSPSKGIS
+                     GTKSTRHSVLKQIYGCSQEGKVHHPTRSSKAHSVLRLNS"
+     exon            <255..430
+                     /gene="INVS"
+                     /number=15
+     intron          431..>1093
+                     /gene="INVS"
+                     /number=15
+     gap             1094..1193
+                     /estimated_length=unknown
+     intron          <1194..1256
+                     /gene="INVS"
+                     /number=15
+     exon            1257..1331
+                     /gene="INVS"
+                     /number=16
+     intron          1332..>1757
+                     /gene="INVS"
+                     /number=16
+     gap             1758..1857
+                     /estimated_length=unknown
+     intron          <1858..>1914
+                     /gene="INVS"
+                     /number=16
+     gap             1915..2014
+                     /estimated_length=unknown
+     mRNA            <2015..2823
+                     /gene="INVS"
+                     /product="inversin"
+     CDS             <2015..2106
+                     /gene="INVS"
+                     /codon_start=3
+                     /product="inversin"
+                     /protein_id="ACF39829.1"
+                     /translation="YNLQSAIQSKNKTKASTACGGRLCPGALE"
+     exon            <2015..2106
+                     /gene="INVS"
+                     /number=17
+     3'UTR           2107..2823
+                     /gene="INVS"
+ORIGIN      
+        1 ttactgaact ggcaagacta cgagggacga acacctcttc attttgcagt cgccgatggg
+       61 aatgtgacgg tggttgatgt cttgacctcg tacgagagct gcaacataac rtcttatgat
+      121 aacttatttc gaaccccact tcactgggca gctcnnnnnn nnnnnnnnnn nnnnnnnnnn
+      181 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      241 nnnnnnnnnn nnnncggaga tatggacaga tggaaccaag agtgcatggt attgctcctc
+      301 caggtctgga ggaaggaact gcaagtaaaa cccccaaaga ttatcccagt aagcaggacc
+      361 accaagagtc catccaaggg catctcgggc acaaagtcca ccaggcactc agtgctcaag
+      421 caaatctatg gtaactatcc ttctgggcac tttgtagttt acarttagca cccccagaga
+      481 gtgtcacgtc ataatctgga atgggattta attacattgg gcaaacatcc attcaggtag
+      541 gaactttatt atacctccag gcaccaagag aatcctcagc accacattta gtgcctccct
+      601 cccagccatt ctgggtcaga attggtttca taagacattc tggcatcaca acaaagagct
+      661 tctctgctgg gctccatgac tgaaagcctc accrtctctc caggccattg cttgggtctt
+      721 ccccttacat tgtcctcttg gaggaaccca ggcacagacc aaccttgcct gcctcacttg
+      781 gacstttcct atgctacgay agtgcagggt tgtccatctg tgggactgcc ccagaccgag
+      841 caccgcagta aacacgcgtt tagcagatga actgctccac ctctggaaga gcccacccag
+      901 agaaaggcag caggcaacaa gtctggctgg ctcccrrcag aagaaagttg agctgaggca
+      961 ccgttagaaa caatctgtga acaggcagga aactctcagg agttgacctg ggtctacatg
+     1021 gtatttccat accatgccta atttatcttg gcagacacct gaagcctcaa gccttcacct
+     1081 caacaaagaa ttcnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1141 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnagaacct
+     1201 ggtcaggcca cagctctcak ggtcagagat acatgattat tgttggttga ttgcaggttg
+     1261 ttctcaagaa gggaaagtac atcatcccac aagatcttca aaagctcatt ctgtgctgcg
+     1321 tctcaactca ggtaaggcaa accactgcac tggcaaaaaa aacgttagaa cagagatggc
+     1381 caggggttcc caaaggtcat tttgatttcc actaggcatg ggtttcatcc ccgtttcatg
+     1441 gagttgttac tgcagtcaac atctgtctct ataaggggca agttattttc caaataaaag
+     1501 ctaacattac ctccagtaga aacttgttca cataaaggaa gggggaaatg aaaatgctat
+     1561 cgttcttcaa agtaatacct tgggaattct tgtttcattt tggtttcaca ttagkatcct
+     1621 ccagttcctt cccaaagatg acaaaaagtc ctttaccaca aattctggct tttgcctttt
+     1681 aggacctact ccataaagat gtgtaatatt taatagcatg ttcagctcag gctcagctgt
+     1741 gcacattttc actcatcnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1801 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnncaa
+     1861 gagcagctca gggaactttc ttttcagcca caagacagga gtgyttactc agagnnnnnn
+     1921 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1981 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnncttaca acctgcaatc agctattcaa
+     2041 tcaaaaaaca aaacaaaagc ttcgaccgcc tgyggaggaa gactgtgtcc aggggcgctg
+     2101 gaatagctag tgcagagtgc taattctccg ctcattatct ccgacatctt gggaaaacgt
+     2161 taatacccat gcctgcagcc ttactggcct gaaaacgtgt taacaactga aagagaatgt
+     2221 cagaatrttt tctttctgct ctcacacagc actgttttgt aaattctctt agcctgagct
+     2281 caaggaccag gggaaactat gcctgtgcaa aactgcccag ctgtctgcct tcacctcagt
+     2341 cacgacggct ggaaagaaga atttataatt aacggtaaag tctaagtaac actaagaaca
+     2401 taggtgctaa agaggctgct gggttgggat ttcggccagc cagctgctgc tggcctggtg
+     2461 ttttggttcc agtgaagaac tggaatcaga tgaggaggag cctgtcctac agtagctgcc
+     2521 ttgtttcact acttttctgg aatctaatgc aacaaacttc cttagagata ccgcatcctg
+     2581 ttattccaac attattagtt ttaaatttta gaccagaatc ataatccagc ctttgctttt
+     2641 agaaactgca agaccataag aggtatactg ttgattcctt acatttacag ttcccatgtt
+     2701 ggcctctgaa ggccacaggt tgctgcctcg tcctctcaga atggtgttct cgtcgctgag
+     2761 caccagcagc agtattgggc actaaggaat cagtcgggca ggtttacaga ccagaccatt
+     2821 cat
+//
+

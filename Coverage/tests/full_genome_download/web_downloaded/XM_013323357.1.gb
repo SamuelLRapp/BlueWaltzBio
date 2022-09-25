@@ -1,0 +1,111 @@
+LOCUS       XM_013323357            1391 bp    mRNA    linear   INV 04-AUG-2015
+DEFINITION  PREDICTED: Papilio xuthus uncharacterized LOC106125935
+            (LOC106125935), mRNA.
+ACCESSION   XM_013323357
+VERSION     XM_013323357.1
+DBLINK      BioProject: PRJNA291600
+KEYWORDS    RefSeq; corrected model.
+SOURCE      Papilio xuthus (Asian swallowtail)
+  ORGANISM  Papilio xuthus
+            Eukaryota; Metazoa; Ecdysozoa; Arthropoda; Hexapoda; Insecta;
+            Pterygota; Neoptera; Endopterygota; Lepidoptera; Glossata;
+            Ditrysia; Papilionoidea; Papilionidae; Papilioninae; Papilio.
+REFERENCE   1
+  AUTHORS   Futahashi,R., Shirataki,H., Narita,T., Mita,K. and Fujiwara,H.
+  TITLE     Comprehensive microarray-based analysis for stage-specific larval
+            camouflage pattern-associated genes in the swallowtail butterfly,
+            Papilio xuthus
+  JOURNAL   BMC Biol. 10 (1), 46 (2012)
+   PUBMED   22651552
+  REMARK    Publication Status: Online-Only
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NW_013533003.1) and transcript sequence (AK401643.1) annotated
+            using gene prediction method: Gnomon, supported by mRNA and EST
+            evidence.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Version          :: Papilio xuthus Annotation Release
+                                           100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 6.4
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+            
+            ##RefSeq-Attributes-START##
+            assembly gap :: added 193 transcript bases to patch genome assembly
+                            gap
+            ##RefSeq-Attributes-END##
+PRIMARY     REFSEQ_SPAN         PRIMARY_IDENTIFIER PRIMARY_SPAN        COMP
+            1-193               AK401643.1         1-193
+            194-356             BBJE01001782.1     3503-3665           c
+            357-1391            BBJE01001782.1     1291-2325           c
+FEATURES             Location/Qualifiers
+     source          1..1391
+                     /organism="Papilio xuthus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:66420"
+                     /chromosome="Unknown"
+     gene            1..1391
+                     /gene="LOC106125935"
+                     /note="The sequence of the model RefSeq transcript was
+                     modified relative to its source genomic sequence to
+                     represent the inferred CDS: added 193 bases not found in
+                     genome assembly; Derived by automated computational
+                     analysis using gene prediction method: Gnomon. Supporting
+                     evidence includes similarity to: 1 mRNA, 3 ESTs, 2
+                     Proteins, and 100% coverage of the annotated genomic
+                     feature by RNAseq alignments, including 17 samples with
+                     support for all annotated introns"
+                     /db_xref="GeneID:106125935"
+     CDS             4..1269
+                     /gene="LOC106125935"
+                     /note="The sequence of the model RefSeq protein was
+                     modified relative to its source genomic sequence to
+                     represent the inferred CDS: added 190 bases not found in
+                     genome assembly"
+                     /codon_start=1
+                     /product="uncharacterized protein LOC106125935"
+                     /protein_id="XP_013178811.1"
+                     /db_xref="GeneID:106125935"
+                     /translation="MSVIADMPSKKLIHYYLTLLEEEELESEEAEILTIYHLNNSMRK
+                     HRFWLRNHIKHRSEHSEYFTFFQTADEETFENSYRVSRCTFYELHSLIEPYIRKQDTN
+                     YRNSISSRERLAVCLKYLATGQSFTTMGENFRIGLKSVSRIVEEVCDALWNILQPLVM
+                     SQPTENDWKEIAKDFDELWQFKNCIGALDGKHVYIKAPSKTGSSFFNYKKRFSVVLMC
+                     LADAKRKIIMADVGSMGRFSDAGIFDNSIFGKSLKEKRLNLPQPVPFYQGGAKMPFVF
+                     IGDEAFPLMENFMRPYPRDGLNAEKKIFNYRLSRARRIVEATFGVLTRKWYVYHKDFE
+                     CKIETVDKVIKATCVLHNYLIQRQPNYINNIENNMEQSLLSVGDIIETQHSSNDGYQV
+                     REMYCSYFNNQGKVPWQDTRILKRIYNSQ"
+ORIGIN      
+        1 gaaatgtcag tgatagcaga catgccatcg aaaaagttga tacattatta ccttacattg
+       61 cttgaggaag aagagttgga gtcagaagaa gccgaaatac ttaccatata ccatttgaac
+      121 aattctatga ggaaacatag attttggtta agaaatcata tcaaacatcg ttcagaacac
+      181 agtgaatatt ttactttttt ccaaacagct gatgaagaaa ctttcgaaaa ttcttataga
+      241 gtttcaagat gtacttttta tgaacttcac tccctgattg aaccatatat tcggaaacaa
+      301 gacacaaatt acagaaattc aattagtagc cgtgaaagat tagcggtgtg tttaaagtat
+      361 ttagcaaccg gccagtcatt tacaacgatg ggagagaatt ttagaattgg attgaaaagt
+      421 gtatcaagaa ttgttgagga ggtttgtgat gctttatgga atatattgca acctcttgtc
+      481 atgtcacaac caacagaaaa cgactggaaa gaaatcgcaa aagattttga tgaactatgg
+      541 caatttaaaa attgtatagg tgctcttgat ggcaagcacg tatatatcaa ggctccctcg
+      601 aaaaccgggt cctcgttttt caactacaaa aagagatttt ctgtagtatt gatgtgttta
+      661 gctgatgcca aaaggaaaat cataatggct gatgtgggat ctatgggaag attttctgat
+      721 gcaggaattt ttgataacag cattttcgga aagagtctaa aagaaaagag attgaattta
+      781 cctcagccgg taccatttta tcaaggtgga gcaaaaatgc cgttcgtatt tataggagac
+      841 gaagcttttc cattaatgga aaattttatg aggccttacc cacgtgatgg acttaacgca
+      901 gaaaaaaaaa tttttaatta ccgattatca agagcacgtc gtattgttga ggcaactttc
+      961 ggtgtattga cgagaaagtg gtacgtgtat cataaagatt ttgaatgcaa aatagaaaca
+     1021 gttgacaagg taataaaagc aacatgtgtt ttgcacaatt atttaattca aagacaacct
+     1081 aattatataa acaatattga aaataacatg gagcaatcat tattatcagt tggtgatatt
+     1141 atagaaacac aacattctag taacgatggt tatcaagttc gtgaaatgta ttgttcatac
+     1201 tttaataatc aggggaaggt accatggcaa gatactcgaa ttttgaaaag aatctataat
+     1261 agtcagtgat gtgagacaga tatagataat ttggccagct gcggacatta tttaggtatt
+     1321 attttgttaa ataaaaaaaa agatatcaat atgtacctac tagaaggtat tatagaataa
+     1381 agatacatat t
+//
+

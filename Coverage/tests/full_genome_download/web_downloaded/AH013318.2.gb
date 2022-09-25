@@ -1,0 +1,148 @@
+LOCUS       AH013318                5034 bp    DNA     linear   VRT 25-AUG-2016
+DEFINITION  Gallus gallus LMBR1 gene, introns 10, 12, 13, 14, and 16.
+ACCESSION   AH013318 AY327493 AY327494 AY327495 AY327496 AY327497
+VERSION     AH013318.2
+KEYWORDS    .
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 5034)
+  AUTHORS   Huang,Y.Q., Li,N. and Deng,X.M.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (23-JUN-2003) State Key National Laboratory of
+            Biotechnology, China Agricultural University, Beijing 100094, China
+REFERENCE   2  (bases 1 to 5034)
+  AUTHORS   Qiu,X.P.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (23-JUN-2003) Sichuan Agricutural University, Beijing
+            625014, China
+COMMENT     On or before Aug 25, 2016 this sequence version replaced
+            AY327493.1, AY327494.1, AY327495.1, AY327496.1, AY327497.1,
+            AH013318.1.
+FEATURES             Location/Qualifiers
+     source          1..5034
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+     gene            <1..>5034
+                     /gene="LMBR1"
+     misc_feature    1..5034
+                     /gene="LMBR1"
+                     /note="Original segmented set titles: Gallus gallus LMBR1
+                     gene, partial sequence.; Gallus gallus LMBR1 gene, intron
+                     10.; Gallus gallus LMBR1 gene, intron 12.; Gallus gallus
+                     LMBR1 gene, intron 13.; Gallus gallus LMBR1 gene, intron
+                     14.; Gallus gallus LMBR1 gene, intron 16."
+     intron          1..988
+                     /gene="LMBR1"
+                     /number=10
+     gap             989..1088
+                     /estimated_length=unknown
+     intron          1089..1920
+                     /gene="LMBR1"
+                     /number=12
+     gap             1921..2020
+                     /estimated_length=unknown
+     intron          2021..2256
+                     /gene="LMBR1"
+                     /number=13
+     gap             2257..2356
+                     /estimated_length=unknown
+     intron          2357..3763
+                     /gene="LMBR1"
+                     /number=14
+     gap             3764..3863
+                     /estimated_length=unknown
+     intron          3864..5034
+                     /gene="LMBR1"
+                     /number=16
+ORIGIN      
+        1 gtaatatgct tttcatactg cctcaagtgg attgcaattt aagtgacttt aaggtactat
+       61 gttcagtttg caacagcgac ctgattaatt ccaattgttt ctaactaaat aagtgcattt
+      121 gcaatccttt caaactgtcg tgtgttctag aattgcctta catggaatca ttgtatctgt
+      181 ctaacaaatc tttttaaaga gagagtctga tttggatctt aattttaagg caattataaa
+      241 gaaattgtaa tacttggcat cctggcatgg agatcagtag cacagtcttt ttcatatatt
+      301 gtgacatttg tgattatttg gcaaccaccc agtaggaatc tccctactta ttcacaggct
+      361 tgcaatactt tgcatttatc agtgtgcaaa ggtaagattg cagtaagaag ctgttggctt
+      421 ttctttttga tcgttttgaa tgtcagtatg tctaaagtat gctagtctcc tattttgtca
+      481 tttatatgat aaaagaaaag gtcagatatt taaattccct tcttaccctt gagttcatgc
+      541 taaaatacac gtacacttct gccttttatt atatatctca atattcagtg taatattacc
+      601 ttacagaagc caggtctaga atatagcgcc attatctaga agactttatg aactgagtaa
+      661 acaaagtgtt tttaaattca ttgtagttta tctgctaagc tacagcatgc caggggaaaa
+      721 aaatgtcgtg gtggaaacac tgttaaacaa gaaagaaaaa tttgcttcta tacttctccc
+      781 taacttttgt gagaggaggc ttcagttttg ggcattgctt tgtacctctc ttcagggtgg
+      841 ttattacgat gaactggttg gtgtcagttt gatgagagaa gattgctttg ttatccacat
+      901 gcaagtgttc atagaaccct aaataatttt tgcttgtttt actctaagct gattgatggt
+      961 aatacacttc tgtttctctt ctgaacagnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1021 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1081 nnnnnnnngt aaagtaaact tctcttatgt gatttctgta gtcttggtaa cactttggag
+     1141 actttatgaa agtgcacttt gaaactttat gaagttgctt ctgggtttca gtcctgctga
+     1201 agcatttgct atgcatcctg ttatagtaag ttcttaataa aaccagtcca tgatctttac
+     1261 aaagttgtaa tgattcagtc aaataaataa ttaacctaga gttctgcatt tttctggcac
+     1321 gatctacttt tatgcagtct agaaatgttc atttaaagaa aaaaaagaaa gatagtaaag
+     1381 aaacaatatg aaaagccttt caggtaattg tgttcatctt tcgaaatgtg attttttttt
+     1441 tcctccttta tgataaacaa ccaaaaaaaa accttcaaga aagtaaagaa tagcgtattg
+     1501 agtggtggtc cttttaatca caaggctgtg taaattagta atactttccc ttgcctgtag
+     1561 ctctgtatga ggctgcagag ctgtaaaaac catttatttt tttggctgca ctgtctgttg
+     1621 cattgcgaac agctgcttgt ctgtagagat ctcctatttt agtttctgga gttctccacc
+     1681 agtatggtgc atagatgcaa catgcatgaa ttgtgaaact tcataacttt gacttaatac
+     1741 atttcactca agtttgaaag ctagatgatg caattgcaag ggatgtgagg tttgcaagtt
+     1801 agaacatcag aatgatcctt aaataattaa gaaaaagctt tgtttcatct aagatgtata
+     1861 atttaactgt atgtatgttg cgtgtacgtt attaatttat gcaatgtatt tttcttctag
+     1921 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1981 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn gtatcctttc tttaagaatt
+     2041 ctgtctgtta acgagcattc tgtctagttt tctgggacac cggtatttta ctaaggcgct
+     2101 tggaaagaag aaagagatag gtcagtcctt ctcaagcact tgaagtgttt ttgttttctt
+     2161 tttttctcct ctggttctta agacttttag gagactgcta agaacttgag tgaaactagc
+     2221 attcttccga ggttcctttt tccttgattc tcacagnnnn nnnnnnnnnn nnnnnnnnnn
+     2281 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2341 nnnnnnnnnn nnnnnngtaa ggtaaagtct gtgatggtga cagccccctc ttctctcttg
+     2401 ccacccaaga caaactgact cttttagtta gtaatggccc cgaatggctc atttgcagtg
+     2461 atcattattt gtttgtaagc tgcgtaaaca caaactggaa gattttcaaa atgctgaatg
+     2521 agtgggaaaa aggatgtgct ctgtttagtt tggatggcat ccattcactt gttaacaagc
+     2581 tctgctattc ccagcttttt acttgctata gaaaagctgg tgaaagaact tttttcaaag
+     2641 gaaatgtatt gctaatgagg aactttgatt gtgctaactg tacttcaggg agcttgtttg
+     2701 aaatctgaag aacttggttg ctagaagtaa tacagagtaa ttcaaatttg aataattaaa
+     2761 ctaagactaa ggaggtctat tcagcaacga tttgcagttt gaggctaatt tgactttctg
+     2821 caatttagca ctggcttgag tacaacaaat gctgttacct aatgctgaag aacatgttta
+     2881 tttatttttt ttgcaaaata ttcccacagc tgacaagagg aggtgatcag taaccaagga
+     2941 acagatgttg aatttaatta cacatcagtg tgtttcactg taaagaaaag atattggatt
+     3001 aaaatattaa ttattggaag gggaaagtag gtaaacgtgg agtgggtata gtagattact
+     3061 taaggagttg aaatattctt aatgttttgt atagttcaca gtacacaaaa aagtatagaa
+     3121 attaatagag atgcatgtat atctacactc ttttaacaag tttggagttt ttcttttgaa
+     3181 ttctcataga attagggctg aagaaagtga tccctcctga gagaaagaag tttcaattac
+     3241 tctttataaa aggctttaca aaaactggag taaaatctaa cagctgtgat tttttttcat
+     3301 actatttaaa gtgatcaaca ggcattcaat tgaaaagaaa ctctttgttg taattttttt
+     3361 aaataatgct aatcctgcaa gcagttacat acaaagctta agctgatata tcagtcatct
+     3421 agttaagctc atggaatggt tcttttctaa aaagtttgcg ggaattaaat agttgatgct
+     3481 ttgcagcata gtagttttga atctgtacat acttaacact ttgaaaaata aatgaataca
+     3541 tatttgatgt ttttaaaact cttggatgat aaattgtgta acaccgtgtg gagaggtgtg
+     3601 acagaggtaa tcgactacca acaggttgtg gaattcttaa ggttccgttt gaacaatatt
+     3661 ttatgcaatt aattttcctt catcttgacc agattttctt ggtttctttt ttccttcaat
+     3721 ggtcctgttt atcatctcaa tgctatttga catactcaaa cagnnnnnnn nnnnnnnnnn
+     3781 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     3841 nnnnnnnnnn nnnnnnnnnn nnngtaataa tagtactgga aatttagttt gtacttcata
+     3901 ttactttact ctaacattga taccttgtag tgttactgtt cttccatgtt gcaagagcgt
+     3961 agaacatgtt ctttgctgct cctgagcatg cagaagtctg aatttatatc caagtgtgaa
+     4021 cagtggttgt cagtgattct taaggggaac ttgtcattta ttggcaattg ggaggcagaa
+     4081 gtaagagact tgaatctttc ttcctgtcct cctaccctga cagagacacc taatccttaa
+     4141 attcttgttg ggtgtattat attgggctga tttcagattc tgcattccaa aatgtaaatg
+     4201 ttcatgtgct gtttgtttgt ttttcgaagc aacatattaa ttcactaaaa ataagttagt
+     4261 ggaagtctgg actgctttgt tttgatgttt ttctaagtgc tacatgttta caaagtcctt
+     4321 gtacagaatg tatgggatct taataactgg ctgagtaaaa cctagagttg ataacaggat
+     4381 tttgatcaaa tcatgctttc atgttcagga atttgcaagt ctggctatac aaaaaaggtg
+     4441 ggaaaaatat ttgatactaa gaagtcgtta ctgaatctcg tgtactaaag aatgaagctc
+     4501 ctttttataa ccatagaata gtatttgctt aaattgaaag gactaacagt ggaacttcag
+     4561 ggtttgttta taaacatgga ctcagtttgt agtatctaaa aggtacttgt gttcgttttc
+     4621 actgactact gttttctgga gttgggaact tggtgagcaa aatccaagtg cttcctggag
+     4681 tgcacctctc ttctggtggc aattaagtta gttttagagc tactaaatag ggtgctacaa
+     4741 aattactgat gctgtaggac taacagaaac cattatgtca tttttgatgt tgagttttta
+     4801 agcttcaggg gatcaggtga ctaggggaat ttaaataatt ttaatttaaa aaatttaata
+     4861 gtgtaaatct atccattgat ttttatgcta aaatagtttc agagaagttg catagttgat
+     4921 ttgagagagt gcttagtttg aagcagtgtt tagtttgtat gtatttatct gaatagctat
+     4981 gcacatgaaa ttcagaggaa tctcattttt tccttattgt gtaatgtttt tcag
+//
+

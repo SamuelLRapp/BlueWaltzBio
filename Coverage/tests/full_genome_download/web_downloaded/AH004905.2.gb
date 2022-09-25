@@ -1,0 +1,629 @@
+LOCUS       AH004905                7137 bp    DNA     linear   VRT 24-JAN-2017
+DEFINITION  Gallus gallus breed White Leghorn anchorin CII (ANX5) gene, exons 1
+            and 2, anchorin CII (ANX5) gene, complete cds, and exon 13.
+ACCESSION   AH004905 U01671 U01672 U01673 U01674 U01675 U01676 U01677 U01678
+            U01679 U01680
+VERSION     AH004905.2
+KEYWORDS    .
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 7137)
+  AUTHORS   Pilar Fernandez,M., Selmin,O., Martin,G.R., Yamada,Y., Pfaffle,M.,
+            Deutzmann,R., Mollenhauer,J. and von der Mark,K.
+  TITLE     The structure of anchorin CII, a collagen binding protein isolated
+            from chondrocyte membrane
+  JOURNAL   J. Biol. Chem. 263 (12), 5921-5925 (1988)
+   PUBMED   2833522
+REFERENCE   2  (bases 1 to 7137)
+  AUTHORS   Fernandez,M.P., Selmin,O., Martin,G.R., Yamada,Y., Pfaffle,M.,
+            Deutzmann,R., Mollenhauer,J. and von der Mark,K.
+  TITLE     The structure of anchorin CII, a collagen binding protein isolated
+            from chondrocyte membrane
+  JOURNAL   J. Biol. Chem. 265 (14), 8344 (1990)
+   PUBMED   2159478
+REFERENCE   3  (bases 1 to 7137)
+  AUTHORS   Fernandez,M.P., Fernandez,M.R. and Morgan,R.O.
+  TITLE     Structure of the gene encoding anchorin CII (chick annexin V)
+  JOURNAL   Gene 141 (2), 179-186 (1994)
+   PUBMED   8163186
+REFERENCE   4  (bases 1 to 7137)
+  AUTHORS   Fernandez,M.P.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (14-SEP-1993) Maria P. Fernandez, Universidad de Oviedo,
+            Departamento de Biologia Funcional, c/Julian Claveria, 33071
+            Oviedo, Asturias, Spain
+COMMENT     On or before Jan 24, 2017 this sequence version replaced U01671.1,
+            U01672.1, U01673.1, U01674.1, U01675.1, U01676.1, U01677.1,
+            U01678.1, U01679.1, U01680.1, AH004905.1.
+FEATURES             Location/Qualifiers
+     source          1..7137
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          1..1777
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-92"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          1878..2162
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-28"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          2263..2438
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-44"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          2539..2944
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-44"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          3045..3462
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-86"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          3563..4201
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-86"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          4302..4614
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-86"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          4715..5449
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-86"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          5550..6322
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-86"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     source          6423..7137
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /clone="clone lambda A5C-86"
+                     /sex="male"
+                     /tissue_type="liver"
+                     /clone_lib="chicken genomic DNA in vector EMBL3
+                     (Clontech)"
+                     /dev_stage="adult"
+                     /note="breed: White Leghorn"
+     misc_feature    1..1533
+                     /note="5'-upstream region; label: 5'-USR"
+                     /citation=[3]
+                     /function="regulatory region for transcription"
+     regulatory      complement(10..16)
+                     /regulatory_class="other"
+                     /standard_name="metal response element"
+                     /note="MRE"
+                     /citation=[3]
+     regulatory      complement(512..518)
+                     /regulatory_class="other"
+                     /standard_name="metal response element"
+                     /note="MRE"
+                     /citation=[3]
+     regulatory      complement(557..563)
+                     /regulatory_class="other"
+                     /standard_name="metal response element"
+                     /note="MRE"
+                     /citation=[3]
+     misc_feature    1254..1724
+                     /standard_name="CpG island"
+                     /note="GC-rich portion in 5'-upstream region through exon
+                     2; G+C averages 75% and (G+C)/(A+T) = 3"
+                     /citation=[3]
+     regulatory      1475..1480
+                     /regulatory_class="GC_signal"
+                     /note="Sp1-binding cis-regulatory element"
+                     /citation=[3]
+     regulatory      1513..1518
+                     /regulatory_class="GC_signal"
+                     /note="Sp1-binding cis-regulatory element"
+                     /citation=[3]
+     regulatory      1531..1539
+                     /regulatory_class="other"
+                     /standard_name="initiator element"
+                     /note="proposed transcription start site at `A' based on
+                     Inr consensus sequence closest to known mRNA start site 15
+                     bp downstream; Inr"
+                     /citation=[3]
+     gene            1534..7137
+                     /gene="ANX5"
+     mRNA            join(1534..1744,1945..2029,2316..2410,2578..2691,
+                     3187..3277,3586..3665,4079..4135,4477..4570,4739..4834,
+                     5381..5439,5676..5798,6455..7137)
+                     /gene="ANX5"
+     5'UTR           join(1534..1600,1695..1735)
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+     exon            1534..1600
+                     /gene="ANX5"
+                     /citation=[3]
+                     /number=1
+     intron          1601..1694
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="length 94 bp"
+                     /citation=[3]
+                     /number=1
+     exon            1695..1744
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=2
+     CDS             join(1736..1744,1945..2029,2316..2410,2578..2691,
+                     3187..3277,3586..3665,4079..4135,4477..4570,4739..4834,
+                     5381..5439,5676..5798,6455..6517)
+                     /gene="ANX5"
+                     /function="binds collagen, inhibits phospholipase A2,
+                     putative Ca2+ channel"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="annexin V; lipocortin V; protein is comprised of a
+                     short N-terminal tail and 4 homologous internal repeat
+                     regions"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /codon_start=1
+                     /product="anchorin CII"
+                     /protein_id="AAB39917.1"
+                     /translation="MAKYTRGTVTAFSPFDARADAEALRKAMKGMGTDEETILKILTS
+                     RNNAQRQEIASAFKTLFGRDLVDDLKSELTGKFETLMVSLMRPARIFDAHALKHAIKG
+                     AGTNEKVLTEILASRTPAEVQNIKQVYMQEYEANLEDKITGETSGHFQRLLVVLLQAN
+                     RDPDGRVDEALVEKDAQVLFRAGELKWGTDEETFITILGTRSVSHLRRVFDKYMTISG
+                     FQIEETIDRETSGDLEKLLLAVVKCIRSVPAYFAETLYYSMKGAGTDDDTLIRVMVSR
+                     SEIDLLDIRHEFRKNFAKSLYQMIQKDTSGDYRKALLLLCGGDDE"
+     intron          1745..>1777
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 7.0 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=2
+     gap             1778..1877
+                     /estimated_length=unknown
+     intron          <1878..1944
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 7.0 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=2
+     exon            1945..2029
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=3
+     intron          2030..>2162
+                     /gene="ANX5"
+                     /note="full size 1.2 kb; phase 1 intron"
+                     /citation=[3]
+                     /number=3
+     gap             2163..2262
+                     /estimated_length=unknown
+     intron          <2263..2315
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 1.2 kb; phase 1 intron"
+                     /citation=[3]
+                     /number=3
+     exon            2316..2410
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=4
+     intron          2411..>2438
+                     /gene="ANX5"
+                     /note="full size 1.5 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=4
+     gap             2439..2538
+                     /estimated_length=unknown
+     intron          <2539..2577
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 1.5 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=4
+     exon            2578..2691
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=5
+     intron          2692..>2944
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 948 bp; phase 0 intron"
+                     /citation=[3]
+                     /number=5
+     gap             2945..3044
+                     /estimated_length=unknown
+     intron          <3045..3186
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 948 bp; phase 1 intron"
+                     /citation=[3]
+                     /number=5
+     exon            3187..3277
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=6
+     intron          3278..>3462
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 0.9 kb; phase 1 intron"
+                     /citation=[3]
+                     /number=6
+     gap             3463..3562
+                     /estimated_length=unknown
+     intron          <3563..3585
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 0.9 kb; phase 1 intron"
+                     /citation=[3]
+                     /number=6
+     exon            3586..3665
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=7
+     intron          3666..4078
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="phase 0 intron"
+                     /citation=[3]
+                     /number=7
+     exon            4079..4135
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=8
+     intron          4136..>4201
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 3.5 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=8
+     gap             4202..4301
+                     /estimated_length=unknown
+     intron          <4302..4476
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 3.5 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=8
+     exon            4477..4570
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=9
+     intron          4571..>4614
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 1.4 kb; phase 1 intron"
+                     /citation=[3]
+                     /number=9
+     gap             4615..4714
+                     /estimated_length=unknown
+     intron          <4715..4738
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 1.4 kb; phase 1 intron"
+                     /citation=[3]
+                     /number=9
+     exon            4739..4834
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=10
+     intron          4835..5380
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="phase 1 intron"
+                     /citation=[3]
+                     /number=10
+     exon            5381..5439
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=11
+     intron          5440..>5449
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 2.1 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=11
+     gap             5450..5549
+                     /estimated_length=unknown
+     intron          <5550..5675
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 0.95 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=11
+     exon            5676..5798
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=12
+     intron          5799..>6322
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 0.95 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=12
+     gap             6323..6422
+                     /estimated_length=unknown
+     intron          <6423..6454
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="full size 0.95 kb; phase 0 intron"
+                     /citation=[3]
+                     /number=12
+     exon            6455..7137
+                     /gene="ANX5"
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+                     /number=13
+     3'UTR           6518..7137
+                     /gene="ANX5"
+                     /citation=[1]
+                     /citation=[2]
+                     /citation=[3]
+     regulatory      7010..7015
+                     /regulatory_class="polyA_signal_sequence"
+                     /gene="ANX5"
+                     /citation=[3]
+ORIGIN      
+        1 gaattccaag cgtgcattgc agctctgtgg gagccaggag gggcttgctg cagctcaggg
+       61 gtgggaagga gagctgggac tgccgtcttc ctgaggtggt gtggtgactt tctagctggt
+      121 cagatgctat tgctaagtaa cgtgtgagac caacatgcaa ctttttctaa attatttaaa
+      181 ggctgctttt attacttgta aagcctaata gatacagtgt ccttaatgac ataaatgtat
+      241 ctgtgcattt gctgaaacaa aggtattact aacctatttc aaagtgaaga ggactagagc
+      301 tttgctagtt tctagatacc tgactaatag gtcaaataat gctgatagaa cctttcaaaa
+      361 atttctcatt gctcaatagc tgctccttat cgcatggctg agtcaccaac gaagtttgaa
+      421 ttccctttgg ctgtgctcac acctgtggct tttggcactc agaatgcaat aacccccgtt
+      481 cacaggcttc cctctaatca tcaggattgt ggagtgcatt agagagggcc cacttacacc
+      541 ttttttgtgc cttcatgtgt gcacttcata gacagtaaag cttgaaatgt gatcccagcg
+      601 tgacctgtat ctgctctgga tataatgtgg tgggagaaaa ggacttgtgc tttcccacaa
+      661 agggatgggt gtgggcaagc tcagttgtgc ttaacctgaa agcagtaagt ctgaatttag
+      721 ctatgatttt tggaaccact gtataactcg gtgtttcctt gaaagccctg accctacatc
+      781 tcatccgtgt gtacattttt agacgtatgt gatgagcaac tcactgttcc cttcacgcac
+      841 cttgcagcat gtgtagagtg ccactgcttc aacagattag aagaaaatca ggctctgctt
+      901 aggaaatcag ggcatttact gcaaccattt ggcccctggt cctacagata aagccagctg
+      961 ggtggttttc atgttcttcc tgaacgttac gggcactgga acaagaaatg atggacggaa
+     1021 catttaaatt aaccccacga tcagtaaagt cggtgttttc tgaagaaaaa cgtgactggc
+     1081 tttaagacaa acacgaccac agcacgttag aaacctcacg taaggagatg atagcgtctt
+     1141 attttggcaa cggcgctaga ttccgtttgt gttgtacttt acctccttgg cctaacgccc
+     1201 agctggatcg catcggtgcg ggtgagggag cagctgaggg agctgctaat ggaacagccg
+     1261 cgcagcccgc ctcctctgtg tgaaggcaac ttgggcccct gaagcgctcc tcctgttagc
+     1321 cgtcgcaaaa gtgaaagccc tcacagggag tcccgcgtcc gagctcacgg cgctgcccac
+     1381 cccggggcga tccccgcctt gcggcgcagc acgcgggccc gggccgggca cacgcggcca
+     1441 ccgccgctgg aggcggccgt ggctctcgcc gccggggcgg tccctggccg gcccccgggt
+     1501 ggagcaggca gcggcggggc cggagctcgc ttcattttct gcgtctcact cggctctccc
+     1561 tgcggctctc ggaggcggcg gcggctcggc ggacgtcgcg gtgagggaac tgcccgcggt
+     1621 gcgctggcag ccgctatggc gccgggcggg gtgcgggcgg cggcgggcgc tcactgtcgc
+     1681 gtctgtcttt gcagactcgg attcgactcc agccccgacc cggcgaaccg cggagatggc
+     1741 gaaggtgagg cgggaggaat cgcagaacgg ccgtcctnnn nnnnnnnnnn nnnnnnnnnn
+     1801 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1861 nnnnnnnnnn nnnnnnncct cacatatgga gaactgaaag acactttatc ttctatttct
+     1921 tttttttttt tcctttttct ctagtataca agaggcaccg tgacagcatt ctctcctttt
+     1981 gatgccagag ctgatgcaga agcccttcgc aaggccatga agggaatggg taagaattta
+     2041 atgttttagg aagaggaaag ggctctcgct cctgctttga aaacatcctt tctgaactca
+     2101 ttttttttat actggcagaa aaggagaagg tgtgtgtcac acgctacaaa tgacagcctc
+     2161 agnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2221 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnctgttgtt tcttggagtt
+     2281 tgtttgtaac tgtttcttgt tctttctaac tccagggact gatgaagaga caattctgaa
+     2341 gatccttacc agcagaaata atgctcaacg tcaagaaatt gcatctgctt ttaaaacact
+     2401 gtttggcagg gtgaggaaaa agaaaaaaga actctagann nnnnnnnnnn nnnnnnnnnn
+     2461 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2521 nnnnnnnnnn nnnnnnnntt tagtcattat tcattacagt cttttgttct gcactaggat
+     2581 cttgtggatg acctgaaatc agaacttact ggcaagtttg aaacactgat ggtatctttg
+     2641 atgagaccag cacgtatttt tgatgctcat gcactgaagc atgcaatcaa ggtaagaggg
+     2701 aaaggactga atatgtttta taaatttttg ttggtgtttt tttgtgtatt ggaataaaca
+     2761 ttcagttggt aaagaaaagc tgataaagtt ctttttaaat tctaggaaga attataaata
+     2821 atatgctgca gaaaaaaaaa agcacagtat tgtaatcaag tgttgctttt ctgaagtcac
+     2881 tccttttcaa atgtaaacag caatggcttt tcttacaggc aaaagcagac ttcagactct
+     2941 gtggnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     3001 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnntcccaa tatttgagat
+     3061 gataataaga aaaaaattct ctgtttggtc caagtgtata aagtaatgct tgccttttga
+     3121 ttgtcaaagg gaatagttgt tttcctgttg ttatcaaatc aactgtttct tacttgcaca
+     3181 ccctagggag caggaaccaa tgagaaagtg ttgactgaaa ttcttgcctc cagaacacct
+     3241 gctgaagtgc agaatattaa acaggtttat atgcaaggta aaattcagta taaaataaag
+     3301 ttctgggttc tcctatcagg tctttcaata tgattttaac acgtacttca aacaagacct
+     3361 atcagtggat ggaggcatgc atgcaccaag tggaattttg ttctgctgag ctgggtaaaa
+     3421 ttcatattgc tggaaactac tgtttgggct gtaaacaaaa aannnnnnnn nnnnnnnnnn
+     3481 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     3541 nnnnnnnnnn nnnnnnnnnn nngaatgagt attgctcttt tgcagagtat gaggccaact
+     3601 tggaggataa gatcacagga gagacatcag gccattttca gagactgctg gtggtcctgc
+     3661 tgcaggtgtg tatcacttta tacacatgca ctgtgtatca tgatttttac tttctgtttt
+     3721 gatgtctgat gtgtgtatgt tgtttctgct tctgagtagg gttcataggc caaatgatag
+     3781 gcaggattgg tactgaaact gagttagttc ctctgaatgt acaaccttga gctctgttac
+     3841 aggccatttc tacaactctg gcttgaaaag cttctgtggt ttttatggta tggatacggc
+     3901 agaatgcctg ctgtgtaggt ttttgaaggt aataaggcaa gcagaaggga gaagtgaagt
+     3961 tgattttgaa gaaggtacat tacttattga cttctcataa taacttttac aggcttaatc
+     4021 taacagtttc gcttttgatc caactaccag tataacagct tgtaaaattg ttctttaggc
+     4081 aaatagagat cctgatggca gagttgacga ggctcttgtt gagaaggatg ctcaggtggg
+     4141 tgaatgattc ttttgagggg aggcgggaca tttctaccag tctcttgtaa agaccctact
+     4201 cnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     4261 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn ngaattcatc gtttatgttt
+     4321 ccaaagtcac tttagtattt tatctcatct ttttccctcc agctattgct gattggtaag
+     4381 tataatgctc cttagagtag gacaaatgga acttttcaac agaatgtgtg aacgcataac
+     4441 aaattctgct gttctgctct cttcaattta caacaggtct tgtttagagc tggggagcta
+     4501 aaatggggaa cagatgaaga aacattcatc accatcttgg gaactcgaag tgtttctcat
+     4561 ttaaggaggg gtaggtgata tggttcatgt atggctgaaa acttctgact gaacnnnnnn
+     4621 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     4681 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnngtaagc atgctttcta ttttccagtg
+     4741 tttgacaaat acatgactat ttctggcttt caaattgaag aaaccattga ccgtgaaacc
+     4801 tctggtgatt tggagaagtt gcttttggca gttggtaatt acagtcttaa caaatctaga
+     4861 actggccttc ttttttttac tcccaagcct tcttaaattg cagttgttac agaatttggc
+     4921 atgaaaacat ggttctttct taagttactc acctggagtc tatttttgta tttagagaat
+     4981 aagcttttta ctctttcttt atgagatgga ggcaaggcca ggggggatga gaaaaagtga
+     5041 gaacagtgct gttgctaact gtgctctgtt cagtagtgca caccaccact ggaaagtgag
+     5101 acagtgctat ctgtgtcctt ttggttgaat tcctggcatc ccgcgtacaa tgctgtagta
+     5161 ggtttgtaac tgggagtaga atttgatctt gtgatatttc ttttccattg taactcctag
+     5221 aacccaaaga gttgtagtgg aggaacagtc tagctaactg tatacttaat tgtccacacc
+     5281 ggagagaatg atacagaaat tgcacaactt ttctttgcca gtgaaagatt tgccttgttg
+     5341 ttgaataaca gtcagtaatt taattccttt cccttttcag tgaagtgcat ccgaagtgtg
+     5401 cctgcttatt ttgctgaaac tttgtattat tccatgaaag taggtatatn nnnnnnnnnn
+     5461 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     5521 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnc cataacctgt ttagtataaa atgtaatgca
+     5581 ggagtgtttg agataccact tgttttgttg ttgttttatt acaggcattt gtctagaaca
+     5641 aatgtataat gtgatattta aactcttctc cttagggggc tggcactgat gatgataccc
+     5701 tgatcagagt catggtttca agaagtgaaa tcgacctgtt ggatattaga catgaattca
+     5761 gaaagaattt tgcgaaatcg ttgtatcaga tgattcaggt aaaaccactg ttctgttgtc
+     5821 aggggaacca ggggtagtta agaagtaatt gtttccactg tttatgagag ggaagcagta
+     5881 atgcaggaca gcatacggca ctccaaggac agctgtggtt ggcctgcagt tctgtgaagt
+     5941 accaagcagc atcatttaag tgggaagcat ttcttatgaa aagctgaagt tttgttgttt
+     6001 tcctcagtgt tcactaggag aacagacgtg gtcttcccta aattacagtt actctttttt
+     6061 tccccacttt tagtttctgc ttcatttcgt ttttcttctg tgtgttcctt ctgtttttta
+     6121 gtggtttaga aagggtagct ggctccagag gagtagcact gtgggttgga gaggaaatct
+     6181 atattgtgat gtggaacctt agcaccactc ataagtagga agaaatctca cagtggaatg
+     6241 atgctgtgtc aaatctcact gtgtagatgt gaggagtagg aagtgtagag cagacgaata
+     6301 cagcagcgag attcatagtt ctnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     6361 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     6421 nnccatgact catgtgactg ttgtgtatta acagaaagat acatctgggg actacaggaa
+     6481 ggcactcctg ctcctctgtg gtggagatga tgagtaatgg tggcagcgac gtgaaggatt
+     6541 tcttgtaatc cagctttgca gcccttcagt tagcatgcct agctaagatt ttgcatctta
+     6601 atgctttatg gctgttcgaa tttatattca tatcacactt attaaaaaca aacatgttac
+     6661 tacctagctg ataaacagtc cctcctcctc agacgtcctg acctctggga atttcaagtg
+     6721 ccttctgagt gtatgcaaaa gtcttcttca tggaagatga gtactgaaca cagaacccag
+     6781 ttatttgcaa gtgttttctg aaatgtggaa aaaaataatc atgtatttcc attaataata
+     6841 tatttccact aataatttaa agactttttt cttgctttta ttccttacat ttccactgaa
+     6901 tcttaaacta gttctaacac tgcaaatgaa gcgaagatat cctttgtatg taatatttga
+     6961 atgagtttgt agaacataat atgagcagtc attggaaatc taaagaacca ataaattttt
+     7021 tccctcttgg cactgttgta tgtgtttttc aatgggcaaa gatcatcttc cttcacctgc
+     7081 tggccacgct gcttttggtg cagctgagag tgcagtttgc cttctgggca catttct
+//
+

@@ -1,0 +1,56 @@
+LOCUS       CK615448                 452 bp    mRNA    linear   EST 19-DEC-2010
+DEFINITION  LPSm_J22 LPS stimulated Chicken PBL Macrophage Gallus gallus cDNA
+            clone LPSm_J22 5' similar to cytokine [Gallus gallus]; macrophage
+            inflammatoryprotein 1-beta [Gallus gallus]; chemokine [Gallus
+            gallus], mRNA sequence.
+ACCESSION   CK615448
+VERSION     CK615448.1
+DBLINK      BioSample: SAMN00174567
+KEYWORDS    EST.
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 452)
+  AUTHORS   Bliss,T.W., Emara,M.G., Dohms,J.E., Lillehoj,H.S. and Keeler,C.L.
+  TITLE     Analysis of gene expression in differentially stimulated avian
+            macrophages
+  JOURNAL   Unpublished
+COMMENT     Contact: Calvin Keeler
+            Dept. of Animal and Food Sciences
+            University of Delaware
+            040 Townsend Hall, Newark, DE 19716-2150, USA
+            Tel: 302-831-6473
+            Fax: 302-831-2822
+            Email: ckeeler@udel.edu
+            www.aviangenomics.udel.edu
+            PCR PRimers
+            FORWARD: T3
+            BACKWARD: T7.
+FEATURES             Location/Qualifiers
+     source          1..452
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /strain="Broiler"
+                     /db_xref="taxon:9031"
+                     /clone="LPSm_J22"
+                     /sex="female and male combined"
+                     /cell_type="Macrophage"
+                     /tissue_type="Blood"
+                     /clone_lib="SAMN00174567 LPS stimulated Chicken PBL
+                     Macrophage"
+                     /note="Vector: pBluescript sk+; Site_1: EcoRI; Site_2:
+                     XhoI"
+ORIGIN      
+        1 gcacgaggcc tcgctgtcct cctcattgcc atctgctacc agacctctgc tgcaccggtg
+       61 ggttctgacc cgccgacctc ctgctgcttc acctacatct cccggcagct gcccttcagc
+      121 tttgtggcag actactacga gaccaacagc cagtgccctc atgctggcgt tgtgttcatc
+      181 accaggaagg gccgtgaggt ctgtgccaac cccgagaacg actgggtaca ggactacatg
+      241 aacaagctgg aactgaactg atgcaccagg atgggatgag cacgctatgc ccacttgcag
+      301 gccctgccag aaacgcaact gtgacatgga gagctacctg agagactgaa aatgtcccag
+      361 aatccgcttt actatttatg tatttaattg tttgtaatgg aagggagcag gtgaaataat
+      421 gccactccaa ccaaatagga agattattta ac
+//
+
