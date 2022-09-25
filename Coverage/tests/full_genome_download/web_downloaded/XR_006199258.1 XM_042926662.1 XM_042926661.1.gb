@@ -1,0 +1,277 @@
+LOCUS       XR_006199258             876 bp    RNA     linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo uncharacterized LOC122212690
+            (LOC122212690), ncRNA.
+ACCESSION   XR_006199258
+VERSION     XR_006199258.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..876
+                     /organism="Panthera leo"
+                     /mol_type="transcribed RNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..876
+                     /gene="LOC122212690"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 100% coverage of the annotated
+                     genomic feature by RNAseq alignments, including 3 samples
+                     with support for all annotated introns"
+                     /db_xref="GeneID:122212690"
+     ncRNA           1..876
+                     /ncRNA_class="lncRNA"
+                     /gene="LOC122212690"
+                     /product="uncharacterized LOC122212690"
+                     /db_xref="GeneID:122212690"
+ORIGIN      
+        1 ctctcaaaat aaataaacgt taaaaaaaaa aaaaaaagat tctgttgggt taacccatca
+       61 gacacttcca gtaccggaca acttctgatc aaaaacaacc acttaatatg ggtgcaaaat
+      121 gctttatata caaacttgta accgaaggtt cggtttacca ctgtgggagt aactgtgcaa
+      181 atgcaactct taaactacgg aaacgcaaag ctccttatct cctttcgaga aaggatttcc
+      241 caatccaccc tggctttcct cttcccggca gcctcgtgac tgagcaaggc catctctctc
+      301 ttgctccggg gctatctggc tggcccacac ttcaggaggc gggctttgag gtcgctaggc
+      361 tttctacccg accctgcctc ccacgtaccc tctgcgtgcc tcccgagacg ctcctgcaac
+      421 acctgcagct ccaacccatc tccgtggggc cctgcggaca caactgtcgg aacgccgatt
+      481 gctttcaggc tgctcccaga ctggaaacga gtgtcctgca cggggtctct gccatgccaa
+      541 agtctttccc gtttgcctgc tctctgttgg ccagatgcgg aaatgtttcc aagacagcaa
+      601 gtgagcaaaa ggaagaggtg aaggtggaaa tttcttttgt gatcggagca atgctaacag
+      661 taaaaccaca gctcaacccc tctcctttcc tggaaaaccg tcctaaccta agttgtaaaa
+      721 ggaccaagca tatcaagcag gaaagaatct ttctaaaaag taccaaagcc tacttaaatt
+      781 tgcaaaagat taccaatttt caataaagac tctcaagcaa aatattttaa tacaaaaaag
+      841 ctaactattt ttttgttttg ttttgctgtt ttttct
+//
+
+LOCUS       XM_042926662            1690 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo G protein-coupled receptor 143 (GPR143),
+            mRNA.
+ACCESSION   XM_042926662
+VERSION     XM_042926662.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..1690
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..1690
+                     /gene="GPR143"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 2 Proteins, and 96% coverage of
+                     the annotated genomic feature by RNAseq alignments,
+                     including 3 samples with support for all annotated
+                     introns"
+                     /db_xref="GeneID:122212689"
+     CDS             79..1410
+                     /gene="GPR143"
+                     /codon_start=1
+                     /product="G-protein coupled receptor 143"
+                     /protein_id="XP_042782596.1"
+                     /db_xref="GeneID:122212689"
+                     /translation="MIPPLAAGRAPDPAARRGPGTPEPRPRARPMASPRLGTFCCPTR
+                     DAATQLVLGFQPRAFHALCLGGGACRLALGLLQLLPGRRPAGPGATSTSPPASARAPA
+                     SVRILRAAAACDLLGCLGIVFRSAVWLGFPDFVKDISDVNGTDLWPAAYCVGTAIWIQ
+                     LLYGACFWWLFCYAVDAYLVIRRSAGQSTILLYHIMAWGLAVLLCVEGVVMLYYPSVS
+                     RCERDPELAIPHYVTTYLPLLLVLGANPILFWKTVTAVASLLKGRKGIYTENERRMGA
+                     VIKIRFFKIMLVLIICWLPNIINESLLFYLEMQPDINGSFLRPVRNAAKTTWFIMAIL
+                     NPAQGFLLSLAFYGWTGCSLEFQSPGKEIQWESMATSAAEQPYLSPDGSSAPGESLTS
+                     RKVLRLGGHASDEALSLLSEGSDASTVEIYVTSGSRNENEVESVPEPQGDL"
+ORIGIN      
+        1 ggcgcgcagc ccccaccccg gtcggcgcct tctccgccag cgcgggcgcc ggggcggggg
+       61 aggcgcggcc ccgggcacat gatccccccg ctcgctgccg gccgggcacc tgacccagcg
+      121 gcccggcggg gtcccggcac acccgagccg cgaccccgag cacggcccat ggcctcccca
+      181 cgcctgggga ccttctgctg ccccacgcgg gacgccgcca cgcagctggt gctgggcttc
+      241 cagccccggg ccttccacgc gctgtgtctg ggcggcggcg cgtgccgcct ggcgctgggc
+      301 ctcctgcaac tgctgccggg gcgacggccc gcgggcccgg gggccacgtc cacgtccccg
+      361 ccggcctcgg cgcgcgcccc ggcctccgtc cgcatcctgc gcgccgccgc cgcctgcgac
+      421 ctgctcggct gcctggggat cgtcttccgg tctgcggtgt ggttgggatt ccccgatttc
+      481 gtcaaggaca tctcagacgt gaatgggacg gacctttggc ctgctgcgta ctgcgtgggg
+      541 accgcaatat ggatccagct gttgtacggt gcctgcttct ggtggctgtt ttgctacgcg
+      601 gtcgacgcct atctggtgat ccggagatcg gcaggacaga gcaccatcct gctttaccac
+      661 atcatggcct ggggcctggc cgtcctgctg tgcgtggagg gagtggtcat gctctactac
+      721 ccgtctgtgt ccaggtgtga acgggatccg gagctcgcca tcccgcacta tgtcaccaca
+      781 tacttgccgc tgctgctcgt cctgggggcc aaccccatcc tattctggaa gaccgtgacc
+      841 gcagtggcct ctttactaaa aggaagaaaa ggcatttaca cagagaacga gagacggatg
+      901 ggagccgtga tcaagatccg atttttcaaa ataatgctgg ttttaattat ttgctggttg
+      961 ccaaacatca tcaacgaaag ccttttattc tatcttgaaa tgcaaccaga tatcaacggg
+     1021 agctttttga gacctgtgag aaatgcggcc aagaccacgt ggtttataat ggcgatactg
+     1081 aacccagccc agggatttct cttgtctttg gccttctacg gctggacagg atgcagcctg
+     1141 gagtttcagt ctcccgggaa ggagattcag tgggaatcca tggcaacgtc tgccgcggag
+     1201 cagccctacc tgtccccaga tggctccagc gcacccggtg agagcctcac ttccaggaag
+     1261 gtgctgcgac tcggcgggca cgcgtctgac gaggccctga gcctgttgtc tgaaggttcc
+     1321 gacgccagca cggttgaaat ctatgtcaca agcgggtccc gcaacgaaaa tgaggtggaa
+     1381 tctgttcccg aaccccaggg agacctctga gggggacgtg acaggggtcc ggtccccaca
+     1441 tcctcaggtt ctgcgtttct cactctttag aactgcgttc tccccacaaa ccttcctgtc
+     1501 ctcgccgtgt tgtaacggtt ccttcccgag gagtagccgt ggtaagagac gcgatccgcg
+     1561 agcacgagct tgggaacaga gagagaattc cttccagacc agacacagca gctgctcccc
+     1621 acccttctga ggttgcctat aatgtaaatg ccagacccag gtccttagaa aagtgaataa
+     1681 agtcgttgta
+//
+
+LOCUS       XM_042926661            2341 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo transducin beta like 1 X-linked (TBL1X),
+            transcript variant X5, mRNA.
+ACCESSION   XM_042926661
+VERSION     XM_042926661.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..2341
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..2341
+                     /gene="TBL1X"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 28 Proteins, and 100% coverage of
+                     the annotated genomic feature by RNAseq alignments,
+                     including 5 samples with support for all annotated
+                     introns"
+                     /db_xref="GeneID:122212688"
+     CDS             367..1950
+                     /gene="TBL1X"
+                     /codon_start=1
+                     /product="F-box-like/WD repeat-containing protein TBL1X"
+                     /protein_id="XP_042782595.1"
+                     /db_xref="GeneID:122212688"
+                     /translation="MSITSDEVNFLVYRYLQESGFSHSAFTFGIESHISQSNINGTLV
+                     PPAALISILQKGLQYVEAEISINEDGTVFDGRPIESLSLIDAVMPDVVQTRQQAFREK
+                     LAQQQASAAAAAAAAAAAAATTATAAPTAVAQQHPPKNGEATVNGEENGAHAINNHSK
+                     PMEIDGDVEIPPNKATVLRGHESEVFICAWNPVSDLLASGSGDSTARIWNLNENSNGG
+                     STQLVLRHCIREGGHDVPSNKDVTSLDWNSDGTLLATGSYDGFARIWTEDGNLASTLG
+                     QHKGPIFALKWNKKGNYILSAGVDKTTIIWDAHTGEAKQQFPFHSAPALDVDWQNNTT
+                     FASCSTDMCIHVCRLGCDRPVKTFQGHTNEVNAIKWDPSGMLLASCSDDMTLKIWSMK
+                     QDTCVHDLQAHSKEIYTIKWSPTGPATSNPNSNIMLASASFDSTVRLWDVERGVCVHT
+                     LTKHQEPVYSVAFSPDGKYLASGSFDKCVHIWNTQSGSLVHSYRGTGGIFEVCWNARG
+                     DKVGASASDGSVCVLDLRK"
+     polyA_site      2341
+                     /gene="TBL1X"
+                     /experiment="COORDINATES: polyA evidence [ECO:0006239]"
+ORIGIN      
+        1 ctcctcggcc gcggcacggc ccgggctcgg cgacggccgg cggcagggag gctcggagcg
+       61 cggcggcgcc gccacaagtt gcgctgccgg cggcgaggta accgaagaca gaaagcgggc
+      121 ctcaaaataa accctcgaag gaagaaggga tttgcctaca tttggctctg agcaggtcct
+      181 ggcggccggt tggcagttta tctgatcgga tgctggggag ctcactggtc ccgaggtcta
+      241 cacatgaagt caccgtaaag tgtaatcaga cccgttgacg agttgaagtg gaccgaatat
+      301 tgctgctagg tttatgaggg cggctcccgc atcgtaaaga cctcgtctcc gcgaggtgag
+      361 gctaagatga gcataaccag cgacgaggtg aacttcctgg tgtatcgcta cctccaggag
+      421 tcaggttttt cccactcggc gttcacgttc ggtattgaga gccacatcag ccagtccaac
+      481 atcaatggga cgctagtgcc gccagctgcc ctcatctcca tcctgcagaa gggacttcag
+      541 tatgtggagg ccgagatcag catcaatgag gatggcacgg tgttcgacgg ccgccccata
+      601 gagtccctgt ccctgatcga cgcggtgatg cccgacgtgg tgcagacgcg gcagcaggcc
+      661 ttccgggaga agctcgctca gcagcaggcc agtgcggcgg ccgcggccgc ggcagctgcg
+      721 gccgcggcgg ccacgacggc cacggcggcc ccgacagccg ttgctcagca acatccacca
+      781 aagaacggag aggccacggt gaacggggag gagaacggag cccacgcgat aaataatcat
+      841 tcgaaaccaa tggaaataga cggggacgtt gagattccac ccaacaaagc cacagtcctt
+      901 cggggccacg agtccgaggt gttcatttgt gcctggaacc ccgtcagcga tctcctagct
+      961 tcagggtctg gagactcaac ggcaaggata tggaacctta acgaaaacag caacgggggc
+     1021 tccacgcagc tcgtgttgag gcactgtata cgagaagggg gccatgacgt ccccagtaat
+     1081 aaagacgtga cctccctgga ctggaacagc gacgggacgc tgttggccac aggctcctat
+     1141 gatggttttg cgagaatatg gacggaagat ggcaacctgg ccagcacctt agggcaacac
+     1201 aaaggcccca tctttgcctt gaaatggaac aaaaagggga attacatttt gagtgctggt
+     1261 gtagacaaaa caacaattat ttgggacgcc cacacaggag aagccaaaca acagtttccg
+     1321 tttcattccg cccctgctct cgacgtagac tggcagaaca acactacctt tgcctcctgt
+     1381 agcacagaca tgtgtattca cgtctgcaga ctcggctgcg accgccccgt caaaaccttc
+     1441 caaggacaca cgaacgaggt gaacgccatc aaatgggatc cttctggaat gctgctagcg
+     1501 tcctgctctg atgacatgac attaaagatc tggagtatga agcaggatac gtgtgtccat
+     1561 gaccttcagg cccacagcaa agagatctac accataaagt ggagtcccac cgggccagcc
+     1621 accagcaacc caaattccaa catcatgcta gcaagcgctt cgttcgattc tacggtccga
+     1681 ctgtgggatg tggagcgagg cgtctgcgtc cacacgctaa ccaagcatca ggagcctgtc
+     1741 tacagcgtag cttttagccc tgacgggaaa tatttggcca gtggctcctt cgataagtgc
+     1801 gtgcatatct ggaatactca gagtggaagt cttgtgcaca gctaccgagg cactggcggc
+     1861 atcttcgagg tgtgctggaa tgcccgaggc gacaaagtgg gtgccagcgc gtccgatggc
+     1921 tctgtgtgtg ttttagatct ccgaaagtaa acacaaacta ttctagaaga gaattctaac
+     1981 ggaccagcag tgaatgtgtg aagcagcaat gctcagacac cgttctttcc gctccaaaac
+     2041 tgtacgaact tgacttgcat tagagtgtac ttggaaatca gttcatcctg gccacaggag
+     2101 tctctacttt ctcgtaatct tcatcaagaa gtttaaaaca gaaacataca cagtcatatc
+     2161 aaagggggaa ggaatggttt ccacccagaa cattcagcct gggaagcatg gagccaccgg
+     2221 ctaggcgggg gcacggtttg ctttccatcc agaacaggct ctgatagttg agaggagaaa
+     2281 agacgaagag gagaaaaaag aaaacaaaca aaaaaagctg tgccaaaaaa gaaaagaaaa
+     2341 a
+//
+

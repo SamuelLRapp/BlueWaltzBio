@@ -1,0 +1,79 @@
+LOCUS       AH008327                 967 bp    DNA     linear   VRT 25-AUG-2016
+DEFINITION  Gallus gallus immunoglobulin IgY heavy chain constant region gene,
+            introns.
+ACCESSION   AH008327 AF190139 AF190140 AF190141 AF190142
+VERSION     AH008327.2
+KEYWORDS    .
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 967)
+  AUTHORS   Zhao,Y.F., Rabbani,H., Hu,Y.Z., Shimizu,A. and Hammarstrom,L.
+  TITLE     Characterization of chicken immunoglobulin heavy chain constant
+            region genes
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 967)
+  AUTHORS   Zhao,Y.F., Rabbani,H. and Hammarstrom,L.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (27-SEP-1999) Center for Biotechnology, Department of
+            Bioscience at Novum, Karolinska Institute, Halsovagen, Stockholm
+            S-14157, Sweden
+COMMENT     On or before Aug 25, 2016 this sequence version replaced
+            AF190139.1, AF190140.1, AF190141.1, AF190142.1, AH008327.1.
+FEATURES             Location/Qualifiers
+     source          1..967
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+     gene            1..967
+                     /gene="immunoglobulin IgY heavy chain constant region"
+     misc_feature    1..967
+                     /gene="immunoglobulin IgY heavy chain constant region"
+                     /note="Original segmented set titles: Gallus gallus
+                     immunoglobulin IgY heavy chain constant region gene,
+                     intron, 5' end; Gallus gallus immunoglobulin IgY heavy
+                     chain constant region gene, intron, 3' end; Gallus gallus
+                     immunoglobulin IgY heavy chain constant region gene,
+                     intron, 5' end; Gallus gallus immunoglobulin IgY heavy
+                     chain constant region gene, intron, 3' end"
+     intron          1..>65
+                     /gene="immunoglobulin IgY heavy chain constant region"
+                     /note="between CH2 and CH3"
+     gap             66..165
+                     /estimated_length=unknown
+     intron          <166..221
+                     /gene="immunoglobulin IgY heavy chain constant region"
+                     /note="between CH2 and CH3"
+     gap             222..321
+                     /estimated_length=unknown
+     intron          322..>722
+                     /gene="immunoglobulin IgY heavy chain constant region"
+                     /note="between CH3 and CH4"
+     gap             723..822
+                     /estimated_length=unknown
+     intron          823..>967
+                     /gene="immunoglobulin IgY heavy chain constant region"
+                     /note="between CH3 and CH4"
+ORIGIN      
+        1 gtaggttgtg gggacggaag tggggatgga agtggggccg gaaggaaggg gggggggggg
+       61 aacccnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      121 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnncaacc ccccccccca
+      181 gacccccatt aacccctctt tttctccccc ccccctacca gnnnnnnnnn nnnnnnnnnn
+      241 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      301 nnnnnnnnnn nnnnnnnnnn ngtaggggag aatgggccaa aagtggggaa aaatgaggaa
+      361 attggagcca aaagtgggga aatttgagcc aaaagtggga taaatgggga caaaagtggg
+      421 aaaaatggag ccaaaagtgg ggaaaatgga cctaaaagtg gggagatttg agccaaaagt
+      481 ggggaaaatg gactcaaaag tggggaaaat ggagagaaaa gtggggaaaa tggactcaaa
+      541 agtgcggaaa atggagtgaa aatgaggaaa ttggaggcaa aagtggggaa aatttgacct
+      601 aaaaagtggg gaaaaatgga accaaaaagt gggggaaaaa tggactcaaa aattggggga
+      661 aaaaggggac cccaaagggg gaccagaatg ggaccccaaa atgcccccaa ggtttcacct
+      721 tgnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      781 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nntttcccct ttccaaggac
+      841 cccaaattgc cactttcaaa cccccaaaaa tggcccccca aatgacccca aatcgacccc
+      901 aaaaatggcc ttcatttgcc gtcgcttccc cctttccagg acctgatttc tccctttccc
+      961 cttccag
+//
+

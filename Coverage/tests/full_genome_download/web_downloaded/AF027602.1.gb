@@ -1,0 +1,511 @@
+LOCUS       AF027602                8737 bp    mRNA    linear   VRT 27-AUG-2010
+DEFINITION  Gallus gallus L-type voltage-gated calcium channel alpha1D subunit
+            ChCaChA1D mRNA, complete cds.
+ACCESSION   AF027602
+VERSION     AF027602.1
+KEYWORDS    .
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 8737)
+  AUTHORS   Kollmar,R., Montgomery,L.G., Fak,J., Henry,L.J. and Hudspeth,A.J.
+  TITLE     Predominance of the alpha1D subunit in L-type voltage-gated Ca2+
+            channels of hair cells in the chicken's cochlea
+  JOURNAL   Proc. Natl. Acad. Sci. U.S.A. 94 (26), 14883-14888 (1997)
+   PUBMED   9405708
+REFERENCE   2  (bases 1 to 8737)
+  AUTHORS   Kollmar,R., Fak,J., Montgomery,L.G., Henry,L.J. and Hudspeth,A.J.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (01-OCT-1997) Howard Hughes Medical Institute and
+            Laboratory for Sensory Neuroscience, The Rockefeller University,
+            1230 York Avenue, Box 314, New York, NY 10021-6399, USA
+FEATURES             Location/Qualifiers
+     source          1..8737
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone_lib="Clontech CL1016b"
+                     /note="breed: White Leghorn"
+     source          1..325
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr4S"
+                     /tissue_type="brain"
+     source          296..762
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE94/61-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          320..1387
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr4L"
+                     /tissue_type="brain"
+     source          633..1311
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE42/43-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          1140..2297
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE9/39-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          1378..1821
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr17"
+                     /tissue_type="brain"
+     source          1604..3926
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr64A"
+                     /tissue_type="brain"
+     source          1612..3485
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr3A"
+                     /tissue_type="brain"
+     source          2094..3741
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE12/13-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          3435..4437
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE4/6-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          3921..6085
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr64B"
+                     /tissue_type="brain"
+     source          4164..4728
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE1/3-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          4522..5133
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE14/15-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          5352..6260
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE48/154-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          5854..6818
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr13AL"
+                     /tissue_type="brain"
+     source          6219..6795
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE141/142-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          6427..8737
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pSE152/29-1"
+                     /tissue_type="basilar papilla of the cochlea"
+     source          6592..7702
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr16BL"
+                     /tissue_type="brain"
+     source          7697..8737
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /clone="pBr16BS"
+                     /tissue_type="brain"
+     5'UTR           1..252
+                     /note="5' end of mRNA has not been confirmed and may lie
+                     further upstream"
+     CDS             253..6825
+                     /note="can be found in the basilar papilla of the cochlea"
+                     /codon_start=1
+                     /product="L-type voltage-gated calcium channel alpha1D
+                     subunit ChCaChA1D"
+                     /protein_id="AAC08304.1"
+                     /translation="MQHHQQQQPEQHPEEANYASSTRIPLPGDGPTTQSNSSAPSKQT
+                     VLSWQAAIDAARQAKAAQNMNTTTAQPVGSLSQRKRQQYAKSKKQGNTSNSRPPRALF
+                     CLSLNNPIRRACISLVEWKPFDIFILLSIFANCVALAVYIPFPEDDSNSTNHNLEKVE
+                     YAFLIIFTVETFLKIIAYGLLLHPNAYVRNGWNLLDFVIVVVGLFSVILEQLTKETEG
+                     GSHSGGKPGGFDVKALRAFRVLRPLRLVSGVPSLQVVLNSIIKAMVPLLHIALLVLFV
+                     IIIYAIIGLELFIGKMHKSCFLIDSDILVEEDPAPCAFSGNGRQCVMNGTECKGGWVG
+                     PNGGITNFDNFAFAMLTVFQCITMEGWTDVLYWVNDAIGCEWPWIYFVSLIILGSFFV
+                     LNLVLGVLSGEFSKEREKAKARGDFQKLREKQQLEEDLKGYLDWITQAEDIDPENDEE
+                     ADEEGKRNRVTLADLMEEKKKSRLSCFGRSSNKHASMPTSETESVNTENVSGEGENPA
+                     CCGSLCQTISKSKFSRRWRRWNRFNRRKCRAAVKSVTFYWLVIVLVFLNTLTISSEHY
+                     NQPDWLTQIQDIANKVLLALFTCEMLVKMYSLGLQAYFVSLFNRFDCFVVCGGIVETI
+                     LVELEIMSPLGISVFRCVRLLRIFKVTRHWASLSNLVASLLNSMKSIASLLLLLFLFI
+                     IIFSLLGMQLFGGKFNFDETQTKRSTFDNFPQALLTVFQILTGEDWNAVMYDGIMAYG
+                     GPSSSGMIVCIYFIILFICGNYILLNVFLAIAVDNLADAESLNTAQKEEAEEKERKKN
+                     ARKESLENKKSEKSEGDQKKPKDSKVTIAEYGEGEDEDKDPYPPCDVPVGEDEEDEED
+                     EPEVPAGPRPRRISELNMKEKITPIPEGSAFFIFSSTNPIRVGCHRLINHHIFTNLIL
+                     VFIMLSSVSLAAEDPIRSHSFRNNILGYADYVFTSMFTFEIILKMTAFGAFLHKGSFC
+                     RNYFNLLDLLVVGVSLVSFGIQSSAISVVKILRVLRVLRPLRAINRAKGLKHVVQCVF
+                     VAIRTIGNIMIVTTLLQFMFACIGVQLFKGKFYKCTDEAKQNPEECRGIYIVYKDGDV
+                     DNPMVKERVWQNSDFNFDNVLSAMMALFTVSTFEGWPALLYKAIDSNGENVGPVYNYR
+                     VEISIFFIIYIIIIAFFMMNIFVGFVIVTFQEQGEQEYKNCELDKNQRQCVEYALKAR
+                     PLRRYIPKNPYQYKFWYVVNSTGFEYIMFVLIMLNTLCLAMQHYGQSKLFNDAMDIMN
+                     MVFTGVFTVEMVLKLIAFKPKIFVRKKERWLGYFSDAWNTFDSLIVIGSIVDVVLSEA
+                     DPKPTETVTTDESGNSEDSARISITFFRLFRVMRLVKLLSRGEGIRTLLWTFIKSFQA
+                     LPYVALLIAMLFFIYAVIGMQVFGKVAMRDNNQINRNNNFQTFPQAVLLLFRCATGEA
+                     WQEIMLACLPGKRCDPESDYNPGEEYTCGSNFAIIYFISFYMLCAFLIINLFVAVIMD
+                     NFDYLTRDWSILGPHHLDEFKRIWSEYDPEAKGRIKHLDVVTLLRRIQPPLGFGKLCP
+                     HRVACKRLVAMNMPLNSDGTVMFNATLFALVRTALKIKTEGNLEQANEELRAVIKKIW
+                     KKTSMKLLDQVVPPAGDDEVTVGKFYATFLIQDYFRKFKKRKEQGLVGKYPAKNTTIA
+                     LQAGLRTLHDIGPEIRRAISCDLQDDEPEENNPDEEEEVYKRNGALFGNHINHISSDR
+                     RDSFQQINTTHRPLHVQRPSIPSASDTEKNIYPHTGNSVYHNHHNHNSVGKQVPNSTN
+                     ANLNNANVSKVVHGKHANFGSHEHRSENGYHSYSRADHEKRRRPSSRRTRYYETYIRS
+                     DSGDGRRPTICREERDIRDYCNDDHYLGEQEYYSGEEYYEEDSMLSGNRHVYDYHCRH
+                     HCHDSDFERPKGYHHPHGFFEEDDSQTCYDTKRSPRRRLLPPTPASNRRSSFNFECLR
+                     RQSSQDDIPLSPNFHHRTALPLHLMQQQVMAVAGLDSSKAHKHSPSRSTRSWATPPAT
+                     PPNRDHTPYYTPLIQVDRAESTEHMNGSLPSLHRSSWYTDDPDISYRTFTPANLTVPN
+                     DFRHKHSDKQRSADSLVEAVLISEGLGRYAKDPKFVSATKHEIADACDMTIDEMESAA
+                     SNLLNGNISNGTNGDMFPILSRQDYELQDFGPGYSDEEPEPGRYEEDLADEMICITSL
+                     "
+     misc_difference 1012
+                     /note="in clone pSE42/43-1"
+                     /citation=[1]
+                     /replace="a"
+     misc_difference 1310
+                     /note="in clone pSE9/39-1"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 1388
+                     /note="in clone pSE9/39-1"
+                     /citation=[1]
+                     /replace="c"
+     exon            1628..1705
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="used in the splice variant found in clone
+                     pSE9/39-1; found in the cytoplasmic loop between repeats I
+                     and II; abundant in the basilar papilla, barely detectable
+                     in the brain"
+     misc_feature    1628^1629
+                     /note="splice junction between exons; for intron sequence,
+                     see GenBank Accession Number AF027607"
+     misc_difference 1947
+                     /note="in clone pBr3A"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 2026..2208
+                     /note="missing in clone pBr64A"
+                     /citation=[1]
+                     /replace=""
+     misc_difference 2119
+                     /note="in clone pSE9/39-1"
+                     /citation=[1]
+                     /replace="g"
+     misc_difference 2142
+                     /note="in clone pSE9/39-1"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 2158..2159
+                     /note="missing in clone pSE12/13-1"
+                     /citation=[1]
+                     /replace=""
+     misc_difference 2170
+                     /note="in clone pBr3A"
+                     /citation=[1]
+                     /replace="t"
+     misc_difference 2204
+                     /note="missing in clone pSE12/13-1"
+                     /citation=[1]
+                     /replace=""
+     misc_difference 2206
+                     /note="in clone pSE9/39-1"
+                     /citation=[1]
+                     /replace="t"
+     misc_difference 2280
+                     /note="in clone pSE9/39-1"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 2589
+                     /note="in clone pSE12/13-1"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 2790
+                     /note="in clone pSE12/13-1"
+                     /citation=[1]
+                     /replace="g"
+     exon            3067..3126
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="used in the splice variant found in clone
+                     pSE12/13-1; alternative exon encodes the transmembrane
+                     segment IIIS2; abundant in the basilar papilla, rare in
+                     the brain"
+     misc_difference 3067..3126
+                     /note="used in the splice variant found in clones pBr3A
+                     and pBr64A; alternative exon encodes the transmembrane
+                     segment IIIS2; rare in the basilar papilla, abundant in
+                     the brain; see GenBank Accession Number AF027603"
+                     /replace="atacttggttactttgactatgctttcacagccatctttactgttgaa
+                     atcctgttaaag"
+     misc_difference 3138
+                     /note="in clone pBr64A"
+                     /citation=[1]
+                     /replace="t"
+     misc_difference 3481
+                     /note="in clone pBr3A"
+                     /citation=[1]
+                     /replace="g"
+     exon            4102..4131
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="used in the splice variant found in clone pSE4/6-1;
+                     found in the cytoplasmic loop between transmembrane
+                     segments IVS2 and IVS3; abundant in the basilar papilla,
+                     not detected in the brain"
+     exon            4132..4215
+                     /experiment="experimental evidence, no additional details
+                     recorded"
+                     /note="used in splice variant found in clones pSE1/3-1,
+                     pSE4/6-1, and pBr64B; alternative exon encodes the
+                     transmembrane segment IVS3 in the basilar papilla and the
+                     brain"
+     misc_difference 4132..4215
+                     /note="used in the splice variant found in clone pBr64B;
+                     alternative exon encodes the transmembrane segment IVS3;
+                     see GenBank Accession Number AF027604"
+                     /replace="cactatttcactgatgcatggaacacttttgatgccttaattgttgtt
+                     ggtagcgtcgttgatattgctataacagaagttaat"
+     misc_difference 4461
+                     /note="in clone pSE1/3-1"
+                     /citation=[1]
+                     /replace="g"
+     misc_feature    5012..5379
+                     /note="5' end of clone pSE29/31-1, which diverges after nt
+                     5379, probably because of alternative splicing; see
+                     GenBank Accession Number AF027606"
+     misc_feature    5012..5262
+                     /note="5' end of clone pSE29/31-2, which diverges after nt
+                     5262, probably because of alternative splicing; see
+                     GenBank Accession Number AF027605"
+     misc_difference 5080
+                     /note="in clone pSE29/31-1"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 5258
+                     /note="in clone pSE29/31-2"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 5518
+                     /note="in clone pSE48/154-1"
+                     /citation=[1]
+                     /replace="g"
+     misc_difference 5727
+                     /note="in clone pSE48/154-1"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 5925^5926
+                     /note="used in splice variant found in clone pSE48/154-1;
+                     additional exon with 12 bases between nucleotides 5923 and
+                     5924, which results in a premature stop codon"
+                     /replace="gaatggaccatg"
+     misc_difference 5951
+                     /note="in clone pSE48/154-1"
+                     /citation=[1]
+                     /replace="g"
+     misc_difference 6716
+                     /note="in clone pSE152/29-1"
+                     /citation=[1]
+                     /replace="g"
+     3'UTR           6826..8737
+     misc_difference 7136
+                     /note="in clone pBr16BL"
+                     /citation=[1]
+                     /replace="t"
+     misc_difference 7571
+                     /note="in clone pSE152/29-1"
+                     /citation=[1]
+                     /replace="c"
+     misc_difference 7815
+                     /note="in clone pSE152/29-1"
+                     /citation=[1]
+                     /replace="g"
+     misc_difference 8208
+                     /note="one A residue missing in clone pSE152/29-1"
+                     /citation=[1]
+                     /replace=""
+     regulatory      8694..8699
+                     /regulatory_class="polyA_signal_sequence"
+     polyA_site      8720
+ORIGIN      
+        1 ggagagatcc cgtgtcaccc ggatgtgagt gtcatgttgg cccaaactcg gagggatttg
+       61 gcagcggcga agcagcggca gcagcggcgg gaggaggagg agcgggaaca gcccctcgcg
+      121 cgtcgctagt cgctaccatg ggggtcgggt agcggagcgc agggcagcgc gcacctggct
+      181 cggggcggcg agggccgtct cggccctggg gttttttctt tttcctctcg cgcgccggag
+      241 caagcgggaa tcatgcagca ccaccagcag cagcagcccg agcagcaccc agaagaggcg
+      301 aactatgcaa gcagcaccag aattcctctc cctggtgacg gaccaactac tcagtccaac
+      361 agttcagcac catccaagca aactgttctg tcttggcaag ctgcaattga tgctgctaga
+      421 caagcaaagg ctgcccaaaa tatgaatacc accacagccc agcctgtagg atctctgtcc
+      481 caaagaaaac gccagcaata tgccaagagc aaaaaacagg gtaatacgtc taatagtcgg
+      541 ccaccccgtg cccttttctg tttatccctc aacaacccaa tacgaagagc ctgcattagt
+      601 ctagtagaat ggaaaccatt tgacatattt atactactgt ctatttttgc caattgtgtg
+      661 gccttagctg tttacatccc attcccagaa gatgattcta attcaactaa tcataacttg
+      721 gaaaaagtag aatatgcctt cctgataatt tttacagttg aaacattttt gaagattata
+      781 gcatatggat tattattaca ccccaatgca tatgttagaa atggatggaa tttattggat
+      841 tttgtaatag tagtagtagg attatttagt gtaatattgg aacaattaac caaagaaaca
+      901 gaaggtggca gccactcagg tggcaaacct ggaggctttg atgtcaaagc cctaagagcc
+      961 tttcgtgtat tgcgacctct ccggcttgta tcaggagtgc ccagtttaca agttgtcctg
+     1021 aactccatta taaaagccat ggttcccctg ctccatattg cccttttggt attgtttgta
+     1081 atcataatct atgctattat aggattggaa ctttttattg gaaaaatgca caaatcttgt
+     1141 tttcttattg attcagatat actagttgaa gaagatccag caccttgtgc attctcaggg
+     1201 aatggacgtc agtgtgtcat gaatggcact gaatgtaagg gtggttgggt tggaccgaat
+     1261 ggaggcataa cgaacttcga taattttgca tttgcaatgc tgactgtatt ccagtgtata
+     1321 accatggaag gatggactga tgtgttatat tgggtaaatg atgcaatagg atgtgaatgg
+     1381 ccatggatct attttgttag tcttatcatc cttggctcat ttttcgtact taacctggtt
+     1441 cttggtgtac ttagtgggga attttccaag gaaagagaaa aagccaaggc ccgaggggac
+     1501 tttcagaagc tacgtgaaaa acaacagctt gaagaagatc tgaagggata tttagactgg
+     1561 attacacagg cagaagacat tgatcctgag aatgatgaag aggctgatga agaagggaaa
+     1621 cggaacaggg ttacactggc tgacttaatg gaagaaaaga agaaaagcag acttagttgc
+     1681 tttggccggt cttccaataa acatgcaagc atgcccacca gcgaaaccga gtcagtgaac
+     1741 acagagaatg tgagtggaga aggagagaac ccagcatgct gtgggagctt atgtcaaacc
+     1801 atctcaaaat ccaagttcag tcgacgctgg cgtcgctgga atcgatttaa tcgaagaaaa
+     1861 tgtagagctg cagtaaaatc tgtcacgttt tattggcttg ttattgtctt ggtctttctg
+     1921 aacacattaa ctatctcatc ggaacattat aaccaacctg actggctgac ccagatccaa
+     1981 gatatcgcaa ataaagttct tctggctttg ttcacctgtg aaatgttagt aaagatgtac
+     2041 agcttgggtc tacaggctta ttttgtttct ctttttaacc gctttgattg cttcgttgtt
+     2101 tgtggtggca ttgttgaaac cattttggtg gagttggaaa ttatgtcacc ccttggaatt
+     2161 tcagtgtttc gctgtgttcg tctcctgcgt atttttaaag taacaaggca ctgggcatcc
+     2221 ctgagcaact tggtagcatc cttgttaaac tcaatgaagt ccattgcttc actgttgctt
+     2281 ctgcttttcc tcttcatcat aatcttctcg ttgcttggaa tgcagctgtt tggaggcaaa
+     2341 tttaattttg atgaaactca aacaaaacgg agcaccttcg ataattttcc acaagctctt
+     2401 ttaactgtat tccagattct aacaggtgaa gactggaatg ctgttatgta tgatggcata
+     2461 atggcgtatg gtggcccatc atcgtcaggc atgatagtct gcatatattt cattatcctc
+     2521 ttcatctgcg gtaactatat cttgctaaat gtcttcttgg ccattgctgt ggataacttg
+     2581 gcagatgctg aaagtctaaa tacagctcag aaagaagaag cagaagaaaa ggaaaggaaa
+     2641 aagaatgcaa gaaaagaaag tctggaaaat aaaaaaagtg agaagtcaga aggtgaccaa
+     2701 aagaagccca aggatagtaa ggtgacaatt gctgaatatg gagaaggaga ggatgaagat
+     2761 aaagatccct atccaccctg tgatgtacca gtaggtgaag atgaagaaga tgaggaggat
+     2821 gaacctgagg taccagcagg cccacgtccc cggagaatat cagaactaaa catgaaggag
+     2881 aagataacac cgatccctga agggagtgcc ttcttcattt tcagcagcac caatccaatt
+     2941 cgagtgggat gccacaggct catcaatcac cacatcttta ccaatctcat ccttgtcttc
+     3001 atcatgctga gcagtgtttc cctagcagca gaagatccga ttcgcagcca ctcttttcga
+     3061 aataatatcc tagggtatgc agattatgtc ttcactagta tgtttacatt tgagatcatt
+     3121 ttgaagatga cagctttcgg agcattcctt cataaagggt ccttctgcag aaattacttt
+     3181 aatttgctgg atttgctggt tgtgggtgtt tctctggtat catttggtat tcagtcaagt
+     3241 gctatctcag ttgtgaagat cctcagagtt ttgagagtct tgaggcccct tagggctata
+     3301 aacagagcaa aaggacttaa gcacgttgtt cagtgcgtct ttgtggctat tagaactatt
+     3361 ggtaatatca tgattgttac aactctgctg cagttcatgt ttgcttgtat tggagtgcag
+     3421 ctcttcaagg gaaaattcta caagtgcact gatgaggcaa aacagaatcc agaggaatgc
+     3481 cgggggatat acattgttta taaagatgga gatgttgata atccaatggt caaagagagg
+     3541 gtctggcaaa atagtgattt caacttcgac aatgttctgt ctgctatgat ggcccttttc
+     3601 acagtgtcta cttttgaagg ctggccagcg ctgctgtaca aagccattga ttccaatggc
+     3661 gagaatgtag gacctgtgta caactacaga gtggagatct ccattttttt catcatctac
+     3721 atcatcatta ttgctttctt tatgatgaac atatttgttg gttttgtcat tgttaccttt
+     3781 caagaacagg gagaacaaga atacaagaac tgtgagctgg acaaaaatca gcgtcagtgc
+     3841 gtggaatatg ccttgaaggc tcgtcctctt cgtagataca ttccaaaaaa tccttaccag
+     3901 tacaagttct ggtatgtggt gaattctact ggatttgaat acatcatgtt tgtcctcatc
+     3961 atgctgaaca cactttgcct ggctatgcag cactatggac agtctaagct ctttaatgat
+     4021 gcgatggaca ttatgaatat ggttttcacg ggagtgttca ctgttgaaat ggttttgaag
+     4081 ctgattgcat tcaaacccaa gatttttgta agaaaaaagg aaagatggct aggctatttt
+     4141 agtgatgcct ggaatacgtt tgactccctc atcgttattg gcagcatagt agacgtcgtt
+     4201 ctcagtgaag ctgatccaaa gccaactgaa acagtcacaa ctgatgagtc tgggaactcc
+     4261 gaagacagcg caagaatctc catcactttt ttccgtcttt tccgagtgat gaggttggtg
+     4321 aagctgctta gcagaggaga aggaatcaga actttattgt ggacatttat taagtcattt
+     4381 caggctctgc cttatgttgc ccttctgata gctatgctgt tcttcatcta tgctgtcatt
+     4441 ggaatgcagg tatttggaaa agtggccatg agagacaaca atcaaataaa cagaaacaac
+     4501 aattttcaaa ctttccccca agctgtgctg cttctcttca ggtgtgcaac tggagaagcc
+     4561 tggcaggaaa tcatgctggc atgtttgcct ggaaaacgct gtgatccaga atctgattat
+     4621 aatccagggg aagaatacac atgtggaagc aattttgcca tcatttattt tatcagtttt
+     4681 tatatgcttt gtgcattttt gataataaac ttatttgtgg ctgtcattat ggataacttt
+     4741 gactatttga cacgtgactg gtccattctg ggtcctcatc atttggatga gttcaaaagg
+     4801 atatggtcag aatatgaccc tgaagcaaag ggaaggataa agcatcttga tgtggttacg
+     4861 ttactgagac gcattcagcc accacttggt tttggcaaat tatgccctca ccgggtggcc
+     4921 tgcaagaggt tagtggccat gaatatgcca ctaaatagtg acggaaccgt catgttcaat
+     4981 gctactttgt ttgctttggt taggactgct ctaaagataa aaacagaagg taacctagag
+     5041 caagcaaatg aagaacttag agcagttata aagaaaatat ggaagaaaac tagcatgaaa
+     5101 ttacttgacc aagttgtccc tccggctggc gatgatgagg taaccgtggg gaagttctat
+     5161 gccaccttcc tgatacagga ctactttagg aaattcaaga aacgcaaaga acaaggactg
+     5221 gtggggaaat atcctgcgaa gaataccacg attgctctgc aggcaggact aaggacactt
+     5281 catgatattg gccctgaaat acgccgagct atatcctgtg acttgcaaga tgatgaacca
+     5341 gaggaaaaca atccagacga ggaggaggaa gtttataaaa ggaatggtgc cctctttggc
+     5401 aaccatataa accatattag cagtgacaga cgagattcat ttcagcagat caacaccacg
+     5461 caccgtccct tacatgtgca gcggccttca attccatctg caagtgatac tgagaaaaat
+     5521 atatatcctc atacaggaaa ttctgtgtac cacaatcatc ataaccacaa ctcagtagga
+     5581 aaacaagttc caaactcaac aaatgccaat ctcaataatg ccaatgtatc caaagttgtt
+     5641 cacggaaaac acgctaattt tggaagtcac gagcatagat ctgaaaatgg ttaccattcg
+     5701 tactctagag ctgaccatga gaagcgtaga aggccaagca gtaggagaac ccgctactac
+     5761 gaaacatata ttaggtctga ctctggtgac ggccgtcgac caactatttg ccgtgaagaa
+     5821 cgtgacattc gagactattg caatgatgat cattatttgg gagagcagga atattatagt
+     5881 ggagaagaat actatgagga agacagcatg ttgtcaggaa acagacatgt gtatgattac
+     5941 cactgtagac atcactgcca tgactcagat tttgagagac caaaaggtta ccatcaccca
+     6001 catgggtttt ttgaggaaga tgattcacag acctgttatg atacgaaaag atctcctagg
+     6061 agacggctgc tacctccaac accagcatca aatagacgat cttcctttaa ttttgaatgc
+     6121 ctccgccgac agagtagtca agatgatata ccactctctc caaatttcca tcatcgcact
+     6181 gctttaccac ttcacctaat gcaacagcag gtcatggctg ttgcaggtct ggattccagt
+     6241 aaagctcata aacattcacc aagtcgttcc acgcgttcat gggctacccc acctgcaacc
+     6301 cctcccaaca gggaccatac cccatactat acacctctaa tccaagttga cagggctgaa
+     6361 tctacagaac atatgaatgg tagcctgcct tccttgcaca ggagctcctg gtacacagac
+     6421 gaccctgata tctcctaccg aacatttaca ccagccaatt taacagtacc taatgacttt
+     6481 aggcataaac acagtgacaa acagaggagt gcagacagtt tggtagaagc ggtacttata
+     6541 tctgaaggcc taggaaggta tgcaaaggac cctaaatttg tttcagctac aaaacatgag
+     6601 attgctgatg cttgtgacat gactatcgat gagatggaaa gtgcagcaag taatcttctc
+     6661 aatggaaata ttagcaatgg gaccaatggg gatatgtttc ccattttaag cagacaagat
+     6721 tatgaacttc aagattttgg tcctggctac agtgatgaag aaccagaacc aggacgatat
+     6781 gaagaagact tagctgatga aatgatatgc attacaagct tatagtattt agcaagggaa
+     6841 aagattttaa ataacagaaa aagtgcctca tagtttaaag atgctaggca ctagttgggg
+     6901 ttaaccgatc aagttttgta caagtgatgt cacacctcaa ggaagccata actaataaac
+     6961 agattatctc cacgttgctg aaatgtgatc agagctgcag cacatcatct cttcccacag
+     7021 aatcttcagt ttctctgtag gaataaggtt attttgaaaa gaagcaggtt ctgacaatca
+     7081 gttttttgag ggctagagtg ggattctgag gtgtaatatc ttgcctgttc ttcaaccttg
+     7141 tgctactgtc cttcatagta gagcaggatt ttgtcagtga aaatgtgtaa gtccagcaca
+     7201 acacgaggtg agtgatgaca accagtaatg tcattacctc agtactcaag agcatatcag
+     7261 ctatccattg catatctatt ctaatactgt tttcaaacct gcctcctgat ttcttttctt
+     7321 aatgctcttc taaaacatgg tttgtcatgc tctacctgtt agagatcatt ggaaaaagaa
+     7381 gttatataaa gaatactctg ttatatgtaa catcagttta cataggaaaa tatcattcag
+     7441 atagtctgtt ttatgactat cacgttaagg gcaaaatata ctggaataat tgcattctta
+     7501 ctaatgcact tgcaaccagg ttaaagtaga attagataag atagtttgct aaaaattata
+     7561 tagaagaaaa tattgtaaat gaattgtaat atacaatgat ttgtatttgt aaagagatgt
+     7621 tctatatttt gtaattattg taccgtaatt gaactgcagc aatatttatg gaccctaatt
+     7681 attgtaactc tccacagaat tctagatatg agtattttta cttggaatat atagatctat
+     7741 agcataaata tttaaataga gccacctctc attgtaaatc tttttgggat aaagtgtcaa
+     7801 gtgtgaactt gacaacacag actttttttt taacataatg gtgtcaaatg aatctctctg
+     7861 tgtaagggat gcacagttga ccatttgcag tcttatactt ggaaaggtaa aagatttgaa
+     7921 attattttaa cattttgatt gaaaaataag ctgtaatttt atttttgtat taatcccatg
+     7981 ctactgaaat attaaaatca ttaaaaaatt ggcaagttca tgccagggta ctactggtca
+     8041 tggcacagta tgttttgaca aagtacactg cctatgtacc ctactgtggt agaaagtatc
+     8101 tagggcagaa actacttcat aggtaaagga gaatgcttta cttcagtact gcttactttg
+     8161 ctcagaaaaa gaagaagaaa tatgattaaa tgattcttca cagaaccaaa aaaaaaaaaa
+     8221 gaagaaaaaa atwtwtaaaa gtatactact ttattgcctc tacctttctg ttttatgtgt
+     8281 actatttcaa agatttattt ttatgcaatc aaaagagggc tgagatattg ttcacaatgc
+     8341 agtaaaaccc tgaaatgact ttgaggctaa tacaaccttg gaggaaaatc aaaaaatact
+     8401 gaaagctact gtctattttg ttagcactgg ataacaatga cttgttctaa caagttgcat
+     8461 tatcaggttt tacctgtagt tcatatgcta gatagcaatc cagttcacat ttttacaaat
+     8521 gtgatgttta aaacatgtca ataaacattt tgtacataat gacaatttcc tatgaatagc
+     8581 atacagactt cctctggaat catttcaaat gccaggataa gaacttaaag gtttgtaaat
+     8641 tctttcttga cctaaatcat tttgtattaa aacaaatgca aaatgttctt caaaataaaa
+     8701 ctgtgtaata attttattaw aaaaaaaaaa aaaaaaa
+//
+

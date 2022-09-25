@@ -1,0 +1,345 @@
+LOCUS       XM_042926660            2281 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo transducin beta like 1 X-linked (TBL1X),
+            transcript variant X4, mRNA.
+ACCESSION   XM_042926660
+VERSION     XM_042926660.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..2281
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..2281
+                     /gene="TBL1X"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 28 Proteins, and 100% coverage of
+                     the annotated genomic feature by RNAseq alignments,
+                     including 9 samples with support for all annotated
+                     introns"
+                     /db_xref="GeneID:122212688"
+     CDS             307..1890
+                     /gene="TBL1X"
+                     /codon_start=1
+                     /product="F-box-like/WD repeat-containing protein TBL1X"
+                     /protein_id="XP_042782594.1"
+                     /db_xref="GeneID:122212688"
+                     /translation="MSITSDEVNFLVYRYLQESGFSHSAFTFGIESHISQSNINGTLV
+                     PPAALISILQKGLQYVEAEISINEDGTVFDGRPIESLSLIDAVMPDVVQTRQQAFREK
+                     LAQQQASAAAAAAAAAAAAATTATAAPTAVAQQHPPKNGEATVNGEENGAHAINNHSK
+                     PMEIDGDVEIPPNKATVLRGHESEVFICAWNPVSDLLASGSGDSTARIWNLNENSNGG
+                     STQLVLRHCIREGGHDVPSNKDVTSLDWNSDGTLLATGSYDGFARIWTEDGNLASTLG
+                     QHKGPIFALKWNKKGNYILSAGVDKTTIIWDAHTGEAKQQFPFHSAPALDVDWQNNTT
+                     FASCSTDMCIHVCRLGCDRPVKTFQGHTNEVNAIKWDPSGMLLASCSDDMTLKIWSMK
+                     QDTCVHDLQAHSKEIYTIKWSPTGPATSNPNSNIMLASASFDSTVRLWDVERGVCVHT
+                     LTKHQEPVYSVAFSPDGKYLASGSFDKCVHIWNTQSGSLVHSYRGTGGIFEVCWNARG
+                     DKVGASASDGSVCVLDLRK"
+     polyA_site      2281
+                     /gene="TBL1X"
+                     /experiment="COORDINATES: polyA evidence [ECO:0006239]"
+ORIGIN      
+        1 ctcctcggcc gcggcacggc ccgggctcgg cgacggccgg cggcagggag gctcggagcg
+       61 cggcggcgcc gccacaagtt gcgctgccgg cggcgaggta accgaagaca gaaagcgggc
+      121 ctcaaaataa accctcgaag gaagaaggga tttgcctaca tttggctctg agtcctggcg
+      181 gccggttggc agtttatctg atcggatgct ggggagctca ctggtcccga ggtctacaca
+      241 tgaagtcacc gtaaagaggg cggctcccgc atcgtaaaga cctcgtctcc gcgaggtgag
+      301 gctaagatga gcataaccag cgacgaggtg aacttcctgg tgtatcgcta cctccaggag
+      361 tcaggttttt cccactcggc gttcacgttc ggtattgaga gccacatcag ccagtccaac
+      421 atcaatggga cgctagtgcc gccagctgcc ctcatctcca tcctgcagaa gggacttcag
+      481 tatgtggagg ccgagatcag catcaatgag gatggcacgg tgttcgacgg ccgccccata
+      541 gagtccctgt ccctgatcga cgcggtgatg cccgacgtgg tgcagacgcg gcagcaggcc
+      601 ttccgggaga agctcgctca gcagcaggcc agtgcggcgg ccgcggccgc ggcagctgcg
+      661 gccgcggcgg ccacgacggc cacggcggcc ccgacagccg ttgctcagca acatccacca
+      721 aagaacggag aggccacggt gaacggggag gagaacggag cccacgcgat aaataatcat
+      781 tcgaaaccaa tggaaataga cggggacgtt gagattccac ccaacaaagc cacagtcctt
+      841 cggggccacg agtccgaggt gttcatttgt gcctggaacc ccgtcagcga tctcctagct
+      901 tcagggtctg gagactcaac ggcaaggata tggaacctta acgaaaacag caacgggggc
+      961 tccacgcagc tcgtgttgag gcactgtata cgagaagggg gccatgacgt ccccagtaat
+     1021 aaagacgtga cctccctgga ctggaacagc gacgggacgc tgttggccac aggctcctat
+     1081 gatggttttg cgagaatatg gacggaagat ggcaacctgg ccagcacctt agggcaacac
+     1141 aaaggcccca tctttgcctt gaaatggaac aaaaagggga attacatttt gagtgctggt
+     1201 gtagacaaaa caacaattat ttgggacgcc cacacaggag aagccaaaca acagtttccg
+     1261 tttcattccg cccctgctct cgacgtagac tggcagaaca acactacctt tgcctcctgt
+     1321 agcacagaca tgtgtattca cgtctgcaga ctcggctgcg accgccccgt caaaaccttc
+     1381 caaggacaca cgaacgaggt gaacgccatc aaatgggatc cttctggaat gctgctagcg
+     1441 tcctgctctg atgacatgac attaaagatc tggagtatga agcaggatac gtgtgtccat
+     1501 gaccttcagg cccacagcaa agagatctac accataaagt ggagtcccac cgggccagcc
+     1561 accagcaacc caaattccaa catcatgcta gcaagcgctt cgttcgattc tacggtccga
+     1621 ctgtgggatg tggagcgagg cgtctgcgtc cacacgctaa ccaagcatca ggagcctgtc
+     1681 tacagcgtag cttttagccc tgacgggaaa tatttggcca gtggctcctt cgataagtgc
+     1741 gtgcatatct ggaatactca gagtggaagt cttgtgcaca gctaccgagg cactggcggc
+     1801 atcttcgagg tgtgctggaa tgcccgaggc gacaaagtgg gtgccagcgc gtccgatggc
+     1861 tctgtgtgtg ttttagatct ccgaaagtaa acacaaacta ttctagaaga gaattctaac
+     1921 ggaccagcag tgaatgtgtg aagcagcaat gctcagacac cgttctttcc gctccaaaac
+     1981 tgtacgaact tgacttgcat tagagtgtac ttggaaatca gttcatcctg gccacaggag
+     2041 tctctacttt ctcgtaatct tcatcaagaa gtttaaaaca gaaacataca cagtcatatc
+     2101 aaagggggaa ggaatggttt ccacccagaa cattcagcct gggaagcatg gagccaccgg
+     2161 ctaggcgggg gcacggtttg ctttccatcc agaacaggct ctgatagttg agaggagaaa
+     2221 agacgaagag gagaaaaaag aaaacaaaca aaaaaagctg tgccaaaaaa gaaaagaaaa
+     2281 a
+//
+
+LOCUS       XM_042926658            2323 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo transducin beta like 1 X-linked (TBL1X),
+            transcript variant X3, mRNA.
+ACCESSION   XM_042926658
+VERSION     XM_042926658.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..2323
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..2323
+                     /gene="TBL1X"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 28 Proteins, and 100% coverage of
+                     the annotated genomic feature by RNAseq alignments,
+                     including 5 samples with support for all annotated
+                     introns"
+                     /db_xref="GeneID:122212688"
+     CDS             349..1932
+                     /gene="TBL1X"
+                     /codon_start=1
+                     /product="F-box-like/WD repeat-containing protein TBL1X"
+                     /protein_id="XP_042782592.1"
+                     /db_xref="GeneID:122212688"
+                     /translation="MSITSDEVNFLVYRYLQESGFSHSAFTFGIESHISQSNINGTLV
+                     PPAALISILQKGLQYVEAEISINEDGTVFDGRPIESLSLIDAVMPDVVQTRQQAFREK
+                     LAQQQASAAAAAAAAAAAAATTATAAPTAVAQQHPPKNGEATVNGEENGAHAINNHSK
+                     PMEIDGDVEIPPNKATVLRGHESEVFICAWNPVSDLLASGSGDSTARIWNLNENSNGG
+                     STQLVLRHCIREGGHDVPSNKDVTSLDWNSDGTLLATGSYDGFARIWTEDGNLASTLG
+                     QHKGPIFALKWNKKGNYILSAGVDKTTIIWDAHTGEAKQQFPFHSAPALDVDWQNNTT
+                     FASCSTDMCIHVCRLGCDRPVKTFQGHTNEVNAIKWDPSGMLLASCSDDMTLKIWSMK
+                     QDTCVHDLQAHSKEIYTIKWSPTGPATSNPNSNIMLASASFDSTVRLWDVERGVCVHT
+                     LTKHQEPVYSVAFSPDGKYLASGSFDKCVHIWNTQSGSLVHSYRGTGGIFEVCWNARG
+                     DKVGASASDGSVCVLDLRK"
+     polyA_site      2323
+                     /gene="TBL1X"
+                     /experiment="COORDINATES: polyA evidence [ECO:0006239]"
+ORIGIN      
+        1 agcccaggga gccggggagc aacgaagggc aggctcaagg gaaggcccca ccacgtcctt
+       61 ttggggggcc ttgattggca actgatacat aataagacac aatctattct gctgattcac
+      121 aattatggag actgtgtaac cgaagacaga aagcgggcct caaaataaac cctcgaagga
+      181 agaagggatt tgcctacatt tggctctgag caggtcctgg cggccggttg gcagtttatc
+      241 tgatcggatg ctggggagct cactggtccc gaggtctaca catgaagtca ccgtaaagag
+      301 ggcggctccc gcatcgtaaa gacctcgtct ccgcgaggtg aggctaagat gagcataacc
+      361 agcgacgagg tgaacttcct ggtgtatcgc tacctccagg agtcaggttt ttcccactcg
+      421 gcgttcacgt tcggtattga gagccacatc agccagtcca acatcaatgg gacgctagtg
+      481 ccgccagctg ccctcatctc catcctgcag aagggacttc agtatgtgga ggccgagatc
+      541 agcatcaatg aggatggcac ggtgttcgac ggccgcccca tagagtccct gtccctgatc
+      601 gacgcggtga tgcccgacgt ggtgcagacg cggcagcagg ccttccggga gaagctcgct
+      661 cagcagcagg ccagtgcggc ggccgcggcc gcggcagctg cggccgcggc ggccacgacg
+      721 gccacggcgg ccccgacagc cgttgctcag caacatccac caaagaacgg agaggccacg
+      781 gtgaacgggg aggagaacgg agcccacgcg ataaataatc attcgaaacc aatggaaata
+      841 gacggggacg ttgagattcc acccaacaaa gccacagtcc ttcggggcca cgagtccgag
+      901 gtgttcattt gtgcctggaa ccccgtcagc gatctcctag cttcagggtc tggagactca
+      961 acggcaagga tatggaacct taacgaaaac agcaacgggg gctccacgca gctcgtgttg
+     1021 aggcactgta tacgagaagg gggccatgac gtccccagta ataaagacgt gacctccctg
+     1081 gactggaaca gcgacgggac gctgttggcc acaggctcct atgatggttt tgcgagaata
+     1141 tggacggaag atggcaacct ggccagcacc ttagggcaac acaaaggccc catctttgcc
+     1201 ttgaaatgga acaaaaaggg gaattacatt ttgagtgctg gtgtagacaa aacaacaatt
+     1261 atttgggacg cccacacagg agaagccaaa caacagtttc cgtttcattc cgcccctgct
+     1321 ctcgacgtag actggcagaa caacactacc tttgcctcct gtagcacaga catgtgtatt
+     1381 cacgtctgca gactcggctg cgaccgcccc gtcaaaacct tccaaggaca cacgaacgag
+     1441 gtgaacgcca tcaaatggga tccttctgga atgctgctag cgtcctgctc tgatgacatg
+     1501 acattaaaga tctggagtat gaagcaggat acgtgtgtcc atgaccttca ggcccacagc
+     1561 aaagagatct acaccataaa gtggagtccc accgggccag ccaccagcaa cccaaattcc
+     1621 aacatcatgc tagcaagcgc ttcgttcgat tctacggtcc gactgtggga tgtggagcga
+     1681 ggcgtctgcg tccacacgct aaccaagcat caggagcctg tctacagcgt agcttttagc
+     1741 cctgacggga aatatttggc cagtggctcc ttcgataagt gcgtgcatat ctggaatact
+     1801 cagagtggaa gtcttgtgca cagctaccga ggcactggcg gcatcttcga ggtgtgctgg
+     1861 aatgcccgag gcgacaaagt gggtgccagc gcgtccgatg gctctgtgtg tgttttagat
+     1921 ctccgaaagt aaacacaaac tattctagaa gagaattcta acggaccagc agtgaatgtg
+     1981 tgaagcagca atgctcagac accgttcttt ccgctccaaa actgtacgaa cttgacttgc
+     2041 attagagtgt acttggaaat cagttcatcc tggccacagg agtctctact ttctcgtaat
+     2101 cttcatcaag aagtttaaaa cagaaacata cacagtcata tcaaaggggg aaggaatggt
+     2161 ttccacccag aacattcagc ctgggaagca tggagccacc ggctaggcgg gggcacggtt
+     2221 tgctttccat ccagaacagg ctctgatagt tgagaggaga aaagacgaag aggagaaaaa
+     2281 agaaaacaaa caaaaaaagc tgtgccaaaa aagaaaagaa aaa
+//
+
+LOCUS       XM_042926657            3210 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo transducin beta like 1 X-linked (TBL1X),
+            transcript variant X2, mRNA.
+ACCESSION   XM_042926657
+VERSION     XM_042926657.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..3210
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..3210
+                     /gene="TBL1X"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 28 Proteins, and 100% coverage of
+                     the annotated genomic feature by RNAseq alignments,
+                     including 4 samples with support for all annotated
+                     introns"
+                     /db_xref="GeneID:122212688"
+     CDS             1236..2819
+                     /gene="TBL1X"
+                     /codon_start=1
+                     /product="F-box-like/WD repeat-containing protein TBL1X"
+                     /protein_id="XP_042782591.1"
+                     /db_xref="GeneID:122212688"
+                     /translation="MSITSDEVNFLVYRYLQESGFSHSAFTFGIESHISQSNINGTLV
+                     PPAALISILQKGLQYVEAEISINEDGTVFDGRPIESLSLIDAVMPDVVQTRQQAFREK
+                     LAQQQASAAAAAAAAAAAAATTATAAPTAVAQQHPPKNGEATVNGEENGAHAINNHSK
+                     PMEIDGDVEIPPNKATVLRGHESEVFICAWNPVSDLLASGSGDSTARIWNLNENSNGG
+                     STQLVLRHCIREGGHDVPSNKDVTSLDWNSDGTLLATGSYDGFARIWTEDGNLASTLG
+                     QHKGPIFALKWNKKGNYILSAGVDKTTIIWDAHTGEAKQQFPFHSAPALDVDWQNNTT
+                     FASCSTDMCIHVCRLGCDRPVKTFQGHTNEVNAIKWDPSGMLLASCSDDMTLKIWSMK
+                     QDTCVHDLQAHSKEIYTIKWSPTGPATSNPNSNIMLASASFDSTVRLWDVERGVCVHT
+                     LTKHQEPVYSVAFSPDGKYLASGSFDKCVHIWNTQSGSLVHSYRGTGGIFEVCWNARG
+                     DKVGASASDGSVCVLDLRK"
+     polyA_site      3210
+                     /gene="TBL1X"
+                     /experiment="COORDINATES: polyA evidence [ECO:0006239]"
+ORIGIN      
+        1 gatataacct aatatttacc gtctgaacca ttttcaaatg tagagttcag tgactttaag
+       61 tacattccca ctgttgtgcg accattagca ccatccatct ccaggacttt ctcgtcttcc
+      121 ccaactgaaa gtggtctgcg tcctcccctc ccccagccct acaacctgtg ctgtctgtct
+      181 ctgaatctga ctcctgcggg cgcctcaaat gagtgggatc atccggtgtt tgtctttctg
+      241 tgacgtgctt atctcacttg gcgtaaggtc ctcgagggtc attctgtgtt ggagcacgtg
+      301 tcagaatttc tttcctagtt agggataagt gacattccat gcggatgtat gccgtttgtc
+      361 cgttcctcca tcgatagacg cttggacggt ttccaccttt tggccactct gaataggcca
+      421 tgtgaacctg ggtgtgtact tacttctagt tgatgggaat ctgcaaaggc acgtgggggt
+      481 ttgtgaggcc tgtcgtagga gaagcgggtg gcctggtggc acttttcggc cttgaaggct
+      541 ttggaaggaa agggcttctc tgtgaccgcg ggcaggccat gagggggtca gagtgcatct
+      601 gagttcaggg tccttggcat ggaggggaca ggacgctgac tccaggagtt tgtcaggtgt
+      661 taacagcttg ggatatttgt gctgtgtttg atgtctggag gttccgttga tagttgaaac
+      721 gtaatgattt atggagcctg gacactagat tgaatctgtc tggtttcctg tgtctcgctc
+      781 cctcagaggt cggcatggca ttcacgctgc tctcccagtt gggatcattt cagcctgctt
+      841 gagcctcctc ttcttgtggc aaagggttga tgggaggctc cagttccgtc ttacgtatca
+      901 gtttccggga tggcatttga ttttgcattt gttgttgttt gaagggtgtg gcgtgtccgg
+      961 agcccagagt gtctttgtga tccgccagtg gagctgaggc ctgtgtgatt ggcccgtagc
+     1021 aggtaaccga agacagaaag cgggcctcaa aataaaccct cgaaggaaga agggatttgc
+     1081 ctacatttgg ctctgagcag gtcctggcgg ccggttggca gtttatctga tcggatgctg
+     1141 gggagctcac tggtcccgag gtctacacat gaagtcaccg taaagagggc ggctcccgca
+     1201 tcgtaaagac ctcgtctccg cgaggtgagg ctaagatgag cataaccagc gacgaggtga
+     1261 acttcctggt gtatcgctac ctccaggagt caggtttttc ccactcggcg ttcacgttcg
+     1321 gtattgagag ccacatcagc cagtccaaca tcaatgggac gctagtgccg ccagctgccc
+     1381 tcatctccat cctgcagaag ggacttcagt atgtggaggc cgagatcagc atcaatgagg
+     1441 atggcacggt gttcgacggc cgccccatag agtccctgtc cctgatcgac gcggtgatgc
+     1501 ccgacgtggt gcagacgcgg cagcaggcct tccgggagaa gctcgctcag cagcaggcca
+     1561 gtgcggcggc cgcggccgcg gcagctgcgg ccgcggcggc cacgacggcc acggcggccc
+     1621 cgacagccgt tgctcagcaa catccaccaa agaacggaga ggccacggtg aacggggagg
+     1681 agaacggagc ccacgcgata aataatcatt cgaaaccaat ggaaatagac ggggacgttg
+     1741 agattccacc caacaaagcc acagtccttc ggggccacga gtccgaggtg ttcatttgtg
+     1801 cctggaaccc cgtcagcgat ctcctagctt cagggtctgg agactcaacg gcaaggatat
+     1861 ggaaccttaa cgaaaacagc aacgggggct ccacgcagct cgtgttgagg cactgtatac
+     1921 gagaaggggg ccatgacgtc cccagtaata aagacgtgac ctccctggac tggaacagcg
+     1981 acgggacgct gttggccaca ggctcctatg atggttttgc gagaatatgg acggaagatg
+     2041 gcaacctggc cagcacctta gggcaacaca aaggccccat ctttgccttg aaatggaaca
+     2101 aaaaggggaa ttacattttg agtgctggtg tagacaaaac aacaattatt tgggacgccc
+     2161 acacaggaga agccaaacaa cagtttccgt ttcattccgc ccctgctctc gacgtagact
+     2221 ggcagaacaa cactaccttt gcctcctgta gcacagacat gtgtattcac gtctgcagac
+     2281 tcggctgcga ccgccccgtc aaaaccttcc aaggacacac gaacgaggtg aacgccatca
+     2341 aatgggatcc ttctggaatg ctgctagcgt cctgctctga tgacatgaca ttaaagatct
+     2401 ggagtatgaa gcaggatacg tgtgtccatg accttcaggc ccacagcaaa gagatctaca
+     2461 ccataaagtg gagtcccacc gggccagcca ccagcaaccc aaattccaac atcatgctag
+     2521 caagcgcttc gttcgattct acggtccgac tgtgggatgt ggagcgaggc gtctgcgtcc
+     2581 acacgctaac caagcatcag gagcctgtct acagcgtagc ttttagccct gacgggaaat
+     2641 atttggccag tggctccttc gataagtgcg tgcatatctg gaatactcag agtggaagtc
+     2701 ttgtgcacag ctaccgaggc actggcggca tcttcgaggt gtgctggaat gcccgaggcg
+     2761 acaaagtggg tgccagcgcg tccgatggct ctgtgtgtgt tttagatctc cgaaagtaaa
+     2821 cacaaactat tctagaagag aattctaacg gaccagcagt gaatgtgtga agcagcaatg
+     2881 ctcagacacc gttctttccg ctccaaaact gtacgaactt gacttgcatt agagtgtact
+     2941 tggaaatcag ttcatcctgg ccacaggagt ctctactttc tcgtaatctt catcaagaag
+     3001 tttaaaacag aaacatacac agtcatatca aagggggaag gaatggtttc cacccagaac
+     3061 attcagcctg ggaagcatgg agccaccggc taggcggggg cacggtttgc tttccatcca
+     3121 gaacaggctc tgatagttga gaggagaaaa gacgaagagg agaaaaaaga aaacaaacaa
+     3181 aaaaagctgt gccaaaaaag aaaagaaaaa
+//
+

@@ -1,0 +1,61 @@
+LOCUS       HQ699517                 945 bp    mRNA    linear   VRT 07-FEB-2011
+DEFINITION  Gallus gallus melanocortin 1 receptor mRNA, complete cds.
+ACCESSION   HQ699517
+VERSION     HQ699517.1
+KEYWORDS    .
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 945)
+  AUTHORS   Chi,L.
+  TITLE     Sequence characterization of the MC1R gene in silky fowl and its
+            expression in goat fibroblasts
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 945)
+  AUTHORS   Chi,L.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (12-DEC-2010) College of Animal Science and Veterinary
+            Medicine, Qingdao Agricultural University, Chunyang Rd No. 700,
+            Qingdao, Shandong 266109, P.R. China
+FEATURES             Location/Qualifiers
+     source          1..945
+                     /organism="Gallus gallus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:9031"
+                     /PCR_primers="fwd_name: silky fowl forward primer,
+                     fwd_seq: atgtcgatgctggcccccct, rev_name: silky fowl
+                     reverse primer, rev_seq: ctaccaggagcacagcaccac"
+                     /note="authority: Gallus gallus domesticus Brisson"
+     CDS             1..945
+                     /note="MC1R"
+                     /codon_start=1
+                     /product="melanocortin 1 receptor"
+                     /protein_id="ADW77215.1"
+                     /translation="MSMLAPLRLLREPWNASEGNQSNATAGAGGAWCQGLDIPNELFL
+                     TLGLVSLVENLLVVAAILKNRNLHSPTYYFICCLAVSDMLVSVSNLAKTLFMLLMEHG
+                     VLVIRASIVRHMDNVIDMLICGSVVSSLSFLGVIAVDRYITIFYALRYHSIMTLQRAV
+                     VTMASVWLASTVSSTVLITYYRNNAILLCLIGFFLFMLVLMLVLYIHMFALACHPVRS
+                     ISSQQKQPTIYRTSSLKGAVTLTILLGVFFICWGPFFFHLILIVTCPTNPFCTCFFSY
+                     FNLFLILIICNSVVDPLIYAFRSQELRRTLREVVLCSW"
+ORIGIN      
+        1 atgtcgatgc tggcccccct gcgcctgctg cgcgagccct ggaacgccag tgagggcaac
+       61 cagagcaatg ccacggccgg ggccggaggt gcctggtgcc aggggctgga catccccaat
+      121 gagctcttcc tgacgctggg gctggtgagc ctggtggaga acctgctggt ggtggccgcc
+      181 atcctcaaga acaggaatct gcactcgccc acgtactact tcatctgctg cctggccgtc
+      241 tccgacatgc tggtgagcgt cagcaacctg gccaagacgc tcttcatgct gctgatggag
+      301 cacggcgtgc tggtgatccg cgccagcatc gtccgccaca tggacaatgt catcgacatg
+      361 ctcatctgcg gctccgtcgt gtcctccctc tccttcctgg gggtcatcgc cgtggaccgc
+      421 tacatcacca tcttctatgc gctgcgctac cacagcatca tgacgctgca gcgcgccgtg
+      481 gtcaccatgg ccagcgtctg gctggccagc accgtctcca gcaccgtctt aatcacctac
+      541 taccgcaaca acgccatcct gctctgcctc attggcttct tcctcttcat gctggtcctc
+      601 atgctggtgc tctacattca catgttcgcg ctggcgtgcc accccgtgcg cagcatctcc
+      661 agccagcaga agcagcccac catctaccgc accagcagcc tgaagggagc cgtcacgctc
+      721 accatcctgc tgggagtctt cttcatctgc tgggggccct tcttcttcca cctcatcctc
+      781 atcgtcacct gccccaccaa ccccttctgc acctgcttct tcagctattt caacctcttc
+      841 ctcatcctca tcatctgcaa ttcagtggtc gatcccctga tctatgcctt ccggagccag
+      901 gagctccggc ggacgctgcg ggaggtggtg ctgtgctcct ggtag
+//
+

@@ -1,0 +1,177 @@
+LOCUS       AH009285                2786 bp    DNA     linear   VRT 25-AUG-2016
+DEFINITION  Gallus gallus introns 29, 30, 32, 33, 34, 35, 37, 38, and 39.
+ACCESSION   AH009285 AF225878 AF225879 AF225880 AF225881 AF225882 AF225883
+            AF225884 AF225885 AF225886 AF225887 AF225888 AF225889 AF225890
+            AF225891 AF225892 AF225893
+VERSION     AH009285.2
+KEYWORDS    .
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 2786)
+  AUTHORS   Killian,J.K., Byrd,J.C., Jirtle,J.V., Munday,B.L., Stoskopf,M.K.,
+            MacDonald,R.G. and Jirtle,R.L.
+  TITLE     M6P/IGF2R imprinting evolution in mammals
+  JOURNAL   Mol. Cell 5 (4), 707-716 (2000)
+   PUBMED   10882106
+REFERENCE   2  (bases 1 to 2786)
+  AUTHORS   Killian,K. and Jirtle,R.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (14-JAN-2000) RadOnc, Duke Univ Med Center, Rm. 139
+            Env.Sfty.Bldg, Durham, NC 27710, USA
+COMMENT     On or before Aug 25, 2016 this sequence version replaced
+            AF225878.1, AF225879.1, AF225880.1, AF225881.1, AF225882.1,
+            AF225883.1, AF225884.1, AF225885.1, AF225886.1, AF225887.1,
+            AF225888.1, AF225889.1, AF225890.1, AF225891.1, AF225892.1,
+            AF225893.1, AH009285.1.
+FEATURES             Location/Qualifiers
+     source          1..2786
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+     misc_feature    1..2786
+                     /note="Original segmented set titles: Gallus gallus IGF2R
+                     gene, intron 29 5' end.; Gallus gallus IGF2R gene, intron
+                     29 3' end.; Gallus gallus IGF2R gene, intron 30 5' end.;
+                     Gallus gallus IGF2R gene, intron 30 3' end.; Gallus gallus
+                     IGF2R gene, intron 32 5' end.; Gallus gallus IGF2R gene,
+                     intron 32 3' end.; Gallus gallus IGF2R gene, intron 33 5'
+                     end.; Gallus gallus IGF2R gene, intron 34 5' end.; Gallus
+                     gallus IGF2R gene, intron 35 5' end.; Gallus gallus IGF2R
+                     gene, intron 35 3' end.; Gallus gallus IGF2R gene, intron
+                     37 5' end.; Gallus gallus IGF2R gene, intron 37 3' end.;
+                     Gallus gallus IGF2R gene, intron 38 5' end.; Gallus gallus
+                     IGF2R gene, intron 38 3' end.; Gallus gallus IGF2R gene,
+                     intron 29 5' end.; Gallus gallus IGF2R gene, intron 39 3'
+                     end."
+     intron          <1..>107
+                     /note="IGF2R; 5' end"
+                     /number=29
+     gap             108..207
+                     /estimated_length=unknown
+     intron          <208..270
+                     /note="IGF2R"
+                     /number=29
+     gap             271..370
+                     /estimated_length=unknown
+     intron          371..>418
+                     /note="IGF2R"
+                     /number=30
+     gap             419..518
+                     /estimated_length=unknown
+     intron          <519..544
+                     /note="IGF2R"
+                     /number=30
+     gap             545..644
+                     /estimated_length=unknown
+     intron          645..>696
+                     /note="IGF2R"
+                     /number=32
+     gap             697..796
+                     /estimated_length=unknown
+     intron          <797..861
+                     /note="IGF2R"
+                     /number=32
+     gap             862..961
+                     /estimated_length=unknown
+     intron          962..>1114
+                     /note="IGF2R"
+                     /number=33
+     gap             1115..1214
+                     /estimated_length=unknown
+     intron          1215..>1301
+                     /note="IGF2R"
+                     /number=34
+     gap             1302..1401
+                     /estimated_length=unknown
+     intron          1402..>1554
+                     /note="IGF2R"
+                     /number=35
+     gap             1555..1654
+                     /estimated_length=unknown
+     intron          <1655..1757
+                     /note="IGF2R"
+                     /number=35
+     gap             1758..1857
+                     /estimated_length=unknown
+     intron          1858..>1937
+                     /note="IGF2R"
+                     /number=37
+     gap             1938..2037
+                     /estimated_length=unknown
+     intron          <2038..2134
+                     /note="IGF2R"
+                     /number=37
+     gap             2135..2234
+                     /estimated_length=unknown
+     intron          2235..>2268
+                     /note="IGF2R"
+                     /number=38
+     gap             2269..2368
+                     /estimated_length=unknown
+     intron          <2369..2400
+                     /note="IGF2R"
+                     /number=38
+     gap             2401..2500
+                     /estimated_length=unknown
+     intron          2501..>2563
+                     /note="IGF2R"
+                     /number=39
+     gap             2564..2663
+                     /estimated_length=unknown
+     intron          <2664..2786
+                     /note="IGF2R"
+                     /number=39
+ORIGIN      
+        1 aggtaagctg ttttttcaga agtaaagtgg ggctacgtga tggtggaaat gagtatatag
+       61 ccttatttca gtctcatgca ataccattac tttagctatg tgctttgnnn nnnnnnnnnn
+      121 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      181 nnnnnnnnnn nnnnnnnnnn nnnnnnnaag tctaaagttg ctggaattac tttttaaaat
+      241 acctcttaat taaaattttc tgtcttacag nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      301 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      361 nnnnnnnnnn gtaagaatga gatgtattcc tagctacaaa tagagagtgg ttagggttnn
+      421 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      481 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnat atacagtgtt tgtcatctgt
+      541 atagnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      601 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnngtaagg agagagactg
+      661 agaactgtgt gtgagtgagg cagctgggag cagtgtnnnn nnnnnnnnnn nnnnnnnnnn
+      721 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      781 nnnnnnnnnn nnnnnnatac aaagtaatgt cattactttg aatctgcaga aagattaaac
+      841 tataccctgt gttgtctgta gnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      901 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      961 ngtaacatct cataccactg ttactgtagt agtggactat aaggtacctg aaaagtattt
+     1021 atatacaagc ttacagtaaa atgtgtgtgg caagttttac tggaaacaag gactgaagag
+     1081 agctgtgtgg ctgactggct tgggaagaga gctgnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1141 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1201 nnnnnnnnnn nnnngtaagg attacttcta tgtaaaatgc ttgtgtgact aaatttctgg
+     1261 gtggattttg aggtatttag gcacagtagt agcatatgct tnnnnnnnnn nnnnnnnnnn
+     1321 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1381 nnnnnnnnnn nnnnnnnnnn ngtaagtatg atgtctggat catgggaatg tgcattactg
+     1441 ttcaaatcag gtctctaatc acagatactg ttttaaacta gtggctcaat gaagggataa
+     1501 aaagaactac aaaattaaca tctcagaatt atttttcatt gcttttccat acaannnnnn
+     1561 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1621 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnntgtgcc aaccaaatgg ataatctctg
+     1681 aaatgatctg aatctctgga ttgatgtgaa agctaagtgt gtcctatgtc tcctaatacg
+     1741 catctttgcc tgtgcagnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1801 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnngta
+     1861 atgctttctc agaatgtttt ttttttaaat tcctggagtg tgagaagaga ctgaaatgtg
+     1921 tgcttctgct gtggtcannn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1981 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnngag
+     2041 tctcataaag cactccagtg gttcttcatg tgtattgact tccagactcc aagaggcagc
+     2101 cttgtttgtg atgcttctgg gtgtgtcccc acagnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2161 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2221 nnnnnnnnnn nnnngtgaga ttgcagtgga tggtcccatt atgtcaagnn nnnnnnnnnn
+     2281 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2341 nnnnnnnnnn nnnnnnnnnn nnnnnnnngt atgttaagag gacttacctt cctttctcag
+     2401 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2461 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn gtaagaactt cttatatctc
+     2521 acatataatg atccgagtta actgtgggag ggcagcagac ctcnnnnnnn nnnnnnnnnn
+     2581 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2641 nnnnnnnnnn nnnnnnnnnn nnntttgtgt tttatctaaa actatatctg attagtgtag
+     2701 caattgtgag gtatcaaact ttaaaatctg tatgtgtatg gaagcctctt gcaaaatact
+     2761 cttatttcca atttcccctc ttatag
+//
+

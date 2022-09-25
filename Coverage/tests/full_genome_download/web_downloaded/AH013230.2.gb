@@ -1,0 +1,174 @@
+LOCUS       AH013230                4553 bp    DNA     linear   VRT 25-AUG-2016
+DEFINITION  Gallus gallus chromosome Z chromo-helicase-DNA binding 1 gene,
+            introns 6, 7, 9, 10, 11, 13, and 25.
+ACCESSION   AH013230 AY298993 AY298994 AY298995 AY298996 AY298997 AY298998
+            AY298999
+VERSION     AH013230.2
+KEYWORDS    .
+SOURCE      Gallus gallus (chicken)
+  ORGANISM  Gallus gallus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Archelosauria; Archosauria; Dinosauria; Saurischia; Theropoda;
+            Coelurosauria; Aves; Neognathae; Galloanserae; Galliformes;
+            Phasianidae; Phasianinae; Gallus.
+REFERENCE   1  (bases 1 to 4553)
+  AUTHORS   Axelsson,E., Smith,N.G., Sundstrom,H., Berlin,S. and Ellegren,H.
+  TITLE     Male-biased mutation rate and divergence in autosomal, z-linked and
+            w-linked introns of chicken and Turkey
+  JOURNAL   Mol. Biol. Evol. 21 (8), 1538-1547 (2004)
+   PUBMED   15140948
+REFERENCE   2  (bases 1 to 738; 839 to 1077; 1790 to 2401; 2502 to 3302; 3403
+            to 3726; 3827 to 4553)
+  AUTHORS   Berlin,S., Brandstrom,M., Backstrom,N., Axelsson,E., Smith,N.G. and
+            Ellegren,H.
+  TITLE     Substitution rate heterogeneity and the male mutation bias
+  JOURNAL   J. Mol. Evol. 62 (2), 226-233 (2006)
+   PUBMED   16474985
+REFERENCE   3  (bases 1 to 4553)
+  AUTHORS   Axelsson,E., Smith,N.G.C., Sundstrom,H., Berlin,S. and Ellegren,H.
+  TITLE     Is there an adaptive reduction in the mutation rate of the avian Z
+            chromosome?
+  JOURNAL   Unpublished
+REFERENCE   4  (bases 1 to 4553)
+  AUTHORS   Berlin,S.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (08-MAY-2003) Department of Evolutionary Biology,
+            Evolutionary Biology Centre, Uppsala University, Norbyvaegen 18D,
+            Uppsala 752 36, Sweden
+COMMENT     On or before Aug 25, 2016 this sequence version replaced
+            AY298997.1, AY298998.1, AY298999.1, AY298993.1, AY298994.1,
+            AY298995.1, AY298996.1, AH013230.1.
+FEATURES             Location/Qualifiers
+     source          1..4553
+                     /organism="Gallus gallus"
+                     /mol_type="genomic DNA"
+                     /db_xref="taxon:9031"
+                     /chromosome="Z"
+     gene            <1..>4553
+                     /gene="chromo-helicase-DNA binding 1"
+     misc_feature    1..4553
+                     /gene="chromo-helicase-DNA binding 1"
+                     /note="Original segmented set titles: Gallus gallus
+                     chromosome Z chromo-helicase-DNA binding 1 gene, partial
+                     sequence.; Gallus gallus chromosome Z chromo-helicase-DNA
+                     binding 1 gene, intron 6; Gallus gallus chromosome Z
+                     chromo-helicase-DNA binding 1 gene, intron 7; Gallus
+                     gallus chromosome Z chromo-helicase-DNA binding 1 gene,
+                     intron 9; Gallus gallus chromosome Z chromo-helicase-DNA
+                     binding 1 gene, intron 10; Gallus gallus chromosome Z
+                     chromo-helicase-DNA binding 1 gene, intron 11; Gallus
+                     gallus chromosome Z chromo-helicase-DNA binding 1 gene,
+                     intron 13; Gallus gallus chromosome Z chromo-helicase-DNA
+                     binding 1 gene, intron 25"
+     intron          1..738
+                     /gene="chromo-helicase-DNA binding 1"
+                     /number=6
+     gap             739..838
+                     /estimated_length=unknown
+     intron          839..1077
+                     /gene="chromo-helicase-DNA binding 1"
+                     /number=7
+     gap             1078..1177
+                     /estimated_length=unknown
+     intron          1178..1689
+                     /gene="chromo-helicase-DNA binding 1"
+                     /number=9
+     gap             1690..1789
+                     /estimated_length=unknown
+     intron          1790..2401
+                     /gene="chromo-helicase-DNA binding 1"
+                     /number=10
+     gap             2402..2501
+                     /estimated_length=unknown
+     intron          2502..3302
+                     /gene="chromo-helicase-DNA binding 1"
+                     /number=11
+     gap             3303..3402
+                     /estimated_length=unknown
+     intron          3403..3726
+                     /gene="chromo-helicase-DNA binding 1"
+                     /number=13
+     gap             3727..3826
+                     /estimated_length=unknown
+     intron          3827..4553
+                     /gene="chromo-helicase-DNA binding 1"
+                     /number=25
+ORIGIN      
+        1 tgaatatttc taggagaact ttttttattt gttttgtaac agtgttgata tttcataaca
+       61 actgttttgt aacaaatctg cttctgagac ctgttaacct ctttgtgagc gtgaggcttc
+      121 cactgtttat acaacaggaa gagtaaaaca ttgaaagctg aagcctcctt gatatgatcc
+      181 tgtaagctaa tctgaacctg atgttaacct ttattataaa tgaaatcaca gttctgtagg
+      241 aatcttgctg cagagattaa tgttttgatg atgccttagc catttcttgt tatatgaatt
+      301 tagttatatt ggcttgagaa cctagaactg aaatgtagtc ttcggttttt ttaatatgtt
+      361 tgatatattt agtgaatgct ggtgacattt tcagcatctt tgagtaagat taattcttac
+      421 aaaataggcc actctccata atgttccatg aaaataccct ataaagtatg ctgcttgctg
+      481 ttgagaacag ctatactgag cattattaac actaggtgta tctgatagta attctgtatt
+      541 tttataatca tttttagcct ttaataatga gacagcaagc ccagatgcaa tatttttgga
+      601 gtaggaagtc taaattatat cccctttaaa agaagcattc taagtagtgt ttccatgatg
+      661 cttacactca gagttaattt tcctagtttt agaactactc agagtagtaa atgttctaaa
+      721 taaattccaa tttcaggcnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      781 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnngt
+      841 atgttacaaa tctaaagcag cgctgagaat attgtttgtt cattgcttgt atttgtagtt
+      901 aaaaatttag aatatcatca acttcttttc taatctaaaa caaaattttg gcaaaagaga
+      961 atttgtcata ttctctgctc tgtgatactt gcatatgctg ccttatcacc taaattcagt
+     1021 gttgtcttaa aatacaaaag taaatattca cttgatatct ctaatgcttt tctgcagnnn
+     1081 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1141 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnngta agtatagtct gttggtaaat
+     1201 tttaaacgtt tgtaaaactt taaaattgtt ttgtctacgn tttttttcag cttcctacag
+     1261 ctgaaagctg acaacctgag atgattgttt ttgcgttatg taaaactaaa gcttgtcctt
+     1321 acgtgtttgg tcaaaaagac agttaagctc tgttgctgtt ttgcttttac tttctgtgtg
+     1381 ggagtcattt gtatttctaa aaagcaatca agcaaaagta ccctacagct acaaagccaa
+     1441 aagaaccaaa caaagtctat tttagacttc ttaggaatac ttggaagcct tttgttaata
+     1501 ttggtaactc ggtttaagga aacagtatat aagtaaactt cttcaggatg tagaattgta
+     1561 aaatcttgtt tgaataatgg tgctcaaaat gtaataattt atttctttgt gttcgttccc
+     1621 ttctctcctt cccttttacc ttcctttgtt tttttttgtt tcgttgttgt tttgtttgtt
+     1681 tgtttttagn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1741 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnng tgagtatccc
+     1801 cccttcatca ttagaaagtc taactggtat atctgattca ttttgtattc ctgtcctctg
+     1861 ctaacttcca gtattttgtt tcagagtgag caaatacttt ctaaaacaga aggggtttaa
+     1921 gatgtgcact taaagctcac attatataca gtatatacay gcagtataaa ttcacatgaa
+     1981 aggttcccta catgcttaat aataagcaga attaaaaatg tagtcttata tttgaaaata
+     2041 atttatcttc tgtcatatga ttaatttggt ggataaaata aaaataaata tttatgcagg
+     2101 ccagccatga tcataattta ttttctcagg gttcttggtt tgttttcata atctgtcttc
+     2161 tgagtattta taatcttatt actaaagtaa aaaagtgttt tgtagaaatt tgtttctatt
+     2221 tattcaagag gttagcaatt attttgaaag gcttagcttg gaaattccat cttgtgtatg
+     2281 tttttgtgtt gtgcttctat tttgtaatga aattatatac atttatattg ctgtagtact
+     2341 tgaattcatt tcaatcaacc agacattttt cctctagctt actgttcatt ttgttcttgt
+     2401 annnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2461 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nggtaatnac catgtacttc
+     2521 tttagggagg tggaatcatt tgtctggtgt agaacttctg gtagacttgc atacattggg
+     2581 ttcttagtca ttaaatgaaa gtcaggtgtg atggattttg catttttgaa atgtaacagt
+     2641 gtaacctttt taagcactta tactatttct gtaagtgtga tgaggttcta tgccattttc
+     2701 catttcatca agtggatacc agttcccgtt tgcttgagtt tctgtttact ataatgatct
+     2761 cctcccatct taaagagcta tactttcctt gcatcttcag agaactgaaa aagagccaag
+     2821 cccctggccc caaaygtctg tgatacagtg ctctggaatc ctgtatgatt ttacttcatt
+     2881 catatgcact gtctccataa tggtagtaga cagttatcaa tagtctttct aaaagtatat
+     2941 ggaaattatt gggaatagtc actgtaaaga ttggtaaaaa aaattttggc ttcatttgtt
+     3001 tgtgtgtgct ggggataacg ggtcaactga gacttttttg ttcccatcat gaaaactaac
+     3061 gtggatcaaa ttttgatctg ttttttcttt cttccccctt ttaaacttat tttatccttc
+     3121 tttgggatgt ctgcacagcc tttctgagag tctggtaaat atagtaatgt gcataaatat
+     3181 tactaaaagc atatagctgt ctttattaat ataaggaaaa aggttgtggt atttttatct
+     3241 tggttatgaa atgtgagaaa ttatatagta tgcctagctg tataaatgta attcccctat
+     3301 tcnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     3361 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nngtaacacc actttttaaa
+     3421 tttttctgtt ttattgagat gactatatgc aaattactga actctaatca ttttcttaaa
+     3481 gcagttcaag ttaggggcaa aaaaaatgaa aagcaccttt ttaggatttc agaactgtga
+     3541 aattctgtga agcaaatgct ttgrgattta tgttggtgta atctctgtcc atttagcttc
+     3601 tattttttgg catatttgtt cattttattt ggggcttttt tttattaatt tgtttatatt
+     3661 ttgagagctt atcttgccct catggttcca catgtagtta cttacactgt atgtcttaaa
+     3721 tcatagnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     3781 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnngtaa tttctttctg
+     3841 taaaggaagt cgtcatgtaa acagtgattc ggactttatc ttctgtattc agacaactgt
+     3901 aactcagagc gctctgtgat gttgttcttc ctccattcac tgtggggact ggcagcagca
+     3961 acctactcca tacttgtttt tctttctttc ttcattctct tcacaagtca gcaccagctt
+     4021 tggtttgtga actgcattca ctgaggactg tgttcagttc tcatagtaat ccagactaga
+     4081 agtcttgttt gttgagtagc tgttatgtca tcactgcttg agggaaaata gtgtctgtca
+     4141 aactgcggca gatggtaact gatggtagtt gttaccactc tgaactgctt ttgctttatg
+     4201 catcactgtt tttagattat ccatatattg agtcagcagt tacacttgga tgatgtttta
+     4261 tgcctttctt cttagttagc taactgtggc ataacccagg accacagact aatgtatttg
+     4321 ttcttcatag tgtaatcttg atcagctttg aaacgtattt cagtgctgat ttaaataaat
+     4381 attttgtgaa aatgtttagg aaatatggtg gatatgcgga ttgatttcct gaatataaca
+     4441 gtaccgtagt ggtgtcacta gatatatttt ctctgctctt cctttgtttc cctctcactt
+     4501 cctatgttcc agtggtaaaa atcctgtatt tgtctttcta atttatttct gct
+//
+

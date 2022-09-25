@@ -1,0 +1,125 @@
+LOCUS       AH015296                2635 bp    DNA     linear   MAM 25-AUG-2016
+DEFINITION  Equus caballus isolate Horse 0834 MHC class I antigen 1/29 gene,
+            introns 1, 2, 3, 4, 5, 6, and 7.
+ACCESSION   AH015296 DQ145583 DQ145584 DQ145585 DQ145586 DQ145587 DQ145588
+            DQ145589
+VERSION     AH015296.2
+KEYWORDS    .
+SOURCE      Equus caballus (horse)
+  ORGANISM  Equus caballus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Perissodactyla; Equidae; Equus.
+REFERENCE   1  (bases 1 to 2635)
+  AUTHORS   Tallmadge,R.L. and Antczak,D.F.
+  TITLE     Analysis of MHC class I loci across horse MHC haplotypes
+  JOURNAL   Unpublished
+REFERENCE   2  (bases 1 to 2635)
+  AUTHORS   Tallmadge,R.L. and Antczak,D.F.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (26-JUL-2005) Baker Institute for Animal Health, Cornell
+            University, Hungerford Hill Rd., Ithaca, NY 14853, USA
+COMMENT     On or before Aug 25, 2016 this sequence version replaced
+            DQ145583.1, DQ145584.1, DQ145585.1, DQ145586.1, DQ145587.1,
+            DQ145588.1, DQ145589.1, AH015296.1.
+FEATURES             Location/Qualifiers
+     source          1..2635
+                     /organism="Equus caballus"
+                     /mol_type="genomic DNA"
+                     /isolate="Horse 0834"
+                     /db_xref="taxon:9796"
+                     /chromosome="ECA20"
+                     /haplotype="ELA-A2"
+                     /note="breed: thoroughbred"
+     gene            <1..>2635
+                     /gene="MHC class I antigen 1/29"
+     misc_feature    1..2635
+                     /gene="MHC class I antigen 1/29"
+                     /note="Original segmented set titles: Equus caballus MHC
+                     class I antigen 1/29 gene, introns 1 through 7.; Equus
+                     caballus MHC class I antigen 1/29 gene, intron 1.; Equus
+                     caballus MHC class I antigen 1/29 gene, intron 2.; Equus
+                     caballus MHC class I antigen 1/29 gene, intron 3.; Equus
+                     caballus MHC class I antigen 1/29 gene, intron 4.; Equus
+                     caballus MHC class I antigen 1/29 gene, intron 5.; Equus
+                     caballus MHC class I antigen 1/29 gene, intron 6.; Equus
+                     caballus MHC class I antigen 1/29 gene, intron 7."
+     intron          1..333
+                     /gene="MHC class I antigen 1/29"
+                     /number=1
+     gap             334..433
+                     /estimated_length=unknown
+     intron          434..675
+                     /gene="MHC class I antigen 1/29"
+                     /number=2
+     gap             676..775
+                     /estimated_length=unknown
+     intron          776..1391
+                     /gene="MHC class I antigen 1/29"
+                     /number=3
+     gap             1392..1491
+                     /estimated_length=unknown
+     intron          1492..1604
+                     /gene="MHC class I antigen 1/29"
+                     /number=4
+     gap             1605..1704
+                     /estimated_length=unknown
+     intron          1705..2127
+                     /gene="MHC class I antigen 1/29"
+                     /number=5
+     gap             2128..2227
+                     /estimated_length=unknown
+     intron          2228..2373
+                     /gene="MHC class I antigen 1/29"
+                     /number=6
+     gap             2374..2473
+                     /estimated_length=unknown
+     intron          2474..2635
+                     /gene="MHC class I antigen 1/29"
+                     /number=7
+ORIGIN      
+        1 gtgagtgccg ggtcgggagg aaacggcctc tgcggggggc ggagcgaggg gaccgcgcgg
+       61 cggggacgca ggacccccgg ggaaggcgcg tctccacaga cccacccaac ccgccccacc
+      121 tctgccccgc cgcgtcctga cccctctctt tccctcccca gtctcccgcc ctctcctctc
+      181 acccactggg gtctcccgcg cttctccgtc cgccgcccct tttccgtctc acgatctctc
+      241 gcccccacct ccctcccggc cccatcaccc tcggacccgg ggacccgcgc cgggaggagg
+      301 gtcggccggg tctcagcccc tccccgcccc cagnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      361 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      421 nnnnnnnnnn nnngtgagcg acgcgggccc gggtccaggc cgcgaccccc atccccacgg
+      481 acgggccggg gtctccccga gtctctgggt ccgaaattca ccccgaggct gcgggacccg
+      541 cccgaccccc gacccgggaa gtgccggcgg ggacttttcc gcagtttcat tttcagttta
+      601 ggttttattt ctgcggggag ggggcggggg gggggcgggg caaagggggc ggggctgacc
+      661 tcggggcggg gtcagnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+      721 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnngtacg
+      781 aggggacacg gggactcctg atctccgctg ggaccgggct ggcttcccac aaagagggag
+      841 gaaatgggat cagtgtcaga acaccctccc tcagaaaaga aaggaatcca cccaggtttt
+      901 tatgttctta ctaaagactc gcccagagag cccgcccttc tctaatggac agtgaaggaa
+      961 tccagtttct tcaggaatag gaggggagac catccctgaa atcgccgtcc ttggttccct
+     1021 ttgaccctgg cagccatctt gtgacccatg actttctctc tcaaggcctt gttctcggcc
+     1081 agaaaagatc tttgcgagtt tgactccagt ttttctgagt tattcatcct ccacccaggt
+     1141 caggaccaga agtctgtgtt ctcctgttta gagacctgac ggcttgtacc ctgggctctc
+     1201 acccttattc tagaactttc caaggaattg gagattattc cggatctgca gatccaggct
+     1261 gatgtctggg ttctgtgctt cctccttcca aaccaattgt cctgtccgtt ctcaggatgg
+     1321 tcacatgagc gctgctttag tggcccatgg agggaactga aagtgtgaat tttctgaatc
+     1381 ttcctcctca gnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1441 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn ngtaaggagg
+     1501 gagccgtggg ctcagagcct cttctcaggg aaatcaggag cccttctgga gaccttcagc
+     1561 agggtcaggg ccctcacctt ccccaccttc ccttccctcc ccagnnnnnn nnnnnnnnnn
+     1621 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     1681 nnnnnnnnnn nnnnnnnnnn nnnngtaggg aagggggttt gggatctgag ttctcttgtc
+     1741 cccctggggg tttcaagaac cgagcagaac ttgccctgcc ccgttactgg aaagtgccgt
+     1801 ccacactcat gtatttgcca ttctggagct gattgttaac gctcttatta aagcgcttat
+     1861 gaaaatgaag gacacatttt ttcaccttga taattctgtt gctggggacc tgattcccag
+     1921 cagtcgaagg tcagagggga aggtccctgc tgaggacaga gctccaggag gggcagatgg
+     1981 tccagtcccc acacatctcc tttgttcatg tttctggatc ctgccctggg tctccagtca
+     2041 tggttctgga aacttccctg tggtccagga ctaggggatt cctctaggat ctcatggctt
+     2101 agccttctcc ctgttttctt cccacagnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2161 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2221 nnnnnnngta agtttgagtg ggggattgat ccctgagacc cctggaatac tgaagacagg
+     2281 agccccgggg tggggagctc acccacccca tagctcctcc tctagtctca tctcctgtgg
+     2341 gctctgacca cttcctgttt tgttctaccc cagnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2401 nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn nnnnnnnnnn
+     2461 nnnnnnnnnn nnngtgagac ttggagggcc tgatgcgggg aggggctttg gggcagaggg
+     2521 gacacagctg gtttatgggg attctttggg gcatttggag catgcagagg gctgttgagg
+     2581 atgccaacac ttatgtgact gacatgaatt tgttcatgat tattttcttt tacag
+//
+

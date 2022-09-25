@@ -1,0 +1,91 @@
+LOCUS       XM_042926651            1294 bp    mRNA    linear   MAM 11-AUG-2021
+DEFINITION  PREDICTED: Panthera leo dehydrogenase/reductase X-linked (DHRSX),
+            mRNA.
+ACCESSION   XM_042926651
+VERSION     XM_042926651.1
+DBLINK      BioProject: PRJNA751610
+KEYWORDS    RefSeq.
+SOURCE      Panthera leo (lion)
+  ORGANISM  Panthera leo
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Laurasiatheria; Carnivora; Feliformia; Felidae;
+            Pantherinae; Panthera.
+COMMENT     MODEL REFSEQ:  This record is predicted by automated computational
+            analysis. This record is derived from a genomic sequence
+            (NC_056697.1) annotated using gene prediction method: Gnomon.
+            Also see:
+                Documentation of NCBI's Annotation Process
+            
+            ##Genome-Annotation-Data-START##
+            Annotation Provider         :: NCBI
+            Annotation Status           :: Full annotation
+            Annotation Name             :: Panthera leo Annotation Release 100
+            Annotation Version          :: 100
+            Annotation Pipeline         :: NCBI eukaryotic genome annotation
+                                           pipeline
+            Annotation Software Version :: 9.0
+            Annotation Method           :: Best-placed RefSeq; Gnomon
+            Features Annotated          :: Gene; mRNA; CDS; ncRNA
+            ##Genome-Annotation-Data-END##
+FEATURES             Location/Qualifiers
+     source          1..1294
+                     /organism="Panthera leo"
+                     /mol_type="mRNA"
+                     /isolate="Ple1"
+                     /db_xref="taxon:9689"
+                     /chromosome="Y"
+                     /sex="male"
+                     /cell_type="Fibroblast"
+                     /tissue_type="Fibroblasts"
+                     /dev_stage="adult"
+     gene            1..1294
+                     /gene="DHRSX"
+                     /note="Derived by automated computational analysis using
+                     gene prediction method: Gnomon. Supporting evidence
+                     includes similarity to: 4 Proteins, and 100% coverage of
+                     the annotated genomic feature by RNAseq alignments,
+                     including 8 samples with support for all annotated
+                     introns"
+                     /db_xref="GeneID:122212686"
+     CDS             37..1044
+                     /gene="DHRSX"
+                     /codon_start=1
+                     /product="dehydrogenase/reductase SDR family member on
+                     chromosome X"
+                     /protein_id="XP_042782585.1"
+                     /db_xref="GeneID:122212686"
+                     /translation="MSPLSAARAALRVYAAGAAVVLAQLLRRCFGGFAEPVFPPQPDR
+                     VAIVTGGTDGIGYATARQLARLGMHVIIAGNNDSKAQDVVRRLKEETSNDKVEFLYCD
+                     LASLTSIRQFVQKFKKKKIPLHVLVNNAAVMMVPQRKTRDGFEEHFGLNYLGHFVLTN
+                     LLLDSLKAAGRPGRTARVVTVSSATHYVGELRLRDLHGSRCYSPHGAYAQSKLALVLF
+                     TYHLQRLLAAQGSPVTANVADPGVVDTDLYRHVFWGTRLIQKMLGWWAFKTPDEGAWT
+                     SVYAAVTPDLEGIGGRYLYNEKETKSLMLTYDRDLQRQLWAISCQMTSITDVTQDTLL
+                     G"
+     polyA_site      1294
+                     /gene="DHRSX"
+                     /experiment="COORDINATES: polyA evidence [ECO:0006239]"
+ORIGIN      
+        1 ggcggcgggc ggcgcggaag cggcggccgg gcagccatgt cgcctttgtc tgcggcgcgg
+       61 gcggccctgc gggtctacgc ggcgggcgcg gcggtggtgt tggcgcagct gctgcggcgc
+      121 tgcttcgggg gcttcgcgga gccagttttt cccccacaac ccgaccgtgt ggccatagtg
+      181 accggaggca cggatggcat cggctatgcc acagcgaggc agctggcgag gctcggcatg
+      241 cacgtgatca tagccggaaa caatgacagc aaagcccaag acgttgtgcg gagactaaaa
+      301 gaggagacgt cgaatgacaa agtggagttt ctatactgtg atctggcttc cctgacgtcc
+      361 atcaggcaat tcgtccagaa gttcaagaag aagaaaatcc ctctccatgt cctggtcaat
+      421 aacgccgcgg tgatgatggt cccgcagagg aagaccagag acggatttga ggagcacttc
+      481 gggctcaact acctgggcca cttcgtcctc accaacctgc tgctggactc cctgaaggcg
+      541 gccgggcgtc cgggccgcac cgccagggtg gtgaccgtct cgtccgccac gcattacgtg
+      601 ggcgagctgc gcctgcgcga cctgcacggc agccgctgct attcccccca cggcgcctac
+      661 gcccaaagca agctggcgct cgtcctgttc acctaccacc tgcagagact gctggccgcc
+      721 caggggagcc ccgtgaccgc caacgtggcc gacccggggg tggtcgacac ggacctgtac
+      781 agacacgtct tctggggcac gcgtctcatc cagaagatgc tcggctggtg ggcgttcaag
+      841 accccagatg agggcgcctg gacctccgtc tacgcagcgg tcaccccgga cctggaagga
+      901 atcggcggcc gctaccttta caacgagaag gagaccaagt ctctgatgct cacgtacgac
+      961 cgagatctcc agagacaact gtgggccata agttgccaga tgaccagcat cactgacgtg
+     1021 acccaagaca cgctcttggg gtaacggcca cattgggaag acctcgcctc gggcccggca
+     1081 aacgcaggtc tgtgaccgat ccccgtgtct gccttttcca cagcggctgc cttcagggct
+     1141 ctgtccccaa cggtctcctg tctgctgtcc ttcctttgcg ggaaatcggg gaacaaaaga
+     1201 aatgttgagt gtagcctcca agtggccgtg agccataaat tgtgtgccaa gtttctccca
+     1261 agtgccaaga accattaaat gctgcctaac ccaa
+//
+
