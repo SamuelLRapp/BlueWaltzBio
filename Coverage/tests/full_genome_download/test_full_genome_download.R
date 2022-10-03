@@ -28,11 +28,10 @@ readFile <- function(file, readFunc) {
   f <- try(readFunc(file), silent=TRUE)
   if (inherits(f, "try-error")) {
     print(paste("Error in applying read function to file: ", f, sep=""))
-    return("")
+    return(c(""))
   } else {
     return(f)
   }
-
 }
 
 
@@ -62,7 +61,7 @@ accessionLoop <- function(accessionNumbers, fileType) {
     func <- switch(fileType, "fasta" = read.fasta, "gb" = read.gb)
     file <- paste("./BlueWaltzBio/Coverage/tests/full_genome_download/web_downloaded/", num, ".", fileType, sep="")
     manuallyDownloaded <- readFile(file, func)
-    if (manuallyDownloaded != "") {
+    if (manuallyDownloaded[1] != "") {
       if (!fullGenomeDownloadTest(fileType, num, manuallyDownloaded, func)) {
         print(paste("Discrepancy in", num, sep=" "))
         write(paste(num, ".", fileType, sep=""), file="./BlueWaltzBio/Coverage/tests/full_genome_download/discrepancies.txt", append=TRUE)
@@ -83,6 +82,6 @@ accessionNumbers = readLines("./BlueWaltzBio/Coverage/tests/full_genome_download
 close(file("./BlueWaltzBio/Coverage/tests/full_genome_download/discrepancies.txt", open="w"))
 
 accessionLoop(accessionNumbers, 'gb')
-#accessionLoop(accessionNumbers, 'fasta')
+accessionLoop(accessionNumbers, 'fasta')
 
 
