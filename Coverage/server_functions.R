@@ -10,7 +10,7 @@ import(promises)
 import(ipc)
 
 orgListHelper <- tryCatch({modules::use("orgListHelper.R")},
-                          error = function(err){modules::use("./BlueWaltzBio/Coverage/orgListHelper.R")})
+                          error = function(err){modules::use("Coverage/orgListHelper.R")})
 
 # General ----------------------------------------------------------------------
 
