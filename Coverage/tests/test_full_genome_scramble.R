@@ -45,9 +45,9 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
       #unique(trueTaxRanks) prevents getting duplicate uids
       for(rank in unique(trueTaxRanks)) {
         foundOrg <- tax_name(query = esum$organism,
-                            get = c(trueTaxRank),
+                            get = c(rank),
                             db = "ncbi",
-                            messages = FALSE)[[trueTaxRank]]
+                            messages = FALSE)[[rank]]
         Sys.sleep(0.34)
         
         foundTax <- get_uid_(sci_com=foundOrg, messages=FALSE)   # THIS WON'T WORK FOR HOMONYMS CASE

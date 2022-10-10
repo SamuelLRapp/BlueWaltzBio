@@ -8,12 +8,14 @@
 #
 
 library(shiny)
+library(shinyjs)
 library(shinycssloaders)
 library(shinyWidgets)
 library(tidyverse)
 library(vembedr)
 library(shinydashboard)
 library(shinyalert) # popup library
+library(modules)
 library(shinyjs)
 
 jsCode <- paste0('shinyjs.clickBtn = function(params){
@@ -60,67 +62,110 @@ tst <- paste0('shinyjs.ncbiDwnFastaTest = function(params){
                 }, 1000)
               }')
 
+components <- modules::use("components.R")
 
 shinyUI(fluidPage(
   useShinyjs(),
   extendShinyjs(text = jsCode, functions = c("clickBtn")),
   extendShinyjs(text = tst, functions = c("ncbiDwnFastaTest")),
+
+  tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   navbarPage("Reference Sequence Browser",
+             id = "mainPage",
 
     # Home tab
+    #img(src='backend.png',  align = "center", height = 350, width = 700), Image in HOME page leaving it here just in case
     tabPanel("Home", 
-             titlePanel("Welcome to the Reference Sequence Browser"),
-             textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
-             actionButton(inputId = "dwntest", label = "Run Download Tests"),
-             actionButton(inputId = "SetKey", label = "Set Key"),
-             p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases.
- Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases.
-" ),
-             p(HTML('&emsp;'), "This rShiny app was built to bridge the gap between ecologists and computer scientists by providing efficient and intuitive access to NCBI and CRUX databases without the user having to write a single line of code. If you would like to learn more details about either the NBCI or CRUX search browser specific design and function click on the relevant tab above. Assemble a list of organisms and get started! 
-" ),
-             p(HTML('&emsp;'), "The diagram represents how the two search portals function in the back end."),
-             img(src='backend.png',  align = "center", height = 450, width = 900),
-          
+             column(6, align="center", offset = 3,
+                    titlePanel("Welcome to the Reference Sequence Browser"),
+                    actionButton(inputId = "dwntest", label = "Run Download Tests"),
+                    actionButton(inputId = "SetKey", label = "Set Key"),
+                    p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases."),
+                    p(HTML('&emsp;'), "Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases."),
+                    p(HTML('&emsp;'), "This rShiny app was built to bridge the gap between ecologists and computer scientists by providing efficient and intuitive access to NCBI and CRUX databases without the user having to write a single line of code. If you would like to learn more details about either the NBCI or CRUX search browser specific design and function click on the relevant tab above. Assemble a list of organisms and get started! " ),
+                    p(HTML('&emsp;'), "The diagram represents how the two search portals function in the back end."),
+                    textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
+                    actionButton(inputId = "SetKey", label = "Set Key"),
+             ),
                           
              ),
     tabPanel("CRUX",
              tabsetPanel(
-             
-               tabPanel("Search",
+               id = "CRUXpage",
+               tabPanel("Start Your CRUX Search",
                         # Application title
                         titlePanel("Find CRUX database coverage of your organisms of interest"),
-                          # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                        
-                        # Usage instructions
+                        mainPanel(
+                          h4("What does the CRUX Coverage Matrix do?"),
+                          p(HTML('&emsp;'), "The ‘CRUX Coverage Matrix’ returns a value that represents how many reference sequences exist for the user’s organism search term(s) in each public database. When direct matches are not found in a database, the tool will instead search for lower taxonomic ranks until a match is found. When a metabarcoding study is being performed, it is critical to confirm the existence of and obtain the reference sequences of organisms of interest, as well as the taxonomic resolution of said sequences, and what metabarcoding loci the reference sequences belong to. (See additional information for more details) CRUX databases are designed to be shared, and this tool allows users to assess whether the public CRUX databases meet their study’s taxonomic requirements. "),
+                          p(HTML('&emsp;'), "The ‘CRUX Coverage Matrix’ searches by taxonomic ranks: domain, phylum, class, order, family, genus, genus-spp.The rows of the table produced are the organism search terms, and the columns are CRUX databases: 16S,  12S, 18S, PITS, CO1, FITS, trnL, Vertebrate."),
+                          p("The cells will show one of the following: "),
+                          p("1) The number of sequences in a database, if direct matches are found",  HTML("<br/>"), "2) If no direct matches are found, the next most specific taxonomic rank found", HTML("<br/>"), "3) “0” if nothing is found at any taxonomic rank."),#The list
+                          p(), #empty space 
+                          
+                          #copied from the twitter icon implementation
+                          #in the contact us code.
+                          CruxUserGuide.icon <- tags$a(href='https://docs.google.com/document/d/1A1_4d21JKkk98WujeqVp51epxDzPrTSr9--_CnM5M5E/edit',
+                                                       icon("book"),
+                                                       'CRUX User Guide', target="_blank"),
+                          p(), #for aesthetics
+                        ),
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        h4("Additional Information:"),
+                        dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
+                        dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
+                        p(), #empty space 
                         fluidRow(
-                          mainPanel(
-                            h4("Additional Information:"),
-                            dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
-                            dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
-                            p(), #empty space 
-                            
-                          ),
-                        ),
+                          column(6, align="center", offset = 3,
+                                 fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
+                                 #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
+                                 actionButton("CruxStart", "Start Your CRUX Search"),
+                                 #tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 #tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 #tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
+                                 )),
                         
+                        ),
+               tabPanel("Organism Names",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         fluidRow(
-                          # Sidebar with a text area for organisms and bar code
-                          sidebarPanel(
-                            fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv")),
-                            actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                            textAreaInput(inputId = "CRUXorganismList", label = "Organism Names"),
-                            checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
-                            actionButton("searchButton", "Search")
-                          ), 
-                          mainPanel(
-                            # Show a plot of the generated distribution
-                            DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                            # Download button
-                            conditionalPanel( condition = "output.CRUXcoverageResults",
-                                              downloadButton('downloadCrux',"Download table"),
-                                              downloadButton("CRUXfileDownloadSD","Download summary data"))
-                          )
-                        ),
-                        ),
+                          column(6, align="center", offset = 3,
+                                 titlePanel("Organism Names"),
+                                 textAreaInput(inputId = "CRUXorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                                 checkboxInput(inputId = "CRUXtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE, width = 500),
+                                 actionButton("searchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
+                                 tags$div(id = 'CRUXtaxizeOption', style ='font-size:120%'),
+                                 #tags$style(type='text/css', "#CRUXorganismList { vertical-align- middle; height- 100px; width- 100%; font-size- 200px;}"),
+                                 #tags$style(type='text/css', "#CRUXtaxizeOption { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
+                                 #tags$style(type='text/css', "#searchButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
+                          )),
+               ),
+               tabPanel("Results",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                          # Show a plot of the generated distribution and the corresponding buttons
+                        fluidRow(
+                          column(12, align="center", style='padding-top:15px',
+                                 DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                                 conditionalPanel( condition = "output.CRUXcoverageResults",
+                                 downloadButton('downloadCrux',"Download table"),
+                                 actionButton("SummaryDataButton", "Check Summary Data"))
+                          )),
+                        
+               ),
+               tabPanel("Summary Results",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        # Show a plot of the generated distribution
+                        fluidRow(
+                          column(12, align="center", style='padding-top:15px',
+                          DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
+                          conditionalPanel( condition = "output.CRUXSummaryResults",
+                          downloadButton("CRUXfileDownloadSD","Download summary data"))
+                        )),
+
+               ),
                tabPanel("Information",
                         # Application title
                         titlePanel("Find CRUX database coverage of your organisms of interest"),
@@ -158,59 +203,88 @@ shinyUI(fluidPage(
         # Application title
 
         tabsetPanel(
-          tabPanel("Search", 
-            titlePanel("Find NCBI records of your organisms and barcodes of interest"),
-            fluidRow(
-              mainPanel(
-                h4("Descriptions of each Search Field"),
-                dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
-                dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
-                dropdown(label="Barcodes of Interest (Text box)", p("A comma separated list of the genes you want to search. Common genes used as organism barcodes include: CO1, 16S, 18S, rbcL, matK, ITS, FITS, trnL, Vert12S."), p("Note: naming conventions in NCBI may vary, thus one gene may be found under multiple names. Cytochrome Oxidase subunit 1, for example, may be found under the names COI, CO1, COXI, and COX1.")),
-                dropdown(label="Minimum sequence lengths", p("When searching for barcodes, A NCBI database record may only be useful for identifying an organism if it is above a certain base pair length. This varies from gene to gene and thus the tool allows each gene’s minimum base pair length to be specified individually."), p("By checking this box users can set a minimum base pair length filter. Entries that are below the specified base pair length, won’t appear in the coverage matrix output.")),
-                p("")
-
-              ),
-            ),
-            fluidRow(
-              # Sidebar with a text area for organisms and bar code
-              sidebarPanel(
-                fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv")),
-                actionButton(inputId = "uploadNCBIButton", label = "Upload file to textboxes"),
-                textAreaInput(inputId = "NCBIorganismList", label = "Organism Names"),
-                checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
-                checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE),
-                textAreaInput(inputId = "barcodeList", label = "Barcodes of Interest"),
-                fluidRow(column(width = 3, actionButton(inputId = "barcodeOptionCO1", label = "CO1")),
-                         column(width = 3, actionButton("barcodeOption16S", "16S")),
-                         column(width = 3, actionButton(inputId = "barcodeOption12S", label = "12S")),
-                         column(width = 3, actionButton(inputId = "barcodeOption18S", label = "18S"))
-                         
-                ),
-                fluidRow(
-                  column(width = 4, actionButton(inputId = "barcodeOptionITS2", label = "ITS2")),
-                  column(width = 4, actionButton(inputId = "barcodeOptiontrnl", label = "trnl")),
-                  column(width = 4, actionButton(inputId = "barcodeOptionITS1", label = "ITS1"))
-                ),
-                checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by the [GENE] Metadata field", value = TRUE),
-                checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
-                uiOutput("seqLenInputs"),
-                numericInput("downloadNum", "Number of Sequences to Download per Cell:", 5, min = 1, max = 500),
-                actionButton("NCBIsearchButton", "Search"),
-              ),
-
-              mainPanel(  
-                DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                # Download button
-                conditionalPanel( condition = "output.NCBIcoverageResults",
-                                  downloadButton('downloadStatements',"Download search terms table"),
-                                  downloadButton('download',"Download counts table"),
-                                  downloadButton("fileDownloadF","Download FASTA files"),
-                                  downloadButton("fileDownloadG","Download Genbank files"),
-                                  downloadButton("NCBIfileDownloadSD","Download summary data"))
-                #add_busy_spinner(spin = "fading-circle")
-              )
-            )
-
+          id = "NCBIpage",
+          tabPanel("Start Your NCBI Search",
+                   # Application title
+                   titlePanel("Find NCBI records of your organisms and barcodes of interest"),
+                   fluidRow(
+                     mainPanel(
+                       h4("Descriptions of each Search Field"),
+                       dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
+                       dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
+                       dropdown(label="Barcodes of Interest (Text box)", p("A comma separated list of the genes you want to search. Common genes used as organism barcodes include: CO1, 16S, 18S, rbcL, matK, ITS, FITS, trnL, Vert12S."), p("Note: naming conventions in NCBI may vary, thus one gene may be found under multiple names. Cytochrome Oxidase subunit 1, for example, may be found under the names COI, CO1, COXI, and COX1.")),
+                       dropdown(label="Minimum sequence lengths", p("When searching for barcodes, A NCBI database record may only be useful for identifying an organism if it is above a certain base pair length. This varies from gene to gene and thus the tool allows each gene’s minimum base pair length to be specified individually."), p("By checking this box users can set a minimum base pair length filter. Entries that are below the specified base pair length, won’t appear in the coverage matrix output.")),
+                       p("")
+                       
+                     ),
+                   ),
+                   fluidRow(
+                     column(6, align="center", offset = 3,
+                            fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
+                            actionButton(inputId = "StartNCBIButton", label = "Start Your NCBI Search"),
+                     )),
+                   
+          ),
+          tabPanel("Organism Names",
+                   # Application title
+                   # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                   fluidRow(
+                     column(6, align="center", offset = 3,
+                            titlePanel("Organism Names"),
+                            textAreaInput(inputId = "NCBIorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                            checkboxInput(inputId = "NCBItaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE, width = 500),
+                            checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE, width = 500),
+                            actionButton(inputId = "BarcodesNext", label = "Barcodes of Interest", width = 150),
+                     )),
+          ),
+          tabPanel("Barcodes of Interest",
+                   # Application title
+                   # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                   fluidRow(
+                     column(6, align="center", offset = 3,
+                            titlePanel("Barcodes of Interest"),
+                            textAreaInput(inputId = "barcodeList", label = "A comma separated list of the genes you want to search. Common genes used as organism barcodes include: CO1, 16S, 18S", width = 500, height = 200),
+                            actionButton(inputId = "barcodeOptionCO1", label = "CO1"),
+                            actionButton("barcodeOption16S", label = "16S"),
+                            actionButton(inputId = "barcodeOption12S", label = "12S"),
+                            actionButton(inputId = "barcodeOption18S", label = "18S"),
+                            actionButton(inputId = "barcodeOptionITS2", label = "ITS2"),
+                            actionButton(inputId = "barcodeOptiontrnl", label = "trnl"),
+                            actionButton(inputId = "barcodeOptionITS1", label = "ITS1"),
+                            checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by the [GENE] Metadata field", value = TRUE, width = 500),
+                            checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
+                            uiOutput("seqLenInputs"),
+                            numericInput("downloadNum", "Number of Sequences to Download per Cell:", 5, min = 1, max = 500),
+                            actionButton("NCBIsearchButton", "Search"),
+                     )),
+          ),
+          tabPanel("Results",
+                   # Application title
+                   # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                   # Show a plot of the generated distribution and the corresponding buttons
+                   fluidRow(
+                     column(12, align="center", style='padding-top:15px',
+                            DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                            conditionalPanel( condition = "output.NCBIcoverageResults",
+                                              downloadButton('downloadStatements',"Download search terms table"),
+                                              downloadButton('download',"Download counts table"),
+                                              downloadButton("fileDownloadF","Download FASTA files"),
+                                              downloadButton("fileDownloadG","Download Genbank files"),
+                                              actionButton("NCBISummaryDataButton", "Check Summary Data"))
+                     )),
+                   
+          ),
+          tabPanel("Summary Results",
+                   # Application title
+                   # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                   # Show a plot of the generated distribution
+                   fluidRow(
+                     column(12, align="center", style='padding-top:15px',
+                            DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
+                            conditionalPanel( condition = "output.NCBISummaryResults",
+                                              downloadButton("NCBIfileDownloadSD","Download summary data"),
+                                              actionButton("NCBIStartOver", "Start the Search again"))
+                     )),
           ),
           tabPanel("Information", 
             titlePanel("Find NCBI records of your organisms and barcodes of interest"),
@@ -237,51 +311,52 @@ shinyUI(fluidPage(
     
     tabPanel("Full Genome Search",
              tabsetPanel(
-               tabPanel("Search", 
+               id = "FullGenomePage",
+               tabPanel("Start Your Full Genome Search",
+                        # Application title
                         titlePanel("Find genome of interest"),
+                        h4("Descriptions of each Search Field"),
+                        dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
+                        dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
+                        p(""),
                         fluidRow(
-                          mainPanel(
-                            
-                            h4("Descriptions of each Search Field"),
-                            dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
-                            dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
-                            p("")
-                            
-                          ),
-                        ),
-
-                        fluidRow(
-                          # Sidebar with a text area for organisms and bar code
-                          sidebarPanel(
-                            selectInput("gsearch", "Choose which genome to search for:", 
-                                        choices = c("Full mitochondrial genomes in NCBI Nucleotide", "Full chloroplast genomes in NCBI Nucleotide", "Number of entries per taxa in NCBI Genome")),
-                            helpText("Select a function"),
-                            
-                            fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv")),
-                            
-                            actionButton(inputId = "uploadGenomeButton", label = "Upload file to textboxes"),
-                            textAreaInput(inputId = "genomeOrganismList", label = "Organism Names"),
-                            
-                            checkboxInput(inputId = "refSeq", label = "Search for reference sequences", value = TRUE),
-                            checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
-                            
-                            
-                            
-                            actionButton("genomeSearchButton", "Search"),
-                          ),
-                          
-                          mainPanel(
-                            
-                            # Show a plot of the generated distribution
-                            DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
-                            # Download button
-                            conditionalPanel( condition = "output.genomeResults",                            
-                                              downloadButton('fullGenomeDownloadT',"Download table"),
-                                              downloadButton('fullGenomeDownloadF', "Download Fasta files"),
-                                              downloadButton('fullGenomeDownloadG', "Download Genbank files"))
-                          )
-                        )
+                          column(6, align="center", offset = 3,
+                                 selectInput("gsearch", "Choose which genome to search for:", 
+                                             choices = c("Full mitochondrial genomes in NCBI Nucleotide", "Full chloroplast genomes in NCBI Nucleotide", "Number of entries per taxa in NCBI Genome"), width=500),
+                                 fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv"), width = 800),
+                                 #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
+                                 actionButton("FullGenomeStart", "Start Your Full Genome Search"),
+                          )),
+                        
                ),
+               tabPanel("Organism Names",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        fluidRow(
+                          column(6, align="center", offset = 3,
+                                 titlePanel("Organism Names"),
+                                 textAreaInput(inputId = "genomeOrganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                                 checkboxInput(inputId = "refSeq", label = "Search for reference sequences", value = TRUE),
+                                 checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE),
+                                 actionButton("genomeSearchButton", "Search"),
+                          )),
+               ),
+               tabPanel("Results",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        # Show a plot of the generated distribution and the corresponding buttons
+                        fluidRow(
+                          column(12, align="center", style='padding-top:15px',
+                                 DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
+                                 conditionalPanel( condition = "output.genomeResults",                            
+                                                   downloadButton('fullGenomeDownloadT',"Download table"),
+                                                   downloadButton('fullGenomeDownloadF', "Download Fasta files"),
+                                                   downloadButton('fullGenomeDownloadG', "Download Genbank files"),
+                                                   actionButton("FullGenomeSummaryDataButton", "Check Summary Data"))
+                          )),
+                        
+               ),
+               
                tabPanel("Information"),
                h4("User Guide"),
                full_genome_guide.icon <- tags$a(href='https://docs.google.com/document/d/1Z9qLSy1ZiHaoT2i6rC_CLM_mKbo4uN2zLxaNbkz_w7U/edit?usp=sharing',

@@ -8,6 +8,7 @@ import(modules)
 import(future)
 import(promises)
 import(ipc)
+import(shinyWidgets)
 
 orgListHelper <- tryCatch({modules::use("orgListHelper.R")},
                           error = function(err){modules::use("Coverage/orgListHelper.R")})
