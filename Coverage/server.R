@@ -29,6 +29,17 @@ server_functions <- modules::use("server_functions.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
+  
+  hideTab("CRUXpage", "Results")
+  hideTab("CRUXpage", "Organism Names")
+  hideTab("CRUXpage", "Summary Results")
+  hideTab("NCBIpage", "Organism Names")
+  hideTab("NCBIpage", "Barcodes of Interest")
+  hideTab("NCBIpage", "Results")
+  hideTab("NCBIpage", "Summary Results")
+  hideTab("FullGenomePage", "Results")
+  hideTab("FullGenomePage", "Organism Names")
+  hideTab("FullGenomePage", "Summary Results")
  
   # max number of homonyms to return if any
   # are found in the homonym check.
@@ -61,17 +72,6 @@ shinyServer(function(input, output, session) {
                  please make sure it is correct",
                  type = "warning")
     })
-
-      hideTab("CRUXpage", "Results")
-      hideTab("CRUXpage", "Organism Names")
-      hideTab("CRUXpage", "Summary Results")
-      hideTab("NCBIpage", "Organism Names")
-      hideTab("NCBIpage", "Barcodes of Interest")
-      hideTab("NCBIpage", "Results")
-      hideTab("NCBIpage", "Summary Results")
-      hideTab("FullGenomePage", "Results")
-      hideTab("FullGenomePage", "Organism Names")
-      hideTab("FullGenomePage", "Summary Results")
   })
  
 # Full Genome ----------------------------------------------------------------
@@ -241,10 +241,12 @@ shinyServer(function(input, output, session) {
   
   cruxOrgSearch <-
     eventReactive(input$searchButton, {
+      print("WOW WHAT")
       organismList <- input$CRUXorganismList # Returns as a string
       cruxTaxizeOption <- input$CRUXtaxizeOption
       # When searchButton clicked, update CruxOrgSearch to return the value 
       # input into CRUXorganismList
+      print("HELLO")
       updateTabsetPanel(session, "CRUXpage", selected = "Results")
       showTab("CRUXpage", "Results")
       future_promise(
