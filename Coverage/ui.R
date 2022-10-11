@@ -350,12 +350,11 @@ shinyUI(fluidPage(
                                  conditionalPanel( condition = "output.genomeResults",                            
                                                    downloadButton('fullGenomeDownloadT',"Download table"),
                                                    downloadButton('fullGenomeDownloadF', "Download Fasta files"),
-                                                   downloadButton('fullGenomeDownloadG', "Download Genbank files"),
-                                                   actionButton("FullGenomeSummaryDataButton", "Check Summary Data"))
+                                                   downloadButton('fullGenomeDownloadG', "Download Genbank files"))
+                                                   #actionButton("FullGenomeSummaryDataButton", "Check Summary Data")) # TO BE USED OEN DAY?
                           )),
                         
                ),
-               
                tabPanel("Information"),
                h4("User Guide"),
                full_genome_guide.icon <- tags$a(href='https://docs.google.com/document/d/1Z9qLSy1ZiHaoT2i6rC_CLM_mKbo4uN2zLxaNbkz_w7U/edit?usp=sharing',
