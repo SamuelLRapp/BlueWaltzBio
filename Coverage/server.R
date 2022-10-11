@@ -29,7 +29,7 @@ server_functions <- modules::use("server_functions.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
-  
+
   hideTab("CRUXpage", "Results")
   hideTab("CRUXpage", "Organism Names")
   hideTab("CRUXpage", "Summary Results")
@@ -40,7 +40,7 @@ shinyServer(function(input, output, session) {
   hideTab("FullGenomePage", "Results")
   hideTab("FullGenomePage", "Organism Names")
   hideTab("FullGenomePage", "Summary Results")
- 
+
   # max number of homonyms to return if any
   # are found in the homonym check.
   maxHomonyms <- 5L
@@ -149,6 +149,15 @@ shinyServer(function(input, output, session) {
         colnames = names(resultsMatrix[[1]]))})
   })
   
+  output$FullGenomeSummaryResults <- DT::renderDataTable({
+    promise_all(data_df = summary_report(0), 
+                rows = organismListGet()) %...>% with({
+                  DT::datatable(
+                    data_df
+                  )
+                })
+  })
+  
   # * Download Fastas ----------------------------------------------------------
   mostRecentFile <- function(dirpath) {
     df <- file.info(list.files(dirpath, full.names = T))
@@ -241,18 +250,21 @@ shinyServer(function(input, output, session) {
   
   cruxOrgSearch <-
     eventReactive(input$searchButton, {
-      print("WOW WHAT")
       organismList <- input$CRUXorganismList # Returns as a string
       cruxTaxizeOption <- input$CRUXtaxizeOption
       # When searchButton clicked, update CruxOrgSearch to return the value 
       # input into CRUXorganismList
-      print("HELLO")
-      updateTabsetPanel(session, "CRUXpage", selected = "Results")
-      showTab("CRUXpage", "Results")
       future_promise(
         server_functions$getCruxSearchFullResults(
           organismList, cruxTaxizeOption))
     })
+  
+  # * UI pipeline updates ------------------------------------------------------
+  observeEvent(input$searchButton, {
+    # Begin CRUX search
+    updateTabsetPanel(session, "CRUXpage", selected = "Results")
+    showTab("CRUXpage", "Results")
+  })
   
   # * CRUXInputCSV -------------------------------------------------------------
   
@@ -339,6 +351,15 @@ shinyServer(function(input, output, session) {
       })
     })
   
+  output$CRUXSummaryResults <- DT::renderDataTable({
+    promise_all(data_df = summary_report(0), 
+                rows = organismListGet()) %...>% with({
+                  DT::datatable(
+                    data_df
+                  )
+                })
+  })
+  
   # NCBI -----------------------------------------------------------------------
 
   # removing reactive elements, need barcodes to be accessible
@@ -359,8 +380,6 @@ shinyServer(function(input, output, session) {
     seqLengthOption <- input$seqLengthOption
     ncbiTaxizeOption <- input$NCBItaxizeOption
     seq_len_list <- server_functions$getSeqLenList(barcodeList_, input)
-    updateTabsetPanel(session, "NCBIpage", selected = "Results")
-    showTab("NCBIpage", "Results")
     future_promise({
       uids <- list()
       searchTerms <- list()
@@ -377,6 +396,13 @@ shinyServer(function(input, output, session) {
       }
       ncbiResultsDataframe <<- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
     })
+  })
+  
+  
+  observeEvent(input$NCBIsearchButton, {
+    # Start NCBI search button
+    updateTabsetPanel(session, "NCBIpage", selected = "Results")
+    showTab("NCBIpage", "Results")
   })
   
   observeEvent(input$NCBIStartOver, {
@@ -798,6 +824,13 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  output$NCBISummaryResults <- DT::renderDataTable({
+    promise_all(data_df = summary_report(1), 
+                rows = NCBIorganismList()) %...>% with({
+                  DT::datatable(data_df, rownames = FALSE)
+                })
+  })
+  
   # * NCBIDownloadTable --------------------------------------------------------
   
   # Download NCBI table
@@ -827,6 +860,7 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Search_Statements", ".csv", sep = "")
     },
     content = function(file) {
+      columns <- barcodeList() 
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
         df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList_))
@@ -848,7 +882,7 @@ shinyServer(function(input, output, session) {
         df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList_))
         colnames(df) <- columns
         rownames(df) <- rows
-        summary_report_dataframe(df)
+        server_functions$summary_report_dataframe(df)
       })
     } else {
       then(cruxOrgSearch(), function(coverage) {
@@ -858,7 +892,7 @@ shinyServer(function(input, output, session) {
         colnames(cruxMatrix) <- columns
         rownames(cruxMatrix) <- organismList
         dataframe <- convert_CRUX(cruxMatrix)
-        summary_report_dataframe(dataframe)
+        server_functions$summary_report_dataframe(dataframe)
       })
     }
   }
