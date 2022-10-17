@@ -522,7 +522,18 @@ getTaxaDbQueryResults <- function(taxaDb, query, organism, searchTerm) {
       taxaDb,
       query,
       params = list(x = searchTerm[1, 7]))
-  toString(nrow(location))
+  if (nrow(location) != 0) {
+    return("phylum")
+  }
+  
+  location <-
+    dbGetQuery(
+      taxaDb,
+      query,
+      params = list(x = searchTerm[1, 7]))
+  if (nrow(location) != 0) {
+    return("kingdom")
+  }
 }
 
 
@@ -620,16 +631,25 @@ convert_CRUX <-
 # by marker to solicit the 
 # user for input on the min/max sequence
 # length for that marker.
-getRangeList_MarkerSequenceLength <- function(barcodeList){
+getRangeList_MarkerSequenceLength <- function(barcodeList, ...){
+  # .barcode <- list(...)
+  # if(!is.list(barcode)) barcode <- list(barcode)
+  # 
+  # barcodeList <- c(barcode,.barcode)
+  # print(barcode)
+  # barcodeList <- barcode
+  # print("-----------------")
+  print(barcodeList)
   textList <- list()
   for (marker in barcodeList) {
+    print(marker)
+    rangeInput <- numericRangeInput(
+                      inputId = marker,
+                      label = paste("Min/max sequence length for", marker),
+                      value = c(0, 2000))
     #add a numeric input
     textList <- list(
-      textList, 
-      numericRangeInput(
-        inputId = marker,
-        label = paste("Min/max sequence length for", marker),
-        value = c(0, 2000)))
+      textList, rangeInput)
   }
   #return the list of numeric inputs
   textList
@@ -637,10 +657,14 @@ getRangeList_MarkerSequenceLength <- function(barcodeList){
 
 # setup a list of sequence lengths based on the selections in the ui
 getSeqLenList <- function(barcodeList, input) {
+  print(paste("barcodeList =", barcodeList))
   seq_len_list <- list()
   for (code in barcodeList) {
+    print(input[[code]])
     seq_len_list[[code]] <- input[[code]]
+    print(seq_len_list[[code]])
   }
+  print(paste("seq_len_list = ", seq_len_list))
   seq_len_list
 }
 
