@@ -638,11 +638,8 @@ getRangeList_MarkerSequenceLength <- function(barcodeList, ...){
   # barcodeList <- c(barcode,.barcode)
   # print(barcode)
   # barcodeList <- barcode
-  # print("-----------------")
-  print(barcodeList)
   textList <- list()
   for (marker in barcodeList) {
-    print(marker)
     rangeInput <- numericRangeInput(
                       inputId = marker,
                       label = paste("Min/max sequence length for", marker),
@@ -657,14 +654,10 @@ getRangeList_MarkerSequenceLength <- function(barcodeList, ...){
 
 # setup a list of sequence lengths based on the selections in the ui
 getSeqLenList <- function(barcodeList, input) {
-  print(paste("barcodeList =", barcodeList))
   seq_len_list <- list()
   for (code in barcodeList) {
-    print(input[[code]])
     seq_len_list[[code]] <- input[[code]]
-    print(seq_len_list[[code]])
   }
-  print(paste("seq_len_list = ", seq_len_list))
   seq_len_list
 }
 

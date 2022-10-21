@@ -6,4 +6,3 @@
 *.sqlite
 .DS_Store
 *.fasta
-*.csv
