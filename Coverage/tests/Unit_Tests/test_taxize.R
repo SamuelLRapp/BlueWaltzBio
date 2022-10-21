@@ -19,7 +19,7 @@ function_template <- function(expectedOutput, inputString, inputBool, testName){
   print("------------------------------------")
   print(paste("Beginning test ", testName))
   taxizeHelperOutput <- orgListHelper$taxizeHelper(inputString, inputBool)
-  fileName <- paste("Coverage/tests/test_output/taxizeTestOutput/", testName, 
+  fileName <- paste("Coverage/tests/Unit_Tests/test_output/taxizeTestOutput/", testName, 
                     ".csv", sep="")
   close( file( fileName, open="w" ) )
   write.table(taxizeHelperOutput, 
