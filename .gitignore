@@ -6,3 +6,5 @@
 *.sqlite
 .DS_Store
 *.fasta
+>>>>>>> Add functionality to download search results from Genbank (#24)
+>>>>>>> master

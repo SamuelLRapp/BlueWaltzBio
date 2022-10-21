@@ -16,6 +16,7 @@ library(vembedr)
 library(shinydashboard)
 library(shinyalert) # popup library
 library(modules)
+library(shinyjs)
 #library(shinybusy)
 
 components <- modules::use("components.R")
@@ -263,6 +264,7 @@ shinyUI(fluidPage(
           )
         ),
       ),
+
     
     tabPanel("Full Genome Search",
              tabsetPanel(
@@ -318,7 +320,136 @@ shinyUI(fluidPage(
                                     icon("question-circle"),
                                     "Full Genome User Guide", target="_blank")
                )),
-    
+
+
+
+
+
+
+
+
+    tabPanel("BOLD",
+             tabsetPanel(
+               id = "BOLDpage",
+               tabPanel("Start Your BOLD Search",
+                        # Application title
+                        titlePanel("Find BOLD database coverage of your organisms of interest"),
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        h4("Additional Information:"),
+                        dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
+                        dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
+                        p(), #empty space 
+                        fluidRow(
+                          column(6, align="center", offset = 3,
+                                 fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
+                                 actionButton("BOLDStartButton", "Start Your BOLD Search"),
+                          )),
+                        
+               ),
+               tabPanel("Organism Names",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        fluidRow(
+                          column(6, align="center", offset = 3,
+                                 titlePanel("Organism Names"),
+                                 textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                                 checkboxInput(inputId = "BOLDtaxizeOption", label = "Check spelling and synonyms for organism names", value = TRUE, width = 500),
+                                 actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
+                          )),
+               ),
+               tabPanel("Filter By Country",
+                        
+                        fluidRow(
+                        column(6, align="center", offset = 3, style='padding-top:15px',
+                              uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
+                              conditionalPanel(condition = "output.selectCountry",
+                                               actionButton('BOLDfilterCountries',"Filter Countries"),
+                                               actionButton('BOLDSkipFilter',"Skip Filter"),
+                                               #selectInput(inputId="geo", label="Filter by Countries", choices=c("China", "India"), multiple = TRUE, width = 500),
+                                               #selectizeInput(inputId="selectCountry", label="Filter by Countries", choices="", selected = NULL, multiple = TRUE,options = NULL, width = 500),
+                                               #actionButton('BOLDfilterCountries',"Filter Countries"),
+                              )
+                        ),
+                        column(2, align="left", style='padding-top:40px',
+                               conditionalPanel(condition = "output.selectCountry",
+                                                actionButton('BOLDClearFilter',"Clear Filter")
+                               )),
+                        
+                        
+                        column(12, align="center", style='padding-top:15px', 
+                               span(textOutput("BOLDNullSpeciesWarning"), style="color:orange"),
+                               textOutput("BOLDNullSpecies") 
+                               )
+                        ),
+                        
+               ),
+               tabPanel("Results",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        # Show a plot of the generated distribution and the corresponding buttons
+                        fluidRow(
+                          column(12, align="center", style='padding-top:15px',
+                                 #conditionalPanel(condition = "input.geo != list()",
+                                                  #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
+                                                  #mainPanel(plotOutput("geo_pie")),
+                                 titlePanel("Summary Data"),
+                                 p("For each barcode we display the total number of sequences found and the number of organisms with at least one or no sequence"),
+                                 DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
+                                 
+                                 titlePanel("Sequences Classified by Barcode"),
+                                 p("Total number of sequences found by barcode for each unique species"),
+                                 DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                                 
+                                 conditionalPanel(condition = "output.BOLDcoverageResults",
+                                                   # add ncbi option remove genome
+                                                   checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
+                                                   #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
+                                                   downloadButton('downloadBoldFasta',"Download Fasta"),
+                                                   downloadButton('downloadBoldSummary', "Download Summary"),
+                          )),
+                        
+               ),
+             ),
+             tabPanel("Country Data",
+                      # Application title
+                      # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                      # Show a plot of the generated distribution and the corresponding buttons
+                      fluidRow(
+                        column(12, align="center", style='padding-top:15px',
+                               #conditionalPanel(condition = "input.geo != list()",
+                               #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
+                               #mainPanel(plotOutput("geo_pie")),
+                               titlePanel("Sequences Classified by Country"),
+                               p("Total number of sequences found by Country for each unique species"),
+                               DT::dataTableOutput("BOLDPresentTable") %>% withSpinner(color="#0dc5c1"),
+                               DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
+                               ),
+                        
+                      ),
+             ),
+             tabPanel("Plot Total Sequences Per Country",
+                fluidRow(
+                  column(10, align="left", style='padding-top:15px',
+                    mainPanel(plotOutput('treemap'))
+                  ),
+                  column(2, align="right", style='padding-top:15px',
+                    downloadButton('downloadTreeGraph',"Download Graph"),
+                  ),
+                ),
+            ),
+            tabPanel("Plot Unique Species Per Country",
+              fluidRow(
+                column(10, align="left", style='padding-top:15px',
+                  mainPanel(plotOutput('species'))
+                ),
+                column(2, align="right", style='padding-top:15px', 
+                  downloadButton('downloadBarGraph',"Download Graph"))
+              ),
+            ),
+
+    )),
+
+
    tabPanel("Contact Us", 
             
             titlePanel("Contact us"),
@@ -332,7 +463,7 @@ shinyUI(fluidPage(
                                    'Twitter', target="_blank")
             
             )
-      
-      
+
     )
 ))
+      
