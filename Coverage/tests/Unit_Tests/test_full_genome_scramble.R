@@ -15,7 +15,7 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
   print("------------------------------------")
   print(paste("Beginning test ", testName))
   genSearchOutput <- server_functions$getGenomeSearchFullResults(dbOption, orgList, taxizeOption, refSeqChecked)
-  fileName <- paste("Coverage/tests/test_output/fullGenomeScrambleTestOutput/", 
+  fileName <- paste("Coverage/tests/Unit_Tests/test_output/fullGenomeScrambleTestOutput/", 
                     testName, ".csv", sep="")
   close( file( fileName, open="w" ) )
   counts <- genSearchOutput[[1]][[1]][[1]]
@@ -44,6 +44,8 @@ function_template <- function(dbOption, orgList, taxizeOption, refSeqChecked, te
       
       #unique(trueTaxRanks) prevents getting duplicate uids
       for(rank in unique(trueTaxRanks)) {
+        print(paste("esum$organism: ", esum$organism))
+        print(paste("rank: ", rank))
         foundOrg <- tax_name(query = esum$organism,
                             get = c(rank),
                             db = "ncbi",

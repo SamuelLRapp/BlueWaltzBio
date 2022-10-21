@@ -31,7 +31,7 @@ readFile <- function(file, readFunc) {
 # ./BlueWaltzBio/Coverage/tests/full_genome_download/fetched/
 # returns True if the downloaded file matches the expected output, false otherwise.
 fullGenomeDownloadTest <- function(fileType, uids, expectedOutput, readFunc){
-    serverDownloadPath <- paste("Coverage/tests/full_genome_download/fetched/", uids, "." , fileType, sep="")
+    serverDownloadPath <- paste("Coverage/tests/Integration_Tests/full_genome_download/fetched/", uids, "." , fileType, sep="")
     fileVector <- c()
     for (uid in uids) {
       Sys.sleep(0.4)
@@ -48,12 +48,12 @@ fullGenomeDownloadTest <- function(fileType, uids, expectedOutput, readFunc){
 accessionLoop <- function(accessionNumbers, fileType) {
   for (num in accessionNumbers){
     func <- switch(fileType, "fasta" = read.fasta, "gb" = read.gb)
-    file <- paste("Coverage/tests/full_genome_download/web_downloaded/", num, ".", fileType, sep="")
+    file <- paste("Coverage/tests/Integration_Tests/full_genome_download/web_downloaded/", num, ".", fileType, sep="")
     manuallyDownloaded <- readFile(file, func)
     if (manuallyDownloaded[1] != "") {
       if (!fullGenomeDownloadTest(fileType, num, manuallyDownloaded, func)) {
         print(paste("Discrepancy in", num, sep=" "))
-        write(paste(num, ".", fileType, sep=""), file="Coverage/tests/full_genome_download/discrepancies.txt", append=TRUE)
+        write(paste(num, ".", fileType, sep=""), file="Coverage/tests/Integration_Tests/full_genome_download/discrepancies.txt", append=TRUE)
       }
     }
   }
@@ -65,10 +65,10 @@ accessionLoop <- function(accessionNumbers, fileType) {
 # every accession number in this file must have an accompanying
 # file already downloaded and save in
 # "./BlueWaltzBio/Coverage/tests/full_genome_download/web_downloaded/
-accessionNumbers = readLines("Coverage/tests/full_genome_download/accession_numbers.txt")
+accessionNumbers = readLines("Coverage/tests/Integration_Tests/full_genome_download/accession_numbers.txt")
 
 # clear the discrepancy file
-close(file("Coverage/tests/full_genome_download/discrepancies.txt", open="w"))
+close(file("Coverage/tests/Integration_Tests/full_genome_download/discrepancies.txt", open="w"))
 
 accessionLoop(accessionNumbers, 'gb')
 accessionLoop(accessionNumbers, 'fasta')
