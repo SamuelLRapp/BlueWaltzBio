@@ -871,7 +871,7 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Search_Statements", ".csv", sep = "")
     },
     content = function(file) {
-      columns <- barcodeList() 
+      columns <- barcodeList_
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
         df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList_))
