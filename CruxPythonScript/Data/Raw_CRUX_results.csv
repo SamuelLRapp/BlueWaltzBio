@@ -1,0 +1,693 @@
+genusspecies,18S,16S,PITS,CO1,FITS,trnL,Vert12S
+Codium fragile subsp. tomentosoides,order,genus,class,class,order,4,0
+Heterosiphonia,4,family,1,23,order,0,0
+Prorocentrum minimum,14,12,0,11,class,0,0
+Sargassum muticum,2,1,0,20,1,class,0
+Bonnemaisonia hamifera,2,genus,1,6,class,0,0
+Ficopomatus enigmaticus,1,family,0,family,class,0,class
+Teredo navalis,4,4,0,4,1,0,class
+Marenzelleria viridis,1,1,0,25,class,0,order
+Membranipora membranacea,3,genus,0,64,0,0,0
+Bugula neritina,1,order,0,72,0,0,0
+Cordylophora caspia,1,1,2,10,class,0,20
+Ectopleura crocea,2,3,2,16,class,0,20
+Mysis diluviana,genus,genus,9,19,class,0,class
+Caprella mutica,1,order,9,16,order,0,class
+Amphibalanus improvisus,1,family,9,42,class,0,8505
+Bythotrephes longimanus,genus,genus,9,24,398,0,order
+Cercopagis pengoi,1,family,9,6,398,0,order
+Rhithropanopeus harrisii,1,order,9,154,order,0,family
+Cambaridae,79,67,9,1930,order,0,8
+Procambarus clarkii,36,9,9,195,order,0,family
+Homarus americanus,11,4,9,12,order,0,3
+Crepidula fornicata,1,1,0,52,order,0,order
+Mytilopsis leucophaeata,1,2,0,13,1,0,class
+Dreissena polymorpha,2,4,0,genus,1,0,class
+Crassostrea gigas,5,14,0,351,1,0,class
+Petricolaria pholadiformis,3,4,0,1,1,0,class
+Corbicula fluminea,4,6,0,100,1,0,class
+Dreissena rostriformis bugensis,genus,genus,0,genus,1,0,class
+Melanoides tuberculata,class,family,0,66,class,0,family
+Potamopyrgus antipodarum,family,30,0,357,order,0,order
+Caulerpa taxifolia,11,genus,class,class,genus,4,0
+Myriophyllum aquaticum,2,2,9,order,order,genus,0
+Egeria densa,2,family,2,family,7418,family,0
+Eichhornia crassipes,1,genus,order,genus,7418,genus,0
+Hydrilla verticillata,3,family,family,1,7418,family,0
+Nymphoides peltata,genus,genus,13,1,order,3,0
+Pistia stratiotes,1,1,1,2,7418,family,0
+Salvinia molesta,genus,genus,class,class,class,order,0
+Ciona intestinalis,1,6,1,307,class,0,77882
+Didemnum vexillum,genus,genus,1,40,class,0,77882
+Styela clava,2,5,1,63,class,0,77882
+Molgula manhattensis,2,6,1,genus,class,0,77882
+Ascidiella aspersa,genus,3,1,genus,class,0,77882
+Styela plicata,4,9,1,125,class,0,77882
+Ciona savignyi,genus,1,1,58,class,0,77882
+Diplosoma listerianum,genus,family,1,5,class,0,77882
+Alosa sapidissima,family,9,class,23,class,0,8
+Cichlasoma,family,1,class,76,class,0,1
+Morone saxatilis,family,3,class,13,class,0,2
+Osmerus mordax,family,6,class,101,class,0,6
+Salmo salar,1,14,class,145,class,0,19
+Pterois volitans,order,2,class,202,class,0,2
+Ameiurus melas,family,2,class,27,order,0,5
+Ameiurus nebulosus,family,5,class,23,order,0,7
+Anguilla rostrata,1,2,class,72,class,0,55
+Carassius auratus,14,71,family,166,family,0,47
+Ctenopharyngodon idella,order,9,order,69,order,0,7
+Cyprinus carpio,8,52,1,187,1,0,35
+Gambusia affinis,genus,2,class,27,class,0,4
+Gambusia holbrooki,1,5,class,18,class,0,6
+Gasterosteus aculeatus,order,8,class,122,class,0,8
+Gymnocephalus cernua,family,2,class,45,class,0,3
+Hypophthalmichthys nobilis,order,45,order,88,order,0,39
+Lepisosteus platostomus,genus,genus,class,5,class,0,3
+Neogobius melanostomus,family,1,class,34,class,0,genus
+Oncorhynchus gorbuscha,genus,4,class,60,class,0,1
+Oncorhynchus mykiss,7,22,class,102,class,0,19
+Platichthys flesus,2,1,class,70,class,0,3
+Salmo trutta,31,44,class,132,class,0,21
+Salvelinus alpinus,genus,6,class,40,class,0,6
+Salvelinus fontinalis,1,10,class,37,class,0,7
+Scardinius erythrophthalmus,order,2,order,34,order,0,3
+Tinca tinca,16,6,order,49,order,0,5
+Danio rerio,12,28,order,51,order,0,8
+Mylopharyngodon piceus,order,34,order,50,order,0,33
+Alexandrium ostenfeldii,28,20,0,1,order,0,0
+Alexandrium tamarense,74,47,0,10,order,0,0
+Corbula,4,7,0,family,1,0,class
+Myriophyllum spicatum,1,5,116,order,order,17,0
+Botryllus schlosseri,2,3,1,473,class,0,77882
+Botrylloides violaceus,2,3,1,15,class,0,77882
+Mya arenaria,5,6,0,67,1,0,class
+Asparagopsis armata,1,genus,1,4,class,0,0
+Oreochromis mossambicus,2,4,class,77,class,0,3
+Charybdis hellerii,genus,genus,9,144,family,0,order
+Rangia cuneata,1,1,0,10,1,0,class
+Belonesox belizanus,family,family,class,5,class,0,family
+Dorosoma petenense,family,1,class,10,class,0,4
+Eriocheir sinensis,3,7,9,58,order,0,order
+Monopterus albus,order,7,class,104,class,0,6
+Lepomis macrochirus,order,12,class,38,class,0,9
+Acanthophora spicifera,family,family,1,6,order,0,0
+Microspongium globosum,family,family,0,genus,genus,class,0
+Alepes djedaba,family,3,class,50,class,0,2
+Avrainvillea,order,3,class,class,order,4,0
+Cladophora sericea,2,order,class,class,class,4,0
+Dictyosphaeria cavernosa,2,order,class,class,class,4,0
+Fucus cottoni,genus,genus,0,genus,genus,class,0
+Gracilaria salicornia,9,3,1,78,class,0,0
+Grateloupia filicina,1,4,1,5,class,0,0
+Hypnea musciformis,1,genus,1,52,class,0,0
+Kappaphycus alvarezii,10,2,1,14,class,0,0
+Neosiphonia,44,family,1,82,order,0,0
+Ulva fasciata,7,4,genus,genus,23,4,0
+Antithamnion nipponicum,1,genus,1,genus,order,0,0
+Asparagopsis taxiformis,3,2,1,32,class,0,0
+Gymnodinium catenatum,11,11,0,13,genus,0,0
+Antithamnionella spirographidis,1,1,1,genus,order,0,0
+Bryopsis pennata,order,genus,class,class,order,4,0
+Gracilaria tikvahiae,18,genus,1,13,class,0,0
+Grateloupia turuturu,genus,genus,1,4,class,0,0
+Macrocystis integrifolia,1,2,0,3,4,class,0
+Polysiphonia,87,10,1,366,order,0,0
+Hemidiscaceae,3,15,class,order,order,0,0
+Aureococcus anophagefferens,25,25,0,0,0,0,0
+Aureoumbra lagunensis,5,6,0,0,0,0,0
+Bangia atropurpurea,11,7,1,3,family,0,0
+Caulacanthus ustulatus,genus,order,1,2,class,0,0
+Caulerpa serrulata,2,genus,class,class,genus,4,0
+Chaetoceros muellerii,9,14,genus,genus,genus,0,0
+Chroodactylon,3,4,1,class,class,0,0
+Cyclotella atomus,1,1,class,genus,genus,0,0
+Cyclotella cryptica,2,5,class,1,genus,0,0
+Cyclotella pseudostelligera,2,4,class,genus,genus,0,0
+Cyclotella,58,85,class,6,4,0,0
+Cylindrospermopsis raciborskii,0,180,0,0,0,order,0
+Diatoma,12,21,1,family,336,0,0
+Didymosphenia geminata,22,29,1,11,29,0,0
+Enteromorpha flexuosa,genus,genus,genus,genus,genus,4,0
+Enteromorpha intestinalis,genus,genus,genus,genus,genus,4,0
+Enteromorpha prolifera,genus,genus,genus,genus,genus,4,0
+Hymenomonas,2,2,0,0,0,0,0
+Nitellopsis obtusa,2,5,1,family,7418,family,0
+Pleurosira laevis,2,3,1,family,class,0,0
+Skeletonema potamos,2,4,class,6,genus,0,0
+Skeletonema subsalsum,11,14,class,1,genus,0,0
+Sphacelaria,5,2,0,3,3,class,0
+Stephanodiscus binderanus,1,1,class,3,genus,0,0
+Stephanodiscus,22,25,class,28,9,0,0
+Thalassiosira baltica,genus,genus,class,genus,genus,0,0
+Thalassiosira,103,419,class,8,170,0,0
+Thalassiosira pseudonana,11,21,class,1,15,0,0
+Bufo,family,38,1,91,12,0,38
+Paranais frici,1,3,0,6,family,0,15
+Branchiura sowerbyi,family,2,0,12,family,0,15
+Gianius aquaedulcis,1,1,0,1,family,0,15
+Potamothrix bedoti,genus,1,0,1,family,0,15
+Potamothrix moldaviensis,1,1,0,4,family,0,15
+Potamothrix vejdovskyi,genus,genus,0,2,family,0,15
+Ripistes parasita,1,1,0,2,family,0,15
+Heteromastus filiformis,2,2,0,5,class,0,class
+Polydora cornuta,genus,genus,0,19,class,genus,order
+Boccardiella ligerica,1,1,0,genus,class,0,order
+Salmacina,1,family,0,family,class,0,class
+Amphicteis,3,3,0,9,class,0,class
+Capitella capitata,1,1,0,7,class,0,class
+Dodecaceria concharum,2,3,0,2,class,0,class
+Exogone,13,13,0,11,order,0,order
+Harmothoe imbricata,3,3,0,41,order,0,order
+Hydroides brachyacantha,genus,genus,0,family,class,0,class
+Lumbrineris japonica,genus,genus,0,10,class,0,class
+Marphysa sanguinea,3,4,0,19,class,0,class
+Myxicola,family,1,0,13,class,0,class
+Neanthes acuminata,24,family,0,24,order,0,order
+Neanthes,24,family,0,40,order,0,order
+Nephtys longosetosa,1,1,0,13,order,0,order
+Spionidae,135,230,0,699,class,0,order
+Pomatoleios kraussii,family,family,0,family,class,0,class
+Scolelepis squamata,1,1,0,8,class,0,order
+Spiophanes,7,7,0,16,class,0,order
+Streblospio benedicti,family,family,0,35,class,0,order
+Acentropus niveus,0,0,0,0,0,0,0
+Tanysphyrus lemnae,2,family,order,24,order,0,order
+Ammothea hilgendorfi,3,2,9,2,order,0,8505
+Cygnus olor,family,3,1,10,class,0,3
+Tricellaria inopinata,genus,family,0,1,0,0,0
+Victorella pavida,0,0,0,0,0,0,0
+Cryptosula pallasiana,3,order,0,1,0,0,0
+Schizoporella,2,1,0,16,0,0,0
+Amathia distans,genus,order,0,1,0,0,0
+Schizoporella errata,genus,genus,0,9,0,0,0
+Watersipora arcuata,1,order,0,16,0,0,0
+Alcyonidium gelatinosum,1,1,0,genus,0,0,0
+Barentsia benedeni,1,1,0,genus,0,0,2
+Bowerbankia,family,order,0,family,0,0,0
+Bugula,1,order,0,79,0,0,0
+Bugula pacifica,genus,order,0,2,0,0,0
+Cribrilina,1,order,0,4,0,0,0
+Lophopodella carteri,family,family,0,family,0,0,0
+Membranipora,4,1,0,93,0,0,0
+Poricella robusta,0,0,0,0,0,0,0
+Savigyniella lafonti,order,order,0,order,0,0,0
+Tubulipora,4,4,0,2,0,0,0
+Watersipora subtorquata,4,order,0,57,0,0,0
+Myxobolus cerebralis,6,genus,2,8062,class,0,20
+Carijoa riisei,family,genus,class,3,order,0,20
+Diadumene lineata,6,8,order,4,class,0,20
+Tubastraea coccinea,6,8,order,5,order,0,20
+Bunodeopsis,family,family,order,family,class,0,20
+Diadumene,11,19,order,6,class,0,20
+Diadumene leucolena,2,4,order,2,class,0,20
+Garveia,2,2,2,family,class,0,20
+Maeotias marginata,1,1,2,2,class,0,20
+Moerisia lyonsi,genus,genus,2,genus,class,0,20
+Gonionemus vertens,family,family,2,3,class,0,20
+Pennaria disticha,4,4,2,1,class,0,20
+Campanulariidae,177,173,2,292,order,0,20
+Clytia hemisphaerica,12,12,2,20,order,0,20
+Dynamena crisioides,1,1,2,genus,order,0,20
+Eudendrium,7,8,2,7,class,0,20
+Gonothyraea,5,4,2,2,order,0,20
+Laomedea,14,15,2,14,order,0,20
+Obelia dichotoma,16,17,2,18,order,0,20
+Obelia longissima,8,1,2,11,order,0,20
+Obelia,36,33,2,101,order,0,20
+Plumularia strictocarpa,8,1,2,6,order,0,20
+Sarsia tubulosa,genus,2,2,12,class,0,20
+Sertularella diaphana,1,1,2,family,order,0,20
+Thyroscyphus fruticosus,genus,genus,2,genus,order,0,20
+Tubularia,family,3,2,3,class,0,20
+Turritopsis nutricula,1,1,2,4,class,0,20
+Phyllorhiza punctata,6,5,2,18,110,0,order
+Drymonema dalmatinum,3,2,2,3,110,0,class
+Maeotias,1,1,2,2,class,0,20
+Cassiopea andromeda,4,5,2,33,110,0,order
+Aurelia aurita,7,11,2,123,110,0,class
+Craspedacusta sowerbii,22,16,2,7,class,0,20
+Jassa marmorata,genus,order,9,47,order,0,class
+Grandidierella japonica,3,family,9,31,order,0,class
+Laticorophium baconi,0,0,0,0,0,0,0
+Monocorophium acherusicum,family,family,9,21,order,0,class
+Monocorophium insidiosum,family,family,9,33,order,0,class
+Gammarus daiberi,genus,order,9,2,order,0,class
+Ampelisca abdita,genus,order,9,genus,order,0,class
+Ampithoe valida,2,order,9,69,order,0,class
+Bemlos virgus,0,0,0,0,0,0,0
+Corophium,2,family,9,39,order,0,class
+Echinogammarus ischnus,genus,order,9,42,order,0,class
+Ericthonius brasiliensis,2,order,9,2,order,0,class
+Gammarus tigrinus,5,order,9,25,order,0,class
+Microjassa,family,order,9,1,order,0,class
+Parapleustes,family,order,9,1,order,0,class
+Stenothoe,1,order,9,9,order,0,class
+Balanus trigonus,1,genus,9,13,class,0,8505
+Balanus,12,1,9,1639,class,0,8505
+Chthamalus proteus,1,genus,9,227,class,0,8505
+Balanus crenatus,1,genus,9,21,class,0,8505
+Balanus glandula,2,genus,9,1526,class,0,8505
+Megabalanus coccopoma,2,family,9,31,class,0,8505
+Daphnia galeata galeata,genus,genus,9,genus,398,0,genus
+Eubosmina coregoni,family,1,9,2,398,0,2
+Eubosmina maritima,family,genus,9,genus,398,0,genus
+Mytilicola orientalis,2,2,9,2,class,0,8505
+Pseudodiaptomus inopinus,1,order,9,6,class,0,8505
+Argulus japonicus,1,5,9,16,398,0,8505
+Cyclops strenuus,12,family,9,1,class,0,8505
+Daphnia lumholtzi,genus,genus,9,14,398,0,7
+Eurytemora affinis,10,family,9,433,class,0,8505
+Heteropsyllus,family,family,9,family,order,0,8505
+Megacyclops viridis,9,family,9,4,class,0,8505
+Neoergasilus japonicus,3,3,9,1,order,0,8505
+Nippoleucon hinumensis,0,0,0,0,0,0,0
+Nitokra hibernica,1,family,9,genus,order,0,8505
+Nitokra,5,family,9,4,order,0,8505
+Oithona davisae,1,2,9,1,class,0,8505
+Pseudodiaptomus marinus,2,order,9,genus,class,0,8505
+Salmincola,family,order,9,3,order,0,8505
+Schizopera,family,family,9,25,order,0,8505
+Skistodiaptomus pallidus,1,order,9,22,class,0,8505
+Tachidius triangularis,1,1,9,genus,order,0,8505
+Hemigrapsus sanguineus,1,2,9,164,order,0,order
+Carcinus maenas,3,order,9,56,order,0,order
+Callinectes bocourti,genus,genus,9,12,family,0,order
+Pachygrapsus fakaravensis,genus,genus,9,genus,order,0,order
+Scylla serrata,2,1,9,29,family,0,order
+Cancer,2,order,9,89,order,0,order
+Petrolisthes armatus,2,order,9,361,order,0,family
+Sphaeroma quoianum,genus,genus,9,genus,order,0,family
+Sphaeroma terebrans,genus,genus,9,genus,order,0,family
+Synidotea laevidorsalis,family,order,9,3,family,0,order
+Sphaeroma walkeri,genus,genus,9,genus,order,0,family
+Ligia exotica,genus,genus,9,95,order,0,family
+Dynamenopsis,2,family,9,family,order,0,family
+Dynoides,1,family,9,family,order,0,family
+Joeropsis dubia,genus,order,9,genus,order,0,order
+Paranthura,1,order,9,family,order,0,order
+Eusarsiella,1,order,9,1,398,0,8505
+Hemimysis anomala,1,1,9,genus,class,0,class
+Nebalia,2,2,9,35,class,0,class
+Litopenaeus vannamei,genus,genus,9,genus,order,0,family
+Macrobrachium olfersii,genus,genus,9,genus,order,0,family
+Penaeus monodon,1,genus,9,55,order,0,family
+Caprella penantis,genus,order,9,131,order,0,class
+Macrobrachium lar,1,genus,9,5,order,0,family
+Macrobrachium rosenbergii,3,2,9,385,order,0,family
+Palaemon macrodactylus,1,genus,9,97,order,0,genus
+Ophiactis savignyi,genus,family,0,17,1,0,class
+Glugea hertwigi,1,1,0,0,1,0,0
+Heterosporis,11,11,0,0,1,0,0
+Sphaeromyxa sevastopoli,genus,order,2,8062,class,0,20
+Hydroides elegans,genus,genus,0,family,class,0,class
+Alitta succinea,2,1,0,13,order,0,order
+Polydora ciliata,1,1,0,genus,class,genus,order
+Pseudopolydora paucibranchiata,4,4,0,3,class,0,order
+Tubificoides pseudogaster,3,3,0,5,family,0,15
+Boccardia proboscidea,5,8,0,1,class,0,order
+Euchone,family,1,0,1,class,0,class
+Hydroides dirampha,genus,genus,0,family,class,0,class
+Pseudopolydora kempi,genus,genus,0,genus,class,0,order
+Clymenella torquata,genus,genus,0,12,class,0,class
+Sabellastarte spectabilis,genus,1,0,genus,class,0,class
+Janua pagenstecheri,1,family,0,family,class,0,class
+Perna perna,1,1,0,826,1,0,class
+Ruditapes philippinarum,4,6,0,383,1,0,class
+Ceratostoma,family,family,0,26,class,0,order
+Geukensia demissa,1,1,0,86,1,0,class
+Mytilopsis sallei,1,4,0,4,1,0,class
+Teredo,5,5,0,4,1,0,class
+Theora lubrica,family,family,0,family,1,0,class
+Acar plicata,1,1,0,genus,1,0,class
+Tenellia adspersa,genus,family,0,3,class,0,class
+Tritonia plebeia,1,1,0,8,class,genus,class
+Urosalpinx cinerea,family,family,0,19,class,0,order
+Anomia,3,3,0,class,1,0,class
+Crucibulum spinosum,genus,genus,genus,genus,genus,0,order
+Ostrea edulis,3,6,0,genus,1,0,class
+Pinctada margaritifera,17,17,0,46,1,0,class
+Thecacera pennigera,family,family,0,2,class,0,class
+Adula,2,2,0,family,1,0,class
+Limnoperna fortunei,family,4,0,58,1,0,class
+Nuttallia obscurata,family,family,0,genus,1,0,class
+Rattus norvegicus,7,15,1,219,class,0,95
+Zalophus californianus,family,family,1,1,order,0,3
+Lyrodus,7,7,0,family,1,0,class
+Musculista senhousia,genus,genus,0,genus,1,0,class
+Mytilus galloprovincialis,2,5,0,345,1,0,class
+Gemma gemma,1,1,0,family,1,0,class
+Mercenaria mercenaria,6,6,0,162,1,0,class
+Mytella charruana,1,genus,0,264,1,0,class
+Perna viridis,7,12,0,124,1,0,class
+Chama pacifica,genus,genus,0,class,1,0,class
+Chama macerophylla,1,genus,0,class,1,0,class
+Crassostrea virginica,5,6,0,151,1,0,class
+Crassostrea ariakensis,4,10,0,119,1,0,class
+Lasmigona subviridis,family,family,0,5,1,0,class
+Ostrea,10,16,0,148,1,0,class
+Pisidium amnicum,genus,genus,0,10,1,0,class
+Pisidium henslowanum,genus,genus,0,1,1,0,class
+Pisidium,2,2,0,63,1,0,class
+Pisidium supinum,genus,genus,0,1,1,0,class
+Sphaerium corneum,1,1,0,genus,1,0,class
+Tapes,2,2,0,16,1,0,class
+Tridacna,11,family,0,155,1,0,class
+Venerupis,1,3,0,family,1,0,class
+Littorina littorea,3,3,0,381,order,0,order
+Littorina saxatilis,1,3,0,51,order,0,order
+Rapana venosa,2,5,0,75,class,0,order
+Batillaria attramentaria,genus,genus,0,47,class,0,class
+Boonea,1,1,0,6,class,0,class
+Busycotypus canaliculatus,family,family,0,2,class,0,order
+Ocinebrellus inornatus,family,family,0,16,class,0,order
+Myosotella myosotis,2,2,0,3,class,0,class
+Potamothrix bavaricus,genus,1,0,13,family,0,15
+Bithynia tentaculata,order,order,0,7,order,0,order
+Cipangopaludina chinensis,family,family,0,7,class,0,class
+Cipangopaludina japonica,family,family,0,5,class,0,class
+Crepidula,2,2,0,221,order,0,order
+Elimia virginica,class,family,0,1,class,0,class
+Gillia altilis,order,order,0,family,order,0,order
+Hermissenda crassicornis,genus,order,0,40,class,0,class
+Nassarius,24,161,0,643,class,0,order
+Philine auriformis,genus,genus,0,genus,class,0,class
+Physella acuta,4,4,0,134,class,0,class
+Pomacea canaliculata,1,4,0,520,class,0,class
+Radix auricularia,2,3,0,143,class,0,class
+Tarebia granifera,class,family,0,5,class,0,family
+Valvata piscinalis,1,class,0,2,class,0,class
+Viviparus,2,2,0,13,class,0,class
+Cuthona,16,16,0,38,class,0,class
+Cumanotus,order,order,0,1,class,0,class
+Dendronotus frondosus,1,2,0,42,class,0,class
+Eubranchus,5,5,0,74,class,0,class
+Eubranchus rupium,genus,genus,0,15,class,0,class
+Glossodoris,family,4,0,49,class,0,class
+Goniodorididae,1,3,0,47,class,0,class
+Anguillicola crassus,2,6,0,74,order,0,order
+Sporobolus alterniflorus,genus,genus,9,family,family,55,0
+Sporobolus anglicus,genus,genus,genus,family,family,genus,0
+Sporobolus densiflorus,genus,genus,5,family,family,4,0
+Sporobolus,4,8,298,family,family,156,0
+Zizania latifolia,family,2,4,family,family,5,0
+Zostera japonica,genus,genus,order,genus,7418,order,0
+Undaria pinnatifida,1,4,0,21,25,class,0
+Achillea ptarmica,genus,genus,2,family,family,1,0
+Aegopodium podagraria,family,family,5,family,family,4,0
+Agrostis gigantea,1,2,13,family,family,3,0
+Agrostis stolonifera,2,1,12,family,family,6,0
+Alliaria petiolata,family,family,9,family,7418,6,0
+Allium schoenoprasum,genus,2,19,genus,order,6,0
+Alnus glutinosa,6,13,52,family,order,8,0
+Alopecurus carolinianus,genus,genus,1,family,family,genus,0
+Alopecurus geniculatus,genus,genus,1,family,family,genus,0
+Alopecurus pratensis,genus,genus,2,family,family,6,0
+Alternanthera philoxeroides,family,2,9,order,family,2,0
+Amaranthus blitoides,genus,genus,5,order,family,genus,0
+Ambrosia psilostachya,family,genus,5,family,family,2,0
+Ammophila arenaria,2,genus,9,genus,family,3,0
+Andropogon virginicus,family,genus,2,family,family,genus,0
+Anthriscus caucalis,family,genus,2,family,family,genus,0
+Arenaria serpyllifolia,family,genus,9,genus,family,family,genus
+Armoracia rusticana,family,family,4,family,7418,2,0
+Artemisia biennis,genus,genus,4,family,genus,genus,0
+Arundo donax,family,4,genus,family,family,54,0
+Atriplex patula,family,genus,6,family,genus,family,0
+Barbarea orthoceras,1,genus,4,family,7418,1,0
+Barbarea vulgaris,2,genus,66,family,7418,3,0
+Batis maritima,1,2,order,1,7418,order,0
+Betula pendula,1,4,6,1,order,5,0
+Bidens tripartita,family,family,5,family,family,1,0
+Boehmeria cylindrica,genus,genus,genus,family,order,genus,0
+Brachiaria,1,3,6,family,family,11,0
+Butomus umbellatus,genus,1,order,1,7418,1,0
+Cabomba caroliniana,3,7,5,1,7418,5,0
+Callitriche stagnalis,genus,genus,3,genus,order,genus,0
+Campsis radicans,family,family,2,genus,family,3,0
+Cannabis sativa,2,13,19,4,order,17,0
+Capsella bursa-pastoris,2,2,30,1,7418,10,0
+Carex acutiformis,genus,1,1,order,family,4,0
+Carex bushii,genus,genus,genus,order,family,genus,0
+Carex crawei,genus,genus,genus,order,family,genus,0
+Carex disticha,genus,genus,1,order,family,1,0
+Carex flacca,genus,1,2,order,family,5,0
+Carex ovalis,genus,genus,4,order,family,2,0
+Carpobrotus chilensis,family,family,genus,order,family,family,0
+Chelidonium majus,family,family,21,family,order,7,0
+Chenopodium album,family,2,74,genus,family,family,0
+Chenopodium,family,9,145,2,family,family,0
+Cirsium palustre,genus,genus,5,family,family,genus,0
+Clintonia borealis,1,family,family,1,family,family,0
+Commelina communis,family,family,4,order,7418,family,0
+Conium maculatum,1,1,8,family,family,family,0
+Crataegus douglasii,family,genus,86,family,genus,2,0
+Cynosurus cristatus,genus,1,5,family,family,3,0
+Delairea odorata,family,family,2,family,family,1,0
+Dioscorea oppositifolia,genus,2,2,genus,1,1,0
+Dryopteris,1,9,order,order,order,family,0
+Echinochloa crus-galli,1,5,12,family,family,21,0
+Echinochloa muricata,genus,genus,1,family,family,1,0
+Ellisia nyctelea,1,1,1,order,7418,family,0
+Epilobium hirsutum,family,genus,3,family,order,genus,0
+Epilobium parviflorum,family,genus,4,family,order,genus,0
+Festuca rubra,1,1,90,family,family,12,0
+Frangula alnus,family,family,6,2,family,5,0
+Gleditsia triacanthos,family,family,12,family,family,2,0
+Glyceria maxima,family,family,6,family,family,2,0
+Gnaphalium uliginosum,family,family,3,family,family,2,0
+Gypsophila paniculata,family,genus,31,genus,family,family,0
+Halymenia durvillei,genus,genus,1,genus,class,0,0
+Hedera helix,2,family,4,family,order,5,0
+Helenium flexuosum,family,family,2,family,family,genus,0
+Helianthus annuus,3,19,8,5,family,14,0
+Hordeum jubatum,1,2,2,genus,family,5,0
+Hydrocharis morsus-ranae,family,family,family,1,7418,family,0
+Hydrocotyle umbellata,genus,genus,genus,genus,order,genus,0
+Hygrophila polysperma,family,family,genus,family,order,genus,0
+Impatiens capensis,1,1,3,order,genus,2,0
+Impatiens glandulifera,genus,genus,3,order,genus,genus,0
+Imperata cylindrica,family,1,12,family,family,42,0
+Ipomoea hederacea,1,3,3,genus,order,4,0
+Iris pseudacorus,genus,genus,4,1,order,6,genus
+Juncus articulatus,genus,genus,1,order,order,1,0
+Juncus compressus,genus,genus,2,order,order,1,0
+Juncus gerardii,genus,genus,4,order,order,2,0
+Juncus inflexus,genus,genus,4,order,order,1,0
+Lactuca serriola,2,3,13,3,genus,8,0
+Lepidium densiflorum,1,1,3,1,7418,1,0
+Leucojum aestivum,family,family,6,family,order,2,0
+Liatris pycnostachya,genus,genus,genus,family,family,genus,0
+Ligustrum vulgare,family,2,4,family,genus,6,0
+Lomentaria hakodatensis,1,order,1,6,class,0,0
+Lotus corniculatus,genus,1,16,genus,genus,25,0
+Lupinus polyphyllus,genus,genus,18,genus,family,6,0
+Lycopus asper,family,family,2,family,family,genus,0
+Lycopus europaeus,family,family,6,family,family,2,0
+Lysimachia nummularia,family,genus,2,order,order,4,0
+Lysimachia vulgaris,family,genus,6,order,order,4,0
+Lythrum salicaria,1,2,3,family,family,3,0
+Macfadyena,family,family,family,family,family,family,0
+Marrubium vulgare,family,family,3,family,family,4,0
+Marsilea quadrifolia,genus,genus,class,class,class,2,0
+Medicago lupulina,1,3,17,1,family,1,0
+Mentha aquatica,family,genus,7,family,1,5,0
+Mentha spicata,family,2,7,family,genus,10,0
+Mentha x gracilis,family,genus,genus,family,genus,genus,0
+Mentha x piperita,family,genus,10,family,genus,4,0
+Microstegium vimineum,family,family,2,family,family,5,0
+Mollugo verticillata,1,6,6,order,order,1,0
+Morus alba,10,4,7,genus,family,11,genus
+Muhlenbergia racemosa,family,family,4,family,family,genus,0
+Myosotis arvensis,family,family,5,family,7418,1,0
+Myosotis scorpioides,family,family,4,family,7418,1,0
+Myosoton aquaticum,family,family,6,family,family,family,0
+Najas marina,genus,genus,102,genus,7418,102,0
+Najas minor,genus,genus,126,genus,7418,1,0
+Nasturtium officinale,1,2,20,family,7418,7,0
+Nepeta cataria,2,family,7,family,family,1,0
+Oenothera pilosella,genus,genus,2,genus,order,1,0
+Ornithogalum umbellatum,genus,genus,genus,order,family,1,0
+Panicum repens,genus,genus,4,family,family,1,0
+Parthenocissus quinquefolia,family,family,1,family,family,17,0
+Phalaris arundinacea,genus,1,12,family,family,11,0
+Phragmites australis,family,5,5,family,family,41,0
+Picea pungens,genus,2,1,genus,7418,4,0
+Plantago lanceolata,2,2,17,4,order,12,0
+Plantago major,genus,genus,16,2,order,3,0
+Plantago rugelii,2,3,3,2,order,1,0
+Pluchea odorata,family,genus,2,family,family,genus,0
+Poa annua,genus,1,15,1,family,33,0
+Poa bulbosa,1,genus,6,genus,family,8,0
+Poa pratensis,genus,1,25,genus,family,34,0
+Poa trivialis,genus,1,9,genus,family,10,0
+Polygonum,7,family,24,3,family,family,0
+Polygonum aviculare,genus,family,8,3,family,family,0
+Polygonum cuspidatum,genus,family,1,genus,family,family,0
+Polygonum ramosissimum,genus,family,genus,genus,family,family,0
+Populus deltoides,genus,2,10,genus,order,5,0
+Portulaca oleracea,genus,5,22,order,order,order,0
+Potamogeton crispus,2,2,31,1,7418,3,0
+Potentilla norvegica,family,genus,9,family,genus,3,0
+Prosopis pallida,genus,genus,genus,family,family,genus,0
+Prunella vulgaris,family,2,7,genus,family,7,genus
+Puccinellia distans,genus,genus,4,family,family,3,0
+Ranunculus acris,genus,genus,7,genus,order,genus,0
+Ranunculus bulbosus,genus,genus,7,genus,order,1,0
+Ranunculus flammula,genus,1,8,genus,order,2,0
+Ranunculus repens,genus,1,42,genus,order,5,0
+Rhamnus cathartica,1,1,8,2,family,3,0
+Rhizophora mangle,family,1,genus,order,order,1,0
+Rhynchospora nitens,genus,family,genus,order,family,genus,0
+Rorippa sylvestris,genus,family,6,family,7418,3,0
+Rumex acetosella,family,genus,1,family,family,family,0
+Rumex crispus,family,genus,12,family,family,family,0
+Rumex longifolius,family,genus,2,family,family,family,0
+Rumex obtusifolius,family,genus,1,family,family,family,0
+Sagina procumbens,family,family,7,family,family,genus,0
+Salix alba,genus,genus,6,genus,order,2,0
+Salix exigua,genus,genus,5,genus,order,genus,0
+Salix fragilis,genus,genus,2,genus,order,2,0
+Salix purpurea,genus,2,6,1,order,2,0
+Salix x pendulina,genus,genus,genus,genus,order,genus,0
+Salix,2,27,234,17,order,79,0
+Salsola,family,family,31,1,family,family,0
+Salvinia minima,genus,genus,class,class,class,order,0
+Sapium,family,family,1,family,family,5,0
+Solanum dulcamara,genus,1,3,1,family,5,0
+Solidago sempervirens,1,genus,2,genus,family,genus,0
+Sonchus arvensis,family,genus,6,family,family,1,0
+Sonchus arvensis subsp. uliginosus,family,genus,genus,family,family,genus,0
+Sonchus asper,family,genus,10,family,family,2,0
+Sorghum halepense,genus,1,16,genus,family,6,0
+Sparganium androcladum,genus,genus,genus,family,order,1,0
+Sparganium emersum,genus,genus,6,family,order,4,0
+Sparganium glomeratum,genus,genus,2,family,order,4,0
+Spirodela polyrhiza,2,3,family,1,7418,family,0
+Stachys palustris,genus,genus,2,family,family,2,0
+Tamarix,1,7,29,2,1,1,0
+Tradescantia pallida,genus,genus,genus,order,7418,family,0
+Trapa natans,family,2,family,family,family,3,0
+Trifolium hybridum,genus,genus,8,genus,genus,1,0
+Trillium erectum,2,genus,family,family,order,3,0
+Typha angustifolia,genus,1,3,1,order,14,0
+Typha latifolia,1,2,genus,1,order,26,0
+Ulmus americana,genus,1,4,order,order,5,0
+Veronica beccabunga,1,genus,16,genus,order,2,0
+Veronica serpyllifolia,genus,genus,9,genus,order,1,0
+Viburnum opulus var. americanum,genus,genus,genus,genus,7418,genus,0
+Viola blanda,genus,genus,genus,genus,order,2,0
+Viola blanda var. palustriformis,genus,genus,genus,genus,order,genus,0
+Wisteria frutescens,genus,genus,4,family,family,1,0
+Xanthium strumarium,family,genus,22,family,family,3,0
+Bothriocephalus,24,family,0,family,3,0,0
+Dactylogyrus amphibothrium,1,class,0,genus,genus,0,0
+Dactylogyrus hemiamphibothrium,1,class,0,genus,genus,0,0
+Dugesiidae,35,27,0,522,3,0,0
+Ichthyocotylurus pileatus,genus,class,0,2,3,0,0
+Neascus,family,class,0,family,3,0,0
+Scolex pleuronectis,order,class,0,order,3,0,0
+Timoniella,6,order,0,order,3,0,0
+Trochammina hadai,8,0,0,0,0,0,0
+Acinetidae,4,8,0,0,17,0,0
+Corythionella,2,order,0,family,0,0,0
+Psammonobiotus communis,0,0,0,0,0,0,0
+Psammonobiotus dziwnowi,0,0,0,0,0,0,0
+Psammonobiotus linearis,0,0,0,0,0,0,0
+Trypanosoma,522,0,0,0,0,0,0
+Varanus indicus,order,genus,1,4,12,0,1
+Caiman crocodilus,family,family,1,18,12,0,2
+Cliona,5,5,class,59,class,0,0
+Gelliodes,3,1,class,5,order,0,0
+Mycale,17,43,class,10,class,0,0
+Mycale parishii,1,genus,class,genus,class,0,0
+Sigmadocia caerulea,genus,genus,class,genus,order,0,0
+Suberites,19,11,class,18,class,0,0
+Cliona celata,2,1,class,24,class,0,0
+Haliclona,18,6,class,122,order,0,0
+Prosuberites,32,2,class,1,class,0,0
+Macrobiotus hufelandi,2,2,0,7,0,0,order
+Milnesium tardigradum,4,17,0,7,0,0,0
+Didemnum,3,1,1,72,class,0,77882
+Polyandrocarpa zorritensis,family,2,1,7,class,0,77882
+Ascidia sydneiensis,genus,1,1,3,class,0,77882
+Didemnum candidum,genus,genus,1,genus,class,0,77882
+Phallusia nigra,9,9,1,genus,class,0,77882
+Botrylloides diegensis,genus,genus,1,genus,class,0,77882
+Botrylloides,2,6,1,43,class,0,77882
+Botryllus,3,5,1,478,class,0,77882
+Corella inflata,1,1,1,genus,genus,0,77882
+Corella willmeriana,genus,genus,1,genus,genus,0,77882
+Microcosmus squamiger,1,2,1,16,class,0,77882
+Styela canopus,genus,1,1,genus,class,0,77882
+Symplegma brakenhielmi,genus,genus,1,6,class,0,77882
+Sarotherodon melanotheron,family,1,class,35,class,0,2
+Tilapia,family,family,class,12,class,0,9
+Acanthogobius flavimanus,1,12,class,11,class,0,1
+Cephalopholis argus,family,2,class,94,class,0,4
+Lutjanus kasmira,order,2,class,49,class,0,1
+Oreochromis aureus,2,4,class,34,class,0,3
+Tridentiger trigonocephalus,family,11,class,18,class,0,3
+Gonodactylaceus falcatus,1,1,9,6,class,0,class
+Lutjanus fulvus,order,4,class,21,class,0,1
+Zebrasoma velifer,family,1,class,16,class,0,1
+Acanthurus maculiceps,family,genus,class,1,class,0,genus
+Alosa aestivalis,family,3,class,14,class,0,4
+Alosa pseudoharengus,family,5,class,23,class,0,7
+Ameiurus catus,family,7,class,12,order,0,8
+Anchoa lyolepis,family,1,class,1,class,0,1
+Apeltes quadracus,order,1,class,10,class,0,2
+Archoplites interruptus,order,family,class,3,class,0,family
+Astronotus ocellatus,family,2,class,27,class,0,3
+Balistes polylepis,order,2,class,4,class,0,2
+Cichla ocellaris,family,3,class,2,class,0,2
+Cichlasoma bimaculatum,family,genus,class,2,class,0,genus
+Cittarium pica,1,1,0,2,class,0,1
+Clarias batrachus,1,6,class,90,genus,0,4
+Enneacanthus gloriosus,order,family,class,6,class,0,family
+Esox lucius,2,2,class,64,class,0,13
+Esox niger,genus,1,class,14,class,0,2
+Fundulus diaphanus,genus,2,class,22,class,0,2
+Hemichromis letourneuxi,family,family,class,8,class,0,genus
+Heros severus,family,1,class,4,class,0,genus
+Hoplosternum littorale,order,5,class,10,order,0,11
+Hypomesus nipponensis,family,2,class,21,class,0,3
+Ictalurus punctatus,3,11,class,60,order,0,10
+Lepomis humilis,order,1,class,3,class,0,1
+Lepomis microlophus,order,genus,class,8,class,0,genus
+Leuciscus idus,order,genus,order,33,order,0,1
+Limia vittata,family,family,class,8,class,0,1
+Plantaginaceae,210,42,1343,51,order,876,0
+Lucania parva,family,family,class,3,class,0,family
+Misgurnus anguillicaudatus,2,19,order,60,order,0,19
+Morone americana,family,2,class,9,class,0,1
+Mylocheilus caurinus,order,3,order,8,order,0,3
+Notropis buchanani,order,genus,order,14,order,0,genus
+Noturus insignis,family,genus,class,7,order,0,1
+Oncorhynchus kisutch,genus,9,class,42,class,0,5
+Oncorhynchus mykiss irideus,genus,genus,class,genus,class,0,genus
+Oncorhynchus nerka,5,11,class,58,class,0,4
+Oncorhynchus tshawytscha,1,8,class,58,class,0,4
+Oreochromis macrochir,genus,2,class,2,class,0,2
+Oreochromis niloticus,136,86,class,182,class,0,12
+Orthodon microlepidotus,order,2,order,1,order,0,2
+Osteoglossum bicirrhosum,family,6,class,8,class,0,4
+Oxydoras niger,order,1,class,2,order,0,3
+Parachromis managuensis,family,2,class,13,class,0,1
+Petromyzon marinus,2,4,1,24,12,0,1
+Phenacobius mirabilis,order,2,order,9,order,0,3
+Piaractus brachypomus,order,family,class,39,class,0,4
+Plecoglossus altivelis,1,2,class,10,class,0,8
+Poecilia latipinna,genus,1,class,17,class,0,1
+Poecilia vivipara,genus,genus,class,41,class,0,genus
+Proterorhinus semilunaris,family,family,class,13,class,0,family
+Pygocentrus nattereri,order,1,class,45,class,0,3
+Salmo trutta x Salvelinus fontinalis,family,family,class,family,class,0,family
+Sander lucioperca,family,7,class,29,class,0,4
+Penaeus monodon-type Baculovirus,0,0,0,0,0,0,0
+WSBV,0,0,0,0,0,0,0
+Aeromonas salmonicida,class,254,class,class,1,0,0
+Novirhabdovirus sp.,0,0,0,0,0,0,0
+Piscirickettsia salmonis,class,135,class,class,1,0,0
+Ranavirus sp.,0,0,0,0,0,0,0
+Renibacterium salmoninarum,0,12,0,0,0,0,0
+Rhabdovirus carpio,0,0,0,0,0,0,0
