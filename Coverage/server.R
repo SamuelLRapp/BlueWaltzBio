@@ -765,7 +765,7 @@ shinyServer(function(input, output, session) {
           geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
           ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
           theme(axis.text = element_text(size = theme.size),
-                axis.title = element_text(size = 20, face = "bold")) 
+                plot.title = element_text(size = 20, face = "bold")) 
         # how to change the colors + get a legend ?
 
     }}
