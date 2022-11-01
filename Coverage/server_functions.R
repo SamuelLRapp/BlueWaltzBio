@@ -399,11 +399,13 @@ getCruxSearchFullResults <- function(orgList, taxizeOption) {
 cruxOrgSearch <- function(results, searchTerm, organism) {
   taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
   for (table in cruxDbList) {
+    print(table)
     queryStatement <- paste(
       "SELECT * from ",
       table,
       " where regio= :x or phylum= :x or classis= :x or ordo= :x
         or familia= :x or genus= :x or genusspecies= :x")
+    print(length(results))
     results <- c(
       results,
       getTaxaDbQueryResults(
@@ -411,6 +413,7 @@ cruxOrgSearch <- function(results, searchTerm, organism) {
         queryStatement, 
         organism, 
         searchTerm))
+    print(length(results))
   }
   dbDisconnect(taxaDB)
   browser()
@@ -530,9 +533,11 @@ getTaxaDbQueryResults <- function(taxaDb, query, organism, searchTerm) {
     dbGetQuery(
       taxaDb,
       query,
-      params = list(x = searchTerm[1, 7]))
+      params = list(x = searchTerm[1, 8]))
   if (nrow(location) != 0) {
     return("kingdom")
+  } else {
+    return("0")
   }
 }
 
