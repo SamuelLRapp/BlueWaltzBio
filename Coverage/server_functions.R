@@ -8,7 +8,7 @@ import(modules)
 import(future)
 import(promises)
 import(ipc)
-import(shinyWidgets)
+
 
 orgListHelper <- tryCatch({modules::use("orgListHelper.R")},
                           error = function(err){modules::use("Coverage/orgListHelper.R")})
@@ -405,7 +405,6 @@ cruxOrgSearch <- function(results, searchTerm, organism) {
       table,
       " where regio= :x or phylum= :x or classis= :x or ordo= :x
         or familia= :x or genus= :x or genusspecies= :x")
-    print(length(results))
     results <- c(
       results,
       getTaxaDbQueryResults(
@@ -413,7 +412,6 @@ cruxOrgSearch <- function(results, searchTerm, organism) {
         queryStatement, 
         organism, 
         searchTerm))
-    print(length(results))
   }
   dbDisconnect(taxaDB)
   browser()
@@ -544,10 +542,10 @@ getTaxaDbQueryResults <- function(taxaDb, query, organism, searchTerm) {
 
 # Set up a dataframe to use in the params argument in a call
 # to dbGetQuery.
-getSearchTerm <- function(organismUid, organismName) {
+getSearchTerm <- function(organismName, organismUid) {
   sleep()
   if (organismUid == "") {
-    tax_name(
+    match <- tax_name(
       query = organismName,
       get = c("genus", "family", "order", "class", "phylum", "domain"),
       db = "ncbi",
