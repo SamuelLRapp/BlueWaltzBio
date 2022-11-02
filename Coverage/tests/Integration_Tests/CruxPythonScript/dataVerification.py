@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import logging
+pd.options.mode.chained_assignment = None  # default='warn' Don't warn about SettingWithCopyWarning
+
 
 LOG_FORMAT = "%(asctime)s | %(levelname)s | %(filename)s | %(message)s"
 logging.basicConfig(filename = "run.log", level = logging.DEBUG, format = LOG_FORMAT)
@@ -36,9 +38,8 @@ while(i != len(CRUXresults.index)):
     if len(x) == 0: # if the legnth is 0 that means nothing was found in this case it is very likely because it is not a genus species
         x = pd.DataFrame(data={'genusspecies': [np.nan], 'genus': [np.nan], 'familia': [np.nan],
                                'ordo': [np.nan], 'classis': [np.nan], 'phylum': [np.nan], 'regio': [np.nan]})
-    df = df.append(x, ignore_index = True) # Add to the dataframe
+    df = pd.concat([df, x]) # Add to the dataframe
     i += 1
-
 
 # Get the column used to verify data
 combinedCol = [df['genusspecies'], df['genus'], df['familia'], df['ordo'],
@@ -116,17 +117,17 @@ while(i != len(finalData.index)):
         # if it isn't then output the actual number if it is then not then Error
         # it could also happen that it is zero if that is the case we gotta go up the taxonomic ranks and find the lowest
         result = len(barcodeDF[barcodeDF['genusspecies']==finalData['genusspecies'][i]].index) # number of genusspecies in barcodeDF
-        if str(result) == finalData[BarcodeToCheck][i]: # Check if the numbers match if it does we are done no ERROR
+        if result == int(finalData[BarcodeToCheck][i]): # Check if the numbers match if it does we are done no ERROR
             finalData['True Result'][i] = result
             finalData['ERROR'][i] = np.nan
-        elif result != finalData[BarcodeToCheck][i] and result > 0: # If it is a non zero number but they are not equal then ERROR
+        elif result != int(finalData[BarcodeToCheck][i]) and result > 0: # If it is a non zero number but they are not equal then ERROR
             finalData['True Result'][i] = result
             finalData['ERROR'][i] = "ERROR"
         else: # Else it is a zero so we have to go up the taxonomic ranks
             for j in range(1, len(listTaxRanks)):
                 result = len(barcodeDF[barcodeDF[listTaxRanks[j]]==finalData[listTaxRanks[j]][i]].index) # number of genusspecies in barcodeDF
                 if result != 0: # if when going up the result is not zero then print Error and the taxonomic rank
-                    if finalData[BarcodeToCheck][i] == str(result): # Check if the numbers match
+                    if int(finalData[BarcodeToCheck][i]) == result: # Check if the numbers match
                         finalData['True Result'][i] = str(result) + " " + CRUXresultsList[j-1] # True result add the number plus the taxonomic rank
                         if finalData['genusspecies'][i] != finalData[listTaxRanks[j]][i]: # check if the genusspecies (which is really the input species) matches the
                             finalData['ERROR'][i] = "ERROR"
