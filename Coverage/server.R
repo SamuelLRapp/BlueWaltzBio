@@ -968,43 +968,43 @@ shinyServer(function(input, output, session) {
    })
 
 
-# * BOLDStrToList ---------------------------------------------------------
-
-    boldOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-      organismList <- strsplit(BOLDOrgSearch(), ",")[[1]] #separate based on commas
-      if(input$BOLDtaxizeOption){ #if the taxize option is selected
-        taxize_organism_list <- c() #initialize an empty vector
-        
-        for(i in 1:length(organismList))
-        {
-          organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
-          NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
-          row_count <- nrow(NCBI_names) # get number of rows in dataframe
-          
-          if(row_count > 0) #If a legitimate name was found
-          {
-            for(j in 1:row_count)
-            {
-              taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
-              taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
-            }
-          }
-          else
-          {
-            taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
-          }
-        }
-        taxize_organism_list  
-      } else{
-        organismList #return the list as is
-      }
-    })
-    
+# # * BOLDStrToList ---------------------------------------------------------
+# 
+#     boldOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
+#       organismList <- strsplit(BOLDOrgSearch(), ",")[[1]] #separate based on commas
+#       if(input$BOLDtaxizeOption){ #if the taxize option is selected
+#         taxize_organism_list <- c() #initialize an empty vector
+#         
+#         for(i in 1:length(organismList))
+#         {
+#           organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
+#           NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
+#           row_count <- nrow(NCBI_names) # get number of rows in dataframe
+#           
+#           if(row_count > 0) #If a legitimate name was found
+#           {
+#             for(j in 1:row_count)
+#             {
+#               taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
+#               taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
+#             }
+#           }
+#           else
+#           {
+#             taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
+#           }
+#         }
+#         taxize_organism_list  
+#       } else{
+#         organismList #return the list as is
+#       }
+#     })
+#     
     # * BOLDCoverage ------------------------------------------------------------
 
     
     boldCoverage <- reactive ({
-      organismList <- boldOrganismList()
+      organismList <- orgListHelper$taxizeHelper(BOLDOrgSearch(), input$BOLDtaxizeOption)
       organismListLength <- length(organismList)
       countries <- c()
       validate(
