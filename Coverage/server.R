@@ -257,16 +257,30 @@ shinyServer(function(input, output, session) {
   
   # * CRUXSearchButton --------------------------------------------------------
   
-  cruxOrgSearch <-
-    eventReactive(input$searchButton, {
-      organismList <- input$CRUXorganismList # Returns as a string
-      cruxTaxizeOption <- input$CRUXtaxizeOption
-      # When searchButton clicked, update CruxOrgSearch to return the value 
-      # input into CRUXorganismList
-      future_promise(
-        server_functions$getCruxSearchFullResults(
-          organismList, cruxTaxizeOption))
+  CRUXOrgList <- eventReactive(input$searchButton, {
+    input$CRUXorganismList
+  })
+    
+  organismListGet <- reactive({
+    orgSearch <- CRUXOrgList()
+    taxizeBool <- input$CRUXtaxizeOption
+    future_promise({
+      result <- orgListHelper$taxizeHelper(orgSearch, taxizeBool)
+      print(result)
+      result
     })
+  })
+  
+  
+  cruxOrgSearch <- reactive({
+    organismListGet() %...>% {
+      print(.)
+      future_promise(
+        server_functions$getCruxSearchFullResults(.))
+    }
+  })
+    
+  
   
   # * UI pipeline updates ------------------------------------------------------
   observeEvent(input$searchButton, {
@@ -902,7 +916,7 @@ shinyServer(function(input, output, session) {
         columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
         colnames(cruxMatrix) <- columns
         rownames(cruxMatrix) <- organismList
-        dataframe <- convert_CRUX(cruxMatrix)
+        dataframe <- server_functions$convert_CRUX(cruxMatrix)
         server_functions$summary_report_dataframe(dataframe)
         })
       }

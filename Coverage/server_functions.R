@@ -366,8 +366,7 @@ cruxDbList <- list(
 # remaining three values are empty vectors, left in place
 # in case the previous homonym failure notification scheme
 # is wanted. 
-getCruxSearchFullResults <- function(orgList, taxizeOption) {
-  organismList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
+getCruxSearchFullResults <- function(organismList) {
   nameUidList <- getHomonyms(organismList)
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
