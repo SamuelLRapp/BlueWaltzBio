@@ -916,7 +916,9 @@ shinyServer(function(input, output, session) {
         columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
         colnames(cruxMatrix) <- columns
         rownames(cruxMatrix) <- organismList
-        dataframe <- server_functions$convert_CRUX(cruxMatrix)
+        cleaned_cruxMatrix <- na.omit(cruxMatrix)
+        print("passed the omit")
+        dataframe <- server_functions$convert_CRUX(cleaned_cruxMatrix)
         server_functions$summary_report_dataframe(dataframe)
         })
       }
