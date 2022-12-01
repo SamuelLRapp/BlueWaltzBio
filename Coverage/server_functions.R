@@ -84,6 +84,7 @@ summary_report_dataframe <- function(dataframe)
   Total_seq_found <- sum(barcodeSums)
   
   #hard code in the totals
+  print(Total_seq_found)
   statistics_df[1, 2] <- Total_seq_found
   statistics_df[1, 3] <- 100
   
@@ -601,7 +602,7 @@ convert_CRUX <-
     #  na.omit(crux_without_taxonomic_names)
     
     non_number_values <-
-      c('genus', 'family', 'class', 'order', 'error')
+      c('genus', 'family', 'class', 'order', 'phylum', 'kingdom', 'error')
     
     ncols <- ncol(crux_output)
     nrows <- nrow(crux_output)
@@ -613,7 +614,7 @@ convert_CRUX <-
         boolean <- 
           crux_without_taxonomic_names[j, i] %in% non_number_values
         print("passed fancy %in% thing")
-        
+        print(crux_without_taxonomic_names[j, i] )
         #if true, ie it matches genus, family, class, order
         if (isTRUE(boolean))
         {
