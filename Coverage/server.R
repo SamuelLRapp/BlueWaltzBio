@@ -65,6 +65,9 @@ shinyServer(function(input, output, session) {
   # on 
   resultsMatrix <- NULL
   
+  
+# NCBI Key ---------------------------------------------------------------------
+  
   # Verifies the provided api key is
   # valid by performing a search with it.
   # Sets key validity variable in server_functions.R
@@ -83,6 +86,30 @@ shinyServer(function(input, output, session) {
     })
   })
  
+  NCBIKeyFlag <- FALSE
+  observeEvent(input$SetKey, {
+    #When NCBIKey is inputed
+    key <- 0
+    NCBI_names <- tryCatch({
+      searchResult <-
+        entrez_search(db = "nucleotide",
+                      term = "Gallus Gallus",
+                      api_key = input$NCBIKey)
+    }, error = function(err) {
+      shinyalert("Your API key has been rejected, please make sure it is correct",
+                 type = "warning")
+      print(err)
+      key <<- 1
+    })
+    if (key == 0) {
+      set_entrez_key(input$NCBIKey)
+      Sys.setenv(ENTREZ_KEY = input$NCBIKey)
+      shinyalert("Your API key has been accepted", type = "success")
+      NCBIKeyFlag <- TRUE
+    }
+    server_functions$setNcbiKeyIsValid(NCBIKeyFlag)
+  })
+  
 # Full Genome ----------------------------------------------------------------
   
   # * FullGenomeSearchButton ---------------------------------------------------
@@ -139,7 +166,6 @@ shinyServer(function(input, output, session) {
           column.header = "OrganismNames",
           textbox.id = "genomeOrganismList"))
     })
-    server_functions$setNcbiKeyIsValid(keyValidity)
   })
   
   # * Output table -------------------------------------------------------------  
@@ -493,30 +519,6 @@ shinyServer(function(input, output, session) {
      updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
      showTab("NCBIpage", "Summary Results")
    })
-  
-  # * NCBI_Key -----------------------------------------------------------------
-  
-  NCBIKeyFlag <- FALSE
-  observeEvent(input$SetKey, {
-    #When NCBIKey is inputed
-    key <- 0
-    NCBI_names <- tryCatch({
-      searchResult <-
-        entrez_search(db = "nucleotide",
-                      term = "Gallus Gallus",
-                      api_key = input$NCBIKey)
-    }, error = function(err) {
-      shinyalert("Your API key has been rejected, please make sure it is correct",
-                 type = "warning")
-      key <<- 1
-    })
-    if (key == 0) {
-      set_entrez_key(input$NCBIKey)
-      Sys.setenv(ENTREZ_KEY = input$NCBIKey)
-      shinyalert("Your API key has been accepted", type = "success")
-      NCBIKeyFlag <- TRUE
-    }
-  })
   
   
   # * NCBIStrToList ------------------------------------------------------------
