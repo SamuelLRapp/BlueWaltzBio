@@ -95,7 +95,7 @@ summary_report_dataframe <- function(dataframe)
     if(Total_seq_found == 0){
       statistics_df[i, 3] <- 0
     } else {
-      statistics_df[i, 3] <- (barcodeSums[x] / Total_seq_found)
+      statistics_df[i, 3] <- ((barcodeSums[x] / Total_seq_found) * 100)
     }
   }
   
