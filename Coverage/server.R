@@ -30,6 +30,8 @@ library(ggplot2)
 
 orgListHelper <- modules::use("orgListHelper.R")
 server_functions <- modules::use("server_functions.R")
+bold_functions <- modules::use("bold_functions.R")
+
 
 plan(multisession)
 shinyServer(function(input, output, session) {
@@ -1004,53 +1006,54 @@ shinyServer(function(input, output, session) {
 
     
     boldCoverage <- reactive ({
-      organismList <- orgListHelper$taxizeHelper(BOLDOrgSearch(), input$BOLDtaxizeOption)
-      organismListLength <- length(organismList)
-      countries <- c()
-      validate(
-        need(organismListLength > 0, 'Please name at least one organism')
-      )
-
-      #puts variable in global scope
-      unfound_species <<- c()
-      
-      results <- data.frame(matrix(ncol=0, nrow=0))
-      for(organism in organismList){
-        searchResult <- tryCatch({
-          records_bold <- bold_seqspec(taxon = organism)
-        }, error = function(err) {
-          print("ERROR")
-          # POP UP TELLING USER THAT BOLD IS DOWN
-        })
-        if (!is.na(records_bold)){
-          for (i in 1:nrow(records_bold)) {
-            if (is.na(records_bold$country[i]) || records_bold$country[i] == "") {
-              records_bold$country[i] = "No Country Listed"
+        organismList <- orgListHelper$taxizeHelper(BOLDOrgSearch(), input$BOLDtaxizeOption)
+        organismListLength <- length(organismList)
+        countries <- c()
+        validate(
+            need(organismListLength > 0, 'Please name at least one organism')
+        )
+        
+        #puts variable in global scope
+        unfound_species <<- c()
+        
+        results <- data.frame(matrix(ncol=0, nrow=0))
+        for(organism in organismList){
+            searchResult <- tryCatch({
+                records_bold <- bold_seqspec(taxon = organism)
+            }, error = function(err) {
+                print("ERROR")
+                # POP UP TELLING USER THAT BOLD IS DOWN
+            })
+            if (!is.na(records_bold)){
+                for (i in 1:nrow(records_bold)) {
+                    if (is.na(records_bold$country[i]) || records_bold$country[i] == "") {
+                        records_bold$country[i] = "No Country Listed"
+                    }
+                }
+                if (!is.na(records_bold$species_name)) {
+                    countries <- c(countries, records_bold$country)
+                    results <- rbind(results, records_bold)
+                } else {
+                    print("unfound:")
+                    print(organism)
+                    print(records_bold)
+                    unfound_species <<- c(unfound_species, organism)
+                }
             }
-          }
-          if (!is.na(records_bold$species_name)) {
-            countries <- c(countries, records_bold$country)
-            results <- rbind(results, records_bold)
-          } else {
-            print("unfound:")
-            print(organism)
-            print(records_bold)
-            unfound_species <<- c(unfound_species, organism)
-          }
         }
-      }
-      shinyjs::show(id = "BOLDClearFilter")
-      shinyjs::show(id = "BOLDfilterCountries")
-      shinyjs::show(id = "BOLDSkipFilter")
-      shinyjs::show(id = "BOLDNullSpecies")
-      shinyjs::show(id = "BOLDNullSpeciesWarning")
-      results <- list(results=results, countries=countries)
-      results #return data matrix
+        shinyjs::show(id = "BOLDClearFilter")
+        shinyjs::show(id = "BOLDfilterCountries")
+        shinyjs::show(id = "BOLDSkipFilter")
+        shinyjs::show(id = "BOLDNullSpecies")
+        shinyjs::show(id = "BOLDNullSpeciesWarning")
+        results <- list(results=results, countries=countries)
+        results #return data matrix
     })
     
     BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
-      input$selectCountry #Returns a list of countries
+        input$selectCountry #Returns a list of countries
     })
+    
     
     # * BOLD MATRIX----------------
     
@@ -1079,8 +1082,8 @@ shinyServer(function(input, output, session) {
         countries_values <- list()
         require(data.table)
         #records_bold <- BoldMatrix()
-        presentMatrix <- presentMatrix()
-        countries <- colnames(presentMatrix)
+        present_matrix <- bold_functions$presentMatrix(boldCoverage(), input$selectCountry)
+        countries <- colnames(present_matrix)
         for (i in 1:length(countries)){
           if (countries[i] == ""){
             countries[i] = "no country listed"
@@ -1090,7 +1093,7 @@ shinyServer(function(input, output, session) {
        
       # set vals
       ## counts # of cols for each country where cell > 0
-      vals <- colSums(presentMatrix != 0)
+      vals <- colSums(present_matrix != 0)
       
       ## BOLD adds species/subspecies to search results
       ## so # of species will often be more than # from boldOrganismList()
@@ -1188,15 +1191,15 @@ shinyServer(function(input, output, session) {
     
     output$BOLDcoverageResults <- 
       DT::renderDataTable(
-        reduce_barcode_summary(barcode_summary()))
+        bold_functions$reduce_barcode_summary(bold_functions$barcode_summary(boldCoverage())))
 
     output$BOLDPresentTable <- 
       DT::renderDataTable(
-        presentMatrix())
+        bold_functions$presentMatrix(boldCoverage(), input$selectCountry))
     
     output$BOLDAbsentTable <- 
       DT::renderDataTable(
-        absentMatrix())
+        bold_functions$absentMatrix(boldCoverage(), input$selectCountry, na.omit(boldCoverage()$input$selectCountry[boldCoverage()$input$selectCountry != ""])))
     
     output$BOLDSummaryData <- 
       DT::renderDataTable(
@@ -1267,165 +1270,5 @@ shinyServer(function(input, output, session) {
       }
     )
     
-    # * BOLDCountryFilter -------------------------------------------
-    
-    country_summary <- function(){
-      summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-      records_bold <- boldCoverage()[["results"]]
-      if (length(records_bold$species_name) == 0){
-        return(summary_df)
-      }
-      for(i in 1:length(records_bold$species_name)){
-        if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-          #add a row to summary_df
-          summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-        #add data to summary_df to get summary data
-        if (!is.na(records_bold$country[i]) && records_bold$country[i] != '' && (records_bold$species_name[i] != "")){
-          #if country is not yet in the dataframe, initiate new col
-          if (!(records_bold$country[i] %in% colnames(summary_df))){
-            #create a new column of 0s
-            summary_df[records_bold$country[i]] <- integer(nrow(summary_df))
-          }
-          #add 1 to existing count
-          summary_df[records_bold$species_name[i], records_bold$country[i]] <- summary_df[records_bold$species_name[i], records_bold$country[i]] + 1
-        }
-      }
-      # print("COUNTRY SUMMARY")
-      # print(summary_df)
-      summary_df
-      
-      
-    }
-    
-    presentMatrix <- function(){
-      present_df <- country_summary()
-      
-      print(present_df)
-      print("I GOT HERE YEEEEE")
-      #remove all columns that are not in filter
-      present_df <- present_df[ , which(names(present_df) %in% BOLDOrgCountries())]
-      
-      #remove all rows that have all 0s as values and return
-      #present_df <- present_df[apply(present_df[, -1], 1, function(x) !all(x==0)),]
-      present_df <- present_df[rowSums(present_df[])>0,]
-      
-      # print("PRESENT MATRIX")
-      # print(present_df)
-      present_df
-      
-    }
-    
-    absentMatrix <- function(){
-      all_names <- rownames(country_summary())
-      #get rownames of presentMatrix  
-      present_names <- rownames(presentMatrix())
-      #get complement of names
-      absent_names <- all_names[is.na(pmatch(all_names, present_names))]
-      
-      country_names <- boldCoverage()$countries[]
-      country_names <- country_names[!duplicated(country_names)]
-      country_names <- na.omit(country_names[country_names != ""])
-      summary_df <- country_summary()
-      absent_df <- data.frame(matrix(ncol = 3, nrow = 0))
-      colnames(absent_df) <- c("1st", "2nd", "3rd")
-      if(length(absent_names) == 0){
-        return(absent_df)
-      }
-      for(i in 1:length(absent_names)){
-        sig_countries <- c("NA" = 0,"NA" = 0,"NA" = 0)
-        for (j in 1:length(country_names)){
-          
-          val <- summary_df[absent_names[i], country_names[j]]
-          #if value is bigger than the most significant
-          if(val > sig_countries[[1]]){
-            #move col 2 to col 3
-            names(sig_countries)[3] <- names(sig_countries)[2]
-            sig_countries[[3]] <- sig_countries[[2]]
-            #move col 1 to col 2
-            names(sig_countries)[2] <- names(sig_countries)[1]
-            sig_countries[[2]] <- sig_countries[[1]]
-            #replace col 1 with new val
-            names(sig_countries)[1] <- country_names[j]
-            sig_countries[[1]] <- val
-            
-          } else if (val > sig_countries[[2]]){
-            #move col 2 to col 3
-            names(sig_countries)[3] <- names(sig_countries)[2]
-            sig_countries[[3]] <- sig_countries[[2]]
-            #replace col 2 with new val
-            names(sig_countries)[2] <- country_names[j]
-            sig_countries[[2]] <- val
-          } else if (val > sig_countries[[3]]){
-            #replace col3 with new val
-            names(sig_countries)[3] <- country_names[j]
-            sig_countries[[3]] <- val
-          }
-        }
-        absent_df[absent_names[i],] <- names(sig_countries)
-      }
-      #print("ABSENT MATRIX")
-      #print(absent_df)
-      absent_df
-      
-    }  
-    
-    
-  
-  # * SummaryReport ------------------------------------------------------------
-  
-  barcode_summary <- function() {
-    summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    records_bold <- BoldMatrix()
-    if (length(records_bold$species_name) == 0){
-      return(summary_df)  
-    }
-    for(i in 1:length(records_bold$species_name)){
-      #if species name not in dataframe
-      if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-        #add a row to summary_df
-        summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-      #add data to summary_df to get summary data
-      if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != '' && (records_bold$species_name[i] != "")){
-        #if markercode is not yet in the dataframe, initiate new col
-        if (!(records_bold$markercode[i] %in% colnames(summary_df))){
-          #create a new column of 0s
-          summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
-        }
-        #add 1 to existing count
-        summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
-      }
-    }
-
-    # print("BARCODE SUMMARY")
-    # print(summary_df)
-    summary_df
-  }
-  
-  reduce_barcode_summary <- function(b_summary) {
-    #number of non-zeros in each column
-    summary <- b_summary
-    count <- apply(summary, 2, function(c)sum(c!=0))
-    sums <- apply(summary, 2, sum)
-    
-    #find most representative 
-    
-    #result <- c()
-    #for (i in 1:length(sums)){
-    #    result <- sums[[i]] * count[[i]]
-   # }
-    #print(c)
-
-    
-    #calculate and sort by relavance
-    calculated <- names(rev(sort(sums * count)))
-    
-    #if (ncol(summary) > 3){
-    #  summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
-    #}
-    summary <- subset(summary, select = (calculated))
-    # print("Sorted Summary")
-    # print(summary)
-    summary
-  }
 })
 
