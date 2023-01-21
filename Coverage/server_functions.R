@@ -54,6 +54,7 @@ summary_report_dataframe <- function(dataframe)
 {
   class(dataframe)
   class(dataframe[, 1])
+  print("passed the class functions")
   options(scipen = 999) #scientific notion
   new_row_names <- "total"
   # doesn't include column with taxa snames
@@ -83,6 +84,7 @@ summary_report_dataframe <- function(dataframe)
   Total_seq_found <- sum(barcodeSums)
   
   #hard code in the totals
+  print(Total_seq_found)
   statistics_df[1, 2] <- Total_seq_found
   statistics_df[1, 3] <- 100
   
@@ -90,7 +92,11 @@ summary_report_dataframe <- function(dataframe)
   {
     x <- i - 1
     statistics_df[i, 2] <- barcodeSums[x]
-    statistics_df[i, 3] <- (barcodeSums[x] / Total_seq_found)
+    if(Total_seq_found == 0){
+      statistics_df[i, 3] <- 0
+    } else {
+      statistics_df[i, 3] <- ((barcodeSums[x] / Total_seq_found) * 100)
+    }
   }
   
   #hard code in the totals
@@ -144,9 +150,16 @@ which_rows_are_empty_and_arenot <-
         total <- 0
         for (j in 1:ncols)
         {
-          total <- total + as.numeric(dataframe[i, j])
+          print(dataframe[i,j])
+          newNum <- as.numeric(dataframe[i,j])
+          print(newNum)
+          if(is.na(newNum)){
+            newNum <- 0
+          }
+          total <- total + newNum
         }
         
+        print(total)
         if (!is.null(total) && total > 0)
         {
           #add species name to list
@@ -161,8 +174,12 @@ which_rows_are_empty_and_arenot <-
       #we will skip the first column because it has names
       for (i in 1:nrows)
       {
+        newNum <- as.numeric(dataframe[i, Which_Column])
+        if(is.na(newNum)){
+          newNum <- 0
+        }
         seqs <- 0
-        seqs <- 0 + as.numeric(dataframe[i, Which_Column])
+        seqs <- 0 + newNum
         
         if (!is.null(seqs) && seqs > 0)
         {
@@ -366,19 +383,21 @@ cruxDbList <- list(
 # remaining three values are empty vectors, left in place
 # in case the previous homonym failure notification scheme
 # is wanted. 
-getCruxSearchFullResults <- function(orgList, taxizeOption) {
-  organismList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
+getCruxSearchFullResults <- function(organismList) {
   nameUidList <- getHomonyms(organismList)
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
+  print("about to enter for loop")
   for (i in 1:length(nameList)) {
     searchTerm <- getSearchTerm(nameList[i], uidList[i])
     results <- cruxOrgSearch(
       results, searchTerm, nameList[i])
   }
+  print("exited for loop")
   results <- getCruxResultsMatrix(
     results, length(nameList))
+  print("results obtained")
   results <-
     list(
       organismList = nameList,
@@ -578,11 +597,12 @@ convert_CRUX <-
     # into  0s/1s. This function is used by which_rows_are_empty_and_arenot()
   {
     crux_without_taxonomic_names <- crux_output
-    crux_without_taxonomic_names <-
-      na.omit(crux_without_taxonomic_names)
+    print(typeof(crux_output))
+    #crux_without_taxonomic_names <-
+    #  na.omit(crux_without_taxonomic_names)
     
     non_number_values <-
-      c('genus', 'family', 'class', 'order', 'error')
+      c('genus', 'family', 'class', 'order', 'phylum', 'kingdom', 'error')
     
     ncols <- ncol(crux_output)
     nrows <- nrow(crux_output)
@@ -593,7 +613,8 @@ convert_CRUX <-
       {
         boolean <- 
           crux_without_taxonomic_names[j, i] %in% non_number_values
-        
+        print("passed fancy %in% thing")
+        print(crux_without_taxonomic_names[j, i] )
         #if true, ie it matches genus, family, class, order
         if (isTRUE(boolean))
         {
@@ -602,6 +623,7 @@ convert_CRUX <-
           crux_without_taxonomic_names[j, i] <- 
             as.numeric(crux_output[j, i])
         }
+        print("passed weird if statement following fancy %in% thing")
       }
     }
     
@@ -609,6 +631,7 @@ convert_CRUX <-
     
     crux_without_taxonomic_names <-
       as.matrix(crux_without_taxonomic_names)
+    print("entering final set of as_numerics")
     if (nrows > 1) {
       crux_without_taxonomic_names <-
         as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
