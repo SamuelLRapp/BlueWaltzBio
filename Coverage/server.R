@@ -67,6 +67,9 @@ shinyServer(function(input, output, session) {
   # on 
   resultsMatrix <- NULL
   
+  
+# NCBI Key ---------------------------------------------------------------------
+  
   # Verifies the provided api key is
   # valid by performing a search with it.
   # Sets key validity variable in server_functions.R
@@ -85,6 +88,30 @@ shinyServer(function(input, output, session) {
     })
   })
  
+  NCBIKeyFlag <- FALSE
+  observeEvent(input$SetKey, {
+    #When NCBIKey is inputed
+    key <- 0
+    NCBI_names <- tryCatch({
+      searchResult <-
+        entrez_search(db = "nucleotide",
+                      term = "Gallus Gallus",
+                      api_key = input$NCBIKey)
+    }, error = function(err) {
+      shinyalert("Your API key has been rejected, please make sure it is correct",
+                 type = "warning")
+      print(err)
+      key <<- 1
+    })
+    if (key == 0) {
+      set_entrez_key(input$NCBIKey)
+      Sys.setenv(ENTREZ_KEY = input$NCBIKey)
+      shinyalert("Your API key has been accepted", type = "success")
+      NCBIKeyFlag <- TRUE
+    }
+    server_functions$setNcbiKeyIsValid(NCBIKeyFlag)
+  })
+  
 # Full Genome ----------------------------------------------------------------
   
   # * FullGenomeSearchButton ---------------------------------------------------
@@ -141,7 +168,6 @@ shinyServer(function(input, output, session) {
           column.header = "OrganismNames",
           textbox.id = "genomeOrganismList"))
     })
-    server_functions$setNcbiKeyIsValid(keyValidity)
   })
   
   # * Output table -------------------------------------------------------------  
@@ -259,16 +285,30 @@ shinyServer(function(input, output, session) {
   
   # * CRUXSearchButton --------------------------------------------------------
   
-  cruxOrgSearch <-
-    eventReactive(input$searchButton, {
-      organismList <- input$CRUXorganismList # Returns as a string
-      cruxTaxizeOption <- input$CRUXtaxizeOption
-      # When searchButton clicked, update CruxOrgSearch to return the value 
-      # input into CRUXorganismList
-      future_promise(
-        server_functions$getCruxSearchFullResults(
-          organismList, cruxTaxizeOption))
+  CRUXOrgList <- eventReactive(input$searchButton, {
+    input$CRUXorganismList
+  })
+    
+  organismListGet <- reactive({
+    orgSearch <- CRUXOrgList()
+    taxizeBool <- input$CRUXtaxizeOption
+    future_promise({
+      result <- orgListHelper$taxizeHelper(orgSearch, taxizeBool)
+      print(result)
+      result
     })
+  })
+  
+  
+  cruxOrgSearch <- reactive({
+    organismListGet() %...>% {
+      print(.)
+      future_promise(
+        server_functions$getCruxSearchFullResults(.))
+    }
+  })
+    
+  
   
   # * UI pipeline updates ------------------------------------------------------
   observeEvent(input$searchButton, {
@@ -481,30 +521,6 @@ shinyServer(function(input, output, session) {
      updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
      showTab("NCBIpage", "Summary Results")
    })
-  
-  # * NCBI_Key -----------------------------------------------------------------
-  
-  NCBIKeyFlag <- FALSE
-  observeEvent(input$SetKey, {
-    #When NCBIKey is inputed
-    key <- 0
-    NCBI_names <- tryCatch({
-      searchResult <-
-        entrez_search(db = "nucleotide",
-                      term = "Gallus Gallus",
-                      api_key = input$NCBIKey)
-    }, error = function(err) {
-      shinyalert("Your API key has been rejected, please make sure it is correct",
-                 type = "warning")
-      key <<- 1
-    })
-    if (key == 0) {
-      set_entrez_key(input$NCBIKey)
-      Sys.setenv(ENTREZ_KEY = input$NCBIKey)
-      shinyalert("Your API key has been accepted", type = "success")
-      NCBIKeyFlag <- TRUE
-    }
-  })
   
   
   # * NCBIStrToList ------------------------------------------------------------
@@ -904,7 +920,9 @@ shinyServer(function(input, output, session) {
         columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
         colnames(cruxMatrix) <- columns
         rownames(cruxMatrix) <- organismList
-        dataframe <- convert_CRUX(cruxMatrix)
+        cleaned_cruxMatrix <- na.omit(cruxMatrix)
+        print("passed the omit")
+        dataframe <- server_functions$convert_CRUX(cleaned_cruxMatrix)
         server_functions$summary_report_dataframe(dataframe)
         })
       }
