@@ -913,7 +913,7 @@ shinyServer(function(input, output, session) {
         rownames(df) <- rows
         server_functions$summary_report_dataframe(df)
       })
-    } else {
+    } else if (databaseFlag == 0) {
       then(cruxOrgSearch(), function(coverage) {
         organismList <- coverage[[1]]
         cruxMatrix <- coverage[[2]]
@@ -925,7 +925,10 @@ shinyServer(function(input, output, session) {
         dataframe <- server_functions$convert_CRUX(cleaned_cruxMatrix)
         server_functions$summary_report_dataframe(dataframe)
         })
-      }
+    } else {
+      dataframe <- bold_functions$barcode_summary(boldCoverage())
+      server_functions$summary_report_dataframe(dataframe)
+    }
     }
 
 # BOLD --------------------------------------------------------------------
