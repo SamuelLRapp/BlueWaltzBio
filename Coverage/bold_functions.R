@@ -6,7 +6,7 @@ import(tidyverse)
 
 country_summary <- function(bold_coverage){
     summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    records_bold <- bold_coverage[["results"]]
+    records_bold <- bold_coverage
     if (length(records_bold$species_name) == 0){
         return(summary_df)
     }
@@ -105,7 +105,7 @@ absentMatrix <- function(bold_coverage, countries, country_names){
 
 barcode_summary <- function(bold_coverage) {
     summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    records_bold <- bold_coverage[["results"]]
+    records_bold <- bold_coverage
     if (length(records_bold$species_name) == 0){
         return(summary_df)  
     }
@@ -123,6 +123,9 @@ barcode_summary <- function(bold_coverage) {
             }
             #add 1 to existing count
             summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
+        }
+        else {
+          
         }
     }
     
