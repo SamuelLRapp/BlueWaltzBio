@@ -1213,7 +1213,7 @@ shinyServer(function(input, output, session) {
 
     output$BOLDPresentTable <- 
       DT::renderDataTable(
-        bold_functions$presentMatrix(boldCoverage(), input$selectCountry))
+        bold_functions$presentMatrix(BoldMatrix(), input$selectCountry))
     
     output$BOLDAbsentTable <- 
       DT::renderDataTable(
