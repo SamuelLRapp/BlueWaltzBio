@@ -921,12 +921,11 @@ shinyServer(function(input, output, session) {
         colnames(cruxMatrix) <- columns
         rownames(cruxMatrix) <- organismList
         cleaned_cruxMatrix <- na.omit(cruxMatrix)
-        print("passed the omit")
         dataframe <- server_functions$convert_CRUX(cleaned_cruxMatrix)
         server_functions$summary_report_dataframe(dataframe)
         })
     } else {
-      dataframe <- bold_functions$barcode_summary(boldCoverage())
+      dataframe <- bold_functions$barcode_summary(BoldMatrix())
       server_functions$summary_report_dataframe(dataframe)
     }
     }
@@ -1081,7 +1080,6 @@ shinyServer(function(input, output, session) {
     BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
       list <- boldCoverage()
       data <- list[["results"]]
-      
       # remove ncbi
       if (input$removeNCBI == TRUE){
         data <- subset(data, genbank_accession == "")
@@ -1124,8 +1122,7 @@ shinyServer(function(input, output, session) {
       xf <- data.frame(country = countries, values = vals)
       ggplot(data=xf, aes(x = country, y = values)) +
         geom_bar(stat="identity", fill="purple") +
-        labs(y = "# unique species", x = "countries", title = "Number of Unique Species in Selected Countries
-") +
+        labs(y = "# unique species", x = "countries", title = "Number of Unique Species in Selected Countries") +
         scale_y_continuous(limits = c(0, max_uniq_species)) +
         theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
         coord_flip()
@@ -1212,7 +1209,7 @@ shinyServer(function(input, output, session) {
     
     output$BOLDcoverageResults <- 
       DT::renderDataTable(
-        bold_functions$reduce_barcode_summary(bold_functions$barcode_summary(boldCoverage())))
+        bold_functions$reduce_barcode_summary(bold_functions$barcode_summary(BoldMatrix())))
 
     output$BOLDPresentTable <- 
       DT::renderDataTable(
