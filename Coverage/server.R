@@ -1101,13 +1101,15 @@ shinyServer(function(input, output, session) {
         countries_values <- list()
         require(data.table)
         #records_bold <- BoldMatrix()
-        present_matrix <- bold_functions$presentMatrix(boldCoverage(), input$selectCountry)
+        present_matrix <- bold_functions$presentMatrix(BoldMatrix(), input$selectCountry)
         countries <- colnames(present_matrix)
         for (i in 1:length(countries)){
+          print(countries[i])
+          #if (is.na(countries[i]) || identical(countries[i], character(0)) || countries[i] == ""){
           if (countries[i] == ""){
-            countries[i] = "no country listed"
-          }
-          countries_values[[countries[i]]] = 0
+            countries[i] <- "no country listed"
+          } 
+          countries_values[[countries[i]]] <- 0
         }
        
       # set vals
