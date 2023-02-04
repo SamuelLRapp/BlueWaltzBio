@@ -37,14 +37,17 @@ presentMatrix <- function(bold_coverage, countries){
     print(present_df)
     print("I GOT HERE YEEEEE")
     #remove all columns that are not in filter
-    present_df <- present_df[ , which(names(present_df) %in% countries)]
+    present_df <- present_df[ , which(names(present_df) %in% countries), drop=FALSE]
     
     #remove all rows that have all 0s as values and return
-    #present_df <- present_df[apply(present_df[, -1], 1, function(x) !all(x==0)),]
-    present_df <- present_df[rowSums(present_df[])>0,]
-    
-    # print("PRESENT MATRIX")
-    # print(present_df)
+    #present_df <- present_df
+
+    #Need to include drop=false to prevent R from dropping dataframe structure when numcolumns is 1, otherwise rowsums will complain
+    #https://stackoverflow.com/questions/32330818/r-row-sums-for-1-or-more-columns
+    print(present_df)
+    present_df <- present_df[rowSums(present_df[drop=FALSE])>0, drop=FALSE]
+    print(present_df)
+
     present_df
     
 }
