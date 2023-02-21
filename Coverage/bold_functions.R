@@ -15,7 +15,8 @@ country_summary <- function(bold_coverage){
             #add a row to summary_df
             summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
         #add data to summary_df to get summary data
-        if (!is.na(records_bold$country[i]) && records_bold$country[i] != '' && (records_bold$species_name[i] != "")){
+        if (!is.na(records_bold$country[i]) && records_bold$country[i] != '' && (records_bold$species_name[i] != "") && 
+            !is.na(records_bold$markercode[i]) && records_bold$markercode[i] != '' && (records_bold$species_name[i] != "")){
             #if country is not yet in the dataframe, initiate new col
             if (!(records_bold$country[i] %in% colnames(summary_df))){
                 #create a new column of 0s
@@ -31,11 +32,40 @@ country_summary <- function(bold_coverage){
     
 }
 
+# * NA Filter -------------------------------------------
+
+
+naBarcodes <- function(bold_coverage){
+  summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+  records_bold <- bold_coverage
+  if (length(records_bold$species_name) == 0){
+    return(summary_df)
+  }
+  
+  for(i in 1:length(records_bold$species_name)){
+    if (is.na(records_bold$species_name[i]) && (records_bold$species_name[i] == "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
+      #add a row to summary_df
+      summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
+    #add data to summary_df to get summary data
+    if (is.na(records_bold$markercode[i]) || records_bold$markercode[i] == '' || (records_bold$species_name[i] == "")){
+      #if country is not yet in the dataframe, initiate new col
+      #add 1 to existing count
+      print(ncol(summary_df))
+      if (ncol(summary_df) == 0) {
+        summary_df["Entries where Barcode was NA"] <- integer(ncol(summary_df))
+        summary_df[records_bold$species_name[i], "Entries where Barcode was NA"] <- records_bold$processid[i]
+      } else {
+        newStr = paste(summary_df[records_bold$species_name[i], "Entries where Barcode was NA"], records_bold$processid[i], sep=", ")
+        summary_df[records_bold$species_name[i], "Entries where Barcode was NA"] <- newStr
+      }
+    }
+  }
+  summary_df
+}
+
 presentMatrix <- function(bold_coverage, countries){
     present_df <- country_summary(bold_coverage)
     
-    print(present_df)
-    print("I GOT HERE YEEEEE")
     #remove all columns that are not in filter
     present_df <- present_df[ , which(names(present_df) %in% countries), drop=FALSE]
     
@@ -44,10 +74,7 @@ presentMatrix <- function(bold_coverage, countries){
 
     #Need to include drop=false to prevent R from dropping dataframe structure when numcolumns is 1, otherwise rowsums will complain
     #https://stackoverflow.com/questions/32330818/r-row-sums-for-1-or-more-columns
-    print(present_df)
     present_df <- present_df[rowSums(present_df[drop=FALSE])>0, drop=FALSE]
-    print(present_df)
-
     present_df
     
 }

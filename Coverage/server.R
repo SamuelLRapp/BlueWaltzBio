@@ -1040,6 +1040,7 @@ shinyServer(function(input, output, session) {
         for(organism in organismList){
             searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
+                print(unique(records_bold$processid))
             }, error = function(err) {
                 print("ERROR")
                 # POP UP TELLING USER THAT BOLD IS DOWN
@@ -1219,7 +1220,11 @@ shinyServer(function(input, output, session) {
     
     output$BOLDAbsentTable <- 
       DT::renderDataTable(
-        bold_functions$absentMatrix(boldCoverage(), input$selectCountry, na.omit(boldCoverage()$input$selectCountry[boldCoverage()$input$selectCountry != ""])))
+        bold_functions$absentMatrix(BoldMatrix(), input$selectCountry, na.omit(boldCoverage()$input$selectCountry[boldCoverage()$input$selectCountry != ""])))
+    
+    output$BOLDNATable <- 
+      DT::renderDataTable(
+        bold_functions$naBarcodes(BoldMatrix()))
     
     output$BOLDSummaryData <- 
       DT::renderDataTable(
