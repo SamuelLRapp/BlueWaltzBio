@@ -438,8 +438,8 @@ shinyUI(fluidPage(
                                  p("For each barcode we display the total number of sequences found and the number of organisms with at least one or no sequence"),
                                  DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
                                  
-                                 titlePanel("Sequences Classified by Barcode"),
-                                 p("Total number of sequences found by barcode for each unique species"),
+                                 titlePanel("Sequences Found for each Species Classified by Barcode"),
+                                 p("Total number of sequences found for each species classified into the different barcodes found"),
                                  DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                  
                                  conditionalPanel(condition = "output.BOLDcoverageResults",
@@ -464,7 +464,14 @@ shinyUI(fluidPage(
                                titlePanel("Sequences Classified by Country"),
                                p("Total number of sequences found by Country for each unique species"),
                                DT::dataTableOutput("BOLDPresentTable") %>% withSpinner(color="#0dc5c1"),
+                               titlePanel("Top Countries for Organism Without Results in the Country Filter"),
+                               p("For those species that have no sequences found in the country(s) filtered we provide 
+                                 the top 3 unselected countries with the most sequence results."),
                                DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
+                               titlePanel("Bold UIDs for Entries With Unlabeled Barcodes"),
+                               p("For those entries in BOLD that have unlabeled we provide their respective BOLD UIDs, 
+                                 so that scientist may explore these results further."),
+                               DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1"),
                                ),
                         
                       ),
