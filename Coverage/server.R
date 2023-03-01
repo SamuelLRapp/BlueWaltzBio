@@ -100,7 +100,6 @@ shinyServer(function(input, output, session) {
     }, error = function(err) {
       shinyalert("Your API key has been rejected, please make sure it is correct",
                  type = "warning")
-      print(err)
       key <<- 1
     })
     if (key == 0) {
@@ -977,14 +976,14 @@ shinyServer(function(input, output, session) {
      updateTabsetPanel(session, "BOLDpage", selected = "Organism Names")
      showTab("BOLDpage", "Organism Names")
      # It requires a file to be uploaded first
-     req(input$uBOLDfile, file.exists(input$uBOLDfile$datapath))
      isolate({
-       uploadinfo <- read.csv(input$uBOLDfile$datapath, quote = "", header = TRUE)
+       req(input$uBOLDfile, file.exists(input$uBOLDfile$datapath))
+       uploadinfo <- read.csv(input$uBOLDfile$datapath, header = TRUE)
        if(input$BOLDorganismList[[1]] != "") {
-         updateTextAreaInput(getDefaultReactiveDomain(), "BOLDorganismList", value = c(head(uploadinfo$OrganismNames, -1), input$CRUXorganismList))
+         updateTextAreaInput(getDefaultReactiveDomain(), "BOLDorganismList", value = c(head(uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""], -1), input$BOLDorganismList))
        }
        else {
-         updateTextAreaInput(getDefaultReactiveDomain(), "BOLDorganismList", value = uploadinfo$OrganismNames)
+         updateTextAreaInput(getDefaultReactiveDomain(), "BOLDorganismList", value = uploadinfo$OrganismNames[uploadinfo$OrganismNames != ""])
        }
      })
    })
@@ -1040,9 +1039,8 @@ shinyServer(function(input, output, session) {
         for(organism in organismList){
             searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
-                print(unique(records_bold$processid))
             }, error = function(err) {
-                print("ERROR")
+                print("ERROR IN BOLD SEARCH")
                 # POP UP TELLING USER THAT BOLD IS DOWN
             })
             if (!is.na(records_bold)){
@@ -1105,7 +1103,6 @@ shinyServer(function(input, output, session) {
         present_matrix <- bold_functions$presentMatrix(BoldMatrix(), input$selectCountry)
         countries <- colnames(present_matrix)
         for (i in 1:length(countries)){
-          print(countries[i])
           #if (is.na(countries[i]) || identical(countries[i], character(0)) || countries[i] == ""){
           if (countries[i] == ""){
             countries[i] <- "no country listed"
@@ -1120,7 +1117,6 @@ shinyServer(function(input, output, session) {
       ## BOLD adds species/subspecies to search results
       ## so # of species will often be more than # from boldOrganismList()
       max_uniq_species <- max(vals)
-      print(max_uniq_species)
   
       xf <- data.frame(country = countries, values = vals)
       ggplot(data=xf, aes(x = country, y = values)) +

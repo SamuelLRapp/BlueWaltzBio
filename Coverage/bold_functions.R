@@ -50,7 +50,6 @@ naBarcodes <- function(bold_coverage){
     if (is.na(records_bold$markercode[i]) || records_bold$markercode[i] == '' || (records_bold$species_name[i] == "")){
       #if country is not yet in the dataframe, initiate new col
       #add 1 to existing count
-      print(ncol(summary_df))
       if (ncol(summary_df) == 0) {
         summary_df["Entries where Barcode was NA"] <- integer(ncol(summary_df))
         summary_df[records_bold$species_name[i], "Entries where Barcode was NA"] <- records_bold$processid[i]

@@ -84,7 +84,6 @@ summary_report_dataframe <- function(dataframe)
   Total_seq_found <- sum(barcodeSums)
   
   #hard code in the totals
-  print(Total_seq_found)
   statistics_df[1, 2] <- Total_seq_found
   statistics_df[1, 3] <- 100
   
@@ -150,9 +149,7 @@ which_rows_are_empty_and_arenot <-
         total <- 0
         for (j in 1:ncols)
         {
-          print(dataframe[i,j])
           newNum <- as.numeric(dataframe[i,j])
-          print(newNum)
           if(is.na(newNum)){
             newNum <- 0
           }
