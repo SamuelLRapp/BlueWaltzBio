@@ -47,3 +47,49 @@
 .info-tooltip:hover .info-tooltip-text {
   visibility: visible;
 }
+
+/*class to control loader/progress bar container*/
+.custom-loader {
+  position: initial !important; /*!important overrides other CSS*/
+  display: block;
+  margin: auto;
+  /*border: red solid 2px;*/
+  padding: 2px;
+  width: 30% !important;
+}
+
+/*remove background of AsyncProgress bar*/
+.custom-loader .shiny-notification {
+  background-color: transparent !important;
+}
+
+/*progress bar background styling*/
+.custom-loader .shiny-progress-notification .progress {
+  margin-bottom: 5px;
+  height: 20px;
+  border: red solid 2px;
+  background-color: rgba(129,283,12,70%);
+  border-radius: 10px;
+}
+
+/*progress bar styling*/
+.custom-loader .progress-bar {
+  float: left;
+  width: 0%;
+  height: 100%;
+  font-size: 12px;
+  line-height: 20px;
+  color: #fff;
+  text-align: center;
+  background-color: #337ab7;
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+  -webkit-transition: width .6s ease;
+  -o-transition: width .6s ease;
+  transition: width .6s ease;
+}
+
+/*progress bar close button*/
+.custom-loader .shiny-notification-close {
+  display: none;
+}
