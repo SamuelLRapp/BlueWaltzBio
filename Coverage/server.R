@@ -1355,6 +1355,7 @@ shinyServer(function(input, output, session) {
       for (code in codeList) {
         seq_len_list[[code]] <- input[[code]]
       }
+      
       future_promise({
         err <- 0              
         countResults <- list() 
@@ -1363,7 +1364,6 @@ shinyServer(function(input, output, session) {
         for (organism in organismList) {
           progress$set(message = paste0("Retrieving barcodes for ", organism))
           progress$inc(amount = 0.5)
-          #shinyjs::html(id="#NCBIpage .loader", html=paste0("<div>Retrieving barcodes for ",organism,"..."))
           for (code in codeList) {
             # TODO: Add more sanitization to this
             
@@ -1482,11 +1482,11 @@ shinyServer(function(input, output, session) {
               #append the count to the vector of results
               countResults <- list.append(countResults, searchResult$count)
             }
+            progress$set(message = paste0("Retrieved barcodes for ", organism))
+            progress$inc(amount = 0.5)
           }
-          progress$set(message = paste0("Retrieved barcodes for ", organism))
-          progress$inc(amount = 0.5)
         }
-        #progress$close()
+        
         results <-
           list(count = countResults,
                ids = uids,
@@ -2830,4 +2830,3 @@ shinyServer(function(input, output, session) {
     }
   
 })
-
