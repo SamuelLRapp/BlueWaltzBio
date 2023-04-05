@@ -293,7 +293,6 @@ shinyServer(function(input, output, session) {
     taxizeBool <- input$CRUXtaxizeOption
     future_promise({
       result <- orgListHelper$taxizeHelper(orgSearch, taxizeBool)
-      print(result)
       result
     })
   })
@@ -301,7 +300,6 @@ shinyServer(function(input, output, session) {
   
   cruxOrgSearch <- reactive({
     organismListGet() %...>% {
-      print(.)
       future_promise(
         server_functions$getCruxSearchFullResults(.))
     }
@@ -924,17 +922,21 @@ shinyServer(function(input, output, session) {
         server_functions$summary_report_dataframe(dataframe)
         })
     } else {
-      dataframe <- bold_functions$barcode_summary(BoldMatrix())
-      server_functions$summary_report_dataframe(dataframe)
+      BoldMatrix() %...>% {
+        matrix <- .
+        dataframe <- bold_functions$barcode_summary(matrix)
+        print(dataframe)
+        server_functions$summary_report_dataframe(dataframe)
+      }
     }
-    }
+  }
 
 # BOLD --------------------------------------------------------------------
 
 
 # * BOLDSearchButton ------------------------------------------------------
 
-    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
+    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update BOLDOrgSearch to return the value input into BOLDorganismList
       input$BOLDorganismList #Returns as a string
     })
     
@@ -988,85 +990,61 @@ shinyServer(function(input, output, session) {
      })
    })
 
-
-# # * BOLDStrToList ---------------------------------------------------------
-# 
-#     boldOrganismList <- reactive({ #Converts string from cruxOrgSearch into a list of Strings
-#       organismList <- strsplit(BOLDOrgSearch(), ",")[[1]] #separate based on commas
-#       if(input$BOLDtaxizeOption){ #if the taxize option is selected
-#         taxize_organism_list <- c() #initialize an empty vector
-#         
-#         for(i in 1:length(organismList))
-#         {
-#           organism <- trimws(organismList[[i]], "b") #trim both leading and trailing whitespace
-#           NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) #help user with various naming issues (spelling, synonyms, etc.)
-#           row_count <- nrow(NCBI_names) # get number of rows in dataframe
-#           
-#           if(row_count > 0) #If a legitimate name was found
-#           {
-#             for(j in 1:row_count)
-#             {
-#               taxa_name <- NCBI_names[[j,3]] #Store each matched name in taxa_name
-#               taxize_organism_list <- c(taxize_organism_list, taxa_name) #update the vector with all the taxa_names.
-#             }
-#           }
-#           else
-#           {
-#             taxize_organism_list <- c(taxize_organism_list, organism) #just append organism to the list, and return taxize_organism_list
-#           }
-#         }
-#         taxize_organism_list  
-#       } else{
-#         organismList #return the list as is
-#       }
-#     })
-#     
     # * BOLDCoverage ------------------------------------------------------------
 
     
     boldCoverage <- reactive ({
-        organismList <- orgListHelper$taxizeHelper(BOLDOrgSearch(), input$BOLDtaxizeOption)
-        organismListLength <- length(organismList)
-        countries <- c()
-        validate(
+        orgSearch <- BOLDOrgSearch()
+        taxize_selected <- input$BOLDtaxizeOption
+        future_promise({orgListHelper$taxizeHelper(orgSearch, taxize_selected)}) %...>% {
+          organismList <- .
+          organismListLength <- length(organismList)
+          validate(
             need(organismListLength > 0, 'Please name at least one organism')
-        )
-        
-        #puts variable in global scope
-        unfound_species <<- c()
-        
-        results <- data.frame(matrix(ncol=0, nrow=0))
-        for(organism in organismList){
-            searchResult <- tryCatch({
+          )
+          
+          #puts variable in global scope
+          unfound_species <<- c()
+          
+          results <- data.frame(matrix(ncol=0, nrow=0))
+          bold_failed <- 0
+          future_promise({
+            countries <- c()
+            for(organism in organismList){
+              searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
-            }, error = function(err) {
+              }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
-                # POP UP TELLING USER THAT BOLD IS DOWN
-            })
-            if (!is.na(records_bold)){
+                bold_failed <- 1
+              })
+              if (!is.na(records_bold)){
                 for (i in 1:nrow(records_bold)) {
-                    if (is.na(records_bold$country[i]) || records_bold$country[i] == "") {
-                        records_bold$country[i] = "No Country Listed"
-                    }
+                  if (is.na(records_bold$country[i]) || records_bold$country[i] == "") {
+                    records_bold$country[i] <- "No Country Listed"
+                  }
                 }
                 if (!is.na(records_bold$species_name)) {
-                    countries <- c(countries, records_bold$country)
-                    results <- rbind(results, records_bold)
+                  countries <- c(countries, records_bold$country)
+                  results <- rbind(results, records_bold)
                 } else {
-                    print("unfound:")
-                    print(organism)
-                    print(records_bold)
-                    unfound_species <<- c(unfound_species, organism)
+                  unfound_species <<- c(unfound_species, organism)
                 }
+              }
             }
+            results <- list(results=results, countries=countries)
+          }) %...>% {
+            if(bold_failed == 1){
+              print("BOLD is down")
+              # POP UP TELLING USER THAT BOLD IS DOWN
+            }
+            shinyjs::show(id = "BOLDClearFilter")
+            shinyjs::show(id = "BOLDfilterCountries")
+            shinyjs::show(id = "BOLDSkipFilter")
+            shinyjs::show(id = "BOLDNullSpecies")
+            shinyjs::show(id = "BOLDNullSpeciesWarning")
+            . #return data matrix
+          }
         }
-        shinyjs::show(id = "BOLDClearFilter")
-        shinyjs::show(id = "BOLDfilterCountries")
-        shinyjs::show(id = "BOLDSkipFilter")
-        shinyjs::show(id = "BOLDNullSpecies")
-        shinyjs::show(id = "BOLDNullSpeciesWarning")
-        results <- list(results=results, countries=countries)
-        results #return data matrix
     })
     
     BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
@@ -1077,17 +1055,19 @@ shinyServer(function(input, output, session) {
     # * BOLD MATRIX----------------
     
     BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
-      list <- boldCoverage()
-      data <- list[["results"]]
-      # remove ncbi
-      if (input$removeNCBI == TRUE){
-        data <- subset(data, genbank_accession == "")
+      boldCoverage() %...>% {
+        list <- .
+          data <- list[["results"]]
+        # remove ncbi
+        if (input$removeNCBI == TRUE){
+          data <- subset(data, genbank_accession == "")
+        }
+        country_list <- BOLDOrgCountries()
+        if(length(country_list) > 0){
+          data <- subset(data, country %in% country_list)
+        }
+        data
       }
-      country_list <- BOLDOrgCountries()
-      if(length(country_list) > 0){
-        data <- subset(data, country %in% country_list)
-      }
-      data
     })
     
     # * Plot: Unique Species per Country ----------
@@ -1095,38 +1075,43 @@ shinyServer(function(input, output, session) {
     # no. of species for all countries
     
     BoldPlotBarGraph <- function(){
+      print("Entering BoldPlotBarGraph")
+      print(BOLDOrgCountries())
       if (!is.null(BOLDOrgCountries())){
         vals <- c()
         countries_values <- list()
+        selectCountry <- input$selectCountry
         require(data.table)
-        #records_bold <- BoldMatrix()
-        present_matrix <- bold_functions$presentMatrix(BoldMatrix(), input$selectCountry)
-        countries <- colnames(present_matrix)
-        for (i in 1:length(countries)){
-          #if (is.na(countries[i]) || identical(countries[i], character(0)) || countries[i] == ""){
-          if (countries[i] == ""){
-            countries[i] <- "no country listed"
-          } 
-          countries_values[[countries[i]]] <- 0
+        BoldMatrix() %...>% {
+          bold_matrix <- .
+          present_matrix <- bold_functions$presentMatrix(bold_matrix, selectCountry)
+          countries <- colnames(present_matrix)
+          for (i in 1:length(countries)){
+            if (countries[i] == ""){
+              countries[i] <- "no country listed"
+            } 
+            countries_values[[countries[i]]] <- 0
+          }
+          
+          # set vals
+          ## counts # of cols for each country where cell > 0
+          vals <- colSums(present_matrix != 0)
+          
+          print("vals = ")
+
+          ## BOLD adds species/subspecies to search results
+          ## so # of species will often be more than # from boldOrganismList()
+          max_uniq_species <- max(vals)
+          
+          xf <- data.frame(country = countries, values = vals)
+          ggplot(data=xf, aes(x = country, y = values)) +
+            geom_bar(stat="identity", fill="purple") +
+            labs(y = "# unique species", x = "countries", title = "Number of Unique Species in Selected Countries") +
+            scale_y_continuous(limits = c(0, max_uniq_species)) +
+            theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
+            coord_flip()
         }
-       
-      # set vals
-      ## counts # of cols for each country where cell > 0
-      vals <- colSums(present_matrix != 0)
-      
-      ## BOLD adds species/subspecies to search results
-      ## so # of species will often be more than # from boldOrganismList()
-      max_uniq_species <- max(vals)
-  
-      xf <- data.frame(country = countries, values = vals)
-      ggplot(data=xf, aes(x = country, y = values)) +
-        geom_bar(stat="identity", fill="purple") +
-        labs(y = "# unique species", x = "countries", title = "Number of Unique Species in Selected Countries") +
-        scale_y_continuous(limits = c(0, max_uniq_species)) +
-        theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
-        coord_flip()
       }
-      #barplot(vals, names.arg = countries, xlab = "countries", ylab = "# unique species", col = "purple")
     }
     
     
@@ -1135,13 +1120,13 @@ shinyServer(function(input, output, session) {
     }, height = 700, width = 1000)
     
     output$downloadBarGraph = downloadHandler(
-      filename = 'test.png',
+      filename = 'bold_bargraph.png',
       content = function(file) {
         device <- function(..., width, height) {
           grDevices::png(..., width = width, height = height,
                          res = 300, units = "in")
         }
-        BoldPlotBarGraph()
+        BoldPlotBarGraph() %...>%
         ggsave(file, device = device)
       })
     
@@ -1151,41 +1136,42 @@ shinyServer(function(input, output, session) {
     
     BoldPlotTreemap <- function(){
       if (!is.null(input$selectCountry)){
-        records_bold <- BoldMatrix()
-        countries_values <- list()
-        vals <- c()
-        countries = c(unique(records_bold$country))
-        # replace the empty str w/ no country listed
-        for (i in 1:length(countries)){
-          if (countries[i] == ""){
-            countries[i] = "no country listed"
+        BoldMatrix() %...>% {
+          records_bold <- .
+          countries_values <- list()
+          vals <- c()
+          countries = c(unique(records_bold$country))
+          # replace the empty str w/ no country listed
+          for (i in 1:length(countries)){
+            if (countries[i] == ""){
+              countries[i] = "no country listed"
+            }
           }
+          
+          for (i in countries){
+            x <- lengths(subset(records_bold, country == i))
+            countries_values[[i]] = x[[1]]
+            vals <- append(vals, x[[1]])
+          }
+          xf <- data.frame(country = countries, values = vals)
+          geom.text.size = 7
+          theme.size = (14/5) * geom.text.size
+          #d3tree(
+          #  treemap(xf, 
+          #          index = "country", 
+          #          vSize = "values", 
+          #          vColor = "country", 
+          #          type = "value",
+          #          title.legend = "Legend"))
+          ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
+            geom_treemap() +  
+            #labs(title = "Distribution of Sequence Records Amongst Selected Countries") +
+            geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
+            ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
+            theme(axis.text = element_text(size = theme.size),
+                  axis.title = element_text(size = 20, face = "bold")) 
+          # how to change the colors + get a legend ?
         }
-        
-        for (i in countries){
-          x <- lengths(subset(records_bold, country == i))
-          countries_values[[i]] = x[[1]]
-          vals <- append(vals, x[[1]])
-        }
-        xf <- data.frame(country = countries, values = vals)
-        geom.text.size = 7
-        theme.size = (14/5) * geom.text.size
-        #d3tree(
-        #  treemap(xf, 
-        #          index = "country", 
-        #          vSize = "values", 
-        #          vColor = "country", 
-        #          type = "value",
-        #          title.legend = "Legend"))
-        ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
-          geom_treemap() +  
-          #labs(title = "Distribution of Sequence Records Amongst Selected Countries") +
-          geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
-          ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
-          theme(axis.text = element_text(size = theme.size),
-                axis.title = element_text(size = 20, face = "bold")) 
-        # how to change the colors + get a legend ?
-
     }}
     
     output$treemap <- renderPlot({ 
@@ -1201,26 +1187,43 @@ shinyServer(function(input, output, session) {
           grDevices::png(..., width = width, height = height,
                          res = 300, units = "in")
         }
-        BoldPlotTreemap()
+        BoldPlotTreemap() %...>%
         ggsave(file, device = device)
       })
     
     
     output$BOLDcoverageResults <- 
-      DT::renderDataTable(
-        bold_functions$reduce_barcode_summary(bold_functions$barcode_summary(BoldMatrix())))
+      DT::renderDataTable({
+        BoldMatrix() %...>% {
+          bold_functions$reduce_barcode_summary(
+            bold_functions$barcode_summary(.)
+          )
+        }
+      })
 
     output$BOLDPresentTable <- 
-      DT::renderDataTable(
-        bold_functions$presentMatrix(BoldMatrix(), input$selectCountry))
+      DT::renderDataTable({
+        BoldMatrix() %...>% {
+          bold_functions$presentMatrix(., input$selectCountry)
+        }
+      })
     
     output$BOLDAbsentTable <- 
-      DT::renderDataTable(
-        bold_functions$absentMatrix(BoldMatrix(), input$selectCountry, na.omit(boldCoverage()$input$selectCountry[boldCoverage()$input$selectCountry != ""])))
-    
+      DT::renderDataTable({
+        promise_all(matrix = BoldMatrix(), coverage = boldCoverage()) %...>% with({
+          bold_functions$absentMatrix(matrix, 
+                                      input$selectCountry, 
+                                      na.omit(coverage$input$selectCountry[coverage$input$selectCountry != ""])
+                                      )
+        })
+      })
+
     output$BOLDNATable <- 
-      DT::renderDataTable(
-        bold_functions$naBarcodes(BoldMatrix()))
+      DT::renderDataTable({
+        BoldMatrix() %...>% {
+        bold_functions$naBarcodes(.)
+        }
+      })
     
     output$BOLDSummaryData <- 
       DT::renderDataTable(
@@ -1237,7 +1240,10 @@ shinyServer(function(input, output, session) {
       })
     
     output$selectCountry <- renderUI({
-      selectizeInput(inputId="selectCountry", label="Filter by Countries", choices=boldCoverage()$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
+      boldCoverage() %...>% {
+        coverage <- .
+        selectizeInput(inputId="selectCountry", label="Filter by Countries", choices=coverage$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
+      }
     })
 
     # * BOLDFASTADownload ------------------------------------------------------------
@@ -1248,35 +1254,32 @@ shinyServer(function(input, output, session) {
       },
       content = function(file) {
         fasta_vector = c()
-        records_bold <- BoldMatrix()
-        for(i in 1:length(records_bold$species_name)){
-          #parsing data into fasta file format and storing in fasta_vector
+        BoldMatrix() %...>% {
+          records_bold <- .
+            for(i in 1:length(records_bold$species_name)){
+              #parsing data into fasta file format and storing in fasta_vector
+              
+              #display species name if subspecies name is not available
+              
+              species_name <- if(is.na(records_bold$subspecies_name[i])) records_bold$species_name[i] else records_bold$subspecies_name[i]
+              
+              #put data into vector
+              org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
+              #remove empty data
+              org_fasta <- org_vector[org_vector != '']
+              org_data <- paste(org_fasta, collapse = '|')
+              org_data <- paste('>', org_data, sep = '')
+              
+              #do not include entries with no sequences
+              
+              if (records_bold$nucleotides[i] != '' && !is.na(records_bold$nucleotides[i])){
+                fasta_vector <- c(fasta_vector, org_data)
+                fasta_vector <- c(fasta_vector, records_bold$nucleotides[i])
+              }
+            }
           
-          #display species name if subspecies name is not available
-
-          species_name <- if(is.na(records_bold$subspecies_name[i])) records_bold$species_name[i] else records_bold$subspecies_name[i]
-          
-          #put data into vector
-          org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
-          #remove empty data
-          org_fasta <- org_vector[org_vector != '']
-          org_data <- paste(org_fasta, collapse = '|')
-          org_data <- paste('>', org_data, sep = '')
-          
-          #do not include entries with no sequences
-
-          #isequal <- !is.na(records_bold$nucleotides[i]) == (records_bold$nucleotides[i] != '')
-          #print(isequal)
-          #if(!isequal) {
-          #  print(records_bold$nucleotides[i])    
-          #}
-          if (records_bold$nucleotides[i] != '' && !is.na(records_bold$nucleotides[i])){
-            fasta_vector <- c(fasta_vector, org_data)
-            fasta_vector <- c(fasta_vector, records_bold$nucleotides[i])
-          }
+          write(fasta_vector, file)
         }
-
-        write(fasta_vector, file)
       }
     )
     
@@ -1287,7 +1290,10 @@ shinyServer(function(input, output, session) {
         paste("BOLD_Summary_Report", ".csv", sep="")
       },
       content = function(file) {
-        write.csv(summary_report(2), file)
+        summary_report %...>% {
+          report <- .
+          write.csv(report, file)
+        }
       }
     )
     
