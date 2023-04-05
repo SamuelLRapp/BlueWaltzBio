@@ -10,6 +10,7 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
       return(c())
     }
     # separate based on commas
+    print(orgSearch)
     organismList <- strsplit(orgSearch[[1]], ",")[[1]]
     # trim both leading and trailing whitespace
     for(i in 1:length(organismList)){

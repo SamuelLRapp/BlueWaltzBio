@@ -54,7 +54,6 @@ summary_report_dataframe <- function(dataframe)
 {
   class(dataframe)
   class(dataframe[, 1])
-  print("passed the class functions")
   options(scipen = 999) #scientific notion
   new_row_names <- "total"
   # doesn't include column with taxa snames
