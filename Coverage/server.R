@@ -1042,7 +1042,8 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "BOLDSkipFilter")
             shinyjs::show(id = "BOLDNullSpecies")
             shinyjs::show(id = "BOLDNullSpeciesWarning")
-            . #return data matrix
+            returnMatrix <- . #return data matrix
+            returnMatrix
           }
         }
     })
@@ -1057,7 +1058,7 @@ shinyServer(function(input, output, session) {
     BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
       boldCoverage() %...>% {
         list <- .
-          data <- list[["results"]]
+        data <- list[["results"]]
         # remove ncbi
         if (input$removeNCBI == TRUE){
           data <- subset(data, genbank_accession == "")
