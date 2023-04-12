@@ -1127,8 +1127,9 @@ shinyServer(function(input, output, session) {
           grDevices::png(..., width = width, height = height,
                          res = 300, units = "in")
         }
-        BoldPlotBarGraph() %...>%
-        ggsave(file, device = device)
+        BoldPlotBarGraph() %...>%{
+            ggsave(file, device = device)
+        }
       })
     
     
@@ -1182,14 +1183,15 @@ shinyServer(function(input, output, session) {
   
     
     output$downloadTreeGraph = downloadHandler(
-      filename = 'test.png',
+      filename = 'bold_treegraph.png',
       content = function(file) {
         device <- function(..., width, height) {
           grDevices::png(..., width = width, height = height,
                          res = 300, units = "in")
         }
-        BoldPlotTreemap() %...>%
-        ggsave(file, device = device)
+        BoldPlotTreemap() %...>% {
+            ggsave(file, device = device)
+        }
       })
     
     
@@ -1291,7 +1293,7 @@ shinyServer(function(input, output, session) {
         paste("BOLD_Summary_Report", ".csv", sep="")
       },
       content = function(file) {
-        summary_report %...>% {
+        summary_report(2) %...>% {
           report <- .
           write.csv(report, file)
         }
