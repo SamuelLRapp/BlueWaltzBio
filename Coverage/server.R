@@ -67,6 +67,33 @@ shinyServer(function(input, output, session) {
   # on 
   resultsMatrix <- NULL
   
+  # * Download tests start------------------------------------------------------
+  observeEvent(input$dwntest, {
+    #run JS portion of test (ui interactions)
+    js$ncbiDwnFastaTest(testOrganisms = "canis lupus, cygnus")
+    
+    #gets reference file to see if download completed later
+    reffile <- mostRecentFile(".")
+    print("Waiting 40 secs for file to finish downloading...")
+    #runs when search complete and download button clicked
+    observeEvent(input[["ui-test-complete"]], {
+      #get the most recent file in the downloads file
+      dwnfile <- mostRecentFile(".")
+      
+      #if download has completed then filename should have changed
+      if (dwnfile != reffile){
+        print("Test passed")
+      } else {
+        print("Test failed: file did not download")
+      }
+    })
+  })
+  
+  mostRecentFile <- function(dirpath) {
+    df <- file.info(list.files(dirpath, full.names = T))
+    rownames(df)[which.max(df$mtime)]
+  }
+  
   
 # NCBI Key ---------------------------------------------------------------------
   
@@ -193,54 +220,33 @@ shinyServer(function(input, output, session) {
                   )
                 })
   })
+
   
   # * Download Fastas ----------------------------------------------------------
-  mostRecentFile <- function(dirpath) {
-    df <- file.info(list.files(dirpath, full.names = T))
-    rownames(df)[which.max(df$mtime)]
-  }
-  
-  # * Download tests start------------------------------------------------------
-  observeEvent(input$dwntest, {
-    #run JS portion of test (ui interactions)
-    js$ncbiDwnFastaTest(testOrganisms = "canis lupus, cygnus")
-    
-    #gets reference file to see if download completed later
-    reffile <- mostRecentFile(".")
-    print("Waiting 40 secs for file to finish downloading...")
-    #runs when search complete and download button clicked
-    observeEvent(input[["ui-test-complete"]], {
-      #get the most recent file in the downloads file
-      dwnfile <- mostRecentFile(".")
-      
-      #if download has completed then filename should have changed
-      if (dwnfile != reffile){
-        print("Test passed")
-      } else {
-        print("Test failed: file did not download")
-      }
-    })
-  })
-  
   output$fullGenomeDownloadF <- downloadHandler(
     filename = function() {
       paste("Full_Genome_Fasta_File", ".fasta", sep = "")
     },
     content = function(file) {
-      progressLength <- length(statefulUids)
+      progLength <- length(statefulUids)
       progress <-
         AsyncProgress$new(
           session,
           min = 0,
-          max = progressLength,
+          max = progLength,
           message = "Downloading",
           value = 0
         )
-      server_functions$fullGenomeDownload(
-        filetype = "fasta", 
-        uids = statefulUids,
-        filepath = file,
-        progress = progress)
+      future_promise({
+        # entrez_fetch can take a list of uids, instead of iterating
+        # over all uids and sleeping at each one, could provide a list
+        # to get all the files at once. 
+        # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
+        # for details
+        write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="fasta"), file)
+        progress$set(value = progLength)
+        progress$close
+      })
     }
   )
   
@@ -251,20 +257,25 @@ shinyServer(function(input, output, session) {
       paste("Full_Genome_Genbank_File", ".gb", sep = "")
     },
     content = function(file) {
-      progressLength <- length(statefulUids)
+      progLength <- length(statefulUids)
       progress <-
         AsyncProgress$new(
           session,
           min = 0,
-          max = progressLength,
+          max = progLength,
           message = "Downloading",
           value = 0
         )
-      server_functions$fullGenomeDownload(
-        filetype = "gb",
-        uids = statefulUids,
-        filepath = file,
-        progress = progress)
+      future_promise({
+        # entrez_fetch can take a list of uids, instead of iterating
+        # over all uids and sleeping at each one, could provide a list
+        # to get all the files at once. 
+        # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
+        # for details
+        write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="gb"), file)
+        progress$set(value = progLength)
+        progress$close
+      })
     }
   )
 
