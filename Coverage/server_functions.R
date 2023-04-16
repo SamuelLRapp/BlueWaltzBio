@@ -323,44 +323,6 @@ getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqCh
     organismList)
 }
 
-# Downloads the file of filetype for each id
-# in uids and amalgamates them into a single file
-# at filepath. Increments the progress indicator with
-# each file downloaded, closes it when finished. 
-fullGenomeDownload <- function(filetype, uids, filepath, progressIndicator) {
-  future_promise({
-    fileVector <- c()
-    for (uid in uids) {
-      sleep()
-      # entrez_fetch can take a list of uids, instead of iterating
-      # over all uids and sleeping at each one, could provide a list
-      # to get all the files at once. 
-      # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
-      # for details
-      fileVector <- c(fileVector, downloadFileFromNcbi(uid, filetype))
-      
-      # progressIndicator is nullable to allow testing outside
-      # of the current rshiny session
-      if (!is.null(progressIndicator)) {
-        progressIndicator$inc(amount = 1)
-      }
-    }
-    write(fileVector, filepath)
-    if (!is.null(progressIndicator)) {
-      progressIndicator$set(value = length(uids))
-      progressIndicator$close()
-    }
-  })
-}
-
-# helper function to ping the database for the file
-downloadFileFromNcbi <- function(uid, filetype, db="nucleotide") {
-  entrez_fetch(
-    db = db,
-    id = uid,
-    rettype = filetype)
-}
-
 
 # CRUX Tab ---------------------------------------------------------------------
 
