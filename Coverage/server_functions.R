@@ -1,5 +1,6 @@
 import(utils)
 import(shiny)
+import(shinyWidgets)
 import(rentrez)
 import(taxize)
 import(RSQLite)
