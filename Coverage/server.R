@@ -1111,9 +1111,26 @@ shinyServer(function(input, output, session) {
       list(input$NCBIorganismList, input$barcodeList) #Returns as a string
     })
   
+  
+  #we'll only have one progress bar at a time
+  #so we can make it a global variable
+  #this doesn't interfere with the local progress
+  #set by the downloads
+  progress <- NULL
   observeEvent(input$NCBIsearchButton, {
     # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Results")
+    #<<- sets value of global variable
+    #initialize progress bar here
+    progress <<-
+      AsyncProgress$new(
+        session,
+        min = 0,
+        max = 1,
+        message = "Retrieving...",
+        value = 0
+      )
+    js$setLoaderAppearance()
     showTab("NCBIpage", "Results")
   })
   
@@ -1324,15 +1341,7 @@ shinyServer(function(input, output, session) {
       #get species and barcode inputs
       organismList <- .
       organismListLength <- length(organismList)
-      progress <-
-        AsyncProgress$new(
-          session,
-          min = 0,
-          max = organismListLength,
-          message = "Retrieving...",
-          value = 0
-        )
-      js$setLoaderAppearance()
+     
       codeList <- barcodeList()
       codeListLength <- length(barcodeList())
       validate(
@@ -1361,9 +1370,11 @@ shinyServer(function(input, output, session) {
         countResults <- list() 
         searchTerms <- list()   
         
+        organismsDownloaded <- 0
+        progress$set(detail = paste0("0","/",organismListLength))
         for (organism in organismList) {
           progress$set(message = paste0("Retrieving barcodes for ", organism))
-          progress$inc(amount = 0.5)
+          progress$inc(amount = 0.5/organismListLength)
           for (code in codeList) {
             # TODO: Add more sanitization to this
             
@@ -1483,9 +1494,12 @@ shinyServer(function(input, output, session) {
               countResults <- list.append(countResults, searchResult$count)
             }
           }
-          progress$set(message = paste0("Retrieved barcodes for ", organism))
-          progress$inc(amount = 0.5)
+          organismsDownloaded <- organismsDownloaded + 1
+          progress$set(message = paste0("Retrieved barcodes for ", organism),
+                       detail = paste0(organismsDownloaded,"/",organismListLength))
+          progress$inc(amount = 0.5/organismListLength)
         }
+        progress$close()
         results <-
           list(count = countResults,
                ids = uids,

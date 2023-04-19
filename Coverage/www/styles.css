@@ -1,79 +1,37 @@
-
-.info-tooltip {
+#testloader {
   position: relative;
-  display: inline-block;
-  
-  border: 1px solid #888;
-  border-radius: 50%;
-  
-  /* size of the icon */
-  width: 1.5em;
-  height: 1.5em;
-  
-  color: #888;
-  
-  text-align: center;
-  
-  cursor: pointer;
-}
-
-.info-icon {
-  /* icon font size */
-  font-size: 1em;
-  
-  /* make sure the line-height is equal to the height of the parent,
-   * otherwise the question mark won't be centered,
-   * this is so that we don't have to change the display of the parent
-  */
-  line-height: 1.5em; 
-}
-
-.info-tooltip .info-tooltip-text {
-  visibility: hidden;
-  width: 15em;
-  background-color: #fff;
-  color: #333;
-  text-align: center;
-  padding: 5px 0;
-  
-  border: 1px solid #888; 
-  border-radius: 10px;
-  
-  position: absolute;
-  left: 2em;
-  z-index: 1;
-}
-
-.info-tooltip:hover .info-tooltip-text {
-  visibility: visible;
+  /*border: blue solid 2px;*/
 }
 
 /*class to control loader/progress bar container*/
 .custom-loader {
+  transform: translateY(50%) !important;
   position: initial !important; /*!important overrides other CSS*/
   display: block;
   margin: auto;
   /*border: red solid 2px;*/
   padding: 2px;
-  width: 30% !important;
+  width: max(250px, 50%) !important;
 }
 
 /*remove background of AsyncProgress bar*/
 .custom-loader .shiny-notification {
+  border-color: transparent  !important;
   background-color: transparent !important;
 }
 
 /*progress bar background styling*/
 .custom-loader .shiny-progress-notification .progress {
   margin-bottom: 5px;
-  height: 20px;
-  border: red solid 2px;
+  height: 25px;
+  /*border: red solid 2px;*/
   background-color: rgba(129,283,12,70%);
-  border-radius: 10px;
+  border-radius: 12.5px;
 }
 
 /*progress bar styling*/
 .custom-loader .progress-bar {
+  /*this css adapted from RShiny's AsyncProgress css*/
   float: left;
   width: 0%;
   height: 100%;
@@ -91,5 +49,14 @@
 
 /*progress bar close button*/
 .custom-loader .shiny-notification-close {
+  display: none;
+}
+
+/*progress bar text container*/
+.custom-loader .progress-text {
+  color: black;
+}
+
+#testloader + div .load1 .loader {
   display: none;
 }
