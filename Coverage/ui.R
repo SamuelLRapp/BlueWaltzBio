@@ -377,8 +377,13 @@ shinyUI(fluidPage(
                         # Application title
                         titlePanel("Find BOLD database coverage of your organisms of interest"),
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+
                         fluidRow(
-                          column(6, align="center", offset = 3,
+                          column(8, align="center", offset = 2,
+                                 div(
+                                   titlePanel("Find BOLD database coverage of your organisms of interest"),
+                                   style = "padding-bottom: 120px;"
+                                 ),
                                  fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                  actionButton("BOLDStartButton", "Start Your BOLD Search"),
                           )),
