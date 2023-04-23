@@ -374,15 +374,12 @@ shinyUI(fluidPage(
              tabsetPanel(
                id = "BOLDpage",
                tabPanel("Start Your BOLD Search",
-                        # Application title
-                        titlePanel("Find BOLD database coverage of your organisms of interest"),
-                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                        h4("Additional Information:"),
-                        dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
-                        dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
-                        p(), #empty space 
                         fluidRow(
-                          column(6, align="center", offset = 3,
+                          column(8, align="center", offset = 2,
+                                 div(
+                                   titlePanel("Find BOLD database coverage of your organisms of interest"),
+                                   style = "padding-bottom: 120px;"
+                                 ),
                                  fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                  actionButton("BOLDStartButton", "Start Your BOLD Search"),
                           )),
