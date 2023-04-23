@@ -594,49 +594,15 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       uidsGet() %...>% {
-        progLength <- length(.)
-        progress <-
-          AsyncProgress$new(
-            session,
-            min = 0,
-            max = progLength,
-            message = "Downloading",
-            value = 0
-          )
         future_promise({
-          Vector_Fasta <- c()
-          for (uid in .) {
-            err <- 1
-            while (err == 1) {
-              File <-
-                tryCatch({
-                  # Try catch for determining if homonyms exist, if they do fill
-                  # up the errorPopupList and activate the errorHomonym Flag
-                  if (!NCBIKeyFlag) {
-                    # sleeping for 1/3 of a second each time gives us 3 queries 
-                    # a second. If each user queries at this rate, we can 
-                    # service 4-8 at the same time.
-                    Sys.sleep(0.34) 
-                  }
-                  # Get the fasta file with that uid
-                  File_fasta <-
-                    entrez_fetch(db = "nucleotide",
-                                 id = uid,
-                                 rettype = "fasta") 
-                  err <- 0
-                }, error = function(err) {
-                  err <<- 1
-                })
-            }
-            Vector_Fasta <-
-              c(Vector_Fasta, File_fasta) # Append the fasta file to a vector
-            progress$inc(amount = 1)
-          }
+          # Download Fasta files from NCBI
+          Vector_Fasta <-
+            entrez_fetch(db = "nucleotide",
+                         id = .,
+                         rettype = "fasta") 
           # Writes the vector containing all the fasta file information into 
           # one fasta file
           write(Vector_Fasta, file) 
-          progress$set(value = progLength)
-          progress$close()
         })
       }
     }
@@ -653,52 +619,15 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       uidsGet() %...>% {
-        progLength <- length(.)
-        progress <-
-          AsyncProgress$new(
-            session,
-            min = 0,
-            max = progLength,
-            message = "Downloading",
-            value = 0
-          )
         future_promise({
-          Vector_genbank <- c()
-          for (uid in .) {
-            err <- 1
-            while (err == 1) {
-              File <-
-                tryCatch({
-                  # Try catch for determining if homonyms exist, if they do fill
-                  # up the errorPopupList and activate the errorHomonym Flag
-                  if (!NCBIKeyFlag) {
-                    # sleeping for 1/3 of a second each time gives us 3 queries 
-                    # a second. If each user queries at this rate, we can 
-                    # service 4-8 at the same time.
-                    Sys.sleep(0.34) 
-                  }
-                  
-                  # Get the genbank file with that uid
-                  File_genbank <-
-                    entrez_fetch(db = "nucleotide",
-                                 id = uid,
-                                 rettype = "gb")  
-                  err <- 0
-                }, error = function(err) {
-                  err <<- 1
-                })
-            }
-            
-            # Append the genbank file to a vector
-            Vector_genbank <-
-              c(Vector_genbank, File_genbank) 
-            progress$inc(amount = 1)
-          }
+          # Download Genbank files from NCBI
+          Vector_genbank <-
+              entrez_fetch(db = "nucleotide",
+                           id = .,
+                           rettype = "gb")  
           # Writes the vector containing all the genbank file information into
           # one genbank file
           write(Vector_genbank, file, append = TRUE) 
-          progress$set(value = progLength)
-          progress$close()
         })
       }
     }
