@@ -402,29 +402,35 @@ shinyUI(fluidPage(
                tabPanel("Filters",
                         
                         fluidRow(
-                        column(6, align="center", offset = 3, style='padding-top:15px',
-                              div(
-                                style = "padding-bottom: 120px;",
+                        column(6, align="center", offset = 3,
+                              conditionalPanel(condition = "output.selectCountry",
+                                               titlePanel("Country Filter"),
                               ),
                               uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
-                              conditionalPanel(condition = "output.selectCountry",
-                                               actionButton('BOLDfilterCountries',"Filter Countries"),
-                                               actionButton('BOLDSkipFilter',"Skip Filter"),
-                              )
                         ),
-                        column(2, align="left", style='padding-top:40px',
+                        column(2, align="left", style='padding-top:110px',
                                conditionalPanel(condition = "output.selectCountry",
-                                                actionButton('BOLDClearFilter',"Clear Filter")
+                                                actionButton('BOLDClearFilter',"Remove Countries From Filter")
                                )),
-
                         column(12, align="center", style='padding-top:15px', 
                                # add ncbi option remove genome
                                conditionalPanel(condition = "output.selectCountry", 
-                               ccheckboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500))
+                                                titlePanel("NCBI Entries Filter"),
+                                                p("If the box is checked all entries also found in NCBI will be removed."), 
+                                                p("If left unchecked then the NCBI entry removal filter won't applied "),
+                                                checkboxInput("removeNCBI", label = "Please Check the box to the left to remove all NCBI entries", value = FALSE, width = 500))
                         ),  
-                        column(12, align="center", style='padding-top:15px', 
-                               span(textOutput("BOLDNullSpeciesWarning"), style="color:orange"),
-                               textOutput("BOLDNullSpecies") 
+                        column(6, align="center", offset = 3, style='padding-top:15px',
+                               conditionalPanel(condition = "output.selectCountry",
+                                                actionButton('BOLDfilterCountries',"Apply Filters"),
+                                                actionButton('BOLDSkipFilter',"Skip Filters"),
+                               )
+                        ),
+                        column(4, align="center", offset=4,style='padding-top:15px', 
+                               conditionalPanel(condition = "output.selectCountry", 
+                                                titlePanel("Missing Species"),
+                                                p("List of species that were not foud when searching the BOLD databse."), 
+                                                DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")),
                                )
                     ),
                         
