@@ -108,34 +108,13 @@ shinyServer(function(input, output, session) {
         api_key = input$NCBIKey)
       shinyalert("Your API key has been accepted", type = "success")
       set_entrez_key(input$NCBIKey)
+      server_functions$setNcbiKeyIsValid(true)
     }, error = function(err) {
       shinyalert("Your API key has been rejected, 
                  please make sure it is correct",
                  type = "warning")
+      server_functions$setNcbiKeyIsValid(true)
     })
-  })
- 
-  NCBIKeyFlag <- FALSE
-  observeEvent(input$SetKey, {
-    #When NCBIKey is inputed
-    key <- 0
-    NCBI_names <- tryCatch({
-      searchResult <-
-        entrez_search(db = "nucleotide",
-                      term = "Gallus Gallus",
-                      api_key = input$NCBIKey)
-    }, error = function(err) {
-      shinyalert("Your API key has been rejected, please make sure it is correct",
-                 type = "warning")
-      key <<- 1
-    })
-    if (key == 0) {
-      set_entrez_key(input$NCBIKey)
-      Sys.setenv(ENTREZ_KEY = input$NCBIKey)
-      shinyalert("Your API key has been accepted", type = "success")
-      NCBIKeyFlag <- TRUE
-    }
-    server_functions$setNcbiKeyIsValid(NCBIKeyFlag)
   })
   
 # Full Genome ----------------------------------------------------------------
@@ -1185,7 +1164,7 @@ shinyServer(function(input, output, session) {
     output$selectCountry <- renderUI({
       boldCoverage() %...>% {
         coverage <- .
-        selectizeInput(inputId="selectCountry", label="Filter by Countries", choices=coverage$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
+        selectizeInput(inputId="selectCountry", label=HTML("Filter by Countries <br> (Please click on the dropdown below to view all the possible countries)"), choices=coverage$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
       }
     })
 
