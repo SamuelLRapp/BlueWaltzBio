@@ -47,7 +47,7 @@ sleep <- function() {
 # before calling this function.
 ncbiKeyIsValid <- FALSE
 setNcbiKeyIsValid <- function(validity = TRUE) {
-  ncbiKeyIsValid <<- validity
+  ncbiKeyIsValid <- validity
 }
 
 # Used for both crux and NCBI tabs
