@@ -375,7 +375,6 @@ shinyUI(fluidPage(
                id = "BOLDpage",
                tabPanel("Start Your BOLD Search",
                         # Application title
-                        titlePanel("Find BOLD database coverage of your organisms of interest"),
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
 
                         fluidRow(
@@ -400,30 +399,34 @@ shinyUI(fluidPage(
                                  actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                           )),
                ),
-               tabPanel("Filter By Country",
+               tabPanel("Filters",
                         
                         fluidRow(
                         column(6, align="center", offset = 3, style='padding-top:15px',
+                              div(
+                                style = "padding-bottom: 120px;",
+                              ),
                               uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
                               conditionalPanel(condition = "output.selectCountry",
                                                actionButton('BOLDfilterCountries',"Filter Countries"),
                                                actionButton('BOLDSkipFilter',"Skip Filter"),
-                                               #selectInput(inputId="geo", label="Filter by Countries", choices=c("China", "India"), multiple = TRUE, width = 500),
-                                               #selectizeInput(inputId="selectCountry", label="Filter by Countries", choices="", selected = NULL, multiple = TRUE,options = NULL, width = 500),
-                                               #actionButton('BOLDfilterCountries',"Filter Countries"),
                               )
                         ),
                         column(2, align="left", style='padding-top:40px',
                                conditionalPanel(condition = "output.selectCountry",
                                                 actionButton('BOLDClearFilter',"Clear Filter")
                                )),
-                        
-                        
+
+                        column(12, align="center", style='padding-top:15px', 
+                               # add ncbi option remove genome
+                               conditionalPanel(condition = "output.selectCountry", 
+                               ccheckboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500))
+                        ),  
                         column(12, align="center", style='padding-top:15px', 
                                span(textOutput("BOLDNullSpeciesWarning"), style="color:orange"),
                                textOutput("BOLDNullSpecies") 
                                )
-                        ),
+                    ),
                         
                ),
                tabPanel("Results",
@@ -444,8 +447,6 @@ shinyUI(fluidPage(
                                  DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                  
                                  conditionalPanel(condition = "output.BOLDcoverageResults",
-                                                   # add ncbi option remove genome
-                                                   checkboxInput("removeNCBI", label = "Remove NCBI genomes", value = FALSE, width = 500),
                                                    #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                                    downloadButton('downloadBoldFasta',"Download Fasta"),
                                                    downloadButton('downloadBoldSummary', "Download Summary"),
