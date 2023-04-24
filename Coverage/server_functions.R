@@ -55,6 +55,7 @@ summary_report_dataframe <- function(dataframe)
 {
   class(dataframe)
   class(dataframe[, 1])
+  print(dataframe)
   options(scipen = 999) #scientific notion
   new_row_names <- "total"
   # doesn't include column with taxa snames
@@ -63,11 +64,11 @@ summary_report_dataframe <- function(dataframe)
   statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
   new_col_names <-
     c(
-      "category",
-      "number of sequences found",
-      "percent of total sequences found",
-      "num of organism with at least one sequence",
-      "num of organisms with no sequences"
+      "Category",
+      "Number of Sequences Found",
+      "Percent of Total Sequences Found",
+      "Number of Organism with at Least one Sequence",
+      "Number of Organisms with no Sequences"
     )
   colnames(statistics_df) <- new_col_names
   #get list of columns + a column called "total"
@@ -94,7 +95,7 @@ summary_report_dataframe <- function(dataframe)
     if(Total_seq_found == 0){
       statistics_df[i, 3] <- 0
     } else {
-      statistics_df[i, 3] <- ((barcodeSums[x] / Total_seq_found) * 100)
+      statistics_df[i, 3] <- round(((barcodeSums[x] / Total_seq_found) * 100), digits=2)
     }
   }
   

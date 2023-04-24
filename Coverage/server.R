@@ -844,7 +844,6 @@ shinyServer(function(input, output, session) {
       BoldMatrix() %...>% {
         matrix <- .
         dataframe <- bold_functions$barcode_summary(matrix)
-        print(dataframe)
         server_functions$summary_report_dataframe(dataframe)
       }
     }
