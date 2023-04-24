@@ -454,8 +454,8 @@ shinyUI(fluidPage(
                                  
                                  conditionalPanel(condition = "output.BOLDcoverageResults",
                                                    #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
-                                                   downloadButton('downloadBoldFasta',"Download Fasta"),
-                                                   downloadButton('downloadBoldSummary', "Download Summary"),
+                                                   downloadButton('downloadBoldFasta',"Download Fasta Files"),
+                                                   downloadButton('downloadBoldSummary', "Download Summary Data Table"),
                           )),
                         
                ),
