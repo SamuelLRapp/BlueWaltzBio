@@ -187,3 +187,12 @@ reduce_barcode_summary <- function(b_summary) {
     # print(summary)
     summary
 }
+
+missingSpecies <- function(missingList) {
+  print(missingList)
+  df <- as.data.frame(missingList)
+  print(df)
+  colnames(df) <- c("Missing Species")
+  df
+}
+

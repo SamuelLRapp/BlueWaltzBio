@@ -39,7 +39,7 @@ shinyServer(function(input, output, session) {
   hideTab("BOLDpage", "Organism Names")
   hideTab("BOLDpage", "Plot Unique Species Per Country")
   hideTab("BOLDpage", "Plot Total Sequences Per Country")
-  hideTab("BOLDpage", "Filter By Country")
+  hideTab("BOLDpage", "Filters")
   hideTab("BOLDpage", "Country Data")
   hideTab("CRUXpage", "Results")
   hideTab("CRUXpage", "Organism Names")
@@ -490,14 +490,14 @@ shinyServer(function(input, output, session) {
         updateTextAreaInput(
           getDefaultReactiveDomain(),
           "barcodeList",
-          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != ""]), 
+          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != "" && !is.na(uploadinfo$Barcodes)]),
                     input$barcodeList)
         )
       }
       else {
         updateTextAreaInput(getDefaultReactiveDomain(),
                             "barcodeList",
-                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != ""])
+                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != "" && !is.na(uploadinfo$Barcodes)])
       }
     })
   })
@@ -860,8 +860,8 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$BOLDsearchButton, {
-      updateTabsetPanel(session, "BOLDpage", selected = "Filter By Country")
-      showTab("BOLDpage", "Filter By Country")
+      updateTabsetPanel(session, "BOLDpage", selected = "Filters")
+      showTab("BOLDpage", "Filters")
       shinyjs::hide(id = "BOLDClearFilter")
       shinyjs::hide(id = "BOLDfilterCountries")
       shinyjs::hide(id = "BOLDSkipFilter")
@@ -876,7 +876,7 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Plot Unique Species Per Country")
       showTab("BOLDpage", "Plot Total Sequences Per Country")
       showTab("BOLDpage", "Country Data")
-      updateSelectizeInput(inputId="selectCountry", label="Filter by Countries", choices=boldCoverage()$countries, selected = boldCoverage()$countries,options = NULL)
+      updateSelectizeInput(inputId="selectCountry", choices=boldCoverage()$countries, selected = boldCoverage()$countries,options = NULL)
       click("BOLDfilterCountries")
     })
     
@@ -923,7 +923,7 @@ shinyServer(function(input, output, session) {
           )
           
           #puts variable in global scope
-          unfound_species <<- c()
+          unfound_species <- c()
           
           results <- data.frame(matrix(ncol=0, nrow=0))
           bold_failed <- 0
@@ -945,12 +945,12 @@ shinyServer(function(input, output, session) {
                 if (!is.na(records_bold$species_name)) {
                   countries <- c(countries, records_bold$country)
                   results <- rbind(results, records_bold)
-                } else {
-                  unfound_species <<- c(unfound_species, organism)
                 }
+              } else {
+                  unfound_species <- c(unfound_species, organism)
               }
             }
-            results <- list(results=results, countries=countries)
+            results <- list(results=results, countries=countries, "Missing Species"=as.data.frame(unfound_species))
           }) %...>% {
             if(bold_failed == 1){
               print("BOLD is down")
@@ -962,6 +962,7 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "BOLDNullSpecies")
             shinyjs::show(id = "BOLDNullSpeciesWarning")
             returnMatrix <- . #return data matrix
+            print(returnMatrix)
             returnMatrix
           }
         }
@@ -1152,9 +1153,12 @@ shinyServer(function(input, output, session) {
         summary_report(2))
   
     output$BOLDNullSpecies <-
-      renderText({
-        unfound_species
+      DT::renderDataTable(
+        boldCoverage() %...>% {
+          df <- .
+          bold_functions$missingSpecies(df["Missing Species"])
         })
+    
     
     output$BOLDNullSpeciesWarning <-
       renderText({
@@ -1164,7 +1168,7 @@ shinyServer(function(input, output, session) {
     output$selectCountry <- renderUI({
       boldCoverage() %...>% {
         coverage <- .
-        selectizeInput(inputId="selectCountry", label=HTML("Filter by Countries <br> (Please click on the dropdown below to view all the possible countries)"), choices=coverage$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
+        selectizeInput(inputId="selectCountry", label=HTML("Select Country(s) You Wish to Filter By <br> (Please click on the dropdown below to view all the possible countries)"), choices=coverage$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
       }
     })
 
