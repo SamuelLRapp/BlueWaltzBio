@@ -920,7 +920,6 @@ shinyServer(function(input, output, session) {
             countries <- c()
             for(organism in organismList){
               searchResult <- tryCatch({
-                stop()
                 records_bold <- bold_seqspec(taxon = organism)
                 searchResult <- 1
               }, error = function(err) {
