@@ -61,12 +61,6 @@ shinyServer(function(input, output, session) {
   # search.
   statefulUids <- NULL
   
-  # df to hold the matrix returned from the most 
-  # recent search -- reactive functions removed.
-  # May make more sense as a reactive function, depending
-  # on 
-  resultsMatrix <- NULL
-  
   # * Download tests start------------------------------------------------------
   observeEvent(input$dwntest, {
     #run JS portion of test (ui interactions)
@@ -182,8 +176,8 @@ shinyServer(function(input, output, session) {
   # into the output data table.
   output$genomeResults <- DT::renderDataTable({
     then(fullGenomeSearch(), function(searchResults){
-      resultsMatrix <<- searchResults[[1]]
-      statefulUids <<- c(resultsMatrix[[2]])
+      resultsMatrix <- searchResults[[1]]
+      statefulUids <- c(resultsMatrix[[2]])
       genomeList <- searchResults[[2]]
       DT::datatable(
         resultsMatrix[[1]],
@@ -207,25 +201,29 @@ shinyServer(function(input, output, session) {
       paste("Full_Genome_Fasta_File", ".fasta", sep = "")
     },
     content = function(file) {
-      progLength <- length(statefulUids)
-      progress <-
-        AsyncProgress$new(
-          session,
-          min = 0,
-          max = progLength,
-          message = "Downloading",
-          value = 0
-        )
-      future_promise({
-        # entrez_fetch can take a list of uids, instead of iterating
-        # over all uids and sleeping at each one, could provide a list
-        # to get all the files at once. 
-        # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
-        # for details
-        write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="fasta"), file)
-        progress$set(value = progLength)
-        progress$close
-      })
+      fullGenomeSearch() %...>% {
+        resultsMatrix <- .[[1]]
+        statefulUids <- c(resultsMatrix[[2]])
+        progLength <- length(statefulUids)
+        progress <-
+          AsyncProgress$new(
+            session,
+            min = 0,
+            max = progLength,
+            message = "Downloading",
+            value = 0
+          )
+        future_promise({
+          # entrez_fetch can take a list of uids, instead of iterating
+          # over all uids and sleeping at each one, could provide a list
+          # to get all the files at once. 
+          # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
+          # for details
+          write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="fasta"), file)
+          progress$set(value = progLength)
+          progress$close
+        })
+      }
     }
   )
   
@@ -266,8 +264,10 @@ shinyServer(function(input, output, session) {
       paste("Full_Genome_Table", ".csv", sep = "")
     },
     content = function(file) {
-      write.csv(resultsMatrix[[1]], file) 
+      fullGenomeSearch() %...>% {
+        write.csv(.[[1]], file)
       }
+    }
   )
 
 # CRUX ----------------------------------------------------------------------
