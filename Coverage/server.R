@@ -399,34 +399,26 @@ shinyServer(function(input, output, session) {
   })
   
   # NCBI -----------------------------------------------------------------------
-
-  # removing reactive elements, need barcodes to be accessible
-  barcodeList_ <- NULL
   
   ncbiResultsDataframe <- NULL
   
   # * NCBISearchButton ---------------------------------------------------------
   ncbiSearch <- eventReactive(input$NCBIsearchButton, {
-    barcodeList_ <<- input$barcodeList
-    #TODO: Move these 2 lines into a single function with splitBarcode() in server_functions.R
-    barcodeList_ <<- strsplit(barcodeList_[[1]], ",")
-    barcodeList_ <<- barcodeList_[[1]]
-    barcodeList_ <<- trimws(barcodeList_, "b")
-    barcodeList  <<- unique(barcodeList_[barcodeList_ != ""])
+    barcodeList <- barcodeList()
     organismList <- input$NCBIorganismList
     searchOptionGene <- input$NCBISearchOptionGene
     searchOptionOrgn <- input$NCBISearchOptionOrgn
     downloadNumber <- input$downloadNum
     seqLengthOption <- input$seqLengthOption
     ncbiTaxizeOption <- input$NCBItaxizeOption
-    seq_len_list <- server_functions$getSeqLenList(barcodeList_, input)
+    seq_len_list <- server_functions$getSeqLenList(barcodeList, input)
     future_promise({
       uids <- list()
       searchTerms <- list()
       countResults <- list()
       organismList <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
       for (organism in organismList) {
-        for (code in barcodeList_) {
+        for (code in barcodeList) {
           searchTerm <- server_functions$getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
           searchResult <- server_functions$getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
           uids <- list.append(uids, searchResult[[1]])
@@ -438,7 +430,7 @@ shinyServer(function(input, output, session) {
     })
   })
   
-  
+  # * NCBI pipeline step display handlers --------------------------------------
   observeEvent(input$NCBIsearchButton, {
     # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Results")
@@ -758,9 +750,9 @@ shinyServer(function(input, output, session) {
   
   output$NCBIcoverageResults <- DT::renderDataTable({
     then(ncbiSearch(), function(searchResults) {
-      data_df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList_))
+      data_df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
       rows <- searchResults[[4]]
-      barcodes <- barcodeList_
+      barcodes <- barcodeList()
       DT::datatable(
         data_df,
         rownames = rows,
@@ -785,10 +777,10 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Table", ".csv", sep = "")
     },
     content = function(file) {
-      columns <- barcodeList_
+      columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList_))
+        df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
         colnames(df) <- columns
         rownames(df) <- rows
         write.csv(df, file)
@@ -805,10 +797,10 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Search_Statements", ".csv", sep = "")
     },
     content = function(file) {
-      columns <- barcodeList_
+      columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList_))
+        df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList()))
         colnames(df) <- columns
         rownames(df) <- rows
         write.csv(df, file)
@@ -821,10 +813,10 @@ shinyServer(function(input, output, session) {
   
   summary_report <- function(databaseFlag) {
     if (databaseFlag == 1) {
-      columns <- barcodeList_
+      columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList_))
+        df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
         colnames(df) <- columns
         rownames(df) <- rows
         server_functions$summary_report_dataframe(df)
