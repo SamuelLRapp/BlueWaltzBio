@@ -913,17 +913,19 @@ shinyServer(function(input, output, session) {
           
           #puts variable in global scope
           unfound_species <- c()
-          
+          searchResult <- 0
           results <- data.frame(matrix(ncol=0, nrow=0))
-          bold_failed <- 0
           future_promise({
+            records_bold <- NA
             countries <- c()
             for(organism in organismList){
               searchResult <- tryCatch({
+                stop()
                 records_bold <- bold_seqspec(taxon = organism)
+                searchResult <- 1
               }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
-                bold_failed <- 1
+                error <- 1
               })
               if (!is.na(records_bold)){
                 for (i in 1:nrow(records_bold)) {
@@ -941,7 +943,7 @@ shinyServer(function(input, output, session) {
             }
             results <- list(results=results, countries=countries, "Missing Species"=as.data.frame(unfound_species))
           }) %...>% {
-            if(bold_failed == 1){
+            if(searchResult == 1){
               print("BOLD is down")
               # POP UP TELLING USER THAT BOLD IS DOWN
             }
