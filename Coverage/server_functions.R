@@ -289,16 +289,19 @@ getNcbiSearchResults <-
           for (id in genome_result$ids) {
             uids <- c(uids, id) 
           }
+          searchResult <- 0
         }, error = function(err) {
-          Results[i, 1] <<- "Error"
-          Results[i, 2] <<- "Error"
+            error <- 1
         })
+        if (searchResult == 1) {
+          Results[i, 1] <- "Error"
+          Results[i, 2] <- "Error"
+        }
       }
-
-
     }
     list(Results, uids)
   }
+
 
 # Takes dbOption, the selection from the dropdown menu
 # "choose which genome to search for;" orgList, the raw
