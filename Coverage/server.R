@@ -56,11 +56,6 @@ shinyServer(function(input, output, session) {
   # are found in the homonym check.
   maxHomonyms <- 5L
   
-  # Removed reactive functions, so use a
-  # vector to hold the uids from the most recent
-  # search.
-  statefulUids <- NULL
-  
   # * Download tests start------------------------------------------------------
   observeEvent(input$dwntest, {
     #run JS portion of test (ui interactions)
@@ -221,7 +216,7 @@ shinyServer(function(input, output, session) {
           # for details
           write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="fasta"), file)
           progress$set(value = progLength)
-          progress$close
+          progress$close()
         })
       }
     }
@@ -234,25 +229,30 @@ shinyServer(function(input, output, session) {
       paste("Full_Genome_Genbank_File", ".gb", sep = "")
     },
     content = function(file) {
-      progLength <- length(statefulUids)
-      progress <-
-        AsyncProgress$new(
-          session,
-          min = 0,
-          max = progLength,
-          message = "Downloading",
-          value = 0
-        )
-      future_promise({
-        # entrez_fetch can take a list of uids, instead of iterating
-        # over all uids and sleeping at each one, could provide a list
-        # to get all the files at once. 
-        # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
-        # for details
-        write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="gb"), file)
-        progress$set(value = progLength)
-        progress$close
-      })
+      fullGenomeSearch() %...>% {
+        resultsMatrix <- .[[1]]
+        statefulUids <- c(resultsMatrix[[2]])
+        progLength <- length(statefulUids)
+        progLength <- length(statefulUids)
+        progress <-
+          AsyncProgress$new(
+            session,
+            min = 0,
+            max = progLength,
+            message = "Downloading",
+            value = 0
+          )
+        future_promise({
+          # entrez_fetch can take a list of uids, instead of iterating
+          # over all uids and sleeping at each one, could provide a list
+          # to get all the files at once. 
+          # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
+          # for details
+          write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="gb"), file)
+          progress$set(value = progLength)
+          progress$close()
+        })
+      }
     }
   )
 
