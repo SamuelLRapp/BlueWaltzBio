@@ -400,8 +400,6 @@ shinyServer(function(input, output, session) {
   
   # NCBI -----------------------------------------------------------------------
   
-  ncbiResultsDataframe <- NULL
-  
   # * NCBISearchButton ---------------------------------------------------------
   ncbiSearch <- eventReactive(input$NCBIsearchButton, {
     barcodeList <- barcodeList()
@@ -426,7 +424,7 @@ shinyServer(function(input, output, session) {
           searchTerms <- list.append(searchTerms, searchTerm) 
         }
       }
-      ncbiResultsDataframe <<- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
+      list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
     })
   })
   
