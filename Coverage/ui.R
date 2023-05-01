@@ -220,7 +220,7 @@ shinyUI(fluidPage(
                    fluidRow(
                      column(6, align="center", offset = 3,
                             fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
-                            actionButton(inputId = "StartNCBIButton", label = "Start Your NCBI Search"),
+                            actionButton(inputId = "StartNCBIButton", label = "Manually enter & adjust Organism name inputs"),
                      )),
                    
           ),
@@ -233,7 +233,7 @@ shinyUI(fluidPage(
                             textAreaInput(inputId = "NCBIorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
                             checkboxInput(inputId = "NCBItaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
                             checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE, width = 500),
-                            actionButton(inputId = "BarcodesNext", label = "Barcodes of Interest", width = 150),
+                            actionButton(inputId = "BarcodesNext", label = "Manually enter & adjust barcodes of interest inputs"),
                      )),
           ),
           tabPanel("Barcodes of Interest",
