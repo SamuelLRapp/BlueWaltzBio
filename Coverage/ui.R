@@ -131,7 +131,7 @@ shinyUI(fluidPage(
                         fluidRow(
                           column(6, align="center", offset = 3,
                                  titlePanel("Organism Names"),
-                                 textAreaInput(inputId = "CRUXorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                                 textAreaInput(inputId = "CRUXorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
                                  checkboxInput(inputId = "CRUXtaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
                                  actionButton("searchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                  tags$div(id = 'CRUXtaxizeOption', style ='font-size:120%'),
@@ -230,7 +230,7 @@ shinyUI(fluidPage(
                    fluidRow(
                      column(6, align="center", offset = 3,
                             titlePanel("Organism Names"),
-                            textAreaInput(inputId = "NCBIorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                            textAreaInput(inputId = "NCBIorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
                             checkboxInput(inputId = "NCBItaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
                             checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE, width = 500),
                             actionButton(inputId = "BarcodesNext", label = "Barcodes of Interest", width = 150),
@@ -335,7 +335,7 @@ shinyUI(fluidPage(
                         fluidRow(
                           column(6, align="center", offset = 3,
                                  titlePanel("Organism Names"),
-                                 textAreaInput(inputId = "genomeOrganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                                 textAreaInput(inputId = "genomeOrganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
                                  checkboxInput(inputId = "refSeq", label = "Search for reference sequences", value = TRUE),
                                  checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE),
                                  actionButton("genomeSearchButton", "Search"),
@@ -394,7 +394,7 @@ shinyUI(fluidPage(
                         fluidRow(
                           column(6, align="center", offset = 3,
                                  titlePanel("Organism Names"),
-                                 textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply", width = 500, height = 200),
+                                 textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
                                  checkboxInput(inputId = "BOLDtaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
                                  actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                           )),
