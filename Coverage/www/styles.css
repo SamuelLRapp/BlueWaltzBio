@@ -1,6 +1,6 @@
+/*css in this file adapted from RShiny's AsyncProgress css*/
 #testloader {
   position: relative;
-  /*border: blue solid 2px;*/
 }
 
 /*class to control loader/progress bar container*/
@@ -9,7 +9,6 @@
   position: initial !important; /*!important overrides other CSS*/
   display: block;
   margin: auto;
-  /*border: red solid 2px;*/
   padding: 2px;
   width: max(250px, 50%) !important;
 }
@@ -31,7 +30,6 @@
 
 /*progress bar styling*/
 .custom-loader .progress-bar {
-  /*this css adapted from RShiny's AsyncProgress css*/
   float: left;
   width: 0%;
   height: 100%;
@@ -55,6 +53,12 @@
 /*progress bar text container*/
 .custom-loader .progress-text {
   color: black;
+}
+
+.custom-loader .progress-detail {
+  margin-left: 5px;
+  /*increase fontsize*/
+  font-size: 12px !important;
 }
 
 #testloader + div .load1 .loader {
