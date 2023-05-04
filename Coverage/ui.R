@@ -381,7 +381,7 @@ shinyUI(fluidPage(
                           column(8, align="center", offset = 2,
                                  div(
                                    titlePanel("Find BOLD database coverage of your organisms of interest"),
-                                   style = "padding-bottom: 120px;"
+                                   style = "padding-top: 20px; padding-bottom: 80px;"
                                  ),
                                  fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                  actionButton("BOLDStartButton", "Start Your BOLD Search"),
@@ -393,45 +393,79 @@ shinyUI(fluidPage(
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         fluidRow(
                           column(6, align="center", offset = 3,
-                                 titlePanel("Organism Names"),
+                                  div(
+                                    titlePanel("Organism Names"),
+                                    style = "padding-top: 20px; padding-bottom: 10px;"
+                                  ),
                                  textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
-                                 checkboxInput(inputId = "BOLDtaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
+                                 checkboxInput(inputId = "BOLDtaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 600),
                                  actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                           )),
                ),
                tabPanel("Filters",
                         
                         fluidRow(
-                        column(6, align="center", offset = 3,
+                          # Padding at the top so it doesn't clash with tabs
+                          div(
+                            style = "padding-bottom: 20px;"
+                          ),
+                          # First column set with the dropdown country filter
+                          column(6, align="center", offset = 3,
+                            div(
+                              style = "padding: 2px; background-color: lightgray; width: 100%; border-radius: 10px; border: 2px solid black;",
                               conditionalPanel(condition = "output.selectCountry",
-                                               titlePanel("Country Filter"),
+                                titlePanel("Country Filter"),
                               ),
                               uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
-                        ),
-                        column(2, align="left", style='padding-top:110px',
-                               conditionalPanel(condition = "output.selectCountry",
-                                                actionButton('BOLDClearFilter',"Remove Countries From Filter")
-                               )),
-                        column(12, align="center", style='padding-top:15px', 
-                               # add ncbi option remove genome
-                               conditionalPanel(condition = "output.selectCountry", 
-                                                titlePanel("NCBI Entries Filter"),
-                                                p("If the box is checked all entries also found in NCBI will be removed."), 
-                                                p("If left unchecked then the NCBI entry removal filter won't applied "),
-                                                checkboxInput("removeNCBI", label = "Please Check the box to the left to remove all NCBI entries", value = FALSE, width = 500))
-                        ),  
-                        column(6, align="center", offset = 3, style='padding-top:15px',
-                               conditionalPanel(condition = "output.selectCountry",
-                                                actionButton('BOLDfilterCountries',"Apply Filters"),
-                                                actionButton('BOLDSkipFilter',"Skip Filters"),
-                               )
-                        ),
-                        column(4, align="center", offset=4,style='padding-top:15px', 
-                               conditionalPanel(condition = "output.selectCountry", 
-                                                titlePanel("Missing Species"),
-                                                p("List of species that were not foud when searching the BOLD databse."), 
-                                                DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")),
-                               )
+                              conditionalPanel(condition = "output.selectCountry",
+                                # tags$style(".buttonClass button { transform: scale(1.1); transform-origin: center top; justify-content: center;}"),
+                                div(
+                                  actionButton('BOLDClearFilter',"Remove Countries From Filter"),
+                                ),
+                              ),
+                            ),
+                          )),
+
+                        # OLd left aligned  button leaving it here cause it may be useful for future reference
+                        # column(2, align="left", style='padding-top:110px',
+                        #        conditionalPanel(condition = "output.selectCountry",
+                        #                         actionButton('BOLDClearFilter',"Remove Countries From Filter")
+                        #        )),
+                        fluidRow(
+                          div(
+                            style = "padding-bottom: 30px;"
+                          ),
+                          conditionalPanel(condition = "output.selectCountry", 
+                            column(6, align="center", offset = 3,
+                              div(
+                                  style = "background-color: lightgray; width: 100%; padding: 0px; border-radius: 10px; border: 2px solid black;",
+                                  # add ncbi option remove genome
+                                  titlePanel("NCBI Entries Filter"),
+                                  p("If the box is checked all entries also found in NCBI will be removed."), 
+                                  p("If left unchecked then the NCBI entry removal filter won't applied "),
+                                  tags$style(".my-class input[type=checkbox] { transform: scale(1.5); } .my-class label { font-size: 15px; display: flex; align-items: center; }"),                                                
+                                  div(class = "my-class",
+                                      checkboxInput("removeNCBI", label = "Please Check the box to the left to remove all NCBI entries", value = FALSE, width = 450),
+                                  ),
+                                  # checkboxInput("removeNCBI", label = "Please Check the box to the left to remove all NCBI entries", value = FALSE, width = 500))
+                          ))),  
+                          column(6, align="center", offset = 3, style='padding-top:15px',
+                                 conditionalPanel(condition = "output.selectCountry",
+                                                  # tags$style(".buttonClass button { transform: scale(1.2); margin-right: 60px;}"),
+                                                  div(#class = "buttonClass",
+                                                      actionButton('BOLDfilterCountries',"Apply Filters"),
+                                                      actionButton('BOLDSkipFilter',"Skip Filters"),
+                                                  ),
+                                                  
+
+                                 ),
+                          ),
+                          column(4, align="center", offset=4,style='padding-top:15px', 
+                                 conditionalPanel(condition = "output.selectCountry", 
+                                                  titlePanel("Missing Species"),
+                                                  p("List of species that were not foud when searching the BOLD databse."), 
+                                                  DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")),
+                                 )
                     ),
                         
                ),
