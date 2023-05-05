@@ -440,8 +440,16 @@ shinyServer(function(input, output, session) {
   # * NCBI pipeline step display handlers --------------------------------------
   observeEvent(input$NCBIsearchButton, {
     # Start NCBI search button
+    updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
+    showTab("NCBIpage", "Results")
+    showTab("NCBIpage", "Summary Results")
+  })
+  
+  observeEvent(input$NCBIdetailsButton, {
+    # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Results")
     showTab("NCBIpage", "Results")
+    showTab("NCBIpage", "Summary Results")
   })
   
   observeEvent(input$NCBIStartOver, {

@@ -257,6 +257,19 @@ shinyUI(fluidPage(
                             actionButton("NCBIsearchButton", "Search"),
                      )),
           ),
+          tabPanel("Summary Results",
+                   # Application title
+                   # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                   # Show a plot of the generated distribution
+                   fluidRow(
+                     column(12, align="center", style='padding-top:15px',
+                            DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
+                            conditionalPanel( condition = "output.NCBISummaryResults",
+                                              downloadButton("NCBIfileDownloadSD","Download summary data"),
+                                              actionButton("NCBIdetailsButton", "See More Detailed Results"),
+                                              actionButton("NCBIStartOver", "Start the Search again"))
+                     )),
+          ),
           tabPanel("Results",
                    # Application title
                    # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
@@ -269,21 +282,9 @@ shinyUI(fluidPage(
                                               downloadButton('download',"Download counts table"),
                                               downloadButton("fileDownloadF","Download FASTA files"),
                                               downloadButton("fileDownloadG","Download Genbank files"),
-                                              actionButton("NCBISummaryDataButton", "Check Summary Data"))
-                     )),
-                   
-          ),
-          tabPanel("Summary Results",
-                   # Application title
-                   # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                   # Show a plot of the generated distribution
-                   fluidRow(
-                     column(12, align="center", style='padding-top:15px',
-                            DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
-                            conditionalPanel( condition = "output.NCBISummaryResults",
-                                              downloadButton("NCBIfileDownloadSD","Download summary data"),
                                               actionButton("NCBIStartOver", "Start the Search again"))
                      )),
+                   
           ),
           tabPanel("Information", 
             titlePanel("Find NCBI records of your organisms and barcodes of interest"),
