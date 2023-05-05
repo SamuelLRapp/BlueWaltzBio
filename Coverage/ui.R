@@ -140,6 +140,19 @@ shinyUI(fluidPage(
                                  #tags$style(type='text/css', "#searchButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
                           )),
                ),
+               tabPanel("Summary Results",
+                        # Application title
+                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
+                        # Show a plot of the generated distribution
+                        fluidRow(
+                          column(12, align="center", style='padding-top:15px',
+                                 DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
+                                 conditionalPanel( condition = "output.CRUXSummaryResults",
+                                                   downloadButton("CRUXfileDownloadSD","Download summary data"),
+                                                   actionButton("detailsButton", "See More Detailed Results"))
+                          )),
+                        
+               ),
                tabPanel("Results",
                         # Application title
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
@@ -148,22 +161,9 @@ shinyUI(fluidPage(
                           column(12, align="center", style='padding-top:15px',
                                  DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                  conditionalPanel( condition = "output.CRUXcoverageResults",
-                                 downloadButton('downloadCrux',"Download table"),
-                                 actionButton("SummaryDataButton", "Check Summary Data"))
+                                 downloadButton('downloadCrux',"Download table"))
                           )),
                         
-               ),
-               tabPanel("Summary Results",
-                        # Application title
-                        # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                        # Show a plot of the generated distribution
-                        fluidRow(
-                          column(12, align="center", style='padding-top:15px',
-                          DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
-                          conditionalPanel( condition = "output.CRUXSummaryResults",
-                          downloadButton("CRUXfileDownloadSD","Download summary data"))
-                        )),
-
                ),
                tabPanel("Information",
                         # Application title
