@@ -35,19 +35,29 @@ bold_functions <- modules::use("bold_functions.R")
 
 plan(multisession)
 shinyServer(function(input, output, session) {
+  
+  # Hiding BOLD Page tabs
   hideTab("BOLDpage", "Results")
   hideTab("BOLDpage", "Organism Names")
   hideTab("BOLDpage", "Plot Unique Species Per Country")
   hideTab("BOLDpage", "Plot Total Sequences Per Country")
   hideTab("BOLDpage", "Filters")
+  hideTab("BOLDpage", "Coverage Matrix")
+  hideTab("BOLDpage", "Summary Data")
   hideTab("BOLDpage", "Country Data")
+  
+  # Hiding CRUXpage
   hideTab("CRUXpage", "Results")
   hideTab("CRUXpage", "Organism Names")
   hideTab("CRUXpage", "Summary Results")
+  
+  # Hiding NCBI
   hideTab("NCBIpage", "Organism Names")
   hideTab("NCBIpage", "Barcodes of Interest")
   hideTab("NCBIpage", "Results")
   hideTab("NCBIpage", "Summary Results")
+  
+  # Hiding Full Genome Tab 
   hideTab("FullGenomePage", "Results")
   hideTab("FullGenomePage", "Organism Names")
   hideTab("FullGenomePage", "Summary Results")
@@ -860,8 +870,9 @@ shinyServer(function(input, output, session) {
 
     
     observeEvent(input$BOLDSkipFilter, {
-      updateTabsetPanel(session, "BOLDpage", selected = "Results")
-      showTab("BOLDpage", "Results")
+      updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
+      showTab("BOLDpage", "Summary Data")
+      showTab("BOLDpage", "Coverage Matrix")
       showTab("BOLDpage", "Plot Unique Species Per Country")
       showTab("BOLDpage", "Plot Total Sequences Per Country")
       showTab("BOLDpage", "Country Data")
@@ -870,10 +881,11 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$BOLDfilterCountries, {
-      updateTabsetPanel(session, "BOLDpage", selected = "Results")
+      updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
+      showTab("BOLDpage", "Summary Data")
+      showTab("BOLDpage", "Coverage Matrix")
       showTab("BOLDpage", "Plot Unique Species Per Country")
       showTab("BOLDpage", "Plot Total Sequences Per Country")
-      showTab("BOLDpage", "Results")
       showTab("BOLDpage", "Country Data")
     })
     
@@ -940,7 +952,7 @@ shinyServer(function(input, output, session) {
                   unfound_species <- c(unfound_species, organism)
               }
             }
-            results <- list(results=results, countries=countries, "Missing Species"=as.data.frame(unfound_species))
+            results <- list(results=results, countries=countries, "Missing Species"=unfound_species)
           }) %...>% {
             if(searchResult == 1){
               print("BOLD is down")
@@ -999,7 +1011,7 @@ shinyServer(function(input, output, session) {
           countries <- colnames(present_matrix)
           for (i in 1:length(countries)){
             if (countries[i] == ""){
-              countries[i] <- "no country listed"
+              countries[i] <- "No country listed"
             } 
             countries_values[[countries[i]]] <- 0
           }
@@ -1017,7 +1029,7 @@ shinyServer(function(input, output, session) {
           xf <- data.frame(country = countries, values = vals)
           ggplot(data=xf, aes(x = country, y = values)) +
             geom_bar(stat="identity", fill="purple") +
-            labs(y = "# unique species", x = "countries", title = "Number of Unique Species in Selected Countries") +
+            labs(y = "# Unique Species", x = "Countries", title = "Number of Unique Species in Selected Countries") +
             scale_y_continuous(limits = c(0, max_uniq_species)) +
             theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
             coord_flip()

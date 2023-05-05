@@ -363,13 +363,6 @@ shinyUI(fluidPage(
                                     "Full Genome User Guide", target="_blank")
                )),
 
-
-
-
-
-
-
-
     tabPanel("BOLD",
              tabsetPanel(
                id = "BOLDpage",
@@ -456,20 +449,12 @@ shinyUI(fluidPage(
                                                       actionButton('BOLDfilterCountries',"Apply Filters"),
                                                       actionButton('BOLDSkipFilter',"Skip Filters"),
                                                   ),
-                                                  
-
                                  ),
                           ),
-                          column(4, align="center", offset=4,style='padding-top:15px', 
-                                 conditionalPanel(condition = "output.selectCountry", 
-                                                  titlePanel("Missing Species"),
-                                                  p("List of species that were not foud when searching the BOLD databse."), 
-                                                  DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")),
-                                 )
                     ),
                         
                ),
-               tabPanel("Results",
+               tabPanel("Summary Data",
                         # Application title
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         # Show a plot of the generated distribution and the corresponding buttons
@@ -481,18 +466,21 @@ shinyUI(fluidPage(
                                  titlePanel("Summary Data"),
                                  p("For each barcode we display the total number of sequences found and the number of organisms with at least one or no sequence"),
                                  DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
-                                 
-                                 titlePanel("Sequences Found for each Species Classified by Barcode"),
-                                 p("Total number of sequences found for each species classified into the different barcodes found"),
-                                 DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                                 
-                                 conditionalPanel(condition = "output.BOLDcoverageResults",
+                                 conditionalPanel(condition = "output.BOLDSummaryData",
                                                    #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
-                                                   downloadButton('downloadBoldFasta',"Download Fasta Files"),
                                                    downloadButton('downloadBoldSummary', "Download Summary Data Table"),
                           )),
                         
                ),
+             ),
+             tabPanel("Coverage Matrix",
+                      column(12, align="center", style='padding-top:15px',
+                        titlePanel("Sequences Found for each Species Classified by Barcode"),
+                        p("Total number of sequences found for each species classified into the different barcodes found"),
+                        DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                        conditionalPanel(condition = "output.BOLDcoverageResults",
+                                         #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
+                                         downloadButton('downloadBoldFasta',"Download Fasta Files"))),
              ),
              tabPanel("Country Data",
                       # Application title
@@ -510,33 +498,47 @@ shinyUI(fluidPage(
                                p("For those species that have no sequences found in the country(s) filtered we provide 
                                  the top 3 unselected countries with the most sequence results."),
                                DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
-                               titlePanel("Bold UIDs for Entries With Unlabeled Barcodes"),
-                               p("For those entries in BOLD that have unlabeled we provide their respective BOLD UIDs, 
-                                 so that scientist may explore these results further."),
-                               DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1"),
                                ),
                         
                       ),
              ),
              tabPanel("Plot Total Sequences Per Country",
                 fluidRow(
-                  column(10, align="left", style='padding-top:15px',
-                    mainPanel(plotOutput('treemap'))
+                  column(10, align="center", style='padding-top:15px',
+                    mainPanel(plotOutput('treemap')),
+                    # downloadButton('downloadTreeGraph',"Download Graph"),
+                    
                   ),
-                  column(2, align="right", style='padding-top:15px',
+                  column(2, align="center", style='padding-top:15px',
                     downloadButton('downloadTreeGraph',"Download Graph"),
                   ),
                 ),
             ),
             tabPanel("Plot Unique Species Per Country",
               fluidRow(
-                column(10, align="left", style='padding-top:15px',
-                  mainPanel(plotOutput('species'))
-                ),
-                column(2, align="right", style='padding-top:15px', 
+                column(12, align="center", style='padding-top:15px',
+                  mainPanel(plotOutput('species')),
                   downloadButton('downloadBarGraph',"Download Graph"))
-              ),
+                
+                ),
+              #   column(2, align="center", style='padding-top:15px', 
+              #     downloadButton('downloadBarGraph',"Download Graph"))
+              # ),
             ),
+            tabPanel("Manual Data Processing Required",
+                     column(12, align="center", offset=0,style='padding-top:15px', 
+                            conditionalPanel(condition = "output.selectCountry", 
+                                             titlePanel("Bold UIDs for Entries With Unlabeled Barcodes"),
+                                             p("For those entries in BOLD that have unlabeled we provide their respective BOLD UIDs, 
+                                                so that scientist may explore these results further."),
+                                             DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1")),
+                     ),
+                     column(4, align="center", offset=4,style='padding-top:15px', 
+                            conditionalPanel(condition = "output.selectCountry", 
+                                             titlePanel("Missing Species"),
+                                             p("List of species that were not foud when searching the BOLD database."), 
+                                             DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")),
+                     )),
 
     )),
 
