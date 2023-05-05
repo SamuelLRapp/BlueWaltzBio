@@ -48,14 +48,14 @@ shinyServer(function(input, output, session) {
   hideTab("BOLDpage", "Manual Data Processing Required")
   
   # Hiding CRUXpage
-  hideTab("CRUXpage", "Results")
+  hideTab("CRUXpage", "Coverage Matrix")
   hideTab("CRUXpage", "Organism Names")
   hideTab("CRUXpage", "Summary Results")
   
   # Hiding NCBI
   hideTab("NCBIpage", "Organism Names")
   hideTab("NCBIpage", "Barcodes of Interest")
-  hideTab("NCBIpage", "Results")
+  hideTab("NCBIpage", "Coverage Matrix")
   hideTab("NCBIpage", "Summary Results")
   
   # Hiding Full Genome Tab 
@@ -313,13 +313,13 @@ shinyServer(function(input, output, session) {
     # Begin CRUX search
     updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
     showTab("CRUXpage", "Summary Results")
-    showTab("CRUXpage", "Results")
+    showTab("CRUXpage", "Coverage Matrix")
   })
   
   observeEvent(input$detailsButton, {
     # Begin CRUX search
-    updateTabsetPanel(session, "CRUXpage", selected = "Results")
-    showTab("CRUXpage", "Results")
+    updateTabsetPanel(session, "CRUXpage", selected = "Coverage Matrix")
+    showTab("CRUXpage", "Coverage Matrix")
   })
   
   # * CRUXInputCSV -------------------------------------------------------------
@@ -441,14 +441,14 @@ shinyServer(function(input, output, session) {
   observeEvent(input$NCBIsearchButton, {
     # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
-    showTab("NCBIpage", "Results")
+    showTab("NCBIpage", "Coverage Matrix")
     showTab("NCBIpage", "Summary Results")
   })
   
   observeEvent(input$NCBIdetailsButton, {
     # Start NCBI search button
-    updateTabsetPanel(session, "NCBIpage", selected = "Results")
-    showTab("NCBIpage", "Results")
+    updateTabsetPanel(session, "NCBIpage", selected = "Coverage Matrix")
+    showTab("NCBIpage", "Coverage Matrix")
     showTab("NCBIpage", "Summary Results")
   })
   
@@ -457,7 +457,7 @@ shinyServer(function(input, output, session) {
     updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
     hideTab("NCBIpage", "Organism Names")
     hideTab("NCBIpage", "Barcodes of Interest")
-    hideTab("NCBIpage", "Results")
+    hideTab("NCBIpage", "Coverage Matrix")
     hideTab("NCBIpage", "Summary Results")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))

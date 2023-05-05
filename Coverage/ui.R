@@ -146,6 +146,7 @@ shinyUI(fluidPage(
                         # Show a plot of the generated distribution
                         fluidRow(
                           column(12, align="center", style='padding-top:15px',
+                                 titlePanel("Summary of Search Results"),
                                  DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
                                  conditionalPanel( condition = "output.CRUXSummaryResults",
                                                    downloadButton("CRUXfileDownloadSD","Download summary data"),
@@ -153,12 +154,13 @@ shinyUI(fluidPage(
                           )),
                         
                ),
-               tabPanel("Results",
+               tabPanel("Coverage Matrix",
                         # Application title
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                           # Show a plot of the generated distribution and the corresponding buttons
                         fluidRow(
                           column(12, align="center", style='padding-top:15px',
+                                 titlePanel("CRUX Coverage Matrix"),
                                  DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                  conditionalPanel( condition = "output.CRUXcoverageResults",
                                  downloadButton('downloadCrux',"Download table"))
@@ -263,6 +265,7 @@ shinyUI(fluidPage(
                    # Show a plot of the generated distribution
                    fluidRow(
                      column(12, align="center", style='padding-top:15px',
+                            titlePanel("Summary of Search Results"),
                             DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
                             conditionalPanel( condition = "output.NCBISummaryResults",
                                               downloadButton("NCBIfileDownloadSD","Download summary data"),
@@ -270,12 +273,13 @@ shinyUI(fluidPage(
                                               actionButton("NCBIStartOver", "Start the Search again"))
                      )),
           ),
-          tabPanel("Results",
+          tabPanel("Coverage Matrix",
                    # Application title
                    # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                    # Show a plot of the generated distribution and the corresponding buttons
                    fluidRow(
                      column(12, align="center", style='padding-top:15px',
+                            titlePanel("Number of Sequences Found Per Organism-Barcode Pairing"),
                             DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
                             conditionalPanel( condition = "output.NCBIcoverageResults",
                                               downloadButton('downloadStatements',"Download search terms table"),
@@ -348,6 +352,7 @@ shinyUI(fluidPage(
                         # Show a plot of the generated distribution and the corresponding buttons
                         fluidRow(
                           column(12, align="center", style='padding-top:15px',
+                                 titlePanel("Number of Sequences Found per Organism"),
                                  DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                                  conditionalPanel( condition = "output.genomeResults",                            
                                                    downloadButton('fullGenomeDownloadT',"Download table"),
@@ -464,7 +469,7 @@ shinyUI(fluidPage(
                                  #conditionalPanel(condition = "input.geo != list()",
                                                   #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
                                                   #mainPanel(plotOutput("geo_pie")),
-                                 titlePanel("Summary Data"),
+                                 titlePanel("Summary of Search Results"),
                                  p("For each barcode we display the total number of sequences found and the number of organisms with at least one or no sequence"),
                                  DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
                                  conditionalPanel(condition = "output.BOLDSummaryData",
