@@ -189,10 +189,19 @@ reduce_barcode_summary <- function(b_summary) {
 }
 
 missingSpecies <- function(missingList) {
-  print(missingList)
-  df <- as.data.frame(missingList)
-  print(df)
-  colnames(df) <- c("Missing Species")
-  df
+  print("Start missing Species")
+  summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+  summary_df["List of Missing Species",] <- 1
+  summary_df["No Results Found"] <-1
+  newStr = ""
+  for (i in 1:length(missingList)) {
+    newStr = paste(newStr, missingList[i], sep=", ")
+  }
+  print("REcord")
+  print(newStr)
+  summary_df["List of Missing Species", "No Results Found"] <- newStr
+  
+  print(summary_df)
+  summary_df
 }
 
