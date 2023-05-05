@@ -157,7 +157,6 @@ which_rows_are_empty_and_arenot <-
           total <- total + newNum
         }
         
-        print(total)
         if (!is.null(total) && total > 0)
         {
           #add species name to list
@@ -351,16 +350,13 @@ getCruxSearchFullResults <- function(organismList) {
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
-  print("about to enter for loop")
   for (i in 1:length(nameList)) {
     searchTerm <- getSearchTerm(nameList[i], uidList[i])
     results <- cruxOrgSearch(
       results, searchTerm, nameList[i])
   }
-  print("exited for loop")
   results <- getCruxResultsMatrix(
     results, length(nameList))
-  print("results obtained")
   results <-
     list(
       organismList = nameList,
@@ -381,7 +377,6 @@ getCruxSearchFullResults <- function(organismList) {
 cruxOrgSearch <- function(results, searchTerm, organism) {
   taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
   for (table in cruxDbList) {
-    print(table)
     queryStatement <- paste(
       "SELECT * from ",
       table,
@@ -560,7 +555,6 @@ convert_CRUX <-
     # into  0s/1s. This function is used by which_rows_are_empty_and_arenot()
   {
     crux_without_taxonomic_names <- crux_output
-    print(typeof(crux_output))
     #crux_without_taxonomic_names <-
     #  na.omit(crux_without_taxonomic_names)
     
@@ -576,8 +570,6 @@ convert_CRUX <-
       {
         boolean <- 
           crux_without_taxonomic_names[j, i] %in% non_number_values
-        print("passed fancy %in% thing")
-        print(crux_without_taxonomic_names[j, i] )
         #if true, ie it matches genus, family, class, order
         if (isTRUE(boolean))
         {
@@ -586,7 +578,6 @@ convert_CRUX <-
           crux_without_taxonomic_names[j, i] <- 
             as.numeric(crux_output[j, i])
         }
-        print("passed weird if statement following fancy %in% thing")
       }
     }
     
@@ -594,7 +585,6 @@ convert_CRUX <-
     
     crux_without_taxonomic_names <-
       as.matrix(crux_without_taxonomic_names)
-    print("entering final set of as_numerics")
     if (nrows > 1) {
       crux_without_taxonomic_names <-
         as.data.frame(apply(crux_without_taxonomic_names, 2, as.numeric)) 
@@ -621,12 +611,6 @@ convert_CRUX <-
 # user for input on the min/max sequence
 # length for that marker.
 getRangeList_MarkerSequenceLength <- function(barcodeList, ...){
-  # .barcode <- list(...)
-  # if(!is.list(barcode)) barcode <- list(barcode)
-  # 
-  # barcodeList <- c(barcode,.barcode)
-  # print(barcode)
-  # barcodeList <- barcode
   textList <- list()
   for (marker in barcodeList) {
     rangeInput <- numericRangeInput(
