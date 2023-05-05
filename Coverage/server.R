@@ -463,6 +463,17 @@ shinyServer(function(input, output, session) {
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
   })
   
+  observeEvent(input$NCBIStartOverSummary, {
+    # Start NCBI search all over again
+    updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
+    hideTab("NCBIpage", "Organism Names")
+    hideTab("NCBIpage", "Barcodes of Interest")
+    hideTab("NCBIpage", "Coverage Matrix")
+    hideTab("NCBIpage", "Summary Results")
+    updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
+    updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
+  })
+  
   observeEvent(input$BarcodesNext, {
     # Go the barcodes tab to allow user to input them
      updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
@@ -508,14 +519,6 @@ shinyServer(function(input, output, session) {
       }
     })
   })
-  
-  observeEvent(input$NCBISummaryDataButton,
-   {
-     # Check the summary data
-     updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
-     showTab("NCBIpage", "Summary Results")
-   })
-  
   
   # * NCBIStrToList ------------------------------------------------------------
   
@@ -971,7 +974,6 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "BOLDNullSpecies")
             shinyjs::show(id = "BOLDNullSpeciesWarning")
             returnMatrix <- . #return data matrix
-            print(returnMatrix)
             returnMatrix
           }
         }
@@ -1005,8 +1007,6 @@ shinyServer(function(input, output, session) {
     # no. of species for all countries
     
     BoldPlotBarGraph <- function(){
-      print("Entering BoldPlotBarGraph")
-      print(BOLDOrgCountries())
       if (!is.null(BOLDOrgCountries())){
         vals <- c()
         countries_values <- list()
@@ -1027,8 +1027,6 @@ shinyServer(function(input, output, session) {
           ## counts # of cols for each country where cell > 0
           vals <- colSums(present_matrix != 0)
           
-          print("vals = ")
-
           ## BOLD adds species/subspecies to search results
           ## so # of species will often be more than # from boldOrganismList()
           max_uniq_species <- max(vals)

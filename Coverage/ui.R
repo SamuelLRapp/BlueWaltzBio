@@ -270,7 +270,7 @@ shinyUI(fluidPage(
                             conditionalPanel( condition = "output.NCBISummaryResults",
                                               downloadButton("NCBIfileDownloadSD","Download summary data"),
                                               actionButton("NCBIdetailsButton", "See More Detailed Results"),
-                                              actionButton("NCBIStartOver", "Start the Search again"))
+                                              actionButton("NCBIStartOverSummary", "Start the Search again"))
                      )),
           ),
           tabPanel("Coverage Matrix",
