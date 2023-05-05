@@ -311,6 +311,13 @@ shinyServer(function(input, output, session) {
   # * UI pipeline updates ------------------------------------------------------
   observeEvent(input$searchButton, {
     # Begin CRUX search
+    updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
+    showTab("CRUXpage", "Summary Results")
+    showTab("CRUXpage", "Results")
+  })
+  
+  observeEvent(input$detailsButton, {
+    # Begin CRUX search
     updateTabsetPanel(session, "CRUXpage", selected = "Results")
     showTab("CRUXpage", "Results")
   })
@@ -341,15 +348,6 @@ shinyServer(function(input, output, session) {
                      value = newOrganismNamesList)
                  })
                })
-  
-  
-  # * Summary Data Button ------------------------------------------------------
-  observeEvent(input$SummaryDataButton,
-  {
-      # Go to summary results
-      updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
-      showTab("CRUXpage", "Summary Results")
-  })
   
   
   # * CRUXDownload -------------------------------------------------------------
