@@ -129,7 +129,7 @@ shinyUI(fluidPage(
                         # Application title
                         # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                         fluidRow(
-                          column(6, align="center", offset = 3,
+                          column(6, align="center", offset = 3,  
                                  titlePanel("Organism Names"),
                                  textAreaInput(inputId = "CRUXorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
                                  checkboxInput(inputId = "CRUXtaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
@@ -385,7 +385,6 @@ shinyUI(fluidPage(
                                  fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                  actionButton("BOLDStartButton", "Start Your BOLD Search"),
                           )),
-                        
                ),
                tabPanel("Organism Names",
                         # Application title
@@ -401,8 +400,10 @@ shinyUI(fluidPage(
                                  actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                           )),
                ),
+               # tags$style(
+               #   HTML("#my-div { padding: 2px; background-color: lightgray; width: 100%; border-radius: 10px; border: 2px solid black; }")
+               # ),
                tabPanel("Filters",
-                        
                         fluidRow(
                           # Padding at the top so it doesn't clash with tabs
                           div(
@@ -410,7 +411,7 @@ shinyUI(fluidPage(
                           ),
                           # First column set with the dropdown country filter
                           column(6, align="center", offset = 3,
-                            div(
+                            div( id = "my-div",
                               style = "padding: 2px; background-color: lightgray; width: 100%; border-radius: 10px; border: 2px solid black;",
                               conditionalPanel(condition = "output.selectCountry",
                                 titlePanel("Country Filter"),
@@ -435,7 +436,7 @@ shinyUI(fluidPage(
                             style = "padding-bottom: 30px;"
                           ),
                           conditionalPanel(condition = "output.selectCountry", 
-                            column(6, align="center", offset = 3,
+                            column(6, align="center", offset = 3,  id = "removeNCBICol",
                               div(
                                   style = "background-color: lightgray; width: 100%; padding: 0px; border-radius: 10px; border: 2px solid black;",
                                   # add ncbi option remove genome
@@ -446,7 +447,6 @@ shinyUI(fluidPage(
                                   div(class = "my-class",
                                       checkboxInput("removeNCBI", label = "Please Check the box to the left to remove all NCBI entries", value = FALSE, width = 450),
                                   ),
-                                  # checkboxInput("removeNCBI", label = "Please Check the box to the left to remove all NCBI entries", value = FALSE, width = 500))
                           ))),  
                           column(6, align="center", offset = 3, style='padding-top:15px',
                                  conditionalPanel(condition = "output.selectCountry",
@@ -458,7 +458,6 @@ shinyUI(fluidPage(
                                  ),
                           ),
                     ),
-                        
                ),
                tabPanel("Summary Data",
                         # Application title
@@ -539,10 +538,10 @@ shinyUI(fluidPage(
                                                 so that scientist may explore these results further."),
                                              DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1")),
                      ),
-                     column(4, align="center", offset=4,style='padding-top:15px', 
+                     column(12, align="center", offset=0,style='padding-top:15px', 
                             conditionalPanel(condition = "output.selectCountry", 
                                              titlePanel("Missing Species"),
-                                             p("List of species that were not foud when searching the BOLD database."), 
+                                             p("List of species that were not found when searching the BOLD database."), 
                                              DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")),
                      )),
 

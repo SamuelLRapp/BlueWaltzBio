@@ -1,0 +1,59 @@
+2022-11-01 20:08:05,481 | INFO | dataVerification.py | ------ SET UP -------
+2022-11-01 20:08:05,481 | INFO | dataVerification.py | debugFlag: False
+2022-11-01 20:08:05,481 | INFO | dataVerification.py | CruxResults fileName: Data/Raw_CRUX_results.csv
+2022-11-01 20:08:05,481 | INFO | dataVerification.py | CruxResults fileName: Data/ALL_taxonomic_names.csv
+2022-11-01 20:08:05,481 | INFO | dataVerification.py | Barcode we are going to check: 18S
+2022-11-01 20:08:05,481 | INFO | dataVerification.py | Name of CSV file with the CRUX database information: Data/18S_CSV.csv
+2022-11-01 20:08:05,481 | INFO | dataVerification.py | ---------------------
+2022-11-01 20:08:05,482 | INFO | dataVerification.py | ------ Building Final Dataframe -------
+2022-11-01 20:08:46,917 | INFO | dataVerification.py | ------ SET UP -------
+2022-11-01 20:08:46,918 | INFO | dataVerification.py | debugFlag: False
+2022-11-01 20:08:46,918 | INFO | dataVerification.py | CruxResults fileName: Data/Raw_CRUX_results.csv
+2022-11-01 20:08:46,918 | INFO | dataVerification.py | CruxResults fileName: Data/ALL_taxonomic_names.csv
+2022-11-01 20:08:46,918 | INFO | dataVerification.py | Barcode we are going to check: 18S
+2022-11-01 20:08:46,918 | INFO | dataVerification.py | Name of CSV file with the CRUX database information: Data/18S_CSV.csv
+2022-11-01 20:08:46,918 | INFO | dataVerification.py | ---------------------
+2022-11-01 20:08:46,918 | INFO | dataVerification.py | ------ Building Final Dataframe -------
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | ------ SET UP -------
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | debugFlag: False
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | CruxResults fileName: Data/Raw_CRUX_results.csv
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | CruxResults fileName: Data/ALL_taxonomic_names.csv
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | Barcode we are going to check: 18S
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | Name of CSV file with the CRUX database information: Data/18S_CSV.csv
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | ---------------------
+2022-11-01 20:09:13,311 | INFO | dataVerification.py | ------ Building Final Dataframe -------
+2022-11-01 20:09:13,419 | INFO | dataVerification.py | --------------------------------------
+2022-11-01 20:09:13,419 | INFO | dataVerification.py | ------ Beginning Data Verification -------
+2022-11-01 20:09:13,525 | INFO | dataVerification.py | --------------------------------------
+2022-11-01 20:21:03,448 | INFO | dataVerification.py | ------ SET UP -------
+2022-11-01 20:21:03,448 | INFO | dataVerification.py | debugFlag: False
+2022-11-01 20:21:03,448 | INFO | dataVerification.py | CruxResults fileName: Data/Raw_CRUX_results.csv
+2022-11-01 20:21:03,449 | INFO | dataVerification.py | CruxResults fileName: Data/ALL_taxonomic_names.csv
+2022-11-01 20:21:03,449 | INFO | dataVerification.py | Barcode we are going to check: 18S
+2022-11-01 20:21:03,449 | INFO | dataVerification.py | Name of CSV file with the CRUX database information: Data/18S_CSV.csv
+2022-11-01 20:21:03,449 | INFO | dataVerification.py | ---------------------
+2022-11-01 20:21:03,449 | INFO | dataVerification.py | ------ Building Final Dataframe -------
+2022-11-01 20:21:03,479 | INFO | dataVerification.py | --------------------------------------
+2022-11-01 20:21:03,479 | INFO | dataVerification.py | ------ Beginning Data Verification -------
+2022-11-01 20:21:03,661 | INFO | dataVerification.py | --------------------------------------
+2022-11-01 20:23:44,849 | INFO | dataVerification.py | ------ SET UP -------
+2022-11-01 20:23:44,850 | INFO | dataVerification.py | debugFlag: False
+2022-11-01 20:23:44,850 | INFO | dataVerification.py | CruxResults fileName: Data/Raw_CRUX_results.csv
+2022-11-01 20:23:44,850 | INFO | dataVerification.py | CruxResults fileName: Data/ALL_taxonomic_names.csv
+2022-11-01 20:23:44,850 | INFO | dataVerification.py | Barcode we are going to check: 18S
+2022-11-01 20:23:44,850 | INFO | dataVerification.py | Name of CSV file with the CRUX database information: Data/18S_CSV.csv
+2022-11-01 20:23:44,850 | INFO | dataVerification.py | ---------------------
+2022-11-01 20:23:44,850 | INFO | dataVerification.py | ------ Building Final Dataframe -------
+2022-11-01 20:23:44,877 | INFO | dataVerification.py | --------------------------------------
+2022-11-01 20:23:44,878 | INFO | dataVerification.py | ------ Beginning Data Verification -------
+2022-11-01 20:23:44,973 | INFO | dataVerification.py | --------------------------------------
+2022-11-01 20:25:26,808 | INFO | dataVerification.py | ------ SET UP -------
+2022-11-01 20:25:26,809 | INFO | dataVerification.py | debugFlag: False
+2022-11-01 20:25:26,809 | INFO | dataVerification.py | CruxResults fileName: Data/Raw_CRUX_results.csv
+2022-11-01 20:25:26,809 | INFO | dataVerification.py | CruxResults fileName: Data/ALL_taxonomic_names.csv
+2022-11-01 20:25:26,809 | INFO | dataVerification.py | Barcode we are going to check: 18S
+2022-11-01 20:25:26,809 | INFO | dataVerification.py | Name of CSV file with the CRUX database information: Data/18S_CSV.csv
+2022-11-01 20:25:26,809 | INFO | dataVerification.py | ---------------------
+2022-11-01 20:25:26,809 | INFO | dataVerification.py | ------ Building Final Dataframe -------
+2022-11-01 20:25:26,827 | INFO | dataVerification.py | --------------------------------------
+2022-11-01 20:25:26,827 | INFO | dataVerification.py | ------ Beginning Data Verification -------
