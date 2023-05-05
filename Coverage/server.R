@@ -45,6 +45,7 @@ shinyServer(function(input, output, session) {
   hideTab("BOLDpage", "Coverage Matrix")
   hideTab("BOLDpage", "Summary Data")
   hideTab("BOLDpage", "Country Data")
+  hideTab("BOLDpage", "Manual Data Processing Required")
   
   # Hiding CRUXpage
   hideTab("CRUXpage", "Results")
