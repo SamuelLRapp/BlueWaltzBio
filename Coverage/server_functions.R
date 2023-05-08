@@ -64,7 +64,7 @@ summary_report_dataframe <- function(dataframe)
   statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
   new_col_names <-
     c(
-      "Category",
+      "Barcodes",
       "Number of Sequences Found",
       "Percent of Total Sequences Found",
       "Number of Organism with at Least one Sequence",
