@@ -115,7 +115,7 @@ shinyUI(fluidPage(
                                    column(6, align="center", offset = 3,
                                           fileInput("uCRUXfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                           #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                                          actionButton("CruxStart", "Start Your CRUX Search"),
+                                          actionButton("CruxStart", "Manually enter & adjust Organism name inputs"),
                                           #tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                           #tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                           #tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
@@ -371,7 +371,7 @@ shinyUI(fluidPage(
                                                       choices = c("Full mitochondrial genomes in NCBI Nucleotide", "Full chloroplast genomes in NCBI Nucleotide", "Number of entries per taxa in NCBI Genome"), width=500),
                                           fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv"), width = 800),
                                           #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                                          actionButton("FullGenomeStart", "Start Your Full Genome Search"),
+                                          actionButton("FullGenomeStart", "Manually enter & adjust Organism name inputs"),
                                    )),
                                  
                         ),
@@ -424,7 +424,7 @@ shinyUI(fluidPage(
                                             style = "padding-top: 20px; padding-bottom: 80px;"
                                           ),
                                           fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
-                                          actionButton("BOLDStartButton", "Start Your BOLD Search"),
+                                          actionButton("BOLDStartButton", "Manually enter & adjust Organism name inputs"),
                                    )),
                         ),
                         tabPanel("Organism Names",
