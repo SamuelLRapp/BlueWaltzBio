@@ -54,6 +54,7 @@ shinyServer(function(input, output, session) {
   # Hiding NCBI
   hideTab("NCBIpage", "Organism Names")
   hideTab("NCBIpage", "Barcodes of Interest")
+  hideTab("NCBIpage", "One last step!")
   hideTab("NCBIpage", "Coverage Matrix")
   hideTab("NCBIpage", "Summary Results")
   
@@ -467,6 +468,7 @@ shinyServer(function(input, output, session) {
     updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
     hideTab("NCBIpage", "Organism Names")
     hideTab("NCBIpage", "Barcodes of Interest")
+    hideTab("NCBIpage", "One last step!")
     hideTab("NCBIpage", "Coverage Matrix")
     hideTab("NCBIpage", "Summary Results")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
@@ -478,6 +480,12 @@ shinyServer(function(input, output, session) {
      updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
      showTab("NCBIpage", "Barcodes of Interest")
    })
+  
+  observeEvent(input$NCBIRetMaxButton, {
+    # Go the barcodes tab to allow user to input them
+    updateTabsetPanel(session, "NCBIpage", selected = "One last step!")
+    showTab("NCBIpage", "One last step!")
+  })
   
   observeEvent(input$StartNCBIButton, {
     # Begin the NCBI pipeline button

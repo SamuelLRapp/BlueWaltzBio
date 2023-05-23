@@ -296,9 +296,19 @@ shinyUI(fluidPage(
                                           checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by the [GENE] Metadata field", value = TRUE, width = 500),
                                           checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
                                           uiOutput("seqLenInputs"),
+                                          actionButton("NCBIRetMaxButton", "One last step!")
+                                   )),
+                        ),
+                        tabPanel("One last step!",
+                                 fluidRow(
+                                   column(6, align="center", offset = 3,
+                                          titlePanel("Will you be downloading sequences?"),
+                                          p("If you are interested in downloading FASTA or Genbank files from the results, you must pre-specificy the number of sequences to download per organism-barcode combination."),
+                                          p("If you will not be downloading any sequences, then you can simply move on to the next step"),
                                           numericInput("downloadNum", "Number of Sequences to Download per Cell:", 5, min = 1, max = 500),
                                           actionButton("NCBIsearchButton", "Search"),
-                                   )),
+                                   )
+                                 )
                         ),
                         tabPanel("Summary Results",
                                  # Application title
