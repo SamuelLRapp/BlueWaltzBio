@@ -180,7 +180,7 @@ shinyUI(fluidPage(
                                  # Show a plot of the generated distribution and the corresponding buttons
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
-                                          titlePanel("CRUX Coverage Matrix"),
+                                          titlePanel("Instances of a organism found in each CRUX metabarcoding database"),
                                           DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.CRUXcoverageResults",
                                                             downloadButton('downloadCrux',"Download table"))
