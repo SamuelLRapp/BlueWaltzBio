@@ -786,6 +786,20 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  output$NCBIsearchQueries <- DT::renderDataTable({
+    then(ncbiSearch(), function(searchResults) {
+      data_df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList()))
+      data <- data_df[1,,drop=FALSE]
+      barcodes <- barcodeList()
+      DT::datatable(
+        t(data),
+        rownames = barcodes,
+        colnames = c(" "),
+        options = list(filters = "none")
+      )
+    })
+  })
+  
   output$NCBISummaryResults <- DT::renderDataTable({
     promise_all(data_df = summary_report(1), 
                 rows = NCBIorganismList()) %...>% with({

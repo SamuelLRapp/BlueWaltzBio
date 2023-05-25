@@ -333,12 +333,20 @@ shinyUI(fluidPage(
                                           titlePanel("Number of Sequences Found Per Organism-Barcode Pairing"),
                                           DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.NCBIcoverageResults",
-                                                            downloadButton('downloadStatements',"Download search terms table"),
                                                             downloadButton('download',"Download counts table"),
                                                             downloadButton("fileDownloadF","Download FASTA files"),
                                                             downloadButton("fileDownloadG","Download Genbank files"),
-                                                            actionButton("NCBIStartOver", "Start the Search again"))
+                                                            actionButton("NCBIStartOver", "Start the Search again")
+                                                            )
                                    )),
+                                 fluidRow(
+                                   column(12, align="center", style='padding-top:15px',
+                                          titlePanel("An Example of the Search Queries Sent to NCBI"),
+                                          p("Below we show an example of some of the queries we are sending to NCBI Nucleotide. If you wish to check the validity of our results, you can go to the NCBI website and paste these queries into their online search tool and see if you get the same results. If you want to see all of the queries used in this search, you can download them using the button located below."),
+                                          DT::dataTableOutput("NCBIsearchQueries") %>% withSpinner(color="#0dc5c1"),
+                                          downloadButton('downloadStatements',"Download search terms table"),
+                                          p())
+                                 )
                                  
                         ),
                         tabPanel("Information", 
