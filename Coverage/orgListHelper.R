@@ -25,8 +25,13 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
       
       for(organism in organismList)
       {
-        err <- 1
-        while(err == 1) {
+        NCBI_names <- 1
+        tries <- 1
+        while(NCBI_names == 1) {
+          tries <- tries + 1
+          if (tries == 6){
+            return(organismList)
+          }
           NCBI_names <- tryCatch({
             # sleeping for 1/3 of a second each time gives us 3 queries a 
             # second. If each user queries at this rate, we can service 4-8 at 
@@ -34,10 +39,9 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
             Sys.sleep(0.34) 
             # help user with various naming issues (spelling, synonyms, etc.)
             NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) 
-            err <- 0
             NCBI_names
           }, error = function(err) {
-            err <<- 1
+            err <- 1
           })
         }
         
