@@ -659,14 +659,14 @@ shinyServer(function(input, output, session) {
       updateTextAreaInput(
         getDefaultReactiveDomain(),
         "barcodeList",
-        value = paste("(CO1; COI; COX1),", input$barcodeList)
+        value = paste("(CO1; COI; COXI; COX1),", input$barcodeList)
       ) 
     }
     else {
       # Here since the textarea is empty we just set its value to the barcode/s
       updateTextAreaInput(getDefaultReactiveDomain(), 
                           "barcodeList", 
-                          value = "(CO1; COI; COX1)") 
+                          value = "(CO1; COI; COXI; COX1)") 
     }
   })
   
