@@ -17,6 +17,7 @@ library(shinydashboard)
 library(shinyalert) # popup library
 library(modules)
 library(shinyjs)
+library(shinyBS) # tooltip library
 
 jsCode <- paste0('shinyjs.clickBtn = function(params){
                     console.log("btn clicked");
@@ -229,18 +230,7 @@ shinyUI(fluidPage(
                                  # Application title
                                  titlePanel("Find NCBI records of your organisms and barcodes of interest"),
                                  fluidRow(
-                                   mainPanel(
-                                     h4("Descriptions of each Search Field"),
-                                     dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
-                                     dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package ‘Taxize’ will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that Taxize references for proper nomenclature, see the Taxize github here: https://github.com/ropensci/taxize")),
-                                     dropdown(label="Barcodes of Interest (Text box)", p("A comma separated list of the genes you want to search. Common genes used as organism barcodes include: CO1, 16S, 18S, rbcL, matK, ITS, FITS, trnL, Vert12S."), p("Note: naming conventions in NCBI may vary, thus one gene may be found under multiple names. Cytochrome Oxidase subunit 1, for example, may be found under the names COI, CO1, COXI, and COX1.")),
-                                     dropdown(label="Minimum sequence lengths", p("When searching for barcodes, A NCBI database record may only be useful for identifying an organism if it is above a certain base pair length. This varies from gene to gene and thus the tool allows each gene’s minimum base pair length to be specified individually."), p("By checking this box users can set a minimum base pair length filter. Entries that are below the specified base pair length, won’t appear in the coverage matrix output.")),
-                                     p("")
-                                     
-                                   ),
-                                 ),
-                                 fluidRow(
-                                   column(6, align="center", offset = 3,
+                                   column(6, align="center", offset = 3, style='padding-top:100px;',
                                           fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                           actionButton(inputId = "StartNCBIButton", label = "Manually enter & adjust Organism name inputs"),
                                    )),
@@ -274,7 +264,18 @@ shinyUI(fluidPage(
                                    column(6, align="center", offset = 3,
                                           titlePanel("Organism Names"),
                                           textAreaInput(inputId = "NCBIorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
-                                          checkboxInput(inputId = "NCBItaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
+                                          checkboxInput(inputId = "NCBItaxizeOption", label = list("Append organism name synonyms and spelling corrections via the R Package Taxize", tags$a(id="NCBItaxizeHelp",icon("question-circle")) ), value = TRUE, width = 500),
+                                          bsPopover(id="NCBItaxizeHelp", title="Help", content = paste0(
+                                            '<p>If this box is checked, the programming package <i>Taxize</i> will:</p>',
+                                            '<ol>',
+                                            '<li><p>Spellcheck each of your organisms’ names before searching the NCBI database.</p></li>',
+                                            '<li><p>Check if you have the most up-to-date organism names, and replaces your search term if not.</p></li>',
+                                            '<li><p>Add synonyms for the organism(s) listed to assist in finding more entries. Example: <i>Homo sapiens</i> with the <b>Check spelling and synonyms for organism names</b> box checked will search both &#39;<i>Homo sapiens</i>&#39; and &#39;<i>Homo sapiens subsp. varitus</i>&#39;.</p></li>', # &#39; is HTML for ' (single apostrophe)
+                                            '</ol>',
+                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>',
+                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'
+                                          ),
+                                          trigger="click"),
                                           checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE, width = 500),
                                           actionButton(inputId = "BarcodesNext", label = "Manually enter & adjust barcodes of interest inputs"),
                                    )),
@@ -286,7 +287,10 @@ shinyUI(fluidPage(
                                    column(6, align="center", offset = 3,
                                           titlePanel("Barcodes of Interest"),
                                           textAreaInput(inputId = "barcodeList", label = "A comma separated list of the genes you want to search. Common genes used as organism barcodes include: CO1, 16S, 18S", width = 500, height = 200),
-                                          actionButton(inputId = "barcodeOptionCO1", label = "CO1"),
+                                          actionButton(inputId = "barcodeOptionCO1", label = list("CO1", tags$a(id="CO1ButtonHelp",icon("question-circle")))),
+                                          bsPopover(id="CO1ButtonHelp", title="Help", content = paste0(
+                                            "<p>Naming conventions in NCBI may vary, thus one gene may be found under multiple names.</p>",
+                                            "<p>Cytochrome oxidase subunit 1, for example, may be found under the names <i>COI</i>, <i>CO1</i>, <i>COXI</i>, and <i>COX1</i>. This button will search for all 3 names and group the results together to make your search more comprehensive.</p>"), trigger="hover" ),
                                           actionButton("barcodeOption16S", label = "16S"),
                                           actionButton(inputId = "barcodeOption12S", label = "12S"),
                                           actionButton(inputId = "barcodeOption18S", label = "18S"),
@@ -294,7 +298,12 @@ shinyUI(fluidPage(
                                           actionButton(inputId = "barcodeOptiontrnl", label = "trnl"),
                                           actionButton(inputId = "barcodeOptionITS1", label = "ITS1"),
                                           checkboxInput(inputId = "NCBISearchOptionGene", label = "Search by the [GENE] Metadata field", value = TRUE, width = 500),
-                                          checkboxInput(inputId = "seqLengthOption", label = "Set minimum sequence lengths(by marker)"),
+                                          checkboxInput(inputId = "seqLengthOption", label = list("Set minimum sequence lengths(by marker)", tags$a(id="seqLenHelp",icon("question-circle"))) ),
+                                          bsPopover(id="seqLenHelp", title="Help", content = paste0(
+                                            "<p>When searching for barcodes, a NCBI database record may only be useful for identifying an organism if it is of an appropriate base pair length. This varies from gene to gene and thus the tool allows each gene’s minimum and maximum base pair lengths to be specified individually.</p>",
+                                            "<p>By checking this box users can filter their results to only get sequences within a certain range of base pair lengths. New inputs will appear for every barcode specified in the text box above.</p>",
+                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'),
+                                            trigger="click" ),
                                           uiOutput("seqLenInputs"),
                                           actionButton("NCBIRetMaxButton", "One last step!")
                                    )),
