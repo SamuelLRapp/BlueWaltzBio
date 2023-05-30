@@ -153,7 +153,18 @@ shinyUI(fluidPage(
                                    column(6, align="center", offset = 3,  
                                           titlePanel("Organism Names"),
                                           textAreaInput(inputId = "CRUXorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
-                                          checkboxInput(inputId = "CRUXtaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 500),
+                                          checkboxInput(inputId = "CRUXtaxizeOption", label = list("Append organism name synonyms and spelling corrections via the R Package Taxize", tags$a(id="CRUXtaxizeHelp",icon("question-circle"))) , value = TRUE, width = 500),
+                                          bsPopover(id="CRUXtaxizeHelp", title="Help", content = paste0(
+                                            '<p>If this box is checked, the programming package <i>Taxize</i> will:</p>',
+                                            '<ol>',
+                                            '<li><p>Spellcheck each of your organisms’ names before searching the NCBI database.</p></li>',
+                                            '<li><p>Check if you have the most up-to-date organism names, and replaces your search term if not.</p></li>',
+                                            '<li><p>Add synonyms for the organism(s) listed to assist in finding more entries. Example: <i>Homo sapiens</i> with the <b>Check spelling and synonyms for organism names</b> box checked will search both &#39;<i>Homo sapiens</i>&#39; and &#39;<i>Homo sapiens subsp. varitus</i>&#39;.</p></li>', # &#39; is HTML for ' (single apostrophe)
+                                            '</ol>',
+                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>',
+                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'
+                                          ),
+                                          trigger="click"),
                                           actionButton("searchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                           tags$div(id = 'CRUXtaxizeOption', style ='font-size:120%'),
                                           #tags$style(type='text/css', "#CRUXorganismList { vertical-align- middle; height- 100px; width- 100%; font-size- 200px;}"),
@@ -464,7 +475,18 @@ shinyUI(fluidPage(
                                             style = "padding-top: 20px; padding-bottom: 10px;"
                                           ),
                                           textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
-                                          checkboxInput(inputId = "BOLDtaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package Taxize", value = TRUE, width = 600),
+                                          checkboxInput(inputId = "BOLDtaxizeOption", label = list("Append organism name synonyms and spelling corrections via the R Package Taxize", tags$a(id="BOLDtaxizeHelp",icon("question-circle")) ), value = TRUE, width = 500),
+                                          bsPopover(id="BOLDtaxizeHelp", title="Help", content = paste0(
+                                            '<p>If this box is checked, the programming package <i>Taxize</i> will:</p>',
+                                            '<ol>',
+                                            '<li><p>Spellcheck each of your organisms’ names before searching the NCBI database.</p></li>',
+                                            '<li><p>Check if you have the most up-to-date organism names, and replaces your search term if not.</p></li>',
+                                            '<li><p>Add synonyms for the organism(s) listed to assist in finding more entries. Example: <i>Homo sapiens</i> with the <b>Check spelling and synonyms for organism names</b> box checked will search both &#39;<i>Homo sapiens</i>&#39; and &#39;<i>Homo sapiens subsp. varitus</i>&#39;.</p></li>', # &#39; is HTML for ' (single apostrophe)
+                                            '</ol>',
+                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>',
+                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'
+                                          ),
+                                          trigger= "click"),
                                           actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                    )),
                         ),
