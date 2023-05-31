@@ -678,7 +678,9 @@ shinyUI(fluidPage(
                                                          titlePanel("Bold UIDs for Entries With Unlabeled Barcodes"),
                                                          p("For those entries in BOLD that have unlabeled barcodes, we provide their respective BOLD UIDs 
                                                 so that scientists may explore these results further."),
-                                                         DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1")),
+                                                         DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1"),
+                                                         downloadButton('downloadBoldNaBarcodes', "Download NA Barcodes table")
+                                        ),
                                  ),
                                  column(12, align="center", offset=0,style='padding-top:15px', 
                                         conditionalPanel(condition = "output.selectCountry", 
