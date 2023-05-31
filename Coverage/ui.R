@@ -154,7 +154,8 @@ shinyUI(fluidPage(
                                           #tags$style(type='text/css', "#uCRUXfile { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                           #tags$style(type='text/css', "#Button { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
                                           #tags$style(type='text/css', "#uploadCRUXButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
-                                   )),
+                                   )
+                                 ),
                                  
                                  HTML("<br><br>"),
                                  
@@ -174,8 +175,8 @@ shinyUI(fluidPage(
                                                     class="btn-success",
                                                     style="margin-left:5px;",
                                        ),
-                                     ),
                                    ),
+                                 ),
                                    
                                  
                                  
@@ -500,7 +501,27 @@ shinyUI(fluidPage(
                                           ),
                                           fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
                                           actionButton("BOLDStartButton", "Manually enter & adjust Organism name inputs"),
-                                   )),
+                                   )
+                                 ),
+                                 fluidRow(
+                                   column(6, align="center", offset = 3,
+                                          HTML("<br><br>"),
+                                          actionButton("BOLDUserGuide", 
+                                                       "BOLD User Guide", 
+                                                       onclick="window.open('https://docs.google.com/document/d/1A1_4d21JKkk98WujeqVp51epxDzPrTSr9--_CnM5M5E/edit?usp=sharing', '_blank')",
+                                                       icon=icon("book"),
+                                                       class="btn-success",
+                                                       style="margin-right:5px;"
+                                          ),
+                                          actionButton("BOLDCsvTemplate", 
+                                                       "BOLD CSV Template", 
+                                                       onclick="window.open('https://docs.google.com/spreadsheets/d/1Gcaiys-vpJhuAoYT6wi0PrYyOZDZZZRS9X9za_em6SM/edit?usp=sharing', '_blank')",
+                                                       icon=icon("file-csv"),
+                                                       class="btn-success",
+                                                       style="margin-left:5px;",
+                                          ),
+                                   ),
+                                 ),
                         ),
                         tabPanel("Organism Names",
                                  # Application title
