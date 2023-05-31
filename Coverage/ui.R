@@ -548,9 +548,12 @@ shinyUI(fluidPage(
                                           actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                    )),
                         ),
-                        # tags$style(
-                        #   HTML("#my-div { padding: 2px; background-color: lightgray; width: 100%; border-radius: 10px; border: 2px solid black; }")
-                        # ),
+                        tabPanel("Species Not Found in BOLD Database",
+                          column(12, align="center", offset=0,style='padding-top:15px',
+                            titlePanel("Species not found in BOLD database"),
+                            p("List of species that were not found when searching the BOLD database, if the species are not displayed in this table then they have results in the BOLD database. Additionally, the results in this table are not affected by the Country or NCBI filter"),
+                            DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")
+                        )),
                         tabPanel("Filters",
                                  fluidRow(
                                    # Padding at the top so it doesn't clash with tabs
@@ -681,16 +684,7 @@ shinyUI(fluidPage(
                                                          DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1"),
                                                          downloadButton('downloadBoldNaBarcodes', "Download NA Barcodes table")
                                         ),
-                                 ),
-                                 column(12, align="center", offset=0,style='padding-top:15px', 
-                                        conditionalPanel(condition = "output.selectCountry", 
-                                                         titlePanel("Species not found in BOLD database"),
-                                                         p("List of species that were not found when searching the BOLD database."), 
-                                                         DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1"),
-                                                         downloadButton('downloadBoldNullSpecies', "Download Missing Species table")
-                                        ),
                                  )),
-                        
                       )),
              
              

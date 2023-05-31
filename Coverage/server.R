@@ -45,6 +45,8 @@ shinyServer(function(input, output, session) {
   hideTab("BOLDpage", "Summary Data")
   hideTab("BOLDpage", "Country Data")
   hideTab("BOLDpage", "Manual Data Processing Required")
+  hideTab("BOLDpage", "Species Not Found in BOLD Database")
+  
   
   # Hiding CRUXpage
   hideTab("CRUXpage", "Coverage Matrix")
@@ -924,18 +926,20 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$BOLDsearchButton, {
-      updateTabsetPanel(session, "BOLDpage", selected = "Filters")
+      updateTabsetPanel(session, "BOLDpage", selected = "Species Not Found in BOLD Database")
+      shinyjs::show(id = "BOLDNullSpecies")
       showTab("BOLDpage", "Filters")
+      showTab("BOLDpage", "Species Not Found in BOLD Database")
       hideTab("BOLDpage", "Plot Unique Species Per Country")
       hideTab("BOLDpage", "Plot Total Sequences Per Country")
       hideTab("BOLDpage", "Coverage Matrix")
       hideTab("BOLDpage", "Summary Data")
       hideTab("BOLDpage", "Country Data")
       hideTab("BOLDpage", "Manual Data Processing Required")
+      
       shinyjs::hide(id = "BOLDClearFilter")
       shinyjs::hide(id = "BOLDfilterCountries")
       shinyjs::hide(id = "BOLDSkipFilter")
-      shinyjs::hide(id = "BOLDNullSpecies")
       shinyjs::hide(id = "BOLDNullSpeciesWarning")
       shinyjs::hide(id = "removeNCBICol")
     })
@@ -949,6 +953,8 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Plot Total Sequences Per Country")
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
+      showTab("BOLDpage", "Species Not Found in BOLD Database")
+
       updateSelectizeInput(inputId="selectCountry", choices=boldCoverage()$countries, selected = boldCoverage()$countries,options = NULL)
       click("BOLDfilterCountries")
     })
@@ -961,6 +967,7 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Plot Total Sequences Per Country")
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
+      showTab("BOLDpage", "Species Not Found in BOLD Database")
     })
     
     observeEvent(input$BOLDClearFilter, {
@@ -1035,7 +1042,6 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "BOLDClearFilter")
             shinyjs::show(id = "BOLDfilterCountries")
             shinyjs::show(id = "BOLDSkipFilter")
-            shinyjs::show(id = "BOLDNullSpecies")
             shinyjs::show(id = "BOLDNullSpeciesWarning")
             shinyjs::show(id = "removeNCBICol")
             shinyjs::show(id = "countryFilterCol")
