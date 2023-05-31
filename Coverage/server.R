@@ -1318,5 +1318,18 @@ shinyServer(function(input, output, session) {
       }
     )
     
+    # * BOLD Sequences per Country Download ------------------------------------------
+    output$downloadBoldPresent <- downloadHandler(
+      filename = function() {
+        paste("BOLD_Sequences_per_Country", ".csv", sep="")
+      },
+      content = function(file) {
+        BoldMatrix() %...>% {
+          results <- bold_functions$presentMatrix(., input$selectCountry)
+          write.csv(results,file)
+        }
+      }
+    )
+    
 })
 
