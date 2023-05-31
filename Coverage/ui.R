@@ -170,7 +170,7 @@ shinyUI(fluidPage(
                                        ),
                                        actionButton("CRUXCsvTemplate", 
                                                     "CRUX CSV Template", 
-                                                    onclick="window.open('https://docs.google.com/spreadsheets/d/1Gcaiys-vpJhuAoYT6wi0PrYyOZDZZZRS9X9za_em6SM/edit?usp=sharing', '_blank')",
+                                                    onclick="window.open('https://www.bluewaltzbio.com/research/test-our-tool/ncbi-csv-template', '_blank')",
                                                     icon=icon("file-csv"),
                                                     class="btn-success",
                                                     style="margin-left:5px;",
@@ -296,7 +296,7 @@ shinyUI(fluidPage(
                                    
                                    actionButton("NCBICsvTemplate", 
                                                 "NCBI CSV Template", 
-                                                onclick="window.open('https://docs.google.com/spreadsheets/d/1XDdypB4Jiis8mGcMIsCSbtxo3w4gsY5FyKhtYmABj8k/edit?usp=sharing', '_blank')",
+                                                onclick="window.open('https://www.bluewaltzbio.com/research/test-our-tool/ncbi-csv-template', '_blank')",
                                                 icon=icon("file-csv"),
                                                 class="btn-success",
                                                 style="margin-left:5px;"
@@ -515,7 +515,7 @@ shinyUI(fluidPage(
                                           ),
                                           actionButton("BOLDCsvTemplate", 
                                                        "BOLD CSV Template", 
-                                                       onclick="window.open('https://docs.google.com/spreadsheets/d/1Gcaiys-vpJhuAoYT6wi0PrYyOZDZZZRS9X9za_em6SM/edit?usp=sharing', '_blank')",
+                                                       onclick="window.open('https://www.bluewaltzbio.com/research/test-our-tool/ncbi-csv-template', '_blank')",
                                                        icon=icon("file-csv"),
                                                        class="btn-success",
                                                        style="margin-left:5px;",
