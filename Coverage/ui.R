@@ -686,7 +686,9 @@ shinyUI(fluidPage(
                                         conditionalPanel(condition = "output.selectCountry", 
                                                          titlePanel("Species not found in BOLD database"),
                                                          p("List of species that were not found when searching the BOLD database."), 
-                                                         DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")),
+                                                         DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1"),
+                                                         downloadButton('downloadBoldNullSpecies', "Download Missing Species table")
+                                        ),
                                  )),
                         
                       )),

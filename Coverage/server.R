@@ -1361,5 +1361,19 @@ shinyServer(function(input, output, session) {
       }
     )
     
+    # * BOLD Null Species Download ------------------------------------------
+    output$downloadBoldNullSpecies <- downloadHandler(
+      filename = function() {
+        paste("BOLD_Missing_Species", ".csv", sep="")
+      },
+      content = function(file) {
+        boldCoverage() %...>% {
+          df <- .
+          results <- bold_functions$missingSpecies(df["Missing Species"])
+          write.csv(results, file)
+        }
+      }
+    )
+    
 })
 
