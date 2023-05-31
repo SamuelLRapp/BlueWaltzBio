@@ -1331,5 +1331,22 @@ shinyServer(function(input, output, session) {
       }
     )
     
+    
+    # * BOLD Recommended Countries Download ------------------------------------------
+    output$downloadBoldPresent <- downloadHandler(
+      filename = function() {
+        paste("BOLD_Recommended_Country_Filters", ".csv", sep="")
+      },
+      content = function(file) {
+        promise_all(matrix = BoldMatrix(), coverage = boldCoverage()) %...>% with({
+          results <- bold_functions$absentMatrix(matrix, 
+                                      input$selectCountry, 
+                                      na.omit(coverage$input$selectCountry[coverage$input$selectCountry != ""])
+          )
+          write.csv(results, file)
+        })
+      }
+    )
+    
 })
 

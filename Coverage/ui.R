@@ -644,6 +644,7 @@ shinyUI(fluidPage(
                                           p("For those species that have no sequences found in the country(s) filtered we provide 
                                  the top 3 unselected countries with the most sequence results."),
                                           DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
+                                          downloadButton('downloadBoldAbsent', "Download suggested country filters table")
                                    ),
                                    
                                  ),
