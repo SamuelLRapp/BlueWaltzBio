@@ -304,7 +304,10 @@ shinyServer(function(input, output, session) {
     taxizeBool <- input$CRUXtaxizeOption
     future_promise({
       result <- orgListHelper$taxizeHelper(orgSearch, taxizeBool)
-      result
+      if(result$status == 1){
+        shinyalert("Taxize ran into an error. Please try again later")
+      }
+      result$results
     })
   })
   
