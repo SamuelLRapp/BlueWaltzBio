@@ -83,16 +83,44 @@ shinyUI(fluidPage(
              # Home tab
              #img(src='backend.png',  align = "center", height = 350, width = 700), Image in HOME page leaving it here just in case
              tabPanel("Home", 
-                      column(6, align="center", offset = 3,
-                             titlePanel("Welcome to the Reference Sequence Browser"),
-                             actionButton(inputId = "dwntest", label = "Run Download Tests"),
-                             p(HTML('&emsp;'), "The Reference Sequence Browser rShiny application returns how many publicly accessible genetic barcodes exist in the NCBI nucleotide database or the CRUX databases."),
-                             p(HTML('&emsp;'), "Users only need to assemble a list of organisms (and gene names for the NCBI search) for the tool to search the NCBI and CRUX databases."),
-                             p(HTML('&emsp;'), "This rShiny app was built to bridge the gap between ecologists and computer scientists by providing efficient and intuitive access to NCBI and CRUX databases without the user having to write a single line of code. If you would like to learn more details about either the NBCI or CRUX search browser specific design and function click on the relevant tab above. Assemble a list of organisms and get started! " ),
-                             p(HTML('&emsp;'), "The diagram represents how the two search portals function in the back end."),
-                             textInput(inputId="NCBIKey", label="NCBI Key", width = '250px'),
-                             actionButton(inputId = "SetKey", label = "Set Key"),
+                      sidebarLayout(
+                        sidebarPanel(
+                          width=2,
+                               div(
+                                 textInput(inputId="NCBIKey", label="Input your NCBI API key here", width = '250px'),
+                                 p("Note: the app will still function if you don't have an API Key, but you may experience slower search/download times"),
+                                 actionButton(inputId = "SetKey", label = "Set Key"),
+                               )
+                        ),
+                        mainPanel(
+                               h2(style="text-align:center", "Welcome to the Reference Sequence Browser"),
+                               # DON'T DELETE THE COMMENT BELOW, WE USE IT FOR INTERNAL TESTING
+                               # actionButton(inputId = "dwntest", label = "Run Download Tests"),
+                               h4(style="text-align:center", "Read this page first if you want to make best use of our app!"),
+                               p(style="padding-bottom:20px;text-align:center", "This app was developed by the ", a("BlueWaltzBio", href="https://www.bluewaltzbio.com/"), " team. "),
+                               p(style="text-align:left", HTML('&emsp;'), "The Reference Sequence Browser (RSB) is a rShiny application that enables the eDNA community to screen and extract organism-specific data from genetic barcode databases such as the ", 
+                                 a("NCBI Nucleotide", href="https://www.ncbi.nlm.nih.gov/nucleotide/"), ", ", 
+                                 a("NCBI Genome", href="https://www.ncbi.nlm.nih.gov/genome/"), ", ", 
+                                 a("BOLD (Barcode for Life Database)", href="https://boldsystems.org"), ", and publicly available ", a("CRUX databases", href="https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13214"), 
+                                 ". The app is best used prior to conducting metabarcoding to assess reference sequence availability or to download non duplicative FASTA files from BOLD and NCBI to develop local sequence databases for q-pcr development.",
+                                 " Each different database can be searched in its own tab in RSB and has its own quick user-guide."),
+                               p(style="text-align:left", HTML('&emsp;'), "The tool is built to search for many organisms and genetic barcodes simultaneously and thus can be used in multiple ways to speed up Environmental DNA workflows. Users only need to assemble",
+                                 " a list of organisms in scientific names for the tool to search for reference sequences at known barcoding loci (e.g COI, 16S, 18S, trnL). Only NCBI additionally requires barcode-gene names to complete its Nucleotide search. To make",
+                                 " inputting long lists into the app easier, download ", a("this CSV template", href="https://www.bluewaltzbio.com/research/test-our-tool/ncbi-csv-template"), " and fill it out with your organism and barcode names. This template can be uploaded within any database tab."),
+                               p(style="text-align:left", HTML('&emsp;'), "The app uses the R packages ‘rentrez’ and ‘bold’ to access the live, up to date NCBI and BOLD databases. RSB retrieves and displays the number of reference sequences in one of the",
+                                 " aforementioned databases for the combination of an organism AND a barcoding loci. For example RSB searches for instances of Canis’s Lupus’s COI barcode-gene. Thus every database tab produces a Coverage Matrix (CM) with organism",
+                                 " names as rows and barcoding loci as columns, with cells that display the number of reference sequences retrieved. Each tab also includes summary statistics and tab specific visualizations/tables to help make sense of searches of numerous species and barcodes." ),
+                               p(style="text-align:left", HTML('&emsp;'), "In addition to previewing what sequences are available in the CM tables, users are able to download the sequences in FASTA file format (excluding CRUX); which can then easily be imported into various genomics softwares",
+                                 " (e.g Geneious, etc). The RSB BOLD database search allows users to exclude entries also in NCBI Nucleotide from the BOLD CM results, visualizations, and FASTA downloads. This allows users to avoid downloading duplicate FASTA files between BOLD and NCBI Nucleotide."),
+                               h4("Use cases:"),
+                               p(style="text-align:left", HTML('&emsp;'), "RSB can be used to improve the workflow of species specific q-pcr development for eDNA applications (Klymus 1). If you are interested in developing a species specific q-primer, RSB can be used to rapidly create a non-duplicative local sequence database by downloading FASTA files from the NCBI and BOLD tabs."),
+                               p(style="text-align:left", HTML('&emsp;'), "RSB can also be used to determine what organisms can and to what be detected by metabarcoding and which metabarcodes fit your study needs This can be determined by searching in the seven metabarcoding databases (16S,  12S, 18S, ITS1, CO1, ITS2, trnL) in the CRUX tab or in the BOLD tab."),
+                               p(style="text-align:left", HTML('&emsp;'), "Additionally, If you are interested in finding full mitochondrial or chloroplast genomes in NCBI Nucleotide or entries in NCBI Genome go to the full genome tab. Guides to the aforementioned processes can be found lower down on this page."),
+                               p(style="text-align:left", HTML('&emsp;'), "Lastly, we hope this tool may be used to point to taxonomic groups lacking publically available reference sequences and thus aid in creating more deliberate and specific sequencing efforts."),
+                               p(style="text-align:left;padding-top:30px", HTML('&emsp;'), "This rShiny app was built in part to bridge the gap between eDNA scientists and large genomics databases by providing efficient and high throughput access to NCBI, BOLD, and CRUX databases without the user having to write a single line of code. Click on one of the tabs to get started."),
+                        ),
                       ),
+                      
                       
              ),
              tabPanel("CRUX",
