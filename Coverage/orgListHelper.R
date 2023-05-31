@@ -30,7 +30,7 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
         while(NCBI_names == 1) {
           tries <- tries + 1
           if (tries == 6){
-            return(organismList)
+            return(list(status=1,results=organismList))
           }
           NCBI_names <- tryCatch({
             # sleeping for 1/3 of a second each time gives us 3 queries a 
@@ -65,10 +65,11 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
           taxize_organism_list <- c(taxize_organism_list, organism) 
         }
       }
-      taxize_organism_list
+      list(status=0,results=taxize_organism_list)
       
     } else{
       #if the checkbox wasn't selected, return the list as is
       organismList 
+      list(status=0,results=organismList)
     }
 }
