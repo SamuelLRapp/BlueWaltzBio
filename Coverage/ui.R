@@ -638,6 +638,8 @@ shinyUI(fluidPage(
                                           #mainPanel(plotOutput("geo_pie")),
                                           titlePanel("Total number of barcodes found by country for each unique species"),
                                           DT::dataTableOutput("BOLDPresentTable") %>% withSpinner(color="#0dc5c1"),
+                                          downloadButton('downloadBoldPresent', "Download entries per country table"),
+                                          
                                           titlePanel("Suggested countries to add to your filter"),
                                           p("For those species that have no sequences found in the country(s) filtered we provide 
                                  the top 3 unselected countries with the most sequence results."),
