@@ -62,6 +62,12 @@ tst <- paste0('shinyjs.ncbiDwnFastaTest = function(params){
                   }
                 }, 1000)
               }')
+loaderJs <- '
+shinyjs.setLoaderAppearance = function(tab){
+  $("#shiny-notification-panel").addClass("custom-loader");
+  $("#shiny-notification-panel").detach().prependTo("#loaderWrapper"+tab);
+  }
+'
 
 components <- modules::use("components.R")
 
@@ -69,7 +75,7 @@ shinyUI(fluidPage(
   useShinyjs(),
   extendShinyjs(text = jsCode, functions = c("clickBtn")),
   extendShinyjs(text = tst, functions = c("ncbiDwnFastaTest")),
-  
+  extendShinyjs(text = loaderJs, functions = c("setLoaderAppearance")),
   tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   navbarPage("Reference Sequence Browser",
              id = "mainPage",
@@ -179,6 +185,7 @@ shinyUI(fluidPage(
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
                                           titlePanel("Summary of Search Results"),
+                                          tags$div(id="loaderWrapperCRUX"),
                                           DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.CRUXSummaryResults",
                                                             downloadButton("CRUXfileDownloadSD","Download summary data"),
@@ -337,6 +344,7 @@ shinyUI(fluidPage(
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
                                           titlePanel("Summary of Search Results"),
+                                          tags$div(id="loaderWrapperNCBI"),
                                           DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.NCBISummaryResults",
                                                             downloadButton("NCBIfileDownloadSD","Download summary data"),
@@ -432,6 +440,7 @@ shinyUI(fluidPage(
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
                                           titlePanel("Number of Sequences Found per Organism"),
+                                          tags$div(id="loaderWrapperFullGenome"),
                                           DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.genomeResults",                            
                                                             downloadButton('fullGenomeDownloadT',"Download table"),

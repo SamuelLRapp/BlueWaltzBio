@@ -130,12 +130,22 @@ shinyServer(function(input, output, session) {
     orgList <- input$genomeOrganismList
     taxizeOption <- input$fullGenomeTaxizeOption
     refSeqChecked <- input$refSeq
+    progress <-
+      AsyncProgress$new(
+        session,
+        min = 0,
+        max = 1,
+        message = "Retrieving...",
+        value = 0
+      )
+    js$setLoaderAppearance("FullGenome")
     future_promise({
       server_functions$getGenomeSearchFullResults(
         dbOption = dbOption, 
         orgList = orgList, 
         taxizeOption = taxizeOption,
-        refSeqChecked = refSeqChecked)
+        refSeqChecked = refSeqChecked,
+        progress = progress)
     })
   })
   
@@ -408,11 +418,13 @@ shinyServer(function(input, output, session) {
   })
   
   # NCBI -----------------------------------------------------------------------
-  
+  # progress bar object
+  progressNCBI <- NULL
   # * NCBISearchButton ---------------------------------------------------------
   ncbiSearch <- eventReactive(input$NCBIsearchButton, {
     barcodeList <- barcodeList()
     organismList <- input$NCBIorganismList
+    
     searchOptionGene <- input$NCBISearchOptionGene
     searchOptionOrgn <- input$NCBISearchOptionOrgn
     downloadNumber <- input$downloadNum
@@ -424,7 +436,12 @@ shinyServer(function(input, output, session) {
       searchTerms <- list()
       countResults <- list()
       organismList <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
+      organismsDownloaded <- 0
+      organismListLength <- length(organismList)
+      progressNCBI$set(detail = paste0("0","/",organismListLength))
       for (organism in organismList) {
+        progressNCBI$set(message = paste0("Retrieving barcodes for ", organism))
+        progressNCBI$inc(amount = 0.5/organismListLength)
         for (code in barcodeList) {
           searchTerm <- server_functions$getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
           searchResult <- server_functions$getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
@@ -432,7 +449,12 @@ shinyServer(function(input, output, session) {
           countResults <- list.append(countResults, searchResult[[2]])
           searchTerms <- list.append(searchTerms, searchTerm) 
         }
+        organismsDownloaded <- organismsDownloaded + 1
+        progressNCBI$set(message = paste0("Retrieved barcodes for ", organism),
+                     detail = paste0(organismsDownloaded,"/",organismListLength))
+        progressNCBI$inc(amount = 0.5/organismListLength)
       }
+      progressNCBI$close()
       list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
     })
   })
@@ -441,6 +463,15 @@ shinyServer(function(input, output, session) {
   observeEvent(input$NCBIsearchButton, {
     # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
+    progressNCBI <<-
+      AsyncProgress$new(
+        session,
+        min = 0,
+        max = 1,
+        message = "Retrieving...",
+        value = 0
+      )
+    js$setLoaderAppearance("NCBI")
     showTab("NCBIpage", "Coverage Matrix")
     showTab("NCBIpage", "Summary Results")
   })
