@@ -196,10 +196,10 @@ shinyUI(fluidPage(
                                             '<li><p>Check if you have the most up-to-date organism names, and replaces your search term if not.</p></li>',
                                             '<li><p>Add synonyms for the organism(s) listed to assist in finding more entries. Example: <i>Homo sapiens</i> with the <b>Check spelling and synonyms for organism names</b> box checked will search both &#39;<i>Homo sapiens</i>&#39; and &#39;<i>Homo sapiens subsp. varitus</i>&#39;.</p></li>', # &#39; is HTML for ' (single apostrophe)
                                             '</ol>',
-                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>',
-                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'
-                                          ),
-                                          trigger="click"),
+                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>'                                          ),
+                                          placement = "right",
+                                          options = list(container = "body"),
+                                          trigger="hover"),
                                           actionButton("searchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                           tags$div(id = 'CRUXtaxizeOption', style ='font-size:120%'),
                                           #tags$style(type='text/css', "#CRUXorganismList { vertical-align- middle; height- 100px; width- 100%; font-size- 200px;}"),
@@ -319,10 +319,11 @@ shinyUI(fluidPage(
                                             '<li><p>Check if you have the most up-to-date organism names, and replaces your search term if not.</p></li>',
                                             '<li><p>Add synonyms for the organism(s) listed to assist in finding more entries. Example: <i>Homo sapiens</i> with the <b>Check spelling and synonyms for organism names</b> box checked will search both &#39;<i>Homo sapiens</i>&#39; and &#39;<i>Homo sapiens subsp. varitus</i>&#39;.</p></li>', # &#39; is HTML for ' (single apostrophe)
                                             '</ol>',
-                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>',
-                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'
+                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>'
                                           ),
-                                          trigger="click"),
+                                          placement = "right",
+                                          options = list(container = "body"),
+                                          trigger="hover"),
                                           checkboxInput(inputId = "NCBISearchOptionOrgn", label = "Search by the [ORGN] Metadata field", value = TRUE, width = 500),
                                           actionButton(inputId = "BarcodesNext", label = "Manually enter & adjust barcodes of interest inputs"),
                                    )),
@@ -348,9 +349,11 @@ shinyUI(fluidPage(
                                           checkboxInput(inputId = "seqLengthOption", label = list("Set minimum sequence lengths(by marker)", tags$a(id="seqLenHelp",icon("question-circle"))) ),
                                           bsPopover(id="seqLenHelp", title="Help", content = paste0(
                                             "<p>When searching for barcodes, a NCBI database record may only be useful for identifying an organism if it is of an appropriate base pair length. This varies from gene to gene and thus the tool allows each gene’s minimum and maximum base pair lengths to be specified individually.</p>",
-                                            "<p>By checking this box users can filter their results to only get sequences within a certain range of base pair lengths. New inputs will appear for every barcode specified in the text box above.</p>",
-                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'),
-                                            trigger="click" ),
+                                            "<p>By checking this box users can filter their results to only get sequences within a certain range of base pair lengths. New inputs will appear for every barcode specified in the text box above.</p>"
+                                            ),
+                                            placement = "right",
+                                            options = list(container = "body"),
+                                            trigger="hover" ),
                                           uiOutput("seqLenInputs"),
                                           actionButton("NCBIRetMaxButton", "One last step!")
                                    )),
@@ -541,10 +544,11 @@ shinyUI(fluidPage(
                                             '<li><p>Check if you have the most up-to-date organism names, and replaces your search term if not.</p></li>',
                                             '<li><p>Add synonyms for the organism(s) listed to assist in finding more entries. Example: <i>Homo sapiens</i> with the <b>Check spelling and synonyms for organism names</b> box checked will search both &#39;<i>Homo sapiens</i>&#39; and &#39;<i>Homo sapiens subsp. varitus</i>&#39;.</p></li>', # &#39; is HTML for ' (single apostrophe)
                                             '</ol>',
-                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>',
-                                            '<p>(Click <i class="fa fa-question-circle"></i> again to close)</p>'
+                                            '<p>Note: for a full list of the data sources that <i>Taxize</i> references for proper nomenclature, see the <i>Taxize</i> GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>'
                                           ),
-                                          trigger= "click"),
+                                          placement = "right",
+                                          options = list(container = "body"),
+                                          trigger="hover"),
                                           actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                    )),
                         ),
@@ -608,7 +612,7 @@ shinyUI(fluidPage(
                                           #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
                                           #mainPanel(plotOutput("geo_pie")),
                                           titlePanel("Summary of Search Results"),
-                                          p("For each barcode we display the total number of sequences found and the number of organisms with at least one or no sequence"),
+                                          p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
                                           DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel(condition = "output.BOLDSummaryData",
                                                            #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
@@ -620,7 +624,7 @@ shinyUI(fluidPage(
                         tabPanel("Coverage Matrix",
                                  column(12, align="center", style='padding-top:15px',
                                         titlePanel("Sequences Found for each Species Classified by Barcode"),
-                                        p("Total number of sequences found for each species classified into the different barcodes found."),
+                                        p("Total number of entries found for each species classified into the different barcodes found."),
                                         p("The different barcodes found in BOLD are ordered left to right from most to least results"),
                                         DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                         conditionalPanel(condition = "output.BOLDcoverageResults",
@@ -644,7 +648,7 @@ shinyUI(fluidPage(
                                           downloadButton('downloadBoldPresent', "Download entries per country table"),
                                           
                                           titlePanel("Suggested countries to add to your filter"),
-                                          p("For those species that have no sequences found in the country(s) filtered we provide 
+                                          p("For those species that have no barcodes found in the country(s) filtered we provide 
                                  the top 3 unselected countries with the most sequence results."),
                                           DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
                                           downloadButton('downloadBoldAbsent', "Download suggested country filters table")
