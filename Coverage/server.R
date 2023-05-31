@@ -1289,7 +1289,7 @@ shinyServer(function(input, output, session) {
       }
     )
     
-    # * BOLDSummaryDownload ------------------------------------------------------------
+    # * BOLDSummaryDownload ----------------------------------------------------
     
     output$downloadBoldSummary <- downloadHandler(
       filename = function() {
@@ -1299,6 +1299,21 @@ shinyServer(function(input, output, session) {
         summary_report(2) %...>% {
           report <- .
           write.csv(report, file)
+        }
+      }
+    )
+    
+    # * BOLD Coverage Matrix Download ------------------------------------------
+    output$downloadBoldMatrix <- downloadHandler(
+      filename = function() {
+        paste("BOLD_Coverage_Matrix", ".csv", sep="")
+      },
+      content = function(file) {
+        BoldMatrix() %...>% {
+          results <- bold_functions$reduce_barcode_summary(
+            bold_functions$barcode_summary(.)
+          )
+          write.csv(results,file)
         }
       }
     )

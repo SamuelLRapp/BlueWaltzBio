@@ -622,7 +622,10 @@ shinyUI(fluidPage(
                                         DT::dataTableOutput("BOLDcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                         conditionalPanel(condition = "output.BOLDcoverageResults",
                                                          #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
-                                                         downloadButton('downloadBoldFasta',"Download Fasta Files"))),
+                                                         downloadButton('downloadBoldFasta',"Download Fasta Files"),
+                                                         downloadButton('downloadBoldMatrix', "Download Counts Table")
+                                        )
+                                  ),
                         ),
                         tabPanel("Country Data",
                                  # Application title
