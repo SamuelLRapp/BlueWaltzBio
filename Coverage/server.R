@@ -1238,7 +1238,17 @@ shinyServer(function(input, output, session) {
     output$selectCountry <- renderUI({
       boldCoverage() %...>% {
         coverage <- .
-        selectizeInput(inputId="selectCountry", label=HTML("Select Country(s) You Wish to Filter By <br> (Please click on the dropdown below to view all the possible countries)"), choices=coverage$countries, selected = NULL, multiple = TRUE,options = NULL, width = 500)
+        div(
+          style = "padding: 2px; background-color: lightgray; width: 100%; border-radius: 10px; border: 2px solid black;",
+          titlePanel("Country Filter"),
+          selectizeInput(inputId="selectCountry", 
+                         label=HTML("Select Country(s) You Wish to Filter By <br> (Please click on the dropdown below to view all the possible countries)"), 
+                         choices=coverage$countries, 
+                         selected = NULL, multiple = TRUE,options = NULL, width = 500),
+          div(
+            actionButton('BOLDClearFilter',"Remove Countries From Filter"),
+          ),
+        )
       }
     })
 

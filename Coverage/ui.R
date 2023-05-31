@@ -510,19 +510,7 @@ shinyUI(fluidPage(
                                    ),
                                    # First column set with the dropdown country filtero
                                    column(6, align="center", offset = 3,
-                                          div( id = "my-div",
-                                               style = "padding: 2px; background-color: lightgray; width: 100%; border-radius: 10px; border: 2px solid black;",
-                                               conditionalPanel(condition = "output.selectCountry",
-                                                                titlePanel("Country Filter"),
-                                               ),
-                                               uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
-                                               conditionalPanel(condition = "output.selectCountry",
-                                                                # tags$style(".buttonClass button { transform: scale(1.1); transform-origin: center top; justify-content: center;}"),
-                                                                div(
-                                                                  actionButton('BOLDClearFilter',"Remove Countries From Filter"),
-                                                                ),
-                                               ),
-                                          ),
+                                          uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
                                    )),
                                  
                                  # OLd left aligned  button leaving it here cause it may be useful for future reference
