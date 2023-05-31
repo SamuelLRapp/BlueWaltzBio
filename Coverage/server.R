@@ -1333,7 +1333,7 @@ shinyServer(function(input, output, session) {
     
     
     # * BOLD Recommended Countries Download ------------------------------------------
-    output$downloadBoldPresent <- downloadHandler(
+    output$downloadBoldAbsent <- downloadHandler(
       filename = function() {
         paste("BOLD_Recommended_Country_Filters", ".csv", sep="")
       },
@@ -1345,6 +1345,19 @@ shinyServer(function(input, output, session) {
           )
           write.csv(results, file)
         })
+      }
+    )
+    
+    # * BOLD NA Barcodes Download ------------------------------------------
+    output$downloadBoldNaBarcodes <- downloadHandler(
+      filename = function() {
+        paste("BOLD_NA_Barcodes", ".csv", sep="")
+      },
+      content = function(file) {
+        BoldMatrix() %...>% {
+          results <- bold_functions$naBarcodes(.)
+          write.csv(results,file)
+        }
       }
     )
     
