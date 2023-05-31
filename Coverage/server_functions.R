@@ -269,13 +269,18 @@ getDbToSearch <- function(selectedOption){
 # The second list item is a vector of uids retrieved from the
 # NCBI search.
 getNcbiSearchResults <- 
-  function(dbToSearch, genomeList, parameters, columnNames) {
+  function(dbToSearch, genomeList, parameters, columnNames, progress) {
     Results <- data.frame(matrix(0, ncol = 2, nrow = length(genomeList)))
     names(Results) <- columnNames
     uids <- c()
-    if (0 < length(genomeList)) {
+    genomeListLength <- length(genomeList) 
+    if (0 < genomeListLength) {
+      genomesDownloaded <- 0
+      progress$set(detail = paste0("0","/",genomeListLength))
       for (i in 1:length(genomeList)){
         sleep()
+        progress$set(message = paste0("Retrieving barcodes for ", genomeList[i]))
+        progress$inc(amount = 0.5/genomeListLength)
         searchTerm <- paste0('', genomeList[i], '[ORGN]', parameters, '')
         searchResult <- tryCatch({            
           genome_result <- entrez_search(
@@ -295,8 +300,13 @@ getNcbiSearchResults <-
           Results[i, 1] <- "Error"
           Results[i, 2] <- "Error"
         }
+        genomesDownloaded <- genomesDownloaded + 1
+        progress$set(message = paste0("Retrieved barcodes for ", genomeList[i]),
+                     detail = paste0(genomesDownloaded,"/",genomeListLength))
+        progress$inc(amount = 0.5/genomeListLength)
       }
     }
+    progress$close()
     list(Results, uids)
   }
 
@@ -312,7 +322,7 @@ getNcbiSearchResults <-
 # a vector of uids (see getNcbiSearchResults), and the second 
 # value is the vector of organism names processed from the 
 # organism name text box.
-getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqChecked) {
+getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqChecked, progress) {
   databaseOption <- getDbToSearch(dbOption)
   organismList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
   dfColumnNames <- getColumnNames(dbOption)
@@ -321,7 +331,8 @@ getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqCh
     databaseOption,
     organismList,
     parameters,
-    dfColumnNames),
+    dfColumnNames,
+    progress),
     organismList)
 }
 
