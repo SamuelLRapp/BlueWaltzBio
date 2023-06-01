@@ -944,7 +944,7 @@ shinyServer(function(input, output, session) {
       input$BOLDorganismList #Returns as a string
     })
     
-    progress <- NULL
+    progressBOLD <- NULL
     observeEvent(input$BOLDsearchButton, {
       updateTabsetPanel(session, "BOLDpage", selected = "Species Not Found in BOLD Database")
       shinyjs::show(id = "BOLDNullSpecies")
@@ -1072,8 +1072,8 @@ shinyServer(function(input, output, session) {
                                detail = paste0(organismsDownloaded,"/",organismListLength))
               progressBOLD$inc(amount = 0.5/organismListLength)
             }
-            results <- list(results=results, countries=countries, "Missing Species"=unfound_species)
             progressBOLD$close()
+            results <- list(results=results, countries=countries, "Missing Species"=unfound_species)
           }) %...>% {
             if(searchResult == 1){
               print("BOLD is down")
