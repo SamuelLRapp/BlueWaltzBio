@@ -324,7 +324,8 @@ getNcbiSearchResults <-
 # organism name text box.
 getGenomeSearchFullResults <- function(dbOption, orgList, taxizeOption, refSeqChecked, progress) {
   databaseOption <- getDbToSearch(dbOption)
-  organismList <- orgListHelper$taxizeHelper(orgList, taxizeOption)
+  taxize_results <- orgListHelper$taxizeHelper(orgList, taxizeOption)
+  organismList <- taxize_results$results
   dfColumnNames <- getColumnNames(dbOption)
   parameters <- getNcbiSearchParameters(dbOption, refSeqChecked)
   list(getNcbiSearchResults(
