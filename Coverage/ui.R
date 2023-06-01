@@ -595,7 +595,10 @@ shinyUI(fluidPage(
                         tabPanel("Species Not Found in BOLD Database",
                           column(12, align="center", offset=0,style='padding-top:15px',
                             titlePanel("Species not found in BOLD database"),
-                            p("List of species that were not found when searching the BOLD database, if the species are not displayed in this table then they have results in the BOLD database. Additionally, the results in this table are not affected by the Country or NCBI filter"),
+                            p("List of species that were not found when searching the BOLD database, 
+                              if the species are not displayed in this table then they have results in the BOLD database. 
+                              Additionally, the results in this table are not affected by the Country or NCBI filter"),
+                            tags$div(id="loaderWrapperBOLD"),
                             DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")
                         )),
                         tabPanel("Filters",
