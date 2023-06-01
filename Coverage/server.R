@@ -306,11 +306,19 @@ shinyServer(function(input, output, session) {
     taxizeBool <- input$CRUXtaxizeOption
     future_promise({
       result <- orgListHelper$taxizeHelper(orgSearch, taxizeBool)
+    }) %...>% {
+      result <- .
       if(result$status == 1){
-        shinyalert("Taxize ran into an error. Please try again later")
+        shinyalert("Taxize ran into an error", 
+                   text = "Unfortunately, some errors occured while running taxize. 
+                   Please make sure you have added your own NCBI key to make sure you don't run into Rate Limiting errors.
+                   If you have already added an NCBI key, then Taxize is most likely down and you may need to try again later.",
+                   html = TRUE,
+                   type = "warning")
       }
       result$results
-    })
+    }
+    
   })
   
   
