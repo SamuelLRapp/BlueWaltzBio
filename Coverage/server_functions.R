@@ -355,15 +355,24 @@ cruxDbList <- list(
 # remaining three values are empty vectors, left in place
 # in case the previous homonym failure notification scheme
 # is wanted. 
-getCruxSearchFullResults <- function(organismList) {
+getCruxSearchFullResults <- function(organismList, progress) {
   nameUidList <- getHomonyms(organismList)
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
-  for (i in 1:length(nameList)) {
+  nameListLength <- length(nameList)
+  progress$set(detail = paste0("0","/",nameListLength))
+  for (i in 1:nameListLength) {
+    progress$set(message = paste0("Retrieving barcodes for ", nameList[i]))
+    progress$inc(amount = 0.5/nameListLength)
+    
     searchTerm <- getSearchTerm(nameList[i], uidList[i])
     results <- cruxOrgSearch(
       results, searchTerm, nameList[i])
+    
+    progress$set(message = paste0("Retrieved barcodes for ", nameList[i]),
+                 detail = paste0(i,"/",nameListLength))
+    progress$inc(amount = 0.5/nameListLength)
   }
   results <- getCruxResultsMatrix(
     results, length(nameList))
@@ -375,6 +384,7 @@ getCruxSearchFullResults <- function(organismList) {
       errorPopupList = c(),
       errorPopupListFound = c()
     )
+  progress$close()
   results
 }
 

@@ -294,7 +294,8 @@ shinyServer(function(input, output, session) {
   )
 
 # CRUX ----------------------------------------------------------------------
-  
+  # progress bar object
+  progressCRUX <- NULL
   # * CRUXSearchButton --------------------------------------------------------
   
   CRUXOrgList <- eventReactive(input$searchButton, {
@@ -325,7 +326,7 @@ shinyServer(function(input, output, session) {
   cruxOrgSearch <- reactive({
     organismListGet() %...>% {
       future_promise(
-        server_functions$getCruxSearchFullResults(.))
+        server_functions$getCruxSearchFullResults(., progressCRUX))
     }
   })
     
@@ -335,6 +336,15 @@ shinyServer(function(input, output, session) {
   observeEvent(input$searchButton, {
     # Begin CRUX search
     updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
+    progressCRUX <<-
+      AsyncProgress$new(
+        session,
+        min = 0,
+        max = 1,
+        message = "Retrieving...",
+        value = 0
+      )
+    js$setLoaderAppearance("NCBI") #This may need to be changed?
     showTab("CRUXpage", "Summary Results")
     showTab("CRUXpage", "Coverage Matrix")
   })
