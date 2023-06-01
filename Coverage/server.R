@@ -317,6 +317,7 @@ shinyServer(function(input, output, session) {
                    html = TRUE,
                    type = "warning")
       }
+      showTab("CRUXpage", "Coverage Matrix")
       result$results
     }
     
@@ -346,7 +347,6 @@ shinyServer(function(input, output, session) {
       )
     js$setLoaderAppearance("CRUX") #This may need to be changed?
     showTab("CRUXpage", "Summary Results")
-    showTab("CRUXpage", "Coverage Matrix")
   })
   
   observeEvent(input$detailsButton, {
@@ -479,8 +479,11 @@ shinyServer(function(input, output, session) {
         progressNCBI$inc(amount = 0.5/organismListLength)
       }
       progressNCBI$close()
-      list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
-    })
+      results <- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
+    })%...>% {
+      showTab("NCBIpage", "Coverage Matrix")
+      results <- .
+    }
   })
   
   # * NCBI pipeline step display handlers --------------------------------------
@@ -496,7 +499,6 @@ shinyServer(function(input, output, session) {
         value = 0
       )
     js$setLoaderAppearance("NCBI")
-    showTab("NCBIpage", "Coverage Matrix")
     showTab("NCBIpage", "Summary Results")
   })
   
