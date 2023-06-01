@@ -523,16 +523,24 @@ shinyUI(fluidPage(
                                  
                                  fluidRow(
                                    column(8, align="center", offset = 2,
-                                          div(
-                                            titlePanel("Find BOLD database coverage of your organisms of interest"),
-                                            style = "padding-top: 20px; padding-bottom: 80px;"
-                                          ),
-                                          fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
-                                          actionButton("BOLDStartButton", "Manually enter & adjust Organism name inputs"),
+                                            titlePanel("Welcome to the BOLD Metabarcoding Pipeline"),
+                                            p("The BOLD, Barcode of Life, pipeline of the Reference Sequence Browser (RSB) is designed to screen the BOLD 
+                                              database for genetic barcode coverage using a list of scientific names provided by the user. Once inputted, 
+                                              the application will conduct a search on the most up to date version of the BOLD database using the BOLD Systems API Package for R."),
+                                            p("The tool allows users to manipulate the results gathered by prompting the user to filter results by country 
+                                              of origin and by giving the option to remove entries also present in NCBI. All subsequent tables and visualizations 
+                                              are based on this filtering, which can be changed by returning to the appropriate tabs at any time."),
+                                            p(style="padding-bottom:40px", "Like the other database pipelines, the app produces a CM where the organism names are rows, gene names are columns, 
+                                              and each intersection of a row and column shows how many records are in the BOLD database. The app also creates 
+                                              a statistical summary of the CM and users may download the associated FASTA files. Afterwards, a variety of tables 
+                                              and graphs to help users analyze the data and fine tune their filters.")
+                                           
                                    )
                                  ),
                                  fluidRow(
                                    column(6, align="center", offset = 3,
+                                          fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
+                                          actionButton("BOLDStartButton", "Manually enter & adjust Organism name inputs"),
                                           HTML("<br><br>"),
                                           actionButton("BOLDUserGuide", 
                                                        "BOLD User Guide", 
