@@ -128,7 +128,7 @@ shinyUI(fluidPage(
                         id = "CRUXpage",
                         tabPanel("Start Your CRUX Search",
                                  # Application title
-                                 h3("Welcome to the CRUX Metabarcoding Pipeline"),
+                                 titlePanel("Welcome to the CRUX Metabarcoding Pipeline"),
                                  mainPanel(
                                    p(HTML('&emsp;'), "The CRUX pipeline of RSB takes in a list of organism(s) and searches through the seven publically available CALeDNA 
                                      CRUX Metabarcode databases to find how many records match the search. The RSB searches through a copy of these databases that are 
@@ -287,7 +287,19 @@ shinyUI(fluidPage(
                         id = "NCBIpage",
                         tabPanel("Start Your NCBI Search",
                                  # Application title
-                                 titlePanel("Find NCBI records of your organisms and barcodes of interest"),
+                                 titlePanel("Welcome to the NCBI Nucleotide Pipeline"),
+                                 mainPanel(
+                                   p("The NCBI Nucleotide pipeline of RSB takes in a list of organism(s) and barcode-gene(s) of interest and then directly queries the Nucleotide database
+                                     using the Rentrez package to find how many records match the search. To further tailor the search, users are able to:"),
+                                   tags$ol(
+                                     tags$li("Set minimum and maximum sequence lengths parameters"),
+                                     tags$li("Utilize the package Taxize to append synonyms and correct spelling mistakes of organism names"),
+                                     tags$li("Choose to search for results either within all fields or specifically in the organism and/or gene metadata fields of NCBI data.")
+                                   ),
+                                   p("The tool then showcases a Coverage Matrix (CM), described on the RSB home page, a statistical summary of the CM, and the search statements used to query
+                                     NCBI Nucleotide. Users are able to download the results showcased and FASTA and GenBank files up to a preset limit. Greater detail for the options and displays 
+                                     are provided in the relevant portions of the pipeline.")
+                                 ),
                                  fluidRow(
                                    column(6, align="center", offset = 3, style='padding-top:100px;',
                                           fileInput("uNCBIfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
