@@ -211,8 +211,10 @@ shinyUI(fluidPage(
                                  # Show a plot of the generated distribution
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
-                                          titlePanel("Summary of Search Results"),
-                                          p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
+                                          conditionalPanel( condition = "output.CRUXSummaryResults",
+                                              titlePanel("Summary of Search Results"),
+                                              p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
+                                          ),
                                           tags$div(id="loaderWrapperCRUX"),
                                           DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.CRUXSummaryResults",
@@ -404,8 +406,10 @@ shinyUI(fluidPage(
                                  # Show a plot of the generated distribution
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
-                                          titlePanel("Summary of Search Results"),
-                                          p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
+                                          conditionalPanel( condition = "output.NCBISummaryResults",
+                                              titlePanel("Summary of Search Results"),
+                                              p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
+                                          ),
                                           tags$div(id="loaderWrapperNCBI"),
                                           DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.NCBISummaryResults",
@@ -501,7 +505,9 @@ shinyUI(fluidPage(
                                  # Show a plot of the generated distribution and the corresponding buttons
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
-                                          titlePanel("Number of Sequences Found per Organism"),
+                                          conditionalPanel( condition = "output.genomeResults",
+                                              titlePanel("Number of Sequences Found per Organism"),
+                                          ),
                                           tags$div(id="loaderWrapperFullGenome"),
                                           DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.genomeResults",                            
@@ -594,10 +600,12 @@ shinyUI(fluidPage(
                         ),
                         tabPanel("Species Not Found in BOLD Database",
                           column(12, align="center", offset=0,style='padding-top:15px',
-                            titlePanel("Species not found in BOLD database"),
-                            p("List of species that were not found when searching the BOLD database, 
-                              if the species are not displayed in this table then they have results in the BOLD database. 
-                              Additionally, the results in this table are not affected by the Country or NCBI filter"),
+                            conditionalPanel(condition = "output.BOLDNullSpecies", 
+                                titlePanel("Species not found in BOLD database"),
+                                p("List of species that were not found when searching the BOLD database, 
+                                  if the species are not displayed in this table then they have results in the BOLD database. 
+                                  Additionally, the results in this table are not affected by the Country or NCBI filter")
+                            ),
                             tags$div(id="loaderWrapperBOLD"),
                             DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")
                         )),
@@ -706,21 +714,19 @@ shinyUI(fluidPage(
                                           # downloadButton('downloadTreeGraph',"Download Graph"),
                                           
                                    ),
-                                   column(2, align="center", style='padding-top:15px',
+                                   column(2, align="left", style='padding-top:15px',
                                           downloadButton('downloadTreeGraph',"Download Graph"),
                                    ),
                                  ),
                         ),
                         tabPanel("Plot Unique Species Per Country",
                                  fluidRow(
-                                   column(12, align="center", style='padding-top:15px',
+                                   column(10, align="center", style='padding-top:15px',
                                           mainPanel(plotOutput('species')),
-                                          downloadButton('downloadBarGraph',"Download Graph"))
-                                   
                                  ),
-                                 #   column(2, align="center", style='padding-top:15px', 
-                                 #     downloadButton('downloadBarGraph',"Download Graph"))
-                                 # ),
+                                   column(2, align="left", style='padding-top:15px',
+                                     downloadButton('downloadBarGraph',"Download Graph"))
+                                 ),
                         ),
                         tabPanel("Manual Data Processing Required",
                                  column(12, align="center", offset=0,style='padding-top:15px', 
