@@ -128,22 +128,17 @@ shinyUI(fluidPage(
                         id = "CRUXpage",
                         tabPanel("Start Your CRUX Search",
                                  # Application title
-                                 titlePanel("Find CRUX database coverage of your organisms of interest"),
+                                 h3("Welcome to the CRUX Metabarcoding Pipeline"),
                                  mainPanel(
-                                   h4("What does the CRUX Coverage Matrix do?"),
-                                   p(HTML('&emsp;'), "The ‘CRUX Coverage Matrix’ returns a value that represents how many reference sequences exist for the user’s organism search term(s) in each public database. When direct matches are not found in a database, the tool will instead search for lower taxonomic ranks until a match is found. When a metabarcoding study is being performed, it is critical to confirm the existence of and obtain the reference sequences of organisms of interest, as well as the taxonomic resolution of said sequences, and what metabarcoding loci the reference sequences belong to. (See additional information for more details) CRUX databases are designed to be shared, and this tool allows users to assess whether the public CRUX databases meet their study’s taxonomic requirements. "),
-                                   p(HTML('&emsp;'), "The ‘CRUX Coverage Matrix’ searches by taxonomic ranks: domain, phylum, class, order, family, genus, genus-spp.The rows of the table produced are the organism search terms, and the columns are CRUX databases: 16S,  12S, 18S, PITS, CO1, FITS, trnL, Vertebrate."),
-                                   p("The cells will show one of the following: "),
-                                   p("1) The number of sequences in a database, if direct matches are found",  HTML("<br/>"), "2) If no direct matches are found, the next most specific taxonomic rank found", HTML("<br/>"), "3) “0” if nothing is found at any taxonomic rank."),#The list
-                                   p(), #empty space 
-                                   
-                                   p(), #for aesthetics
-                                   
-                                   # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                                   h4("Additional Information:"),
-                                   dropdown(p(HTML('&emsp;'), "CRUX databases are metabarcode specific, which means each database is oriented around one specific genetic loci that is shared across the organisms in a given CRUX reference database. For example, the 16S ribosomal RNA metabarcoding loci specifically works well in identifying bacteria and archaea, while the trnL Chloroplast UAA loci is specifically useful for identifying plants."), label="Why are there multiple databases? How are they different?"),
-                                   dropdown(p(HTML('&emsp;'), "Taxonomic resolution is the taxonomic rank to which a DNA sequence can successfully be matched to an organism. The highest taxonomic resolution possible is genus-species identification, and the lowest resolution is the largest taxonomic grouping domain. The taxonomic resolution required for a study heavily depends on its goals. A metabarcoding biodiversity survey would likely desire the highest taxonomic resolution possible, whereas a study focused on a specific group of organisms may be okay with lower resolution results. Some studies require identification down to the genus or species level, whereas others may find lower taxonomic resolution acceptable.  The ‘CRUX Coverage Matrix’ determines the taxonomic resolution the CALeDNA public reference databases contain for the input set of organisms."), label="What is taxonomic resolution?"), 
-                                   p(), #empty space 
+                                   p(HTML('&emsp;'), "The CRUX pipeline of RSB takes in a list of organism(s) and searches through the seven publically available CALeDNA 
+                                     CRUX Metabarcode databases to find how many records match the search. The RSB searches through a copy of these databases that are 
+                                     updated periodically. The last update was in October 2019. When direct matches are not found in a database, the tool will then search 
+                                     for higher  taxonomic ranks (genus, family, order, class, phylum, domain), via the R package Taxize, until a match is found. I.E if 
+                                     the Giant Seastar (Pisaster giganteus) isn’t found in the COI database the app will search for the presence of the genus Pisaster, and 
+                                     then family Asteriidae and so forth."),
+                                   p(style="padding-bottom:60px", HTML('&emsp;'), "Users are given the choice to utilize the package Taxize to append synonyms and correct spelling mistakes 
+                                     of organism names. The tool then showcases a Coverage Matrix (CM), showing the reference sequence abundance or taxonomic resolution
+                                     for each barcoding loci per organism, and a statistical summary of the CM."),
                                  ),
                                  
                                  fluidRow(
@@ -214,6 +209,7 @@ shinyUI(fluidPage(
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
                                           titlePanel("Summary of Search Results"),
+                                          p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
                                           tags$div(id="loaderWrapperCRUX"),
                                           DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.CRUXSummaryResults",
@@ -226,13 +222,29 @@ shinyUI(fluidPage(
                                  # Application title
                                  # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
                                  # Show a plot of the generated distribution and the corresponding buttons
-                                 fluidRow(
-                                   column(12, align="center", style='padding-top:15px',
-                                          titlePanel("Instances of a organism found in each CRUX metabarcoding database"),
-                                          DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
-                                          conditionalPanel( condition = "output.CRUXcoverageResults",
-                                                            downloadButton('downloadCrux',"Download table"))
-                                   )),
+                                 div(style="padding-top:40px",),
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     p("The ‘CRUX Coverage Matrix’ returns a value that represents how many reference sequences exist for the user’s organism search 
+                                       term(s) in each public database.The rows of the table produced are the organism search terms, and the columns are CRUX databases: 
+                                       16S, 12S, 18S, PITS, CO1, FITS, trnL, Vertebrate."),
+                                     p("The cells will show one of the following"),
+                                     tags$ol(
+                                       tags$li("The number of sequences in a database, if direct matches are found"),
+                                       tags$li("If no direct matches are found, the next most specific taxonomic rank found"),
+                                       tags$li("“0” if nothing is found at any taxonomic rank.")
+                                     )
+                                   ),
+                                   mainPanel(
+                                     column(12, align="center", style='padding-top:15px',
+                                            titlePanel("Instances of a organism found in each CRUX metabarcoding database"),
+                                            DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
+                                            conditionalPanel( condition = "output.CRUXcoverageResults",
+                                                              downloadButton('downloadCrux',"Download table"))
+                                     ) 
+                                   )
+                                   
+                                 )
                                  
                         ),
                         tabPanel("Information",
@@ -376,6 +388,7 @@ shinyUI(fluidPage(
                                  fluidRow(
                                    column(12, align="center", style='padding-top:15px',
                                           titlePanel("Summary of Search Results"),
+                                          p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
                                           tags$div(id="loaderWrapperNCBI"),
                                           DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.NCBISummaryResults",
