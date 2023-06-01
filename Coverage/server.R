@@ -344,7 +344,7 @@ shinyServer(function(input, output, session) {
         message = "Retrieving...",
         value = 0
       )
-    js$setLoaderAppearance("NCBI") #This may need to be changed?
+    js$setLoaderAppearance("CRUX") #This may need to be changed?
     showTab("CRUXpage", "Summary Results")
     showTab("CRUXpage", "Coverage Matrix")
   })
@@ -944,6 +944,7 @@ shinyServer(function(input, output, session) {
       input$BOLDorganismList #Returns as a string
     })
     
+    progress <- NULL
     observeEvent(input$BOLDsearchButton, {
       updateTabsetPanel(session, "BOLDpage", selected = "Species Not Found in BOLD Database")
       shinyjs::show(id = "BOLDNullSpecies")
@@ -961,6 +962,16 @@ shinyServer(function(input, output, session) {
       shinyjs::hide(id = "BOLDSkipFilter")
       shinyjs::hide(id = "BOLDNullSpeciesWarning")
       shinyjs::hide(id = "removeNCBICol")
+      
+      progressBOLD <<-
+        AsyncProgress$new(
+          session,
+          min = 0,
+          max = 1,
+          message = "Retrieving...",
+          value = 0
+        )
+      js$setLoaderAppearance("BOLD")
     })
 
     
@@ -1031,7 +1042,11 @@ shinyServer(function(input, output, session) {
           future_promise({
             records_bold <- NA
             countries <- c()
+            organismsDownloaded <- 0
+            progressBOLD$set(detail = paste0("0","/",organismListLength))
             for(organism in organismList){
+              progressBOLD$set(message = paste0("Retrieving barcodes for ", organism))
+              progressBOLD$inc(amount = 0.5/organismListLength)
               searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
                 searchResult <- 1
@@ -1052,8 +1067,13 @@ shinyServer(function(input, output, session) {
               } else {
                   unfound_species <- c(unfound_species, organism)
               }
+              organismsDownloaded <- organismsDownloaded + 1
+              progressBOLD$set(message = paste0("Retrieved barcodes for ", organism),
+                               detail = paste0(organismsDownloaded,"/",organismListLength))
+              progressBOLD$inc(amount = 0.5/organismListLength)
             }
             results <- list(results=results, countries=countries, "Missing Species"=unfound_species)
+            progressBOLD$close()
           }) %...>% {
             if(searchResult == 1){
               print("BOLD is down")
