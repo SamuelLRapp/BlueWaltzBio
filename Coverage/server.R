@@ -458,7 +458,8 @@ shinyServer(function(input, output, session) {
       uids <- list()
       searchTerms <- list()
       countResults <- list()
-      organismList <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
+      taxize_results <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
+      organismList <- taxize_results$results
       organismsDownloaded <- 0
       organismListLength <- length(organismList)
       progressNCBI$set(detail = paste0("0","/",organismListLength))
@@ -1016,7 +1017,8 @@ shinyServer(function(input, output, session) {
         orgSearch <- BOLDOrgSearch()
         taxize_selected <- input$BOLDtaxizeOption
         future_promise({orgListHelper$taxizeHelper(orgSearch, taxize_selected)}) %...>% {
-          organismList <- .
+          taxize_results <- .
+          organismList <- taxize_results$results
           organismListLength <- length(organismList)
           validate(
             need(organismListLength > 0, 'Please name at least one organism')

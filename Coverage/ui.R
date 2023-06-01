@@ -128,17 +128,20 @@ shinyUI(fluidPage(
                         id = "CRUXpage",
                         tabPanel("Start Your CRUX Search",
                                  # Application title
-                                 titlePanel("Welcome to the CRUX Metabarcoding Pipeline"),
-                                 mainPanel(
-                                   p(HTML('&emsp;'), "The CRUX pipeline of RSB takes in a list of organism(s) and searches through the seven publically available CALeDNA 
-                                     CRUX Metabarcode databases to find how many records match the search. The RSB searches through a copy of these databases that are 
-                                     updated periodically. The last update was in October 2019. When direct matches are not found in a database, the tool will then search 
-                                     for higher  taxonomic ranks (genus, family, order, class, phylum, domain), via the R package Taxize, until a match is found. I.E if 
-                                     the Giant Seastar (Pisaster giganteus) isn’t found in the COI database the app will search for the presence of the genus Pisaster, and 
-                                     then family Asteriidae and so forth."),
-                                   p(style="padding-bottom:60px", HTML('&emsp;'), "Users are given the choice to utilize the package Taxize to append synonyms and correct spelling mistakes 
-                                     of organism names. The tool then showcases a Coverage Matrix (CM), showing the reference sequence abundance or taxonomic resolution
-                                     for each barcoding loci per organism, and a statistical summary of the CM."),
+                                 fluidRow(
+                                   column(8, align="center", offset = 2,
+                                          titlePanel("Welcome to the CRUX Metabarcoding Pipeline")
+                                   ),
+                                   column(8, align="justify", offset = 2,
+                                               p(HTML('&emsp;'), "The CRUX pipeline of RSB takes in a list of organism(s) and searches through the seven publically available CALeDNA 
+                                                 CRUX Metabarcode databases to find how many records match the search. The RSB searches through a copy of these databases that are 
+                                                 updated periodically. The last update was in October 2019. When direct matches are not found in a database, the tool will then search 
+                                                 for higher  taxonomic ranks (genus, family, order, class, phylum, domain), via the R package Taxize, until a match is found. I.E if 
+                                                 the Giant Seastar (Pisaster giganteus) isn’t found in the COI database the app will search for the presence of the genus Pisaster, and 
+                                                 then family Asteriidae and so forth."),
+                                               p(style="padding-bottom:60px", HTML('&emsp;'), "Users are given the choice to utilize the package Taxize to append synonyms and correct spelling mistakes 
+                                                 of organism names. The tool then showcases a Coverage Matrix (CM), showing the reference sequence abundance or taxonomic resolution
+                                                 for each barcoding loci per organism, and a statistical summary of the CM."),
                                  ),
                                  
                                  fluidRow(
@@ -175,7 +178,7 @@ shinyUI(fluidPage(
                                    
                                  
                                  
-                        ),
+                        )),
                         tabPanel("Organism Names",
                                  # Application title
                                  # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
@@ -287,8 +290,10 @@ shinyUI(fluidPage(
                         id = "NCBIpage",
                         tabPanel("Start Your NCBI Search",
                                  # Application title
-                                 titlePanel("Welcome to the NCBI Nucleotide Pipeline"),
-                                 mainPanel(
+                                 column(8, align="center", offset = 2,
+                                        titlePanel("Welcome to the NCBI Nucleotide Pipeline")
+                                 ),
+                                 column(8, align="justify", offset = 2,
                                    p("The NCBI Nucleotide pipeline of RSB takes in a list of organism(s) and barcode-gene(s) of interest and then directly queries the Nucleotide database
                                      using the Rentrez package to find how many records match the search. To further tailor the search, users are able to:"),
                                    tags$ol(
@@ -523,7 +528,9 @@ shinyUI(fluidPage(
                                  
                                  fluidRow(
                                    column(8, align="center", offset = 2,
-                                            titlePanel("Welcome to the BOLD Metabarcoding Pipeline"),
+                                            titlePanel("Welcome to the BOLD Metabarcoding Pipeline")
+                                   ),
+                                   column(8, align="justify", offset = 2,
                                             p("The BOLD, Barcode of Life, pipeline of the Reference Sequence Browser (RSB) is designed to screen the BOLD 
                                               database for genetic barcode coverage using a list of scientific names provided by the user. Once inputted, 
                                               the application will conduct a search on the most up to date version of the BOLD database using the BOLD Systems API Package for R."),
