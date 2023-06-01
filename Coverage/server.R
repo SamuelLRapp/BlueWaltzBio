@@ -1185,7 +1185,7 @@ shinyServer(function(input, output, session) {
           # replace the empty str w/ no country listed
           for (i in 1:length(countries)){
             if (countries[i] == ""){
-              countries[i] = "no country listed"
+              countries[i] = "No Country Listed"
             }
           }
           
@@ -1206,11 +1206,10 @@ shinyServer(function(input, output, session) {
           #          title.legend = "Legend"))
           ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
             geom_treemap() +  
-            #labs(title = "Distribution of Sequence Records Amongst Selected Countries") +
             geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
             ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
             theme(axis.text = element_text(size = theme.size),
-                  axis.title = element_text(size = 20, face = "bold")) 
+                  plot.title = element_text(size = 20, face = "bold")) 
           # how to change the colors + get a legend ?
         }
     }}
