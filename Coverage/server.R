@@ -1316,9 +1316,8 @@ shinyServer(function(input, output, session) {
               #parsing data into fasta file format and storing in fasta_vector
               
               #display species name if subspecies name is not available
-              
-              species_name <- if(is.na(records_bold$subspecies_name[i])) records_bold$species_name[i] else records_bold$subspecies_name[i]
-              
+              species_name <- if(is.na(records_bold$subspecies_name[i]) || records_bold$subspecies_name[i] == "") records_bold$species_name[i] else records_bold$subspecies_name[i]
+
               #put data into vector
               org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
               #remove empty data
