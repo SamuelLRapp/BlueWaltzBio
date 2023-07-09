@@ -66,7 +66,7 @@ summary_report_dataframe <- function(dataframe)
       "Barcodes",
       "Number of Sequences Found",
       "Percent of Total Sequences Found",
-      "Number of Organism with at Least one Sequence",
+      "Number of Organisms with at Least one Sequence",
       "Number of Organisms with no Sequences"
     )
   colnames(statistics_df) <- new_col_names

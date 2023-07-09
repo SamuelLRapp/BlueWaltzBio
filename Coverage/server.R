@@ -1148,7 +1148,7 @@ shinyServer(function(input, output, session) {
           xf <- data.frame(country = countries, values = vals)
           ggplot(data=xf, aes(x = country, y = values)) +
             geom_bar(stat="identity", fill="purple") +
-            labs(y = "# Unique Species", x = "Countries", title = "Number of Unique Species in Selected Countries") +
+            labs(y = "Number of Unique Species", x = "Countries", title = "Number of Unique Species in Selected Countries") +
             scale_y_continuous(limits = c(0, max_uniq_species)) +
             theme(text = element_text(size = 17), axis.ticks.length = unit(0.25, "cm")) +
             coord_flip()
