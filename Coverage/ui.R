@@ -105,16 +105,16 @@ shinyUI(fluidPage(
                                  ". The app is best used prior to conducting metabarcoding to assess reference sequence availability or to download non duplicative FASTA files from BOLD and NCBI to develop local sequence databases for q-pcr development.",
                                  " Each different database can be searched in its own tab in RSB and has its own quick user-guide."),
                                p(style="text-align:left", HTML('&emsp;'), "The tool is built to search for many organisms and genetic barcodes simultaneously and thus can be used in multiple ways to speed up Environmental DNA workflows. Users only need to assemble",
-                                 " a list of organisms in scientific names for the tool to search for reference sequences at known barcoding loci (e.g COI, 16S, 18S, trnL). Only NCBI additionally requires barcode-gene names to complete its Nucleotide search. To make",
+                                 " a list of organisms in scientific names for the tool to search for reference sequences at known barcoding loci (e.g", tags$i("COI,"), tags$i("16S,"), tags$i("18S,"), tags$i("trnL"), "). Only NCBI additionally requires barcode-gene names to complete its Nucleotide search. To make",
                                  " inputting long lists into the app easier, download ", a("this CSV template", href="https://www.bluewaltzbio.com/research/test-our-tool/ncbi-csv-template", target="_blank", rel="noopener noreferrer"), " and fill it out with your organism and barcode names. This template can be uploaded within any database tab."),
                                p(style="text-align:left", HTML('&emsp;'), "The app uses the R packages ‘rentrez’ and ‘bold’ to access the live, up to date NCBI and BOLD databases. RSB retrieves and displays the number of reference sequences in one of the",
-                                 " aforementioned databases for the combination of an organism AND a barcoding loci. For example RSB searches for instances of Canis’s Lupus’s COI barcode-gene. Thus every database tab produces a Coverage Matrix (CM) with organism",
+                                 " aforementioned databases for the combination of an organism AND a barcode. For example, RSB searches for instances of", tags$i("Canis Lupus’s COI"), "barcode-gene. Thus every database tab produces a Coverage Matrix (CM) with organism",
                                  " names as rows and barcoding loci as columns, with cells that display the number of reference sequences retrieved. Each tab also includes summary statistics and tab specific visualizations/tables to help make sense of searches of numerous species and barcodes." ),
                                p(style="text-align:left", HTML('&emsp;'), "In addition to previewing what sequences are available in the CM tables, users are able to download the sequences in FASTA file format (excluding CRUX); which can then easily be imported into various genomics softwares",
                                  " (e.g Geneious, etc). The RSB BOLD database search allows users to exclude entries also in NCBI Nucleotide from the BOLD CM results, visualizations, and FASTA downloads. This allows users to avoid downloading duplicate FASTA files between BOLD and NCBI Nucleotide."),
                                h4("Use cases:"),
                                p(style="text-align:left", HTML('&emsp;'), "RSB can be used to improve the workflow of species specific q-pcr development for eDNA applications (Klymus 1). If you are interested in developing a species specific q-primer, RSB can be used to rapidly create a non-duplicative local sequence database by downloading FASTA files from the NCBI and BOLD tabs."),
-                               p(style="text-align:left", HTML('&emsp;'), "RSB can also be used to determine what organisms can and to what be detected by metabarcoding and which metabarcodes fit your study needs This can be determined by searching in the seven metabarcoding databases (", tags$i("16S,"), tags$i("12S,"), tags$i("18S,"), tags$i("PITS,"), tags$i("CO1,"), tags$i("FITS,"), "and", tags$i("trnL"), ") in the CRUX tab or in the BOLD tab."),
+                               p(style="text-align:left", HTML('&emsp;'), "RSB can also be used to determine what organisms can and to what be detected by metabarcoding and which metabarcodes fit your study needs This can be determined by searching in the seven metabarcoding databases (", tags$i("16S,"), "Vertebrate", tags$i("12S,"), tags$i("18S,"), "Plant", tags$i("ITS1,"), tags$i("CO1,"), "Fungal", tags$i("ITS2,"), "and", tags$i("trnL"), ") in the CRUX tab or in the BOLD tab."),
                                p(style="text-align:left", HTML('&emsp;'), "Additionally, If you are interested in finding full mitochondrial or chloroplast genomes in NCBI Nucleotide or entries in NCBI Genome go to the full genome tab. Guides to the aforementioned processes can be found lower down on this page."),
                                p(style="text-align:left", HTML('&emsp;'), "Lastly, we hope this tool may be used to point to taxonomic groups lacking publically available reference sequences and thus aid in creating more deliberate and specific sequencing efforts."),
                                p(style="text-align:left;padding-top:30px", HTML('&emsp;'), "This rShiny app was built in part to bridge the gap between eDNA scientists and large genomics databases by providing efficient and high throughput access to NCBI, BOLD, and CRUX databases without the user having to write a single line of code. Click on one of the tabs to get started."),
@@ -136,12 +136,12 @@ shinyUI(fluidPage(
                                                p(HTML('&emsp;'), "The CRUX pipeline of RSB takes in a list of organism(s) and searches through the seven publically available CALeDNA 
                                                  CRUX Metabarcode databases to find how many records match the search. The RSB searches through a copy of these databases that are 
                                                  updated periodically. The last update was in October 2019. When direct matches are not found in a database, the tool will then search 
-                                                 for higher  taxonomic ranks (genus, family, order, class, phylum, domain), via the R package 'Taxize', until a match is found. I.E if 
+                                                 for higher  taxonomic ranks (genus, family, order, class, phylum, domain), via the R package 'Taxize', until a match is found. For example, if 
                                                  the Giant Seastar (", tags$i("Pisaster giganteus"), ") isn’t found in the ", tags$i("COI"), " database the app will search for the presence of the genus", tags$i("Pisaster,"), " and 
                                                  then family ", tags$i("Asteriidae"), " and so forth."),
                                                p(style="padding-bottom:60px", HTML('&emsp;'), "Users are given the choice to utilize the package 'Taxize' to append synonyms and correct spelling mistakes 
                                                  of organism names. The tool then showcases a Coverage Matrix (CM), showing the reference sequence abundance or taxonomic resolution
-                                                 for each barcoding loci per organism, and a statistical summary of the CM."),
+                                                 for each marker/gene per organism, and a statistical summary of the CM."),
                                  ),
                                  
                                  fluidRow(
@@ -232,7 +232,7 @@ shinyUI(fluidPage(
                                    sidebarPanel(
                                      p("The ‘CRUX Coverage Matrix’ returns a value that represents how many reference sequences exist for the user’s organism search 
                                        term(s) in each public database.The rows of the table produced are the organism search terms, and the columns are CRUX databases: ",
-                                       tags$i("16S,"), tags$i("12S,"), tags$i("18S,"), tags$i("PITS,"), tags$i("CO1,"), tags$i("FITS,"), "and", tags$i("trnL.")),
+                                       tags$i("16S,"), "Vertebrate", tags$i("12S,"), tags$i("18S,"), "Plant", tags$i("ITS1,"), tags$i("CO1,"), "Fungal", tags$i("ITS2,"), "and", tags$i("trnL.")),
                                      p("The cells will show one of the following"),
                                      tags$ol(
                                        tags$li("The number of sequences in a database, if direct matches are found"),
