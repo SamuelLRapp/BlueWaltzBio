@@ -114,7 +114,7 @@ shinyUI(fluidPage(
                                  " (e.g Geneious, etc). The RSB BOLD database search allows users to exclude entries also in NCBI Nucleotide from the BOLD CM results, visualizations, and FASTA downloads. This allows users to avoid downloading duplicate FASTA files between BOLD and NCBI Nucleotide."),
                                h4("Use cases:"),
                                p(style="text-align:left", HTML('&emsp;'), "RSB can be used to improve the workflow of species specific q-pcr development for eDNA applications (Klymus 1). If you are interested in developing a species specific q-primer, RSB can be used to rapidly create a non-duplicative local sequence database by downloading FASTA files from the NCBI and BOLD tabs."),
-                               p(style="text-align:left", HTML('&emsp;'), "RSB can also be used to determine what organisms can and to what be detected by metabarcoding and which metabarcodes fit your study needs This can be determined by searching in the seven metabarcoding databases (16S,  12S, 18S, ITS1, CO1, ITS2, trnL) in the CRUX tab or in the BOLD tab."),
+                               p(style="text-align:left", HTML('&emsp;'), "RSB can also be used to determine what organisms can and to what be detected by metabarcoding and which metabarcodes fit your study needs This can be determined by searching in the seven metabarcoding databases (", tags$i("16S,"), tags$i("12S,"), tags$i("18S,"), tags$i("PITS,"), tags$i("CO1,"), tags$i("FITS,"), "and", tags$i("trnL"), ") in the CRUX tab or in the BOLD tab."),
                                p(style="text-align:left", HTML('&emsp;'), "Additionally, If you are interested in finding full mitochondrial or chloroplast genomes in NCBI Nucleotide or entries in NCBI Genome go to the full genome tab. Guides to the aforementioned processes can be found lower down on this page."),
                                p(style="text-align:left", HTML('&emsp;'), "Lastly, we hope this tool may be used to point to taxonomic groups lacking publically available reference sequences and thus aid in creating more deliberate and specific sequencing efforts."),
                                p(style="text-align:left;padding-top:30px", HTML('&emsp;'), "This rShiny app was built in part to bridge the gap between eDNA scientists and large genomics databases by providing efficient and high throughput access to NCBI, BOLD, and CRUX databases without the user having to write a single line of code. Click on one of the tabs to get started."),
@@ -231,8 +231,8 @@ shinyUI(fluidPage(
                                  sidebarLayout(
                                    sidebarPanel(
                                      p("The ‘CRUX Coverage Matrix’ returns a value that represents how many reference sequences exist for the user’s organism search 
-                                       term(s) in each public database.The rows of the table produced are the organism search terms, and the columns are CRUX databases: 
-                                       16S, 12S, 18S, PITS, CO1, FITS, trnL, Vertebrate."),
+                                       term(s) in each public database.The rows of the table produced are the organism search terms, and the columns are CRUX databases: ",
+                                       tags$i("16S,"), tags$i("12S,"), tags$i("18S,"), tags$i("PITS,"), tags$i("CO1,"), tags$i("FITS,"), "and", tags$i("trnL.")),
                                      p("The cells will show one of the following"),
                                      tags$ol(
                                        tags$li("The number of sequences in a database, if direct matches are found"),
