@@ -139,7 +139,7 @@ shinyUI(fluidPage(
                                                  for higher  taxonomic ranks (genus, family, order, class, phylum, domain), via the R package “Taxize”, until a match is found. For example, if 
                                                  the Giant Seastar (", tags$i("Pisaster giganteus"), ") isn’t found in the ", tags$i("COI"), " database the app will search for the presence of the genus", tags$i("Pisaster,"), " and 
                                                  then family ", tags$i("Asteriidae"), " and so forth."),
-                                               p(style="padding-bottom:60px", HTML('&emsp;'), "Users are given the choice to utilize the package “Taxize” to append synonyms and correct spelling mistakes 
+                                               p(style="padding-bottom:60px", HTML('&emsp;'), "Users are given the choice to use the package “Taxize” to append synonyms and correct spelling mistakes 
                                                  of organism names. The tool then showcases a Coverage Matrix (CM), showing the reference sequence abundance or taxonomic resolution
                                                  for each marker/gene per organism, and a statistical summary of the CM."),
                                  ),
@@ -213,7 +213,7 @@ shinyUI(fluidPage(
                                    column(12, align="center", style='padding-top:15px',
                                           conditionalPanel( condition = "output.CRUXSummaryResults",
                                               titlePanel("Summary of Search Results"),
-                                              p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
+                                              p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                                           ),
                                           tags$div(id="loaderWrapperCRUX"),
                                           DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
@@ -300,7 +300,7 @@ shinyUI(fluidPage(
                                      using the “Rentrez” package to find how many records match the search. To further tailor the search, users are able to:"),
                                    tags$ol(
                                      tags$li("Set minimum and maximum sequence lengths parameters"),
-                                     tags$li("Utilize the package “Taxize” to append synonyms and correct spelling mistakes of organism names"),
+                                     tags$li("Use the package “Taxize” to append synonyms and correct spelling mistakes of organism names"),
                                      tags$li("Choose to search for results either within all fields or specifically in the organism and/or gene metadata fields of NCBI data.")
                                    ),
                                    p("The tool then showcases a Coverage Matrix (CM), described on the RSB home page, a statistical summary of the CM, and the search statements used to query
@@ -408,7 +408,7 @@ shinyUI(fluidPage(
                                    column(12, align="center", style='padding-top:15px',
                                           conditionalPanel( condition = "output.NCBISummaryResults",
                                               titlePanel("Summary of Search Results"),
-                                              p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
+                                              p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                                           ),
                                           tags$div(id="loaderWrapperNCBI"),
                                           DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
@@ -546,7 +546,7 @@ shinyUI(fluidPage(
                                             p(style="padding-bottom:40px", "Like the other database pipelines, the app produces a CM where the organism names are rows, gene names are columns, 
                                               and each intersection of a row and column shows how many records are in the BOLD database. The app also creates 
                                               a statistical summary of the CM and users may download the associated FASTA files. Afterwards, a variety of tables 
-                                              and graphs to help users analyze the data and fine tune their filters.")
+                                              and graphs are presented to help users analyze the data and fine tune their filters.")
                                            
                                    )
                                  ),
@@ -663,7 +663,7 @@ shinyUI(fluidPage(
                                           #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
                                           #mainPanel(plotOutput("geo_pie")),
                                           titlePanel("Summary of Search Results"),
-                                          p("For each barcode we display the total number of entries found and the number of organisms with at least one or no sequence"),
+                                          p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                                           DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel(condition = "output.BOLDSummaryData",
                                                            #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
