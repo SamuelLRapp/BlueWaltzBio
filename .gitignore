@@ -6,3 +6,4 @@
 *.sqlite
 .DS_Store
 *.fasta
+Coverage/tests/Unit_Tests/test_output/*.csv
