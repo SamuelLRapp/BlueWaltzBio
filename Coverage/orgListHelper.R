@@ -4,6 +4,7 @@ import(ipc)
 import(shiny)
 import(rentrez)
 import(taxize)
+import(tidyverse)
 
 taxizeHelper <- function(orgSearch, taxizeSelected){
     if(orgSearch == ""){
@@ -30,9 +31,9 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
       
       for(organism in organismList)
       {
-        NCBI_names <- 1
+        NCBI_names <- data.frame(x = c(), stringsAsFactors = FALSE)
         tries <- 1
-        while(NCBI_names == 1) {
+        while(nrow(NCBI_names) == 0) {
           tries <- tries + 1
           if (tries == 6){
             return(list(status=1,results=organismList))
@@ -47,6 +48,7 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
             NCBI_names
           }, error = function(err) {
             err <- 1
+            NCBI_names <- data.frame(x = c(), stringsAsFactors = FALSE)
           })
         }
         
