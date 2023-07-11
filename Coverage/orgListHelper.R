@@ -33,7 +33,8 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
       {
         NCBI_names <- data.frame(x = c(), stringsAsFactors = FALSE)
         tries <- 1
-        while(nrow(NCBI_names) == 0) {
+        err <- 1
+        while(nrow(NCBI_names) == 0 && err == 1) {
           tries <- tries + 1
           if (tries == 6){
             return(list(status=1,results=organismList))
@@ -45,6 +46,7 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
             Sys.sleep(0.34) 
             # help user with various naming issues (spelling, synonyms, etc.)
             NCBI_names <- gnr_resolve(sci = organism, data_source_ids = 4) 
+            err <- 0
             NCBI_names
           }, error = function(err) {
             err <- 1
