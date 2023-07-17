@@ -357,7 +357,7 @@ cruxDbList <- list(
 # in case the previous homonym failure notification scheme
 # is wanted. 
 getCruxSearchFullResults <- function(organismList, progress) {
-  nameUidList <- getHomonyms(organismList)
+  nameUidList <- getHomonyms(tolower(organismList))
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
@@ -448,15 +448,23 @@ getHomonyms <- function(organismList) {
     # get_uid_ returns null or a data.frame.
     # source at https://rdrr.io/cran/taxize/src/R/get_uid.R
     search <- get_uid_(sci_com=organism, messages=FALSE)
-    if (is.null(search[[1]])) {
-      newOrganismNamesList <- c(newOrganismNamesList, organism)
-      newOrganismUidsList <- c(newOrganismUidsList, "")
-    } else {
+    
+    #add original query in case of get_uid_ being wrong
+    newOrganismNamesList <- c(newOrganismNamesList, organism)
+    newOrganismUidsList <- c(newOrganismUidsList, "")
+    
+    if (!(is.null(search[[1]]))) {
       for (i in 1:nrow(search[[1]])){
-        newOrganismNamesList <- c(
-          newOrganismNamesList, search[[1]][["scientificname"]][[i]])
-        newOrganismUidsList <- c(
-          newOrganismUidsList, search[[1]][["uid"]][[i]])
+        newOrganismName <- tolower(search[[1]][["scientificname"]][[i]])
+        
+        #avoid duplicates
+        if (newOrganismName != organism) {
+          newOrganismNamesList <- c(
+            newOrganismNamesList, newOrganismName)
+          newOrganismUidsList <- c(
+            newOrganismUidsList, search[[1]][["uid"]][[i]])
+        }
+        
         if (i > maxHomonyms) {
           break
         }
