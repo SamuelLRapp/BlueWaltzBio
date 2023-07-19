@@ -19,7 +19,7 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
     
     # trim both leading and trailing whitespace and lowercase
     for(i in 1:length(organismList)){
-      organismList[[i]] <- tolower(trimws(organismList[[i]], "b"))
+      organismList[[i]] <- trimws(organismList[[i]], "b")
     }
     # deduplicate
     organismList <- unique(organismList[organismList != ""])
@@ -55,7 +55,7 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
         }
         
         
-        #append the lowercased original query to taxize_organism_list in case of taxize being wrong
+        #append the original query to taxize_organism_list in case of taxize being wrong
         taxize_organism_list <- c(taxize_organism_list, organism) 
         
         # get number of rows in dataframe
@@ -64,12 +64,13 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
         #If a legitimate name was found
         if(row_count > 0) 
         {
+          lowercase_organism <- tolower(organism)
           for(j in 1:row_count)
           {
             #Store each matched name in taxa_name
-            taxa_name <- tolower(NCBI_names[[j,3]]) 
+            taxa_name <- NCBI_names[[j,3]]
             
-            if (organism != taxa_name) {
+            if (lowercase_organism != tolower(taxa_name)) {
               #update the vector with all the taxa_names.
               taxize_organism_list <- c(taxize_organism_list, taxa_name) 
             }
