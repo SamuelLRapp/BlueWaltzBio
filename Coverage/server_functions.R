@@ -357,7 +357,7 @@ cruxDbList <- list(
 # in case the previous homonym failure notification scheme
 # is wanted. 
 getCruxSearchFullResults <- function(organismList, progress) {
-  nameUidList <- getHomonyms(tolower(organismList))
+  nameUidList <- getHomonyms(organismList)
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
@@ -454,11 +454,12 @@ getHomonyms <- function(organismList) {
     newOrganismUidsList <- c(newOrganismUidsList, "")
     
     if (!(is.null(search[[1]]))) {
+      lowercaseOrganism <- tolower(organism)
       for (i in 1:nrow(search[[1]])){
-        newOrganismName <- tolower(search[[1]][["scientificname"]][[i]])
+        newOrganismName <- search[[1]][["scientificname"]][[i]]
         
         #avoid duplicates
-        if (newOrganismName != organism) {
+        if (lowercaseOrganism != tolower(newOrganismName)) {
           newOrganismNamesList <- c(
             newOrganismNamesList, newOrganismName)
           newOrganismUidsList <- c(
