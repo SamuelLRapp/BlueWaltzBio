@@ -986,9 +986,11 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
       showTab("BOLDpage", "Species Not Found in BOLD Database")
-
-      updateSelectizeInput(inputId="selectCountry", choices=boldCoverage()$countries, selected = boldCoverage()$countries,options = NULL)
-      click("BOLDfilterCountries")
+      boldCoverage() %...>% {
+        countries <- unique(.$countries) 
+        updateSelectizeInput(inputId="selectCountry", choices=countries, selected = countries,options = NULL)
+        click("BOLDfilterCountries")
+      }
     })
     
     observeEvent(input$BOLDfilterCountries, {
@@ -1253,10 +1255,10 @@ shinyServer(function(input, output, session) {
     
     output$BOLDAbsentTable <- 
       DT::renderDataTable({
-        promise_all(matrix = BoldMatrix(), coverage = boldCoverage()) %...>% with({
-          bold_functions$absentMatrix(matrix, 
+        promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
+          bold_functions$absentMatrix(matrix$results, 
                                       input$selectCountry, 
-                                      na.omit(coverage$input$selectCountry[coverage$input$selectCountry != ""])
+                                      na.omit(coverage$countries[coverage$countries != ""])
                                       )
         })
       })
