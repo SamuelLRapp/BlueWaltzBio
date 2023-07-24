@@ -26,8 +26,8 @@ country_summary <- function(bold_coverage){
             summary_df[records_bold$species_name[i], records_bold$country[i]] <- summary_df[records_bold$species_name[i], records_bold$country[i]] + 1
         }
     }
-    # print("COUNTRY SUMMARY")
-    # print(summary_df)
+    #print("COUNTRY SUMMARY")
+    #print(summary_df)
     summary_df
     
 }
@@ -76,26 +76,26 @@ presentMatrix <- function(bold_coverage, countries){
 }
 
 absentMatrix <- function(bold_coverage, countries, country_names){
-    all_names <- rownames(country_summary(bold_coverage))
+    country_summary_df <- country_summary(bold_coverage)
+    all_names <- rownames(country_summary_df)
     
     #get rownames of presentMatrix  
     present_names <- rownames(presentMatrix(bold_coverage, countries))
     
     #get complement of names
     absent_names <- all_names[is.na(pmatch(all_names, present_names))]
-  
-    country_names <- unique(country_names) #country_names[!duplicated(country_names)]
+    country_names <- unique(colnames(country_summary_df)) #country_names[!duplicated(country_names)]
     
-    summary_df <- country_summary(bold_coverage)
     absent_df <- data.frame(matrix(ncol = 3, nrow = 0))
     colnames(absent_df) <- c("1st", "2nd", "3rd")
     if(length(absent_names) == 0){
         return(absent_df)
     }
+    
     for(i in 1:length(absent_names)){
         sig_countries <- c("NA" = 0,"NA" = 0,"NA" = 0)
         for (j in 1:length(country_names)){
-            val <- summary_df[absent_names[i], country_names[j]]
+            val <- country_summary_df[absent_names[i], country_names[j]]
             #if value is bigger than the most significant
             if(val > sig_countries[[1]]){
                 #move col 2 to col 3
