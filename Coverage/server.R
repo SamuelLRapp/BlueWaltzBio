@@ -1053,21 +1053,18 @@ shinyServer(function(input, output, session) {
               progressBOLD$inc(amount = 0.5/organismListLength)
               searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
+                print(records_bold)
                 searchResult <- 1
               }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
               if (!is.na(records_bold)){
-                for (i in 1:nrow(records_bold)) {
-                  if (is.na(records_bold$country[i]) || records_bold$country[i] == "") {
-                    records_bold$country[i] <- "No Country Listed"
-                  }
-                }
-                if (!is.na(records_bold$species_name)) {
-                  countries <- c(countries, records_bold$country)
-                  results <- rbind(results, records_bold)
-                }
+                records_bold[records_bold == ''] <- NA
+                records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
+                records_bold <- records_bold %>% filter(!is.na(country) & !is.na(markercode) & !is.na(species_name))
+                countries <- c(countries, records_bold$country)
+                results <- rbind(results, records_bold)
               } else {
                   unfound_species <- c(unfound_species, organism)
               }
