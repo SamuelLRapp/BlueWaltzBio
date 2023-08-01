@@ -448,24 +448,15 @@ getHomonyms <- function(organismList) {
     # get_uid_ returns null or a data.frame.
     # source at https://rdrr.io/cran/taxize/src/R/get_uid.R
     search <- get_uid_(sci_com=organism, messages=FALSE)
-    
-    #add original query in case of get_uid_ being wrong
-    newOrganismNamesList <- c(newOrganismNamesList, organism)
-    newOrganismUidsList <- c(newOrganismUidsList, "")
-    
-    if (!(is.null(search[[1]]))) {
-      lowercaseOrganism <- tolower(organism)
+    if (is.null(search[[1]])) {
+      newOrganismNamesList <- c(newOrganismNamesList, organism)
+      newOrganismUidsList <- c(newOrganismUidsList, "")
+    } else {
       for (i in 1:nrow(search[[1]])){
-        newOrganismName <- search[[1]][["scientificname"]][[i]]
-        
-        #avoid duplicates
-        if (lowercaseOrganism != tolower(newOrganismName)) {
-          newOrganismNamesList <- c(
-            newOrganismNamesList, newOrganismName)
-          newOrganismUidsList <- c(
-            newOrganismUidsList, search[[1]][["uid"]][[i]])
-        }
-        
+        newOrganismNamesList <- c(
+          newOrganismNamesList, search[[1]][["scientificname"]][[i]])
+        newOrganismUidsList <- c(
+          newOrganismUidsList, search[[1]][["uid"]][[i]])
         if (i > maxHomonyms) {
           break
         }
