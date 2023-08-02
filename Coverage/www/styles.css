@@ -48,7 +48,7 @@
   visibility: visible;
 }
 
-/*css after this point adapted from RShiny's AsyncProgress css*/
+/*css after this point adapted from Shiny's AsyncProgress css*/
 
 /*class to control loader/progress bar container*/
 .custom-loader {
@@ -70,31 +70,15 @@
 .custom-loader .shiny-progress-notification .progress {
   margin-bottom: 5px;
   height: 25px;
-  /*border: red solid 2px;*/
-  background-color: rgba(129,283,12,70%);
+  background-color: #ccf9ae;
   border-radius: 12.5px;
 }
 
 /*progress bar styling*/
-.custom-loader .progress-bar {
-  float: left;
-  width: 0%;
-  height: 100%;
-  font-size: 12px;
-  line-height: 20px;
-  color: #fff;
-  text-align: center;
-  background-color: #337ab7;
-  -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-  box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-  -webkit-transition: width .6s ease;
-  -o-transition: width .6s ease;
-  transition: width .6s ease;
-}
 
-/*progress bar close button*/
+/*hide the progress bar close button that comes with the default AsyncProgress*/
 .custom-loader .shiny-notification-close {
-  display: none;
+  display: none; 
 }
 
 /*progress bar text container*/
@@ -106,8 +90,4 @@
   margin-left: 5px;
   /*increase fontsize*/
   font-size: 12px !important;
-}
-
-.shiny-spinner-output-container .load1 .loader {
-  display: none;
 }
