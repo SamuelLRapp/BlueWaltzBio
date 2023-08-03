@@ -6,30 +6,25 @@ import(tidyverse)
 
 country_summary <- function(bold_coverage){
     summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    records_bold <- bold_coverage
-    if (length(records_bold$species_name) == 0){
+ 
+    if (length(bold_coverage$species_name) == 0){
         return(summary_df)
     }
-    for(i in 1:length(records_bold$species_name)){
-        if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-            #add a row to summary_df
-            summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-        #add data to summary_df to get summary data
-        if (!is.na(records_bold$country[i]) && records_bold$country[i] != '' && (records_bold$species_name[i] != "") && 
-            !is.na(records_bold$markercode[i]) && records_bold$markercode[i] != '' && (records_bold$species_name[i] != "")){
-            #if country is not yet in the dataframe, initiate new col
-            if (!(records_bold$country[i] %in% colnames(summary_df))){
-                #create a new column of 0s
-                summary_df[records_bold$country[i]] <- integer(nrow(summary_df))
-            }
-            #add 1 to existing count
-            summary_df[records_bold$species_name[i], records_bold$country[i]] <- summary_df[records_bold$species_name[i], records_bold$country[i]] + 1
-        }
-    }
-    # print("COUNTRY SUMMARY")
-    # print(summary_df)
-    summary_df
     
+    #select needed columns
+    records_bold <- bold_coverage[c("species_name", "country", "markercode")]
+    
+    #remove rows with empty strings or NA cell(s)
+    #basically removes invalid species names, countries, and marker codes
+    records_bold <- records_bold[records_bold != "" & !is.na(records_bold),]
+    
+    #nice one-liner for making co-occurrence dataframes
+    #from, and nicely explained, here: https://stackoverflow.com/a/49217363
+    #table() gets the number of times a species and country co-occur
+    #as.data.frame.matrix turns that into a co-occurrence count dataframe
+    summary_df <- as.data.frame.matrix(table(records_bold[c("species_name", "country")]))
+    
+    summary_df
 }
 
 # * NA Filter -------------------------------------------
