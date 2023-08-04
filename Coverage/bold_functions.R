@@ -1,28 +1,21 @@
-import(tidyverse)
+import(dplyr)
 
+not_missing <- function(val) {
+  return(val != "" & !is.na(val))
+}
 
 # * BOLDCountryFilter -------------------------------------------
 
 
 country_summary <- function(bold_coverage){
-    summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
- 
-    if (length(bold_coverage$species_name) == 0){
-        return(summary_df)
-    }
-    
-    #select needed columns
-    records_bold <- bold_coverage[c("species_name", "country", "markercode")]
-    
-    #remove rows with empty strings or NA cell(s)
-    #basically removes invalid species names, countries, and marker codes
-    records_bold <- records_bold[records_bold != "" & !is.na(records_bold),]
-    
-    #nice one-liner for making co-occurrence dataframes
-    #from, and nicely explained, here: https://stackoverflow.com/a/49217363
     #table() gets the number of times a species and country co-occur
-    #as.data.frame.matrix turns that into a co-occurrence count dataframe
-    summary_df <- as.data.frame.matrix(table(records_bold[c("species_name", "country")]))
+    #as.data.frame.matrix() turns that into a co-occurrence count dataframe
+    #this idea is from, and nicely explained, here: https://stackoverflow.com/a/49217363
+    summary_df <- bold_coverage %>%
+      subset(subset = not_missing(species_name) & not_missing(markercode) & not_missing(country),
+             select = c("species_name", "country")) %>%
+      table %>%
+      as.data.frame.matrix
     
     summary_df
 }
