@@ -64,34 +64,33 @@ presentMatrix <- function(bold_coverage, countries){
     present_df <- present_df[ , which(names(present_df) %in% countries), drop=FALSE]
     
     #remove all rows that have all 0s as values and return
-    #present_df <- present_df
-
     #Need to include drop=false to prevent R from dropping dataframe structure when numcolumns is 1, otherwise rowsums will complain
     #https://stackoverflow.com/questions/32330818/r-row-sums-for-1-or-more-columns
-    present_df <- present_df[rowSums(present_df[drop=FALSE])>0, drop=FALSE]
+    present_df <- present_df[rowSums(present_df[drop=FALSE])>0, ,drop=FALSE]
     present_df
-    
 }
 
 absentMatrix <- function(bold_coverage, countries, country_names){
-    all_names <- rownames(country_summary(bold_coverage))
+    country_summary_df <- country_summary(bold_coverage)
+    all_names <- rownames(country_summary_df)
+    
     #get rownames of presentMatrix  
     present_names <- rownames(presentMatrix(bold_coverage, countries))
+    
     #get complement of names
     absent_names <- all_names[is.na(pmatch(all_names, present_names))]
+    country_names <- unique(colnames(country_summary_df)) #country_names[!duplicated(country_names)]
     
-    country_names <- country_names[!duplicated(country_names)]
-    summary_df <- country_summary(bold_coverage)
     absent_df <- data.frame(matrix(ncol = 3, nrow = 0))
     colnames(absent_df) <- c("1st", "2nd", "3rd")
     if(length(absent_names) == 0){
         return(absent_df)
     }
+    
     for(i in 1:length(absent_names)){
         sig_countries <- c("NA" = 0,"NA" = 0,"NA" = 0)
         for (j in 1:length(country_names)){
-            
-            val <- summary_df[absent_names[i], country_names[j]]
+            val <- country_summary_df[absent_names[i], country_names[j]]
             #if value is bigger than the most significant
             if(val > sig_countries[[1]]){
                 #move col 2 to col 3
@@ -184,7 +183,7 @@ reduce_barcode_summary <- function(b_summary) {
 }
 
 missingSpecies <- function(missingList) {
-  summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
+  missing_df <- data.frame(matrix(ncol = 0, nrow = 0))
   newStr <- ""
   for (i in 1:length(missingList)) {
     if (newStr == "") {
@@ -193,7 +192,8 @@ missingSpecies <- function(missingList) {
       newStr <- paste(newStr, missingList[i], sep=", ")
     }
   }
-  summary_df[" ", " "] <- newStr
-  summary_df
+  print(newStr)
+  missing_df[" ", " "] <- newStr
+  missing_df
 }
 

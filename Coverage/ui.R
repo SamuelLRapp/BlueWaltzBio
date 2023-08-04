@@ -216,7 +216,7 @@ shinyUI(fluidPage(
                                               p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                                           ),
                                           tags$div(id="loaderWrapperCRUX"),
-                                          DT::dataTableOutput("CRUXSummaryResults") %>% withSpinner(color="#0dc5c1"),
+                                          DT::dataTableOutput("CRUXSummaryResults"),
                                           conditionalPanel( condition = "output.CRUXSummaryResults",
                                                             downloadButton("CRUXfileDownloadSD","Download summary data"),
                                                             actionButton("detailsButton", "See More Detailed Results"))
@@ -411,7 +411,7 @@ shinyUI(fluidPage(
                                               p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                                           ),
                                           tags$div(id="loaderWrapperNCBI"),
-                                          DT::dataTableOutput("NCBISummaryResults") %>% withSpinner(color="#0dc5c1"),
+                                          DT::dataTableOutput("NCBISummaryResults"),
                                           conditionalPanel( condition = "output.NCBISummaryResults",
                                                             downloadButton("NCBIfileDownloadSD","Download summary data"),
                                                             actionButton("NCBIdetailsButton", "See More Detailed Results"),
@@ -509,7 +509,7 @@ shinyUI(fluidPage(
                                               titlePanel("Number of Sequences Found per Organism"),
                                           ),
                                           tags$div(id="loaderWrapperFullGenome"),
-                                          DT::dataTableOutput("genomeResults") %>% withSpinner(color="#0dc5c1"),
+                                          DT::dataTableOutput("genomeResults"),
                                           conditionalPanel( condition = "output.genomeResults",                            
                                                             downloadButton('fullGenomeDownloadT',"Download table"),
                                                             downloadButton('fullGenomeDownloadF', "Download Fasta files"),
@@ -607,7 +607,7 @@ shinyUI(fluidPage(
                                   Additionally, the results in this table are not affected by the Country or NCBI filter")
                             ),
                             tags$div(id="loaderWrapperBOLD"),
-                            DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#0dc5c1")
+                            DT::dataTableOutput("BOLDNullSpecies")
                         )),
                         tabPanel("Filters",
                                  fluidRow(

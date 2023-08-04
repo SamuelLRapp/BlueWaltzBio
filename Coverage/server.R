@@ -986,9 +986,11 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
       showTab("BOLDpage", "Species Not Found in BOLD Database")
-
-      updateSelectizeInput(inputId="selectCountry", choices=boldCoverage()$countries, selected = boldCoverage()$countries,options = NULL)
-      click("BOLDfilterCountries")
+      boldCoverage() %...>% {
+        countries <- unique(.$countries) 
+        updateSelectizeInput(inputId="selectCountry", choices=countries, selected = countries,options = NULL)
+        click("BOLDfilterCountries")
+      }
     })
     
     observeEvent(input$BOLDfilterCountries, {
@@ -1051,21 +1053,17 @@ shinyServer(function(input, output, session) {
               progressBOLD$inc(amount = 0.5/organismListLength)
               searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
+                print(records_bold)
                 searchResult <- 1
               }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
               if (!is.na(records_bold)){
-                for (i in 1:nrow(records_bold)) {
-                  if (is.na(records_bold$country[i]) || records_bold$country[i] == "") {
-                    records_bold$country[i] <- "No Country Listed"
-                  }
-                }
-                if (!is.na(records_bold$species_name)) {
-                  countries <- c(countries, records_bold$country)
-                  results <- rbind(results, records_bold)
-                }
+                records_bold[records_bold == ''] <- NA
+                records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
+                countries <- c(countries, records_bold$country)
+                results <- rbind(results, records_bold)
               } else {
                   unfound_species <- c(unfound_species, organism)
               }
@@ -1104,6 +1102,8 @@ shinyServer(function(input, output, session) {
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
+        data <- data %>% filter(!is.na(markercode) & !is.na(species_name))
+  
         # remove ncbi
         if (input$removeNCBI == TRUE){
           data <- subset(data, genbank_accession == "")
@@ -1253,10 +1253,10 @@ shinyServer(function(input, output, session) {
     
     output$BOLDAbsentTable <- 
       DT::renderDataTable({
-        promise_all(matrix = BoldMatrix(), coverage = boldCoverage()) %...>% with({
-          bold_functions$absentMatrix(matrix, 
+        promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
+          bold_functions$absentMatrix(matrix$results, 
                                       input$selectCountry, 
-                                      na.omit(coverage$input$selectCountry[coverage$input$selectCountry != ""])
+                                      na.omit(coverage$countries[coverage$countries != ""])
                                       )
         })
       })
