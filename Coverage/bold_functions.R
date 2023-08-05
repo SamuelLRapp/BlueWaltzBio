@@ -1,7 +1,7 @@
 import(dplyr)
 
-not_missing <- function(val) {
-  return(val != "" & !is.na(val))
+is_missing <- function(val) {
+  return(val == "" | is.na(val))
 }
 
 # * BOLDCountryFilter -------------------------------------------
@@ -12,7 +12,7 @@ country_summary <- function(bold_coverage){
     #as.data.frame.matrix() turns that into a co-occurrence count dataframe
     #this idea is from, and nicely explained, here: https://stackoverflow.com/a/49217363
     summary_df <- bold_coverage %>%
-      subset(subset = not_missing(species_name) & not_missing(markercode) & not_missing(country),
+      subset(subset = !is_missing(species_name) & !is_missing(markercode) & !is_missing(country),
              select = c("species_name", "country")) %>%
       table %>%
       as.data.frame.matrix
@@ -24,29 +24,19 @@ country_summary <- function(bold_coverage){
 
 
 naBarcodes <- function(bold_coverage){
-  summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-  records_bold <- bold_coverage
-  if (length(records_bold$species_name) == 0){
-    return(summary_df)
-  }
+  #summarise gets the processids and converts them to a list string with paste
+  #for each group (species_name)
+  #check.names = FALSE in data.frame makes sure spaces aren't replaced with '.'
+  summary_df <- bold_coverage %>%
+    subset(subset = !is_missing(species_name) & !is_missing(processid) & is_missing(markercode),
+    select = c("species_name", "processid")) %>%
+    group_by(species_name) %>%
+    summarise("Entries where Barcode was NA" = paste(processid, collapse = ", ")) %>%
+    data.frame(row.names = .$species_name, check.names = FALSE)
   
-  for(i in 1:length(records_bold$species_name)){
-    if (is.na(records_bold$species_name[i]) && (records_bold$species_name[i] == "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-      #add a row to summary_df
-      summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-    #add data to summary_df to get summary data
-    if (is.na(records_bold$markercode[i]) || records_bold$markercode[i] == '' || (records_bold$species_name[i] == "")){
-      #if country is not yet in the dataframe, initiate new col
-      #add 1 to existing count
-      if (ncol(summary_df) == 0) {
-        summary_df["Entries where Barcode was NA"] <- integer(ncol(summary_df))
-        summary_df[records_bold$species_name[i], "Entries where Barcode was NA"] <- records_bold$processid[i]
-      } else {
-        newStr = paste(summary_df[records_bold$species_name[i], "Entries where Barcode was NA"], records_bold$processid[i], sep=", ")
-        summary_df[records_bold$species_name[i], "Entries where Barcode was NA"] <- newStr
-      }
-    }
-  }
+  #remove species_name column
+  summary_df$species_name <- NULL 
+
   summary_df
 }
 
