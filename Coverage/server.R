@@ -1102,7 +1102,7 @@ shinyServer(function(input, output, session) {
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
-        data <- data %>% filter(!is.na(markercode) & !is.na(species_name))
+        data <- data %>% filter(!is.na(species_name))
   
         # remove ncbi
         if (input$removeNCBI == TRUE){
