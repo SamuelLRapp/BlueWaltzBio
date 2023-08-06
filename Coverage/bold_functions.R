@@ -58,15 +58,14 @@ absentMatrix <- function(bold_coverage, countries, country_names){
     country_summary_df <- country_summary(bold_coverage)
     country_filtered <- country_summary_df %>% filter(across(all_of(countries), ~ . == 0))
 
-    # 'country_filtered[, -1]' selects all columns except the first one (species names)
     # the apply funcyion, gets the top 3 countries with the most entries for each row (species)
-    absent_top_countries <- apply(country_filtered[, -1], 1, function(x) names(sort(x, decreasing = TRUE)[1:3]))
+    absent_top_countries <- apply(country_filtered, 1, function(x) names(sort(x, decreasing = TRUE)[1:3]))
     
     # Set the names of the vector as the species names
     names(absent_top_countries) <- absent_top_countries[, 1]
     top_countries_df <- as.data.frame(t(absent_top_countries))
-    colnames(absent_top_countries) <- c("1st", "2nd", "3rd")
-    absent_top_countries
+    colnames(top_countries_df) <- c("1st", "2nd", "3rd")
+    top_countries_df
 }  
 
 
@@ -124,8 +123,6 @@ reduce_barcode_summary <- function(b_summary) {
     #  summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
     #}
     summary <- subset(summary, select = (calculated))
-    # print("Sorted Summary")
-    # print(summary)
     summary
 }
 
