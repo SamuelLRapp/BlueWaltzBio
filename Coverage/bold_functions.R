@@ -87,22 +87,10 @@ reduce_barcode_summary <- function(b_summary) {
     summary <- b_summary
     count <- apply(summary, 2, function(c)sum(c!=0))
     sums <- apply(summary, 2, sum)
-    
-    #find most representative 
-    
-    #result <- c()
-    #for (i in 1:length(sums)){
-    #    result <- sums[[i]] * count[[i]]
-    # }
-    #print(c)
-    
-    
+  
     #calculate and sort by relavance
     calculated <- names(rev(sort(sums * count)))
-    
-    #if (ncol(summary) > 3){
-    #  summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
-    #}
+  
     summary <- subset(summary, select = (calculated))
     summary
 }
@@ -117,7 +105,6 @@ missingSpecies <- function(missingList) {
       newStr <- paste(newStr, missingList[i], sep=", ")
     }
   }
-  print(newStr)
   missing_df[" ", " "] <- newStr
   missing_df
 }
