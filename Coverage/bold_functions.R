@@ -54,55 +54,19 @@ presentMatrix <- function(bold_coverage, countries){
 }
 
 absentMatrix <- function(bold_coverage, countries, country_names){
+    # Get data frame with species as rows and countries as columns (with each number of sequences)
     country_summary_df <- country_summary(bold_coverage)
-    all_names <- rownames(country_summary_df)
+    country_filtered <- country_summary_df %>% filter(across(all_of(countries), ~ . == 0))
+
+    # 'country_filtered[, -1]' selects all columns except the first one (species names)
+    # the apply funcyion, gets the top 3 countries with the most entries for each row (species)
+    absent_top_countries <- apply(country_filtered[, -1], 1, function(x) names(sort(x, decreasing = TRUE)[1:3]))
     
-    #get rownames of presentMatrix  
-    present_names <- rownames(presentMatrix(bold_coverage, countries))
-    
-    #get complement of names
-    absent_names <- all_names[is.na(pmatch(all_names, present_names))]
-    country_names <- unique(colnames(country_summary_df)) #country_names[!duplicated(country_names)]
-    
-    absent_df <- data.frame(matrix(ncol = 3, nrow = 0))
-    colnames(absent_df) <- c("1st", "2nd", "3rd")
-    if(length(absent_names) == 0){
-        return(absent_df)
-    }
-    
-    for(i in 1:length(absent_names)){
-        sig_countries <- c("NA" = 0,"NA" = 0,"NA" = 0)
-        for (j in 1:length(country_names)){
-            val <- country_summary_df[absent_names[i], country_names[j]]
-            #if value is bigger than the most significant
-            if(val > sig_countries[[1]]){
-                #move col 2 to col 3
-                names(sig_countries)[3] <- names(sig_countries)[2]
-                sig_countries[[3]] <- sig_countries[[2]]
-                #move col 1 to col 2
-                names(sig_countries)[2] <- names(sig_countries)[1]
-                sig_countries[[2]] <- sig_countries[[1]]
-                #replace col 1 with new val
-                names(sig_countries)[1] <- country_names[j]
-                sig_countries[[1]] <- val
-                
-            } else if (val > sig_countries[[2]]){
-                #move col 2 to col 3
-                names(sig_countries)[3] <- names(sig_countries)[2]
-                sig_countries[[3]] <- sig_countries[[2]]
-                #replace col 2 with new val
-                names(sig_countries)[2] <- country_names[j]
-                sig_countries[[2]] <- val
-            } else if (val > sig_countries[[3]]){
-                #replace col3 with new val
-                names(sig_countries)[3] <- country_names[j]
-                sig_countries[[3]] <- val
-            }
-        }
-        absent_df[absent_names[i],] <- names(sig_countries)
-    }
-    absent_df
-    
+    # Set the names of the vector as the species names
+    names(absent_top_countries) <- absent_top_countries[, 1]
+    top_countries_df <- as.data.frame(t(absent_top_countries))
+    colnames(absent_top_countries) <- c("1st", "2nd", "3rd")
+    absent_top_countries
 }  
 
 
