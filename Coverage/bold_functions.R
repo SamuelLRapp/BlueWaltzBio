@@ -73,30 +73,11 @@ absentMatrix <- function(bold_coverage, countries, country_names){
 # * SummaryReport ------------------------------------------------------------
 
 barcode_summary <- function(bold_coverage) {
-    summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    records_bold <- bold_coverage
-    if (length(records_bold$species_name) == 0){
-        return(summary_df)  
-    }
-    for(i in 1:length(records_bold$species_name)){
-        #if species name not in dataframe
-        if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-            #add a row to summary_df
-            summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-        #add data to summary_df to get summary data
-        if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != '' && (records_bold$species_name[i] != "")){
-            #if markercode is not yet in the dataframe, initiate new col
-            if (!(records_bold$markercode[i] %in% colnames(summary_df))){
-                #create a new column of 0s
-                summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
-            }
-            #add 1 to existing count
-            summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
-        }
-        else {
-          
-        }
-    }
+    summary_df <- bold_coverage %>%
+      subset(subset = !is_missing(species_name) & !is_missing(markercode),
+             select = c("species_name", "markercode")) %>%
+      table %>%
+      as.data.frame.matrix
     
     summary_df
 }
