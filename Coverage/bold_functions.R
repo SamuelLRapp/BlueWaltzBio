@@ -7,11 +7,11 @@ is_missing <- function(val) {
 # * BOLDCountryFilter -------------------------------------------
 
 
-country_summary <- function(bold_coverage){
+country_summary <- function(bold_coverage_df){
     #table() gets the number of times a species and country co-occur
     #as.data.frame.matrix() turns that into a co-occurrence count dataframe
     #this idea is from, and nicely explained, here: https://stackoverflow.com/a/49217363
-    summary_df <- bold_coverage %>%
+    summary_df <- bold_coverage_df %>%
       subset(subset = !is_missing(species_name) & !is_missing(markercode) & !is_missing(country),
              select = c("species_name", "country")) %>%
       table %>%
@@ -58,11 +58,9 @@ absentMatrix <- function(bold_coverage, countries, country_names){
     country_summary_df <- country_summary(bold_coverage)
     country_filtered <- country_summary_df %>% filter(across(all_of(countries), ~ . == 0))
 
-    # the apply funcyion, gets the top 3 countries with the most entries for each row (species)
+    # the apply function, gets the top 3 countries with the most entries for each row (species)
     absent_top_countries <- apply(country_filtered, 1, function(x) names(sort(x, decreasing = TRUE)[1:3]))
     
-    # Set the names of the vector as the species names
-    names(absent_top_countries) <- absent_top_countries[, 1]
     top_countries_df <- as.data.frame(t(absent_top_countries))
     colnames(top_countries_df) <- c("1st", "2nd", "3rd")
     top_countries_df

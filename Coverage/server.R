@@ -1053,7 +1053,6 @@ shinyServer(function(input, output, session) {
               progressBOLD$inc(amount = 0.5/organismListLength)
               searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
-                print(records_bold)
                 searchResult <- 1
               }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
@@ -1102,7 +1101,7 @@ shinyServer(function(input, output, session) {
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
-        data <- data %>% filter(!is.na(species_name))
+        data <- data %>% filter(!is.na(species_name)  & !is.na(markercode) & !is.na(country))
   
         # remove ncbi
         if (input$removeNCBI == TRUE){
@@ -1263,8 +1262,8 @@ shinyServer(function(input, output, session) {
 
     output$BOLDNATable <- 
       DT::renderDataTable({
-        BoldMatrix() %...>% {
-        bold_functions$naBarcodes(.)
+        boldCoverage() %...>% {
+        bold_functions$naBarcodes(.$results)
         }
       })
     
