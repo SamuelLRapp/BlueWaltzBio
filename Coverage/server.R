@@ -1129,12 +1129,6 @@ shinyServer(function(input, output, session) {
           bold_matrix <- .
           present_matrix <- bold_functions$presentMatrix(bold_matrix, selectCountry)
           countries <- colnames(present_matrix)
-          for (i in 1:length(countries)){
-            if (countries[i] == ""){
-              countries[i] <- "No country listed"
-            } 
-            countries_values[[countries[i]]] <- 0
-          }
           
           # set vals
           ## counts # of cols for each country where cell > 0
