@@ -61,7 +61,14 @@ absentMatrix <- function(bold_coverage, countries, country_names){
     # the apply function, gets the top 3 countries with the most entries for each row (species)
     absent_top_countries <- apply(country_filtered, 1, function(x) names(sort(x, decreasing = TRUE)[1:3]))
     
-    top_countries_df <- as.data.frame(t(absent_top_countries))
+    # Check if the table is empty or not
+    if (is.null(absent_top_countries)){
+      top_countries_df <- data.frame(matrix(ncol = 3, nrow = 0))
+    } else {
+      top_countries_df <- as.data.frame(t(absent_top_countries))
+    }
+    
+    # Name the columns and return
     colnames(top_countries_df) <- c("1st", "2nd", "3rd")
     top_countries_df
 }  
