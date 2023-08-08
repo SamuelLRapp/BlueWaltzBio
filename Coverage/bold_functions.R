@@ -98,7 +98,7 @@ missingSpecies <- function(missingList) {
   if (is.null(missingList[["Missing Species"]])) {
     missing_df <- data.frame(" " <- c("NULL"))
   } else {
-    missing_df <- data.frame(" " <- paste(missingList[["Missing Species"]], collapse = ", "))
+    missing_df <- data.frame(" " <- missingList[["Missing Species"]])
   }
   
   #remove column name for species column
