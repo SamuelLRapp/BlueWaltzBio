@@ -1174,38 +1174,26 @@ shinyServer(function(input, output, session) {
       if (!is.null(input$selectCountry)){
         BoldMatrix() %...>% {
           records_bold <- .
-          countries_values <- list()
-          vals <- c()
-          countries = c(unique(records_bold$country))
-          # replace the empty str w/ no country listed
-          for (i in 1:length(countries)){
-            if (countries[i] == ""){
-              countries[i] = "No Country Listed"
-            }
-          }
           
-          for (i in countries){
-            x <- lengths(subset(records_bold, country == i))
-            countries_values[[i]] = x[[1]]
-            vals <- append(vals, x[[1]])
-          }
-          xf <- data.frame(country = countries, values = vals)
+          #table gets counts, data.frame converts table to dataframe
+          #ggplot only accepts dataframes
+          xf <- records_bold[c("country")] %>%
+            table %>%
+            data.frame
+    
           geom.text.size = 7
           theme.size = (14/5) * geom.text.size
-          #d3tree(
-          #  treemap(xf, 
-          #          index = "country", 
-          #          vSize = "values", 
-          #          vColor = "country", 
-          #          type = "value",
-          #          title.legend = "Legend"))
-          ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
+          
+          #reference for changing titles: http://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
+          #the "." column holds the countries (.data refers to xf)
+          #using .data instead of xf to avoid warnings about it
+          ggplot(xf, aes(area = .data[["Freq"]], fill = .data[["."]], label = .data[["."]])) +
             geom_treemap() +  
             geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
             ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
             theme(axis.text = element_text(size = theme.size),
-                  plot.title = element_text(size = 20, face = "bold")) 
-          # how to change the colors + get a legend ?
+                  plot.title = element_text(size = 20, face = "bold")) +
+            labs(fill = "Countries")
         }
     }}
     
