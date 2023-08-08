@@ -94,8 +94,13 @@ reduce_barcode_summary <- function(b_summary) {
 }
 
 missingSpecies <- function(missingList) {
-  missing_df <- data.frame(" " <- missingList)
-
+  #check for empty missing species list
+  if (is.null(missingList[["Missing Species"]])) {
+    missing_df <- data.frame(" " <- c("NULL"))
+  } else {
+    missing_df <- data.frame(" " <- paste(missingList[["Missing Species"]], collapse = ", "))
+  }
+  
   #remove column name for species column
   colnames(missing_df) <- c(" ")
   
