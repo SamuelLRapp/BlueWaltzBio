@@ -216,7 +216,7 @@ shinyUI(fluidPage(
                                               p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                                           ),
                                           tags$div(id="loaderWrapperCRUX"),
-                                          DT::dataTableOutput("CRUXSummaryResults"),
+                                          DT::dataTableOutput("CRUXSummaryResults")  %>% withSpinner(color="#00000000"),
                                           conditionalPanel( condition = "output.CRUXSummaryResults",
                                                             downloadButton("CRUXfileDownloadSD","Download summary data"),
                                                             actionButton("detailsButton", "See More Detailed Results"))
@@ -411,7 +411,7 @@ shinyUI(fluidPage(
                                               p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                                           ),
                                           tags$div(id="loaderWrapperNCBI"),
-                                          DT::dataTableOutput("NCBISummaryResults"),
+                                          DT::dataTableOutput("NCBISummaryResults")  %>% withSpinner(color="#00000000"),
                                           conditionalPanel( condition = "output.NCBISummaryResults",
                                                             downloadButton("NCBIfileDownloadSD","Download summary data"),
                                                             actionButton("NCBIdetailsButton", "See More Detailed Results"),
@@ -607,7 +607,7 @@ shinyUI(fluidPage(
                                   Additionally, the results in this table are not affected by the Country or NCBI filter")
                             ),
                             tags$div(id="loaderWrapperBOLD"),
-                            DT::dataTableOutput("BOLDNullSpecies")
+                            DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#00000000") #transparent spinner
                         )),
                         tabPanel("Filters",
                                  fluidRow(
