@@ -1236,8 +1236,7 @@ shinyServer(function(input, output, session) {
       DT::renderDataTable({
         promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
           bold_functions$absentMatrix(matrix$results, 
-                                      input$selectCountry, 
-                                      na.omit(coverage$countries[coverage$countries != ""])
+                                      input$selectCountry
                                       )
         })
       })
@@ -1368,11 +1367,10 @@ shinyServer(function(input, output, session) {
         paste("BOLD_Recommended_Country_Filters", ".csv", sep="")
       },
       content = function(file) {
-        promise_all(matrix = BoldMatrix(), coverage = boldCoverage()) %...>% with({
-          results <- bold_functions$absentMatrix(matrix, 
-                                      input$selectCountry, 
-                                      na.omit(coverage$input$selectCountry[coverage$input$selectCountry != ""])
-          )
+        promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
+          results <- bold_functions$absentMatrix(matrix$results, 
+                                                input$selectCountry
+                                                )
           write.csv(results, file)
         })
       }
