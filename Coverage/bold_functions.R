@@ -53,14 +53,22 @@ presentMatrix <- function(bold_coverage, countries){
     present_df
 }
 
-absentMatrix <- function(bold_coverage, countries, country_names){
+
+#####
+# Input:
+#   - The BOLD Coverage Matrix from bold_coverage function
+#   - A list of the filtered countries
+#.  - A list of all countries
+absentMatrix <- function(bold_coverage, countries){
     # Get data frame with species as rows and countries as columns (with each number of sequences)
     country_summary_df <- country_summary(bold_coverage)
-    country_filtered <- country_summary_df %>% filter(across(all_of(countries), ~ . == 0))
-
-    # the apply function, gets the top 3 countries with the most entries for each row (species)
-    absent_top_countries <- apply(country_filtered, 1, function(x) names(sort(x, decreasing = TRUE)[1:3]))
+    country_filtered <- country_summary_df %>% filter(if_all(all_of(countries), ~ . == 0) )
     
+    # the apply function, gets the top 3 countries with the most entries for each row (species)
+    absent_top_countries_values <- apply(country_filtered, 1, function(x) sort(x, decreasing = TRUE)[1:3])
+    absent_top_countries <- apply(country_filtered, 1, function(x) names(sort(x, decreasing = TRUE))[1:3])
+    absent_top_countries[absent_top_countries_values == 0] <- 'NA'
+
     # Check if the table is empty or not
     if (is.null(absent_top_countries)){
       top_countries_df <- data.frame(matrix(ncol = 3, nrow = 0))
