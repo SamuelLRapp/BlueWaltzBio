@@ -964,6 +964,8 @@ shinyServer(function(input, output, session) {
       shinyjs::hide(id = "BOLDSkipFilter")
       shinyjs::hide(id = "BOLDNullSpeciesWarning")
       shinyjs::hide(id = "removeNCBICol")
+      shinyjs::hide(id = "BOLDClearFilter")
+      shinyjs::hide(id = "bold_species_not_found_panel")
       
       progressBOLD <<-
         AsyncProgress$new(
@@ -1084,6 +1086,7 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "BOLDNullSpeciesWarning")
             shinyjs::show(id = "removeNCBICol")
             shinyjs::show(id = "countryFilterCol")
+            shinyjs::show(id = "bold_species_not_found_panel")
             returnMatrix <- . #return data matrix
             returnMatrix
           }
