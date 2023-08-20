@@ -1,64 +1,42 @@
-import(tidyverse)
+import(dplyr)
 
+is_missing <- function(val) {
+  return(val == "" | is.na(val))
+}
 
 # * BOLDCountryFilter -------------------------------------------
 
 
-country_summary <- function(bold_coverage){
-    summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    records_bold <- bold_coverage
-    if (length(records_bold$species_name) == 0){
-        return(summary_df)
-    }
-    for(i in 1:length(records_bold$species_name)){
-        if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-            #add a row to summary_df
-            summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-        #add data to summary_df to get summary data
-        if (!is.na(records_bold$country[i]) && records_bold$country[i] != '' && (records_bold$species_name[i] != "") && 
-            !is.na(records_bold$markercode[i]) && records_bold$markercode[i] != '' && (records_bold$species_name[i] != "")){
-            #if country is not yet in the dataframe, initiate new col
-            if (!(records_bold$country[i] %in% colnames(summary_df))){
-                #create a new column of 0s
-                summary_df[records_bold$country[i]] <- integer(nrow(summary_df))
-            }
-            #add 1 to existing count
-            summary_df[records_bold$species_name[i], records_bold$country[i]] <- summary_df[records_bold$species_name[i], records_bold$country[i]] + 1
-        }
-    }
-    #print("COUNTRY SUMMARY")
-    #print(summary_df)
-    summary_df
+country_summary <- function(bold_coverage_df){
+    #table() gets the number of times a species and country co-occur
+    #as.data.frame.matrix() turns that into a co-occurrence count dataframe
+    #this idea is from, and nicely explained, here: https://stackoverflow.com/a/49217363
+    summary_df <- bold_coverage_df %>%
+      subset(subset = !is_missing(species_name) & !is_missing(markercode) & !is_missing(country),
+             select = c("species_name", "country")) %>%
+      table %>%
+      as.data.frame.matrix
     
+    summary_df
 }
 
 # * NA Filter -------------------------------------------
 
 
 naBarcodes <- function(bold_coverage){
-  summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-  records_bold <- bold_coverage
-  if (length(records_bold$species_name) == 0){
-    return(summary_df)
-  }
+  #summarise gets the processids and converts them to a list string with paste
+  #for each group (species_name)
+  #check.names = FALSE in data.frame makes sure spaces aren't replaced with '.'
+  summary_df <- bold_coverage %>%
+    subset(subset = !is_missing(species_name) & !is_missing(processid) & is_missing(markercode),
+    select = c("species_name", "processid")) %>%
+    group_by(species_name) %>%
+    summarise("Entries where Barcode was NA" = paste(processid, collapse = ", ")) %>%
+    data.frame(row.names = .$species_name, check.names = FALSE)
   
-  for(i in 1:length(records_bold$species_name)){
-    if (is.na(records_bold$species_name[i]) && (records_bold$species_name[i] == "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-      #add a row to summary_df
-      summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-    #add data to summary_df to get summary data
-    if (is.na(records_bold$markercode[i]) || records_bold$markercode[i] == '' || (records_bold$species_name[i] == "")){
-      #if country is not yet in the dataframe, initiate new col
-      #add 1 to existing count
-      if (ncol(summary_df) == 0) {
-        summary_df["Entries where Barcode was NA"] <- integer(ncol(summary_df))
-        summary_df[records_bold$species_name[i], "Entries where Barcode was NA"] <- records_bold$processid[i]
-      } else {
-        newStr = paste(summary_df[records_bold$species_name[i], "Entries where Barcode was NA"], records_bold$processid[i], sep=", ")
-        summary_df[records_bold$species_name[i], "Entries where Barcode was NA"] <- newStr
-      }
-    }
-  }
+  #remove species_name column
+  summary_df$species_name <- NULL 
+
   summary_df
 }
 
@@ -75,56 +53,32 @@ presentMatrix <- function(bold_coverage, countries){
     present_df
 }
 
-absentMatrix <- function(bold_coverage, countries, country_names){
+
+#####
+# Input:
+#   - The BOLD Coverage Matrix from bold_coverage function
+#   - A list of the filtered countries
+#.  - A list of all countries
+absentMatrix <- function(bold_coverage, countries){
+    # Get data frame with species as rows and countries as columns (with each number of sequences)
     country_summary_df <- country_summary(bold_coverage)
-    all_names <- rownames(country_summary_df)
+    country_filtered <- country_summary_df %>% filter(if_all(all_of(countries), ~ . == 0) )
     
-    #get rownames of presentMatrix  
-    present_names <- rownames(presentMatrix(bold_coverage, countries))
-    
-    #get complement of names
-    absent_names <- all_names[is.na(pmatch(all_names, present_names))]
-    country_names <- unique(colnames(country_summary_df)) #country_names[!duplicated(country_names)]
-    
-    absent_df <- data.frame(matrix(ncol = 3, nrow = 0))
-    colnames(absent_df) <- c("1st", "2nd", "3rd")
-    if(length(absent_names) == 0){
-        return(absent_df)
+    # the apply function, gets the top 3 countries with the most entries for each row (species)
+    absent_top_countries_values <- apply(country_filtered, 1, function(x) sort(x, decreasing = TRUE)[1:3])
+    absent_top_countries <- apply(country_filtered, 1, function(x) names(sort(x, decreasing = TRUE))[1:3])
+    absent_top_countries[absent_top_countries_values == 0] <- 'NA'
+
+    # Check if the table is empty or not
+    if (is.null(absent_top_countries)){
+      top_countries_df <- data.frame(matrix(ncol = 3, nrow = 0))
+    } else {
+      top_countries_df <- as.data.frame(t(absent_top_countries))
     }
     
-    for(i in 1:length(absent_names)){
-        sig_countries <- c("NA" = 0,"NA" = 0,"NA" = 0)
-        for (j in 1:length(country_names)){
-            val <- country_summary_df[absent_names[i], country_names[j]]
-            #if value is bigger than the most significant
-            if(val > sig_countries[[1]]){
-                #move col 2 to col 3
-                names(sig_countries)[3] <- names(sig_countries)[2]
-                sig_countries[[3]] <- sig_countries[[2]]
-                #move col 1 to col 2
-                names(sig_countries)[2] <- names(sig_countries)[1]
-                sig_countries[[2]] <- sig_countries[[1]]
-                #replace col 1 with new val
-                names(sig_countries)[1] <- country_names[j]
-                sig_countries[[1]] <- val
-                
-            } else if (val > sig_countries[[2]]){
-                #move col 2 to col 3
-                names(sig_countries)[3] <- names(sig_countries)[2]
-                sig_countries[[3]] <- sig_countries[[2]]
-                #replace col 2 with new val
-                names(sig_countries)[2] <- country_names[j]
-                sig_countries[[2]] <- val
-            } else if (val > sig_countries[[3]]){
-                #replace col3 with new val
-                names(sig_countries)[3] <- country_names[j]
-                sig_countries[[3]] <- val
-            }
-        }
-        absent_df[absent_names[i],] <- names(sig_countries)
-    }
-    absent_df
-    
+    # Name the columns and return
+    colnames(top_countries_df) <- c("1st", "2nd", "3rd")
+    top_countries_df
 }  
 
 
@@ -132,30 +86,11 @@ absentMatrix <- function(bold_coverage, countries, country_names){
 # * SummaryReport ------------------------------------------------------------
 
 barcode_summary <- function(bold_coverage) {
-    summary_df <- data.frame(matrix(ncol = 0, nrow = 0))
-    records_bold <- bold_coverage
-    if (length(records_bold$species_name) == 0){
-        return(summary_df)  
-    }
-    for(i in 1:length(records_bold$species_name)){
-        #if species name not in dataframe
-        if (!is.na(records_bold$species_name[i]) && (records_bold$species_name[i] != "") && !(records_bold$species_name[i] %in% rownames(summary_df)))
-            #add a row to summary_df
-            summary_df[records_bold$species_name[i],] <- integer(ncol(summary_df))
-        #add data to summary_df to get summary data
-        if (!is.na(records_bold$markercode[i]) && records_bold$markercode[i] != '' && (records_bold$species_name[i] != "")){
-            #if markercode is not yet in the dataframe, initiate new col
-            if (!(records_bold$markercode[i] %in% colnames(summary_df))){
-                #create a new column of 0s
-                summary_df[records_bold$markercode[i]] <- integer(nrow(summary_df))
-            }
-            #add 1 to existing count
-            summary_df[records_bold$species_name[i], records_bold$markercode[i]] <- summary_df[records_bold$species_name[i], records_bold$markercode[i]] + 1
-        }
-        else {
-          
-        }
-    }
+    summary_df <- bold_coverage %>%
+      subset(subset = !is_missing(species_name) & !is_missing(markercode),
+             select = c("species_name", "markercode")) %>%
+      table %>%
+      as.data.frame.matrix
     
     summary_df
 }
@@ -165,40 +100,25 @@ reduce_barcode_summary <- function(b_summary) {
     summary <- b_summary
     count <- apply(summary, 2, function(c)sum(c!=0))
     sums <- apply(summary, 2, sum)
-    
-    #find most representative 
-    
-    #result <- c()
-    #for (i in 1:length(sums)){
-    #    result <- sums[[i]] * count[[i]]
-    # }
-    #print(c)
-    
-    
+  
     #calculate and sort by relavance
     calculated <- names(rev(sort(sums * count)))
-    
-    #if (ncol(summary) > 3){
-    #  summary <- subset(summary, select = c(names(calculated[1]), names(calculated[2]), names(calculated[3])))
-    #}
+  
     summary <- subset(summary, select = (calculated))
-    # print("Sorted Summary")
-    # print(summary)
     summary
 }
 
 missingSpecies <- function(missingList) {
-  missing_df <- data.frame(matrix(ncol = 0, nrow = 0))
-  newStr <- ""
-  for (i in 1:length(missingList)) {
-    if (newStr == "") {
-      newStr <- paste(newStr, missingList[i], sep="")
-    } else {
-      newStr <- paste(newStr, missingList[i], sep=", ")
-    }
+  #check for empty missing species list
+  if (is.null(missingList[["Missing Species"]])) {
+    missing_df <- data.frame(" " <- c("NULL"))
+  } else {
+    missing_df <- data.frame(" " <- missingList[["Missing Species"]])
   }
-  print(newStr)
-  missing_df[" ", " "] <- newStr
+  
+  #remove column name for species column
+  colnames(missing_df) <- c(" ")
+  
   missing_df
 }
 

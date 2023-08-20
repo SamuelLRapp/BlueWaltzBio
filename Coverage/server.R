@@ -964,6 +964,8 @@ shinyServer(function(input, output, session) {
       shinyjs::hide(id = "BOLDSkipFilter")
       shinyjs::hide(id = "BOLDNullSpeciesWarning")
       shinyjs::hide(id = "removeNCBICol")
+      shinyjs::hide(id = "BOLDClearFilter")
+      shinyjs::hide(id = "bold_species_not_found_panel")
       
       progressBOLD <<-
         AsyncProgress$new(
@@ -1053,7 +1055,6 @@ shinyServer(function(input, output, session) {
               progressBOLD$inc(amount = 0.5/organismListLength)
               searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
-                print(records_bold)
                 searchResult <- 1
               }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
@@ -1085,6 +1086,7 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "BOLDNullSpeciesWarning")
             shinyjs::show(id = "removeNCBICol")
             shinyjs::show(id = "countryFilterCol")
+            shinyjs::show(id = "bold_species_not_found_panel")
             returnMatrix <- . #return data matrix
             returnMatrix
           }
@@ -1102,7 +1104,7 @@ shinyServer(function(input, output, session) {
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
-        data <- data %>% filter(!is.na(markercode) & !is.na(species_name))
+        data <- data %>% filter(!is.na(species_name)  & !is.na(markercode) & !is.na(country))
   
         # remove ncbi
         if (input$removeNCBI == TRUE){
@@ -1130,12 +1132,6 @@ shinyServer(function(input, output, session) {
           bold_matrix <- .
           present_matrix <- bold_functions$presentMatrix(bold_matrix, selectCountry)
           countries <- colnames(present_matrix)
-          for (i in 1:length(countries)){
-            if (countries[i] == ""){
-              countries[i] <- "No country listed"
-            } 
-            countries_values[[countries[i]]] <- 0
-          }
           
           # set vals
           ## counts # of cols for each country where cell > 0
@@ -1181,38 +1177,26 @@ shinyServer(function(input, output, session) {
       if (!is.null(input$selectCountry)){
         BoldMatrix() %...>% {
           records_bold <- .
-          countries_values <- list()
-          vals <- c()
-          countries = c(unique(records_bold$country))
-          # replace the empty str w/ no country listed
-          for (i in 1:length(countries)){
-            if (countries[i] == ""){
-              countries[i] = "No Country Listed"
-            }
-          }
           
-          for (i in countries){
-            x <- lengths(subset(records_bold, country == i))
-            countries_values[[i]] = x[[1]]
-            vals <- append(vals, x[[1]])
-          }
-          xf <- data.frame(country = countries, values = vals)
+          #table gets counts, data.frame converts table to dataframe
+          #ggplot only accepts dataframes
+          xf <- records_bold[c("country")] %>%
+            table %>%
+            data.frame
+    
           geom.text.size = 7
           theme.size = (14/5) * geom.text.size
-          #d3tree(
-          #  treemap(xf, 
-          #          index = "country", 
-          #          vSize = "values", 
-          #          vColor = "country", 
-          #          type = "value",
-          #          title.legend = "Legend"))
-          ggplot(xf, aes(area = vals, fill = countries, label=countries)) +
+          
+          #reference for changing titles: http://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
+          #the "." column holds the countries (.data refers to xf)
+          #using .data instead of xf to avoid warnings about it
+          ggplot(xf, aes(area = .data[["Freq"]], fill = .data[["."]], label = .data[["."]])) +
             geom_treemap() +  
             geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
             ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
             theme(axis.text = element_text(size = theme.size),
-                  plot.title = element_text(size = 20, face = "bold")) 
-          # how to change the colors + get a legend ?
+                  plot.title = element_text(size = 20, face = "bold")) +
+            labs(fill = "Countries")
         }
     }}
     
@@ -1255,16 +1239,15 @@ shinyServer(function(input, output, session) {
       DT::renderDataTable({
         promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
           bold_functions$absentMatrix(matrix$results, 
-                                      input$selectCountry, 
-                                      na.omit(coverage$countries[coverage$countries != ""])
+                                      input$selectCountry
                                       )
         })
       })
 
     output$BOLDNATable <- 
       DT::renderDataTable({
-        BoldMatrix() %...>% {
-        bold_functions$naBarcodes(.)
+        boldCoverage() %...>% {
+        bold_functions$naBarcodes(.$results)
         }
       })
     
@@ -1387,11 +1370,10 @@ shinyServer(function(input, output, session) {
         paste("BOLD_Recommended_Country_Filters", ".csv", sep="")
       },
       content = function(file) {
-        promise_all(matrix = BoldMatrix(), coverage = boldCoverage()) %...>% with({
-          results <- bold_functions$absentMatrix(matrix, 
-                                      input$selectCountry, 
-                                      na.omit(coverage$input$selectCountry[coverage$input$selectCountry != ""])
-          )
+        promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
+          results <- bold_functions$absentMatrix(matrix$results, 
+                                                input$selectCountry
+                                                )
           write.csv(results, file)
         })
       }
