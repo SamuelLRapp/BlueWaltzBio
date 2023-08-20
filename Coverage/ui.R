@@ -242,7 +242,7 @@ shinyUI(fluidPage(
                                    ),
                                    mainPanel(
                                      column(12, align="center", style='padding-top:15px',
-                                            titlePanel("Instances of a organism found in each CRUX metabarcoding database"),
+                                            titlePanel("Instances of an Organism Found in Each CRUX Metabarcoding Database"),
                                             DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                             conditionalPanel( condition = "output.CRUXcoverageResults",
                                                               downloadButton('downloadCrux',"Download table"))
@@ -694,11 +694,11 @@ shinyUI(fluidPage(
                                           #conditionalPanel(condition = "input.geo != list()",
                                           #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
                                           #mainPanel(plotOutput("geo_pie")),
-                                          titlePanel("Total number of barcodes found by country for each unique species"),
+                                          titlePanel("Total Number of Barcodes Found by Country for Each Unique Species"),
                                           DT::dataTableOutput("BOLDPresentTable") %>% withSpinner(color="#0dc5c1"),
                                           downloadButton('downloadBoldPresent', "Download entries per country table"),
                                           
-                                          titlePanel("Suggested countries to add to your filter"),
+                                          titlePanel("Suggested Countries to Add to Your Filter"),
                                           p("For those species that have no barcodes found in the country(s) filtered we provide 
                                  the top 3 unselected countries with the most sequence results."),
                                           DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
