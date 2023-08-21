@@ -47,3 +47,47 @@
 .info-tooltip:hover .info-tooltip-text {
   visibility: visible;
 }
+
+/*css after this point adapted from Shiny's AsyncProgress css*/
+
+/*class to control loader/progress bar container*/
+.custom-loader {
+  transform: translateY(50%) !important;
+  position: initial !important; /*!important overrides other CSS*/
+  display: block;
+  margin: auto;
+  padding: 2px;
+  width: max(250px, 50%) !important;
+}
+
+/*remove background of AsyncProgress bar*/
+.custom-loader .shiny-notification {
+  border-color: transparent  !important;
+  background-color: transparent !important;
+}
+
+/*progress bar background styling*/
+.custom-loader .shiny-progress-notification .progress {
+  margin-bottom: 5px;
+  height: 25px;
+  background-color: #ccf9ae;
+  border-radius: 12.5px;
+}
+
+/*progress bar styling*/
+
+/*hide the progress bar close button that comes with the default AsyncProgress*/
+.custom-loader .shiny-notification-close {
+  display: none; 
+}
+
+/*progress bar text container*/
+.custom-loader .progress-text {
+  color: black;
+}
+
+.custom-loader .progress-detail {
+  margin-left: 5px;
+  /*increase fontsize*/
+  font-size: 12px !important;
+}

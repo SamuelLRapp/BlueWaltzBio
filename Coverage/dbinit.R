@@ -35,3 +35,4 @@ dbWriteTable(taxaDB, "MB12S", df_Vert12S)
 
 dbDisconnect(taxaDB)
 unlink("taxa-db.sqlite")
+
