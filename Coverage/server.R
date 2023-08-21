@@ -110,12 +110,12 @@ shinyServer(function(input, output, session) {
         api_key = input$NCBIKey)
       shinyalert("Your API key has been accepted", type = "success")
       set_entrez_key(input$NCBIKey)
-      server_functions$setNcbiKeyIsValid(true)
+      server_functions$setNcbiKeyIsValid(TRUE)
     }, error = function(err) {
       shinyalert("Your API key has been rejected, 
                  please make sure it is correct",
                  type = "warning")
-      server_functions$setNcbiKeyIsValid(true)
+      server_functions$setNcbiKeyIsValid(TRUE)
     })
   })
   
