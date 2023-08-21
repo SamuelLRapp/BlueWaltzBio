@@ -1,0 +1,49 @@
+{
+  "input": {
+    "barcodeList": "(CO1; COI; COX1)",
+    "barcodeOption12S": 0,
+    "barcodeOption16S": 0,
+    "barcodeOption18S": 0,
+    "barcodeOptionCO1": 1,
+    "barcodeOptionITS1": 0,
+    "barcodeOptionITS2": 0,
+    "barcodeOptiontrnl": 0,
+    "btn-312928385": 0,
+    "btn-554504146": 0,
+    "btn-66608964": 0,
+    "btn-803234389": 0,
+    "btn-836151595": 0,
+    "btn-85229418": 0,
+    "btn-866248189": 0,
+    "btn-884616499": 0,
+    "CRUXorganismList": "",
+    "CRUXtaxizeOption": true,
+    "downloadNum": 5,
+    "fullGenomeTaxizeOption": true,
+    "genomeOrganismList": "",
+    "genomeSearchButton": 0,
+    "gsearch": "Full mitochondrial genomes in NCBI Nucleotide",
+    "NCBIKey": "",
+    "NCBIorganismList": "",
+    "NCBIsearchButton": 0,
+    "NCBISearchOptionGene": true,
+    "NCBISearchOptionOrgn": true,
+    "NCBItaxizeOption": true,
+    "refSeq": true,
+    "searchButton": 0,
+    "seqLengthOption": true,
+    "SetKey": 0,
+    "uCRUXfile": null,
+    "uNCBIfile": null,
+    "uploadCRUXButton": 0,
+    "uploadGenomeButton": 0,
+    "uploadGenomeFile": null,
+    "uploadNCBIButton": 0
+  },
+  "output": {
+
+  },
+  "export": {
+
+  }
+}

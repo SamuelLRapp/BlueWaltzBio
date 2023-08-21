@@ -1,0 +1,3 @@
+OrganismNames,"Instructions: This downloadable template allows users of the Reference Seqeunce Coverage Matrix upload a list of latin species names, instead of typing them into the website's UI. This process is simple and easy. Just write one latin name per row. Next download the file as a CSV and upload it on the website!"
+,Common error: Do not change the column name (you can rewrite them if you accidently edit them). Only write in the first two columns of this CSV.
+,"Example Organism_names: Canis Lupus, Pisaster, Homo Sapien"
