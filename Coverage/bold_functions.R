@@ -70,7 +70,7 @@ absentMatrix <- function(bold_coverage, countries){
     absent_top_countries[absent_top_countries_values == 0] <- 'NA'
 
     # Check if the table is empty or not
-    if (is.null(absent_top_countries)){
+    if (is.null(nrow(absent_top_countries))){
       top_countries_df <- data.frame(matrix(ncol = 3, nrow = 0))
     } else {
       top_countries_df <- as.data.frame(t(absent_top_countries))
