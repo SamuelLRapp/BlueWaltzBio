@@ -1108,7 +1108,7 @@ shinyServer(function(input, output, session) {
   
         # remove ncbi
         if (input$removeNCBI == TRUE){
-          data <- subset(data, genbank_accession == "")
+          data <- subset(data, is.na(genbank_accession))
         }
         country_list <- BOLDOrgCountries()
         if(length(country_list) > 0){
