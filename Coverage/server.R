@@ -23,7 +23,6 @@ library(mpoly)
 library(modules)
 library(shinyjs)
 require("bold") 
-require("treemap")
 library(plotly)
 library(treemapify)
 library(ggplot2)
@@ -115,7 +114,7 @@ shinyServer(function(input, output, session) {
       shinyalert("Your API key has been rejected, 
                  please make sure it is correct",
                  type = "warning")
-      server_functions$setNcbiKeyIsValid(TRUE)
+      server_functions$setNcbiKeyIsValid(FALSE)
     })
   })
   
@@ -920,12 +919,18 @@ shinyServer(function(input, output, session) {
     } else if (databaseFlag == 0) {
       then(cruxOrgSearch(), function(coverage) {
         organismList <- coverage[[1]]
+        print("Coverage 1")
+        print(organismList)
         cruxMatrix <- coverage[[2]]
+        print("Coverage 2")
+        print(cruxMatrix)
         columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
         colnames(cruxMatrix) <- columns
         rownames(cruxMatrix) <- organismList
         cleaned_cruxMatrix <- na.omit(cruxMatrix)
         dataframe <- server_functions$convert_CRUX(cleaned_cruxMatrix)
+        print("dataframe")
+        print(dataframe)
         server_functions$summary_report_dataframe(dataframe)
         })
     } else {
