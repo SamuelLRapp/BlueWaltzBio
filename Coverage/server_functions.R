@@ -53,159 +53,89 @@ setNcbiKeyIsValid <- function(validity = TRUE) {
 # Used for both crux and NCBI tabs
 summary_report_dataframe <- function(dataframe)
 {
-  class(dataframe)
-  class(dataframe[, 1])
-  options(scipen = 999) #scientific notion
-  new_row_names <- "Total"
-  # doesn't include column with taxa snames
-  new_row_names <- c(new_row_names, colnames(dataframe))
+  # colnames dataframe are all the barcodes that come from the search:
+  # For CRUX that is: "18S"     "16S"     "PITS"    "CO1"     "FITS"    "trnL"    "Vert12S"
+  # For NCBI: Depends on User Input
+  # For BOLD: Depends on the barcodes found during the search
+  new_row_names <- colnames(dataframe)
+  
+  # Convert all non-integer entries into 0's
+  dataframe <- dataframe %>%
+    mutate_all(~ ifelse(is.na(as.integer(.)), 0, as.integer(.)))
   
   statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
-  new_col_names <-
-    c(
-      "Barcodes",
-      "Number of Sequences Found",
-      "Percent of Total Sequences Found",
-      "Number of Organisms with at Least one Sequence",
-      "Number of Organisms with no Sequences"
-    )
-  colnames(statistics_df) <- new_col_names
-  #get list of columns + a column called "total"
+  colnames(statistics_df) <- c(
+    "Barcodes",
+    "Number of Sequences Found",
+    "Percent of Total Sequences Found",
+    "Number of Organisms with at Least one Sequence",
+    "Number of Organisms with no Sequences"
+  )
   
-  #add row names
-  for (i in 1:length(new_row_names))
-  {
-    statistics_df[i, 1] <- new_row_names[i]
-  }
-  
-  #doesn't include column with taxa snames
+  # Add up each column representing a barcode and add up every barcode
   barcodeSums <- colSums(dataframe) 
+  total_seq_found <- sum(barcodeSums)
   
-  Total_seq_found <- sum(barcodeSums)
-  
-  #hard code in the totals
-  statistics_df[1, 2] <- Total_seq_found
+  # Manually enter known values, total sequences found and total percentage
+  statistics_df[1, 2] <- total_seq_found
   statistics_df[1, 3] <- 100
+  statistics_df[1, 1] <- "Total" # Set the Total barcodeName Row
+  organismPresence <- orgamismPresence(dataframe, -1)
+  statistics_df[1, 5] <- length(organismPresence[[2]])
+  statistics_df[1, 4] <- length(organismPresence[[1]])
   
   for (i in 2:length(new_row_names))
   {
     x <- i - 1
+    statistics_df[i, 1] <- new_row_names[x] # Set the barcodeName Row
     statistics_df[i, 2] <- barcodeSums[x]
-    if(Total_seq_found == 0){
+    if(total_seq_found == 0){
       statistics_df[i, 3] <- 0
     } else {
-      statistics_df[i, 3] <- round(((barcodeSums[x] / Total_seq_found) * 100), digits=2)
+      statistics_df[i, 3] <- round(((barcodeSums[x] / total_seq_found) * 100), digits=2)
     }
-  }
-  
-  #hard code in the totals
-  output_of_which_rows_are_empty_and_arenot <-
-    which_rows_are_empty_and_arenot(dataframe,-1)
-  #list 2 is thee species without any seqs
-  statistics_df[1, 5] <-
-    length(output_of_which_rows_are_empty_and_arenot[[2]])
-  #we know list 1 is the species with some seqs
-  statistics_df[1, 4] <-
-    length(output_of_which_rows_are_empty_and_arenot[[1]])
-  
-  for (i in 2:length(new_row_names))
-  {
-    x <- i - 1
-    output_of_which_rows_are_empty_and_arenot <-
-      which_rows_are_empty_and_arenot(dataframe, Which_Column = x)
-    #list 2 is the species without any seqs
-    statistics_df[i, 5] <-
-      length(output_of_which_rows_are_empty_and_arenot[[2]])
-    #we know list 1 is the species with some seqs
-    statistics_df[i, 4] <-
-      length(output_of_which_rows_are_empty_and_arenot[[1]])
+    organismPresence <- orgamismPresence(dataframe, x)
+    statistics_df[i, 5] <- length(organismPresence[[2]])
+    statistics_df[i, 4] <- length(organismPresence[[1]])
   }
   statistics_df
 }
 
-
-# if which_column = -1 it means do all rows, if a column number is given the 
-# function will only run on said column of the dataframe returns list of 2 
-# lists, one of species with seqs, and one of species without any sequences
-which_rows_are_empty_and_arenot <-
-  function(dataframe, Which_Column)
+# Detect for a barcode or every barcode how many organism have coverage.
+# i.e how many organism have some sequences found
+orgamismPresence <- function(dataframe, column){
+  total <- 0
+  ncols <- ncol(dataframe)
+  nrows <- nrow(dataframe)
+  haveSomeSeq <- c()
+  haveZeroSeq <- c()
+  
+  for (i in 1:nrows)
   {
-    if (is.null(Which_Column))
+    # Check every barcode
+    if (column < 0) {
+      for (j in 1:ncols)
+      {
+        total <- total + dataframe[i, j]
+      }
+    }
+    # Only need to check one barcode
+    else {
+      total <- total + dataframe[i, column]
+    }
+    if (total > 0)
     {
-      Which_Column <- -1
-    }
-    Which_Column <- Which_Column
-    #create two lists
-    haveSomeSeq <- c()
-    haveZeroSeq <- c()
-    
-    ncols <- ncol(dataframe)
-    nrows <- nrow(dataframe)
-    
-    if (Which_Column < 0) {
-      #we will skip the first column because it has names
-      for (i in 1:nrows)
-      {
-        total <- 0
-        for (j in 1:ncols)
-        {
-          newNum <- as.numeric(dataframe[i,j])
-          if(is.na(newNum)){
-            newNum <- 0
-          }
-          total <- total + newNum
-        }
-        
-        if (!is.null(total) && total > 0)
-        {
-          #add species name to list
-          haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
-        } else
-        {
-          #add species name to list
-          haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
-        }
-      }
-    } else {         #if a specific columnn
-      #we will skip the first column because it has names
-      for (i in 1:nrows)
-      {
-        newNum <- as.numeric(dataframe[i, Which_Column])
-        if(is.na(newNum)){
-          newNum <- 0
-        }
-        seqs <- 0
-        seqs <- 0 + newNum
-        
-        if (!is.null(seqs) && seqs > 0)
-        {
-          #add species name to list
-          haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1]) 
-        } else
-        {
-          #add species name to list
-          haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
-        }
-      }
-    }
-    if (Which_Column < 0) {
-      results <-
-        list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
-      results <- as.matrix(results)
+      #add species name to list
+      haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
     } else
     {
-      COLNam <- colnames(dataframe)
-      column_name <- paste0("Have", COLNam[Which_Column], "Seq")
-      results <-
-        list(
-          single_Barcode_haveSomeseq = haveSomeSeq,
-          single_Barcode_haveZeroSeqs = haveZeroSeq
-        )
-      results <- as.matrix(results)
+      #add species name to list
+      haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
     }
-    results
   }
-
+  results <- list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
+  results <- as.matrix(results)
+}
 
 
 # Full Genome Tab --------------------------------------------------------------
@@ -573,7 +503,7 @@ getSearchTerm <- function(organismName, organismUid) {
 convert_CRUX <-
   function(crux_output) 
     # Take a crux output matrix and  turn the characters "genus, spp, etc" 
-    # into  0s/1s. This function is used by which_rows_are_empty_and_arenot()
+    # into  0s/1s. This function is used by orgamismPresence()
   {
     crux_without_taxonomic_names <- crux_output
     #crux_without_taxonomic_names <-
