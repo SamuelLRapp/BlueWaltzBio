@@ -911,7 +911,7 @@ shinyServer(function(input, output, session) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
+        df <- as.data.frame(server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList())))
         colnames(df) <- columns
         rownames(df) <- rows
         server_functions$summary_report_dataframe(df)
@@ -1065,14 +1065,14 @@ shinyServer(function(input, output, session) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
-              if (!is.na(records_bold)){
-                records_bold[records_bold == ''] <- NA
-                records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
-                countries <- c(countries, records_bold$country)
-                results <- rbind(results, records_bold)
-              } else {
-                  unfound_species <- c(unfound_species, organism)
-              }
+              # if (!is.na(records_bold)){
+              records_bold[records_bold == ''] <- NA
+              records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
+              countries <- c(countries, records_bold$country)
+              results <- rbind(results, records_bold)
+              # } else {
+              #     unfound_species <- c(unfound_species, organism)
+              # }
               organismsDownloaded <- organismsDownloaded + 1
               progressBOLD$set(message = paste0("Retrieved barcodes for ", organism),
                                detail = paste0(organismsDownloaded,"/",organismListLength))
