@@ -904,49 +904,43 @@ shinyServer(function(input, output, session) {
   )
   
   # * SummaryReport ------------------------------------------------------------
-  
-  
+
+  # Format the dataframe for each database correctly 
+  # Then send it to the summary data function for processing
+  # Returns the summary report data table
   summary_report <- function(databaseFlag) {
     if (databaseFlag == 1) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
         rows <- searchResults[[4]] #organismList
-        df <- as.data.frame(server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList())))
-        colnames(df) <- columns
-        rownames(df) <- rows
-        server_functions$summary_report_dataframe(df)
+        dataframe <- as.data.frame(server_functions$getNcbiResultsMatrix(searchResults, 
+                                                                         length(barcodeList())))
+        colnames(dataframe) <- columns
+        rownames(dataframe) <- rows
       })
     } else if (databaseFlag == 0) {
       then(cruxOrgSearch(), function(coverage) {
         organismList <- coverage[[1]]
-        print("Coverage 1")
-        print(organismList)
         cruxMatrix <- coverage[[2]]
-        print("Coverage 2")
-        print(cruxMatrix)
         columns <- list("18S", "16S", "PITS", "CO1", "FITS", "trnL", "Vert12S")
         colnames(cruxMatrix) <- columns
         rownames(cruxMatrix) <- organismList
         cleaned_cruxMatrix <- na.omit(cruxMatrix)
         dataframe <- server_functions$convert_CRUX(cleaned_cruxMatrix)
-        print("dataframe")
-        print(dataframe)
-        server_functions$summary_report_dataframe(dataframe)
         })
     } else {
       BoldMatrix() %...>% {
         matrix <- .
         dataframe <- bold_functions$barcode_summary(matrix)
-        server_functions$summary_report_dataframe(dataframe)
       }
     }
+    server_functions$summary_report_dataframe(dataframe)
   }
 
-# BOLD --------------------------------------------------------------------
-
-
-# * BOLDSearchButton ------------------------------------------------------
-
+  # BOLD --------------------------------------------------------------------
+  
+  
+  # * BOLDSearchButton ------------------------------------------------------
     BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update BOLDOrgSearch to return the value input into BOLDorganismList
       input$BOLDorganismList #Returns as a string
     })
