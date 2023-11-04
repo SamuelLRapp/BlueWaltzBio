@@ -77,12 +77,13 @@ summary_report_dataframe <- function(dataframe)
   total_seq_found <- sum(barcodeSums)
   
   # Manually enter known values, total sequences found and total percentage
+  statistics_df[1, 1] <- "Total" # Set the Total barcodeName Row
   statistics_df[1, 2] <- total_seq_found
   statistics_df[1, 3] <- 100
-  statistics_df[1, 1] <- "Total" # Set the Total barcodeName Row
   organismPresence <- orgamismPresence(dataframe, -1)
-  statistics_df[1, 5] <- length(organismPresence[[2]])
   statistics_df[1, 4] <- length(organismPresence[[1]])
+  statistics_df[1, 5] <- length(organismPresence[[2]])
+
   
   for (i in 2:length(new_row_names))
   {
@@ -95,8 +96,8 @@ summary_report_dataframe <- function(dataframe)
       statistics_df[i, 3] <- round(((barcodeSums[x] / total_seq_found) * 100), digits=2)
     }
     organismPresence <- orgamismPresence(dataframe, x)
-    statistics_df[i, 5] <- length(organismPresence[[2]])
     statistics_df[i, 4] <- length(organismPresence[[1]])
+    statistics_df[i, 5] <- length(organismPresence[[2]])
   }
   statistics_df
 }
@@ -112,14 +113,14 @@ orgamismPresence <- function(dataframe, column){
   
   for (i in 1:nrows)
   {
-    # Check every barcode
+    # Check presence for every barcode/column
     if (column < 0) {
       for (j in 1:ncols)
       {
         total <- total + dataframe[i, j]
       }
     }
-    # Only need to check one barcode
+    # Only need to check presence one barcode/column
     else {
       total <- total + dataframe[i, column]
     }
@@ -133,6 +134,7 @@ orgamismPresence <- function(dataframe, column){
       haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
     }
   }
+  # Return organism presence lists
   results <- list(HaveSomeSeqs = haveSomeSeq, haveZeroSeqs = haveZeroSeq)
   results <- as.matrix(results)
 }
