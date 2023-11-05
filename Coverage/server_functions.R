@@ -290,7 +290,6 @@ cruxDbList <- list(
 # is wanted. 
 getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
   nameUidList <- getHomonyms(organismList, homonymFlag)
-  print("HELLO")
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
@@ -395,7 +394,10 @@ getHomonyms <- function(organismList, homonymFlag) {
             break
           }
         }
-      } 
+      } else {
+        newOrganismNamesList <- c(newOrganismNamesList, organism)
+        newOrganismUidsList <- c(newOrganismUidsList, "")
+      }
     }
     else {
       newOrganismNamesList <- c(newOrganismNamesList, organism)
