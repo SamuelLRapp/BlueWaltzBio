@@ -57,12 +57,12 @@ summary_report_dataframe <- function(dataframe)
   # For CRUX that is: "18S"     "16S"     "PITS"    "CO1"     "FITS"    "trnL"    "Vert12S"
   # For NCBI: Depends on User Input
   # For BOLD: Depends on the barcodes found during the search
-  new_row_names <- colnames(dataframe)
-  
+  #new_row_names <- colnames(dataframe)
+  new_row_names <- c("Total", colnames(dataframe))
+
   # Convert all non-integer entries into 0's
   dataframe <- dataframe %>%
     mutate_all(~ ifelse(is.na(as.integer(.)), 0, as.integer(.)))
-  
   statistics_df <- data.frame(matrix(ncol = 5, nrow = 0))
   colnames(statistics_df) <- c(
     "Barcodes",
@@ -88,7 +88,7 @@ summary_report_dataframe <- function(dataframe)
   for (i in 2:length(new_row_names))
   {
     x <- i - 1
-    statistics_df[i, 1] <- new_row_names[x] # Set the barcodeName Row
+    statistics_df[i, 1] <- new_row_names[i] # Set the barcodeName Row
     statistics_df[i, 2] <- barcodeSums[x]
     if(total_seq_found == 0){
       statistics_df[i, 3] <- 0
@@ -110,9 +110,9 @@ orgamismPresence <- function(dataframe, column){
   nrows <- nrow(dataframe)
   haveSomeSeq <- c()
   haveZeroSeq <- c()
-  
   for (i in 1:nrows)
   {
+    total <- 0
     # Check presence for every barcode/column
     if (column < 0) {
       for (j in 1:ncols)
@@ -127,11 +127,11 @@ orgamismPresence <- function(dataframe, column){
     if (total > 0)
     {
       #add species name to list
-      haveSomeSeq <- c(haveSomeSeq, dataframe[i, 1])
+      haveSomeSeq <- c(haveSomeSeq, total)
     } else
     {
       #add species name to list
-      haveZeroSeq <- c(haveZeroSeq, dataframe[i, 1])
+      haveZeroSeq <- c(haveZeroSeq, total)
     }
   }
   # Return organism presence lists
@@ -288,8 +288,9 @@ cruxDbList <- list(
 # remaining three values are empty vectors, left in place
 # in case the previous homonym failure notification scheme
 # is wanted. 
-getCruxSearchFullResults <- function(organismList, progress) {
-  nameUidList <- getHomonyms(organismList)
+getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
+  nameUidList <- getHomonyms(organismList, homonymFlag)
+  print("HELLO")
   nameList <- nameUidList[[1]]
   uidList <- nameUidList[[2]]
   results <- c()
@@ -364,7 +365,7 @@ getCruxResultsMatrix <- function(resultsVector, numOrganisms) {
 # names for the organism. If no homonyms were found for an 
 # organism, the corresponding uid will be the empty string,
 # since the uid is unknown here in that case.
-getHomonyms <- function(organismList) {
+getHomonyms <- function(organismList, homonymFlag) {
   validate(
     need(length(organismList) > 0, 'Please name at least one organism'))
   newOrganismNamesList <- c()
@@ -373,26 +374,32 @@ getHomonyms <- function(organismList) {
     
     # get_uid_ calls function get_uid_help,
     # which calls Sys.sleep(0.33). Explicitly sleeping
-    # here may not be necessary.
     # https://rdrr.io/cran/taxize/src/R/get_uid.R
     sleep()
     
-    # get_uid_ returns null or a data.frame.
-    # source at https://rdrr.io/cran/taxize/src/R/get_uid.R
-    search <- get_uid_(sci_com=organism, messages=FALSE)
-    if (is.null(search[[1]])) {
+    if (homonymFlag) {
+      # get_uid_ returns a data.frame.
+      # source at https://rdrr.io/cran/taxize/src/R/get_uid.R
+      search <- get_uid_(sci_com=organism, messages=FALSE)
+      print(search)
+      if (!is.null(search) && !is.null(search[[1]]) && nrow(search[[1]])>1) {
+        newOrganismNamesList <- c(newOrganismNamesList, organism)
+        newOrganismUidsList <- c(newOrganismUidsList, "")
+        for (i in 1:nrow(search[[1]])){
+          newOrg <- paste(organism, search[[1]]$division[i], sep = " ")
+          newOrganismNamesList <- c(
+            newOrganismNamesList, newOrg)
+          newOrganismUidsList <- c(
+            newOrganismUidsList, search[[1]][["uid"]][[i]])
+          if (i > maxHomonyms) {
+            break
+          }
+        }
+      } 
+    }
+    else {
       newOrganismNamesList <- c(newOrganismNamesList, organism)
       newOrganismUidsList <- c(newOrganismUidsList, "")
-    } else {
-      for (i in 1:nrow(search[[1]])){
-        newOrganismNamesList <- c(
-          newOrganismNamesList, search[[1]][["scientificname"]][[i]])
-        newOrganismUidsList <- c(
-          newOrganismUidsList, search[[1]][["uid"]][[i]])
-        if (i > maxHomonyms) {
-          break
-        }
-      }
     }
   }
   list(newOrganismNamesList, newOrganismUidsList)
