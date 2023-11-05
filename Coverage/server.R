@@ -325,8 +325,9 @@ shinyServer(function(input, output, session) {
   
   cruxOrgSearch <- reactive({
     organismListGet() %...>% {
+      homonymFlag <- input$CRUXhomonymOption
       future_promise(
-        server_functions$getCruxSearchFullResults(., progressCRUX))
+        server_functions$getCruxSearchFullResults(., progressCRUX, homonymFlag))
     }
   })
     
@@ -1061,8 +1062,9 @@ shinyServer(function(input, output, session) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
-              if (!is.null(records_bold)){
+              if (!is.null(records_bold) && !is.na(records_bold)){
                 records_bold[records_bold == ''] <- NA
+                print(records_bold)
                 records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
                 countries <- c(countries, records_bold$country)
                 results <- rbind(results, records_bold)

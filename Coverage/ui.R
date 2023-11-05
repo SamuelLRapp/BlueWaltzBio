@@ -187,6 +187,8 @@ shinyUI(fluidPage(
                                           titlePanel("Organism Names"),
                                           textAreaInput(inputId = "CRUXorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
                                           checkboxInput(inputId = "CRUXtaxizeOption", label = list("Append organism name synonyms and spelling corrections via the R Package “Taxize”", tags$a(id="CRUXtaxizeHelp",icon("question-circle"))) , value = TRUE, width = 500),
+                                          checkboxInput(inputId = "CRUXhomonymOption", label = list("Check for homonyms and append to the list of organisms if any are found"), value = TRUE, width = 500),
+                                          
                                           bsPopover(id="CRUXtaxizeHelp", title="Help", content = paste0(
                                             '<p>If this box is checked, the programming package “Taxize” will:</p>',
                                             '<ol>',
@@ -200,9 +202,6 @@ shinyUI(fluidPage(
                                           trigger="hover"),
                                           actionButton("searchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                           tags$div(id = 'CRUXtaxizeOption', style ='font-size:120%'),
-                                          #tags$style(type='text/css', "#CRUXorganismList { vertical-align- middle; height- 100px; width- 100%; font-size- 200px;}"),
-                                          #tags$style(type='text/css', "#CRUXtaxizeOption { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}"),
-                                          #tags$style(type='text/css', "#searchButton { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
                                    )),
                         ),
                         tabPanel("Summary Results",
@@ -245,7 +244,7 @@ shinyUI(fluidPage(
                                             titlePanel("Instances of an Organism Found in Each CRUX Metabarcoding Database"),
                                             DT::dataTableOutput("CRUXcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                             conditionalPanel( condition = "output.CRUXcoverageResults",
-                                                              downloadButton('downloadCrux',"Download table"))
+                                                              downloadButton('downloadCrux',"Download Coverage Matrix"))
                                      ) 
                                    )
                                    
@@ -413,7 +412,7 @@ shinyUI(fluidPage(
                                           tags$div(id="loaderWrapperNCBI"),
                                           DT::dataTableOutput("NCBISummaryResults")  %>% withSpinner(color="#00000000"),
                                           conditionalPanel( condition = "output.NCBISummaryResults",
-                                                            downloadButton("NCBIfileDownloadSD","Download summary data"),
+                                                            downloadButton("NCBIfileDownloadSD","Download Summary Data"),
                                                             actionButton("NCBIdetailsButton", "See More Detailed Results"),
                                                             actionButton("NCBIStartOverSummary", "Start the Search again"))
                                    )),
@@ -427,9 +426,9 @@ shinyUI(fluidPage(
                                           titlePanel("Number of Sequences Found Per Organism-Barcode Pairing"),
                                           DT::dataTableOutput("NCBIcoverageResults") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel( condition = "output.NCBIcoverageResults",
-                                                            downloadButton('download',"Download counts table"),
-                                                            downloadButton("fileDownloadF","Download FASTA files"),
-                                                            downloadButton("fileDownloadG","Download Genbank files"),
+                                                            downloadButton('download',"Download Coverage Matrix"),
+                                                            downloadButton("fileDownloadF","Download FASTA Files"),
+                                                            downloadButton("fileDownloadG","Download Genbank Files"),
                                                             actionButton("NCBIStartOver", "Start the Search again")
                                                             )
                                    )),
@@ -511,9 +510,9 @@ shinyUI(fluidPage(
                                           tags$div(id="loaderWrapperFullGenome"),
                                           DT::dataTableOutput("genomeResults"),
                                           conditionalPanel( condition = "output.genomeResults",                            
-                                                            downloadButton('fullGenomeDownloadT',"Download table"),
-                                                            downloadButton('fullGenomeDownloadF', "Download Fasta files"),
-                                                            downloadButton('fullGenomeDownloadG', "Download Genbank files"))
+                                                            downloadButton('fullGenomeDownloadT',"Download Coverage Matrix"),
+                                                            downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
+                                                            downloadButton('fullGenomeDownloadG', "Download Genbank Files"))
                                           #actionButton("FullGenomeSummaryDataButton", "Check Summary Data")) # TO BE USED OEN DAY?
                                    )),
                                  
@@ -667,7 +666,7 @@ shinyUI(fluidPage(
                                           DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
                                           conditionalPanel(condition = "output.BOLDSummaryData",
                                                            #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
-                                                           downloadButton('downloadBoldSummary', "Download Summary Data Table"),
+                                                           downloadButton('downloadBoldSummary', "Download Summary Data"),
                                           )),
                                    
                                  ),
@@ -681,7 +680,7 @@ shinyUI(fluidPage(
                                         conditionalPanel(condition = "output.BOLDcoverageResults",
                                                          #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
                                                          downloadButton('downloadBoldFasta',"Download Fasta Files"),
-                                                         downloadButton('downloadBoldMatrix', "Download Counts Table")
+                                                         downloadButton('downloadBoldMatrix', "Download Coverage Matrix")
                                         )
                                   ),
                         ),
