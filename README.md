@@ -1,4 +1,6 @@
 ![Alt text](https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioButterfly.jpg)
+![Alt text](https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioIcon)
+
 
 # BlueWaltzBio Reference Sequence Browser
 
