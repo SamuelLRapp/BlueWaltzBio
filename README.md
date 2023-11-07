@@ -1,7 +1,3 @@
-![Alt text](https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioButterfly.jpg)
-![Alt text](https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioIcon.jpg)
-
-
 # BlueWaltzBio Reference Sequence Browser
 
 To learn more about our tool please refer to our paper and or user guides:
@@ -27,3 +23,5 @@ To install:
 3. Run the rsbpackages.R script which will automatically install all the required packages with the right versions.
 4. Download the CRUX Database files from here: https://drive.google.com/file/d/106-Gxe8cWZiFEb_0WoIcAjRFtDfXG08b/view?usp=sharing
 5. You are all set now run the app using the RStudio "Run App" button or by executing the command shiny::runApp('Coverage')
+
+![Alt text](https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioButterfly.jpg)
