@@ -1,3 +1,5 @@
+![Alt text](https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioButterfly.jpg)
+
 # BlueWaltzBio Reference Sequence Browser
 
 To learn more about our tool please refer to our paper and or user guides:
