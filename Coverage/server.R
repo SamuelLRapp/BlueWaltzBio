@@ -797,13 +797,13 @@ shinyServer(function(input, output, session) {
       updateTextAreaInput(
         getDefaultReactiveDomain(),
         "barcodeList",
-        value = paste("trnl,", input$barcodeList)
+        value = paste("trnL,", input$barcodeList)
       )
     }
     else {
       updateTextAreaInput(getDefaultReactiveDomain(), 
                           "barcodeList", 
-                          value = "trnl")
+                          value = "trnL")
     }
   })
   
