@@ -91,6 +91,7 @@ shinyServer(function(input, output, session) {
   })
   
   mostRecentFile <- function(dirpath) {
+    #snippet from https://stackoverflow.com/a/50870673
     df <- file.info(list.files(dirpath, full.names = T))
     rownames(df)[which.max(df$mtime)]
   }
@@ -627,6 +628,7 @@ shinyServer(function(input, output, session) {
     function(){
       # Returns the uids stored in the results from the NCBi query
       then(ncbiSearch(), function(value) {
+        View(value)
         # Get the results from the NCBI query
         uids <- c()
         for (i in value[[2]]) {
@@ -643,19 +645,39 @@ shinyServer(function(input, output, session) {
   output$fileDownloadF <- downloadHandler(
     filename = function() {
       # Create the file and set its name
-      paste("NCBI_Fasta_File", ".fasta", sep = "")
+      paste("NCBI", ".zip", sep = "")
     },
-    content = function(file) {
-      uidsGet() %...>% {
+    content = function(downloadedFile) {
+      #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
+      setwd(tempdir())
+      ncbiSearch() %...>% {
+        barcodes <- barcodeList()
+        uidsMatrix <- matrix(.[[2]], ncol = length(barcodes), byrow = TRUE)
         future_promise({
-          # Download Fasta files from NCBI
-          Vector_Fasta <-
-            entrez_fetch(db = "nucleotide",
-                         id = .,
-                         rettype = "fasta") 
-          # Writes the vector containing all the fasta file information into 
-          # one fasta file
-          write(Vector_Fasta, file) 
+          filenames <- lapply(barcodes, function(barcode) {
+            file_path <- paste("NCBI", barcodes, "sequences.fasta", sep="_")
+          })[[1]]
+          i <- 0
+          #apply across columns
+          apply(uidsMatrix, MARGIN = 2, function(idCol) {
+            
+              # Download Fasta files from NCBI
+              idsList <- unlist(idCol)
+              Vector_Fasta = c("")
+              if (length(idsList) > 0) {
+                Vector_Fasta <-
+                  entrez_fetch(db = "nucleotide",
+                               id = idsList,
+                               rettype = "fasta")
+              }
+              # Writes the vector containing all the fasta file information into
+              # one fasta file
+              i <<- i+1
+              fn <- filenames[i]
+              file.create(fn)
+              write(Vector_Fasta, fn)
+          })
+          zip(zipfile = downloadedFile, files = filenames)
         })
       }
     }
@@ -1292,34 +1314,50 @@ shinyServer(function(input, output, session) {
     
     output$downloadBoldFasta <- downloadHandler(
       filename = function() {
-        paste("BOLD", ".fasta", sep="")
+        paste("BOLD", ".zip", sep="")
       },
-      content = function(file) {
-        fasta_vector = c()
+      content = function(downloadedFile) {
+        #make temporary directory to hold files to be zipped
+        setwd(tempdir())
+        
         BoldMatrix() %...>% {
           records_bold <- .
-            for(i in 1:length(records_bold$species_name)){
-              #parsing data into fasta file format and storing in fasta_vector
-              
-              #display species name if subspecies name is not available
-              species_name <- if(is.na(records_bold$subspecies_name[i]) || records_bold$subspecies_name[i] == "") records_bold$species_name[i] else records_bold$subspecies_name[i]
-
-              #put data into vector
-              org_vector <- c(records_bold$processid[i], species_name, records_bold$markercode[i], records_bold$genbank_accession[i])
-              #remove empty data
-              org_fasta <- org_vector[org_vector != '']
-              org_data <- paste(org_fasta, collapse = '|')
-              org_data <- paste('>', org_data, sep = '')
-              
-              #do not include entries with no sequences
-              
-              if (records_bold$nucleotides[i] != '' && !is.na(records_bold$nucleotides[i])){
-                fasta_vector <- c(fasta_vector, org_data)
-                fasta_vector <- c(fasta_vector, records_bold$nucleotides[i])
+          grouped_rb <- records_bold %>%
+            select(c("processid", "subspecies_name", "species_name", "markercode", "nucleotides", "genbank_accession")) %>%
+            group_by(markercode) 
+ 
+          grouped_rb %>%
+            group_walk(function(barcode_table, barcode){
+              fasta_vector = c()
+              for(i in 1:length(barcode_table$species_name)){
+                
+                #display species name if subspecies name is not available
+                species_name <- if(is.na(barcode_table$subspecies_name[i]) || barcode_table$subspecies_name[i] == "") barcode_table$species_name[i] else barcode_table$subspecies_name[i]
+                
+                #put data into vector
+                org_vector <- c(barcode_table$processid[i], species_name, barcode, barcode_table$genbank_accession[i])
+                #remove empty data
+                org_fasta <- org_vector[org_vector != '']
+                org_data <- paste(org_fasta, collapse = '|')
+                org_data <- paste('>', org_data, sep = '')
+                
+                #do not include entries with no sequences
+                
+                if (barcode_table$nucleotides[i] != '' && !is.na(barcode_table$nucleotides[i])){
+                  fasta_vector <- c(fasta_vector, org_data)
+                  fasta_vector <- c(fasta_vector, barcode_table$nucleotides[i])
+                }
               }
-            }
-          
-          write(fasta_vector, file)
+              filename <- paste0("BOLD_", barcode[[1,1]], "_sequence")
+              file_path <- paste0(filename, ".fasta")
+              file.create(file_path)
+              write(fasta_vector, file_path)
+            })
+          all_codes <- grouped_rb %>% 
+            group_keys()
+
+          filenames <- unlist(lapply(all_codes[[1]], function(x){paste0("BOLD_",x,"_sequence",".fasta")}))
+          zip(zipfile = downloadedFile, files = filenames)
         }
       }
     )
