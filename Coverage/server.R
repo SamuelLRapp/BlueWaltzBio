@@ -651,6 +651,13 @@ shinyServer(function(input, output, session) {
       #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
       setwd(tempdir())
       ncbiSearch() %...>% {
+        downloadProgress <- AsyncProgress$new(
+          session,
+          min = 0,
+          max = 1,
+          message = "Starting...",
+          value = 0
+        )
         barcodes <- barcodeList()
         uidsMatrix <- matrix(.[[2]], ncol = length(barcodes), byrow = TRUE)
         future_promise({
@@ -660,23 +667,26 @@ shinyServer(function(input, output, session) {
           i <- 0
           #apply across columns
           apply(uidsMatrix, MARGIN = 2, function(idCol) {
+            i <<- i+1
+            downloadProgress$set(message = paste0("Retrieving FASTA for ", barcodes[i]))
+            # Download Fasta files from NCBI
+            idsList <- unlist(idCol)
+            Vector_Fasta = c("")
+            if (length(idsList) > 0) {
+              Vector_Fasta <-
+                entrez_fetch(db = "nucleotide",
+                             id = idsList,
+                             rettype = "fasta")
+            }
+            # Writes the vector containing all the fasta file information into
+            # one fasta file
             
-              # Download Fasta files from NCBI
-              idsList <- unlist(idCol)
-              Vector_Fasta = c("")
-              if (length(idsList) > 0) {
-                Vector_Fasta <-
-                  entrez_fetch(db = "nucleotide",
-                               id = idsList,
-                               rettype = "fasta")
-              }
-              # Writes the vector containing all the fasta file information into
-              # one fasta file
-              i <<- i+1
-              fn <- filenames[i]
-              file.create(fn)
-              write(Vector_Fasta, fn)
+            fn <- filenames[i]
+            file.create(fn)
+            write(Vector_Fasta, fn)
+            downloadProgress$inc(amount = 1/length(barcodes))
           })
+          downloadProgress$close()
           zip(zipfile = downloadedFile, files = filenames)
         })
       }
