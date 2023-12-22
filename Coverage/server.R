@@ -68,34 +68,6 @@ shinyServer(function(input, output, session) {
   # are found in the homonym check.
   maxHomonyms <- 5L
   
-  # * Download tests start------------------------------------------------------
-  observeEvent(input$dwntest, {
-    #run JS portion of test (ui interactions)
-    js$ncbiDwnFastaTest(testOrganisms = "canis lupus, cygnus")
-    
-    #gets reference file to see if download completed later
-    reffile <- mostRecentFile(".")
-    print("Waiting 40 secs for file to finish downloading...")
-    #runs when search complete and download button clicked
-    observeEvent(input[["ui-test-complete"]], {
-      #get the most recent file in the downloads file
-      dwnfile <- mostRecentFile(".")
-      
-      #if download has completed then filename should have changed
-      if (dwnfile != reffile){
-        print("Test passed")
-      } else {
-        print("Test failed: file did not download")
-      }
-    })
-  })
-  
-  mostRecentFile <- function(dirpath) {
-    #snippet from https://stackoverflow.com/a/50870673
-    df <- file.info(list.files(dirpath, full.names = T))
-    rownames(df)[which.max(df$mtime)]
-  }
-  
   
 # NCBI Key ---------------------------------------------------------------------
   
