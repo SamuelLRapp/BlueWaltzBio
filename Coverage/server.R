@@ -1086,8 +1086,8 @@ shinyServer(function(input, output, session) {
               })
               if (!is.null(records_bold) && !is.na(records_bold)){
                 records_bold[records_bold == ''] <- NA
-                print(records_bold)
                 records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
+                records_bold <- records_bold %>% filter(!is.na(species_name)  & !is.na(markercode))
                 countries <- c(countries, records_bold$country)
                 results <- rbind(results, records_bold)
               } else {
@@ -1129,7 +1129,6 @@ shinyServer(function(input, output, session) {
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
-        data <- data %>% filter(!is.na(species_name)  & !is.na(markercode) & !is.na(country))
   
         # remove ncbi
         if (input$removeNCBI == TRUE){
