@@ -1007,24 +1007,30 @@ shinyServer(function(input, output, session) {
       updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
       showTab("BOLDpage", "Summary Data")
       showTab("BOLDpage", "Coverage Matrix")
-      showTab("BOLDpage", "Plot Unique Species Per Country")
-      showTab("BOLDpage", "Plot Total Sequences Per Country")
+      if (!is.null(input$selectCountry)){
+        showTab("BOLDpage", "Plot Unique Species Per Country")
+        showTab("BOLDpage", "Plot Total Sequences Per Country")
+      } else {
+        hideTab("BOLDpage", "Plot Total Sequences Per Country")
+        hideTab("BOLDpage", "Plot Unique Species Per Country")
+      }
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
       showTab("BOLDpage", "Species Not Found in BOLD Database")
-      boldCoverage() %...>% {
-        countries <- unique(.$countries) 
-        updateSelectizeInput(inputId="selectCountry", choices=countries, selected = countries,options = NULL)
-        click("BOLDfilterCountries")
-      }
+      click("BOLDfilterCountries")
     })
     
     observeEvent(input$BOLDfilterCountries, {
       updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
       showTab("BOLDpage", "Summary Data")
       showTab("BOLDpage", "Coverage Matrix")
-      showTab("BOLDpage", "Plot Unique Species Per Country")
-      showTab("BOLDpage", "Plot Total Sequences Per Country")
+      if (!is.null(input$selectCountry)){
+        showTab("BOLDpage", "Plot Unique Species Per Country")
+        showTab("BOLDpage", "Plot Total Sequences Per Country")
+      } else {
+        hideTab("BOLDpage", "Plot Total Sequences Per Country")
+        hideTab("BOLDpage", "Plot Unique Species Per Country")
+      }
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
       showTab("BOLDpage", "Species Not Found in BOLD Database")
@@ -1084,6 +1090,7 @@ shinyServer(function(input, output, session) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
+              
               if (!is.null(records_bold) && !is.na(records_bold)){
                 records_bold[records_bold == ''] <- NA
                 records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
@@ -1201,20 +1208,19 @@ shinyServer(function(input, output, session) {
       if (!is.null(input$selectCountry)){
         BoldMatrix() %...>% {
           records_bold <- .
-          
           #table gets counts, data.frame converts table to dataframe
           #ggplot only accepts dataframes
           xf <- records_bold[c("country")] %>%
             table %>%
             data.frame
-    
+          
           geom.text.size = 7
           theme.size = (14/5) * geom.text.size
           
           #reference for changing titles: http://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
           #the "." column holds the countries (.data refers to xf)
           #using .data instead of xf to avoid warnings about it
-          ggplot(xf, aes(area = .data[["Freq"]], fill = .data[["."]], label = .data[["."]])) +
+          ggplot(xf, aes(area = .data[["Freq"]], fill = .data[["country"]], label = .data[["country"]])) +
             geom_treemap() +  
             geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
             ggtitle("Distribution of Sequence Records Amongst Selected Countries") +
