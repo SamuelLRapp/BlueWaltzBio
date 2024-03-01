@@ -7,17 +7,19 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
-library(shinyjs)
-library(shinycssloaders)
-library(shinyWidgets)
-library(tidyverse)
-library(vembedr)
-library(shinydashboard)
-library(shinyalert) # popup library
-library(modules)
-library(shinyjs)
-library(shinyBS) # tooltip library
+suppressPackageStartupMessages({
+  library(shiny)
+  library(shinyjs)
+  library(shinycssloaders)
+  library(shinyWidgets)
+  library(tidyverse)
+  library(vembedr)
+  library(shinydashboard)
+  library(shinyalert) # popup library
+  library(modules)
+  library(shinyjs)
+  library(shinyBS) # tooltip library
+})
 
 jsCode <- paste0('shinyjs.clickBtn = function(params){
                     console.log("btn clicked");
@@ -79,7 +81,6 @@ shinyUI(fluidPage(
   tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   navbarPage("Reference Sequence Browser",
              id = "mainPage",
-             
              # Home tab
              #img(src='backend.png',  align = "center", height = 350, width = 700), Image in HOME page leaving it here just in case
              tabPanel("Home", 
@@ -282,8 +283,6 @@ shinyUI(fluidPage(
                         )
                       ),
              ),
-             
-             
              tabPanel("NCBI",          #NCBI Tab    
                       # Application title
                       
@@ -332,7 +331,6 @@ shinyUI(fluidPage(
                                                 style="margin-left:5px;"
                                    ),
                                  )),
-                                 
                         ),
                         tabPanel("Organism Names",
                                  # Application title
@@ -440,7 +438,6 @@ shinyUI(fluidPage(
                                           downloadButton('downloadStatements',"Download the full search terms table"),
                                           p())
                                  )
-                                 
                         ),
                         tabPanel("Information", 
                                  titlePanel("Find NCBI records of your organisms and barcodes of interest"),
@@ -464,8 +461,6 @@ shinyUI(fluidPage(
                         )
                       ),
              ),
-             
-             
              tabPanel("Full Genome Search",
                       tabsetPanel(
                         id = "FullGenomePage",
@@ -517,11 +512,11 @@ shinyUI(fluidPage(
                                    )),
                                  
                         ),
-                        tabPanel("Information"),
-                        h4("User Guide"),
-                        full_genome_guide.icon <- tags$a(href='https://docs.google.com/document/d/1Z9qLSy1ZiHaoT2i6rC_CLM_mKbo4uN2zLxaNbkz_w7U/edit?usp=sharing',
-                                                         icon("question-circle"),
-                                                         "Full Genome User Guide", target="_blank")
+                        tabPanel("Information",
+                          h4("User Guide"),
+                          full_genome_guide.icon <- tags$a(href='https://docs.google.com/document/d/1Z9qLSy1ZiHaoT2i6rC_CLM_mKbo4uN2zLxaNbkz_w7U/edit?usp=sharing',
+                                                           icon("question-circle"),
+                                                           "Full Genome User Guide", target="_blank"))
                       )),
              
              tabPanel("BOLD",
