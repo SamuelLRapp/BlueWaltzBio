@@ -1,4 +1,6 @@
-import(dplyr)
+suppressPackageStartupMessages({
+  import(dplyr)
+})
 
 is_missing <- function(val) {
   return(val == "" | is.na(val))

@@ -9,23 +9,26 @@
 
 # Imports ----------------------------------------------------------------------
 
-library(shiny)
-library(rentrez)
-library(taxize)
-library(tidyverse)
-library(dplyr)
-library(RSQLite)
-library(rlist)
-library(future)
-library(promises)
-library(ipc)
-library(mpoly)
-library(modules)
-library(shinyjs)
-require("bold") 
-library(plotly)
-library(treemapify)
-library(ggplot2)
+suppressPackageStartupMessages({
+  library(shiny)
+  library(rentrez)
+  library(taxize)
+  library(tidyverse)
+  library(dplyr)
+  library(RSQLite)
+  library(rlist)
+  library(future)
+  library(promises)
+  library(ipc)
+  library(mpoly)
+  library(modules)
+  library(shinyjs)
+  require("bold") 
+  library(plotly)
+  library(treemapify)
+  library(ggplot2) 
+})
+
 
 orgListHelper <- modules::use("orgListHelper.R")
 server_functions <- modules::use("server_functions.R")
@@ -33,6 +36,8 @@ bold_functions <- modules::use("bold_functions.R")
 
 
 plan(multisession)
+options(future.rng.onMisuse="ignore")
+
 shinyServer(function(input, output, session) {
   
   # Hiding BOLD Page tabs
@@ -738,14 +743,14 @@ shinyServer(function(input, output, session) {
       updateTextAreaInput(
         getDefaultReactiveDomain(),
         "barcodeList",
-        value = paste("(CO1; COI; COXI; COX1),", input$barcodeList)
+        value = paste("CO1 + COI + COXI + COX1,", input$barcodeList)
       ) 
     }
     else {
       # Here since the textarea is empty we just set its value to the barcode/s
       updateTextAreaInput(getDefaultReactiveDomain(), 
                           "barcodeList", 
-                          value = "(CO1; COI; COXI; COX1)") 
+                          value = "CO1 + COI + COXI + COX1") 
     }
   })
   
@@ -1090,8 +1095,7 @@ shinyServer(function(input, output, session) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
-              
-              if (!is.null(records_bold) && !is.na(records_bold)){
+              if (!is.null(records_bold) && !all(is.na(records_bold))){
                 records_bold[records_bold == ''] <- NA
                 records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
                 records_bold <- records_bold %>% filter(!is.na(species_name)  & !is.na(markercode))

@@ -1,10 +1,12 @@
-import(future)
-import(promises)
-import(ipc)
-import(shiny)
-import(rentrez)
-import(taxize)
-import(tidyverse)
+suppressPackageStartupMessages({
+  import(future)
+  import(promises)
+  import(ipc)
+  import(shiny)
+  import(rentrez)
+  import(taxize)
+  import(tidyverse)
+})
 
 taxizeHelper <- function(orgSearch, taxizeSelected){
     if(orgSearch == ""){

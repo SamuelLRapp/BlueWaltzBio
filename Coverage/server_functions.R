@@ -1,15 +1,16 @@
-import(utils)
-import(shiny)
-import(shinyWidgets)
-import(rentrez)
-import(taxize)
-import(RSQLite)
-import(dplyr)
-import(modules)
-import(future)
-import(promises)
-import(ipc)
-
+suppressPackageStartupMessages({
+  import(utils)
+  import(shiny)
+  import(shinyWidgets)
+  import(rentrez)
+  import(taxize)
+  import(RSQLite)
+  import(dplyr)
+  import(modules)
+  import(future)
+  import(promises)
+  import(ipc)
+})
 
 orgListHelper <- tryCatch({modules::use("orgListHelper.R")},
                           error = function(err){modules::use("Coverage/orgListHelper.R")})
@@ -603,8 +604,8 @@ getSeqLenList <- function(barcodeList, input) {
 # else it's just a single element list
 splitBarcode <- function(barcode) {
   code <- trimws(barcode)
-  code <- gsub("[(, ,)]", "", code)
-  strsplit(code, ";")
+  code <- gsub("\\s+", "", code)  
+  strsplit(code, "\\+")
 }
 
 
@@ -650,7 +651,6 @@ getNcbiSearchTerm <- function(organism, code, searchOptionGene, searchOptionOrgn
         sep = ""
       )
   }
-  
   for (c in code[[1]]) {
     searchTerm <- paste(searchTerm, "(", c, replacement, ")", sep="")
     if (c != code[[1]][[length(code[[1]])]]) {
