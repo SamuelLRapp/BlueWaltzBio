@@ -27,6 +27,7 @@ suppressPackageStartupMessages({
   library(plotly)
   library(treemapify)
   library(ggplot2) 
+  library(zip)
 })
 
 
@@ -650,14 +651,18 @@ shinyServer(function(input, output, session) {
   output$fileDownloadF <- downloadHandler(
     filename = function() {
       # Create the file and set its name
-      paste("NCBI", ".zip", sep = "")
+      paste("NCBI_Fastas", ".zip", sep = "")
     },
     content = function(downloadedFile) {
       #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
       setwd(tempdir())
       ncbiSearch() %...>% {
         barcodes <- barcodeList()
-        uidsMatrix <- matrix(.[[2]], ncol = length(barcodes), byrow = TRUE)
+        codesLen <- length(barcodes)
+        uidsMatrix <- matrix(.[[2]], ncol = codesLen, byrow = TRUE)
+        progress <- AsyncProgress$new(session, min=0, max=codesLen,
+                                      message = "Downloading Fasta files from NCBI")
+        
         future_promise({
           filenames <- lapply(barcodes, function(barcode) {
             file_path <- paste("NCBI", barcodes, "sequences.fasta", sep="_")
@@ -681,8 +686,10 @@ shinyServer(function(input, output, session) {
               fn <- filenames[i]
               file.create(fn)
               write(Vector_Fasta, fn)
+              progress$inc(1/codesLen)
           })
           zip(zipfile = downloadedFile, files = filenames)
+          progress$close()
         })
       }
     }
@@ -695,19 +702,45 @@ shinyServer(function(input, output, session) {
   output$fileDownloadG <- downloadHandler(
     filename = function() {
       # Create the file and set its name
-      paste("NCBI_Genbank_File", ".gb", sep = "")
+      paste("NCBI_Genbank", ".zip", sep = "")
     },
-    content = function(file) {
-      uidsGet() %...>% {
+    content = function(downloadedFile) {
+      #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
+      setwd(tempdir())
+      ncbiSearch() %...>% {
+        barcodes <- barcodeList()
+        codesLen <- length(barcodes)
+        uidsMatrix <- matrix(.[[2]], ncol = codesLen, byrow = TRUE)
+        progress <- AsyncProgress$new(session, min=0, max=codesLen,
+                                      message = "Downloading Genbank files from NCBI")
+        
         future_promise({
-          # Download Genbank files from NCBI
-          Vector_genbank <-
-              entrez_fetch(db = "nucleotide",
-                           id = .,
-                           rettype = "gb")  
-          # Writes the vector containing all the genbank file information into
-          # one genbank file
-          write(Vector_genbank, file, append = TRUE) 
+          filenames <- lapply(barcodes, function(barcode) {
+            file_path <- paste("NCBI", barcodes, "sequences.gb", sep="_")
+          })[[1]]
+          i <- 0
+          #apply across columns
+          apply(uidsMatrix, MARGIN = 2, function(idCol) {
+            
+            # Download Genbank files from NCBI
+            idsList <- unlist(idCol)
+            vectorGb = c("")
+            if (length(idsList) > 0) {
+              vectorGb <-
+                entrez_fetch(db = "nucleotide",
+                             id = idsList,
+                             rettype = "gb")
+            }
+            # Writes the vector containing all the genbank file information into
+            # one genbank file
+            i <<- i+1
+            fn <- filenames[i]
+            file.create(fn)
+            write(vectorGb, fn)
+            progress$inc(1/codesLen)
+          })
+          zip(zipfile = downloadedFile, files = filenames)
+          progress$close()
         })
       }
     }
@@ -1331,14 +1364,20 @@ shinyServer(function(input, output, session) {
         
         BoldMatrix() %...>% {
           records_bold <- .
+          
           grouped_rb <- records_bold %>%
             select(c("processid", "subspecies_name", "species_name", "markercode", "nucleotides", "genbank_accession")) %>%
             group_by(markercode) 
+          
+          codesLen <- length(grouped_rb)
+          progress <- AsyncProgress$new(session, min=0, max=codesLen,
+                                        message="Downloading Fastas from BOLD")
  
           grouped_rb %>%
             group_walk(function(barcode_table, barcode){
+              
               fasta_vector = c()
-              for(i in 1:length(barcode_table$species_name)){
+              for(i in 1:codesLen){
                 
                 #display species name if subspecies name is not available
                 species_name <- if(is.na(barcode_table$subspecies_name[i]) || barcode_table$subspecies_name[i] == "") barcode_table$species_name[i] else barcode_table$subspecies_name[i]
@@ -1361,12 +1400,16 @@ shinyServer(function(input, output, session) {
               file_path <- paste0(filename, ".fasta")
               file.create(file_path)
               write(fasta_vector, file_path)
+              
+              progress$inc(1/codesLen)
             })
           all_codes <- grouped_rb %>% 
             group_keys()
 
           filenames <- unlist(lapply(all_codes[[1]], function(x){paste0("BOLD_",x,"_sequence",".fasta")}))
           zip(zipfile = downloadedFile, files = filenames)
+          
+          progress$close()
         }
       }
     )
