@@ -1123,6 +1123,7 @@ shinyServer(function(input, output, session) {
               progressBOLD$inc(amount = 0.5/organismListLength)
               searchResult <- tryCatch({
                 records_bold <- bold_seqspec(taxon = organism)
+                records_bold <- subset(records_bold, select = c("country", "species_name", "markercode", "processid", "subspecies_name", "nucleotides", "genbank_accession"))
                 searchResult <- 1
               }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
@@ -1173,7 +1174,6 @@ shinyServer(function(input, output, session) {
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
-  
         # remove ncbi
         if (input$removeNCBI == TRUE){
           data <- subset(data, is.na(genbank_accession))
