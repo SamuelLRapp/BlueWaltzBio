@@ -5,7 +5,7 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-#
+
 
 # Imports ----------------------------------------------------------------------
 
@@ -1129,6 +1129,7 @@ shinyServer(function(input, output, session) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
+              print(records_bold)
               if (!is.null(records_bold) && !all(is.na(records_bold))){
                 records_bold[records_bold == ''] <- NA
                 records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
