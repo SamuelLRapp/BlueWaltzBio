@@ -21,408 +21,67 @@ suppressPackageStartupMessages({
   library(shinyBS) # tooltip library
 })
 
-jsCode <- paste0('shinyjs.clickBtn = function(params){
-                    console.log("btn clicked");
-                    var defaultParams = {
-                       btnId : ""
-                    };
-                    params = shinyjs.getParams(params, defaultParams);
-                    btn = $("#"+params.btnId);
-                    console.log(btn);
-                    btn[0].click();
-                  }')
-
-tst <- paste0('shinyjs.ncbiDwnFastaTest = function(params){
-                var defaultParams = {
-                   dwnBtnId : "fileDownloadF",
-                   waitTimeForFileDwn: 40000,
-                   testOrganisms: "gallus gallus",
-                   testBarcodes: "(CO1; COI; COX1)"
-                };
-                params = shinyjs.getParams(params, defaultParams);
-                
-                //set search params
-                Shiny.setInputValue("NCBIorganismList", params.testOrganisms);
-                Shiny.setInputValue("barcodeList", params.testBarcodes);
-                shinyjs.clickBtn("NCBIsearchButton"); //run search
-  
-                //loop to check if search complete
-                var dwnPanelVis = false;
-                console.log(dwnPanelVis);
-                var intr = setInterval(function() {
-                    
-                  dwnPanelVis = $("#"+params.dwnBtnId).is(":visible");
-                  //run this code after search completed
-                  if (dwnPanelVis) {
-                    clearInterval(intr);
-                    console.log("loop finished");
-                    shinyjs.clickBtn(params.dwnBtnId);
-                    setTimeout(function(){
-                      //let server know to check if file has downloaded
-                        Shiny.onInputChange("ui-test-complete", true);
-                    }, params.waitTimeForFileDwn);
-                  }
-                }, 1000)
-              }')
-loaderJs <- '
-shinyjs.setLoaderAppearance = function(tab){
-  $("#shiny-notification-panel").addClass("custom-loader");
-  $("#shiny-notification-panel").detach().prependTo("#loaderWrapper"+tab);
-  }
-'
+source("ui_files/ui_Rfiles/elements_ui.R", echo = FALSE, print.eval = FALSE)[1]
 
 components <- modules::use("components.R")
 
 shinyUI(fluidPage(
+  
   useShinyjs(),
   extendShinyjs(text = jsCode, functions = c("clickBtn")),
   extendShinyjs(text = tst, functions = c("ncbiDwnFastaTest")),
   extendShinyjs(text = loaderJs, functions = c("setLoaderAppearance")),
   tags$link(rel="stylesheet", type="text/css", href="styles.css"),
+  
   navbarPage("Reference Sequence Browser",
              id = "mainPage",
+             
              # Home tab
-             #img(src='backend.png',  align = "center", height = 350, width = 700), Image in HOME page leaving it here just in case
              tabPanel("Home", 
                       sidebarLayout(
                         sidebarPanel(
                           width=2,
-                               div(
-                                 textInput(inputId="NCBIKey", label="Input your NCBI API key here", width = '250px'),
-                                 p("Note: the app will still function if you don't have an API Key, but you may experience slower search/download times"),
-                                 actionButton(inputId = "SetKey", label = "Set Key"),
-                               )
+                          div(
+                            textInput(inputId="NCBIKey", label="Input your NCBI API key here", width = '250px'),
+                            p("Note: the app will still function if you don't have an API Key, but you may experience slower search/download times"),
+                            actionButton(inputId = "SetKey", label = "Set Key"),
+                          )
                         ),
                         mainPanel(
-                               h2(style="text-align:center", "Welcome to the Reference Sequence Browser"),
-                               # DON'T DELETE THE COMMENT BELOW, WE USE IT FOR INTERNAL TESTING
-                               # actionButton(inputId = "dwntest", label = "Run Download Tests"),
-                               h4(style="text-align:center", "Read this page first if you want to make best use of our app!"),
-                               p(style="padding-bottom:20px;text-align:center", "This app was developed by the ", a("BlueWaltzBio", href="https://www.bluewaltzbio.com/", target="_blank", rel="noopener noreferrer"), " team. "),
-                               p(style="text-align:left", HTML('&emsp;'), "The Reference Sequence Browser (RSB) is a rShiny application that enables the eDNA community to screen and extract organism-specific data from genetic barcode databases such as the ", 
-                                 a("NCBI Nucleotide", href="https://www.ncbi.nlm.nih.gov/nucleotide/", target="_blank", rel="noopener noreferrer"), ", ", 
-                                 a("NCBI Genome", href="https://www.ncbi.nlm.nih.gov/genome/", target="_blank", rel="noopener noreferrer"), ", ", 
-                                 a("BOLD (Barcode for Life Database)", href="https://boldsystems.org", target="_blank", rel="noopener noreferrer"), ", and publicly available ", a("CRUX databases", href="https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13214", target="_blank", rel="noopener noreferrer"), 
-                                 ". The app is best used prior to conducting metabarcoding to assess reference sequence availability or to download non duplicative FASTA files from BOLD and NCBI to develop local sequence databases for q-pcr development.",
-                                 " Each different database can be searched in its own tab in RSB and has its own quick user-guide."),
-                               p(style="text-align:left", HTML('&emsp;'), "The tool is built to search for many organisms and genetic barcodes simultaneously and thus can be used in multiple ways to speed up Environmental DNA workflows. Users only need to assemble",
-                                 " a list of organisms in scientific names for the tool to search for reference sequences at known barcoding loci (e.g", tags$i("COI,"), tags$i("16S,"), tags$i("18S,"), tags$i("trnL"), "). Only NCBI additionally requires barcode-gene names to complete its Nucleotide search. To make",
-                                 " inputting long lists into the app easier, download ", a("this CSV template", href="https://www.bluewaltzbio.com/research/test-our-tool/ncbi-csv-template", target="_blank", rel="noopener noreferrer"), " and fill it out with your organism and barcode names. This template can be uploaded within any database tab."),
-                               p(style="text-align:left", HTML('&emsp;'), "The app uses the R packages “Rentrez” and “Bold” to access the live, up to date NCBI and BOLD databases. RSB retrieves and displays the number of reference sequences in one of the",
-                                 " aforementioned databases for the combination of an organism AND a barcode. For example, RSB searches for instances of", tags$i("Canis Lupus’s COI"), "barcode-gene. Thus every database tab produces a Coverage Matrix (CM) with organism",
-                                 " names as rows and barcoding loci as columns, with cells that display the number of reference sequences retrieved. Each tab also includes summary statistics and tab specific visualizations/tables to help make sense of searches of numerous species and barcodes." ),
-                               p(style="text-align:left", HTML('&emsp;'), "In addition to previewing what sequences are available in the CM tables, users are able to download the sequences in FASTA file format (excluding CRUX); which can then easily be imported into various genomics softwares",
-                                 " (e.g Geneious, etc). The RSB BOLD database search allows users to exclude entries also in NCBI Nucleotide from the BOLD CM results, visualizations, and FASTA downloads. This allows users to avoid downloading duplicate FASTA files between BOLD and NCBI Nucleotide."),
-                               h4("Use cases:"),
-                               p(style="text-align:left", HTML('&emsp;'), "RSB can be used to improve the workflow of species specific q-pcr development for eDNA applications (Klymus 1). If you are interested in developing a species specific q-primer, RSB can be used to rapidly create a non-duplicative local sequence database by downloading FASTA files from the NCBI and BOLD tabs."),
-                               p(style="text-align:left", HTML('&emsp;'), "RSB can also be used to determine what organisms can and to what be detected by metabarcoding and which metabarcodes fit your study needs This can be determined by searching in the seven metabarcoding databases (", tags$i("16S,"), "Vertebrate", tags$i("12S,"), tags$i("18S,"), "Plant", tags$i("ITS1,"), tags$i("CO1,"), "Fungal", tags$i("ITS2,"), "and", tags$i("trnL"), ") in the CRUX tab or in the BOLD tab."),
-                               p(style="text-align:left", HTML('&emsp;'), "Additionally, If you are interested in finding full mitochondrial or chloroplast genomes in NCBI Nucleotide or entries in NCBI Genome go to the full genome tab. Guides to the aforementioned processes can be found lower down on this page."),
-                               p(style="text-align:left", HTML('&emsp;'), "Lastly, we hope this tool may be used to point to taxonomic groups lacking publically available reference sequences and thus aid in creating more deliberate and specific sequencing efforts."),
-                               p(style="text-align:left;padding-top:30px", HTML('&emsp;'), "This rShiny app was built in part to bridge the gap between eDNA scientists and large genomics databases by providing efficient and high throughput access to NCBI, BOLD, and CRUX databases without the user having to write a single line of code. Click on one of the tabs to get started."),
-                        ),
-                      ),
-                      
-                      
-             ),
+                          h2(style="text-align:center", "Welcome to the Reference Sequence Browser"),
+                          # DON'T DELETE THE COMMENT BELOW, WE USE IT FOR INTERNAL TESTING
+                          # actionButton(inputId = "dwntest", label = "Run Download Tests"),
+                          h4(style="text-align:center", "Read this page first if you want to make best use of our app!"),
+                          p(style="padding-bottom:20px;text-align:center", "This app was developed by the ", a("BlueWaltzBio", href="https://www.bluewaltzbio.com/", target="_blank", rel="noopener noreferrer"), " team. "),
+                          includeMarkdown("ui_files/ui_text/rsb_welcome_page.md"),
+                        ))),
+             
+             # CRUX Tab
              tabPanel("CRUX",
-                 source("ui_files/ui_Rfiles/crux_ui.R", echo = FALSE, print.eval = FALSE)[1],
+                      source("ui_files/ui_Rfiles/crux_ui.R", echo = FALSE, print.eval = FALSE)[1],
              ),
              
              # NCBI Tab
              tabPanel("NCBI",
-                 source("ui_files/ui_Rfiles/ncbi_ui.R", echo = FALSE, print.eval = FALSE)[1],
+                      source("ui_files/ui_Rfiles/ncbi_ui.R", echo = FALSE, print.eval = FALSE)[1],
              ),
+             
+             # Full Genome Tab
              tabPanel("Full Genome Search",
-                      tabsetPanel(
-                        id = "FullGenomePage",
-                        tabPanel("Start Your Full Genome Search",
-                                 # Application title
-                                 titlePanel("Find genome of interest"),
-                                 h4("Descriptions of each Search Field"),
-                                 dropdown(label="Organisms List (Text box)", p("A comma separated list of the names for your organism(s) of interest. All taxonomic ranks apply.")),
-                                 dropdown(label="Check spelling and synonyms for organism names (Check box)", p("If this box is checked, the programing package “Taxize” will: "), p("1) Spell check each of your organisms' names before searching the NCBI database",  HTML("<br/>"), "2) Check if you have the most up to date organism names, and replaces your search term if not", HTML("<br/>"), "3) Add synonyms for the organism(s) listed to assist in finding more entries. Example: Homo sapien with the 'Check spelling and synonyms for organism names' box checked will search both ‘Homo sapien’ and ‘Homo sapien varitus’"), p("Note: for a full list of the data sources that “Taxize” references for proper nomenclature, see the “Taxize” github here: https://github.com/ropensci/taxize")),
-                                 p(""),
-                                 fluidRow(
-                                   column(6, align="center", offset = 3,
-                                          selectInput("gsearch", "Choose which genome to search for:", 
-                                                      choices = c("Full mitochondrial genomes in NCBI Nucleotide", "Full chloroplast genomes in NCBI Nucleotide", "Number of entries per taxa in NCBI Genome"), width=500),
-                                          fileInput("uploadGenomeFile", "Choose CSV file to upload", accept = c(".csv"), width = 800),
-                                          #actionButton(inputId = "uploadCRUXButton", label = "Upload file to textboxes"),
-                                          actionButton("FullGenomeStart", "Manually enter & adjust Organism name inputs"),
-                                   )),
-                                 
-                        ),
-                        tabPanel("Organism Names",
-                                 # Application title
-                                 # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                                 fluidRow(
-                                   column(6, align="center", offset = 3,
-                                          titlePanel("Organism Names"),
-                                          textAreaInput(inputId = "genomeOrganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
-                                          checkboxInput(inputId = "refSeq", label = "Search for reference sequences", value = TRUE),
-                                          checkboxInput(inputId = "fullGenomeTaxizeOption", label = "Append organism name synonyms and spelling corrections via the R Package “Taxize”", value = TRUE),
-                                          actionButton("genomeSearchButton", "Search"),
-                                   )),
-                        ),
-                        tabPanel("Results",
-                                 # Application title
-                                 # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                                 # Show a plot of the generated distribution and the corresponding buttons
-                                 fluidRow(
-                                   column(12, align="center", style='padding-top:15px',
-                                          conditionalPanel( condition = "output.genomeResults",
-                                              titlePanel("Number of Sequences Found per Organism"),
-                                          ),
-                                          tags$div(id="loaderWrapperFullGenome"),
-                                          DT::dataTableOutput("genomeResults"),
-                                          conditionalPanel( condition = "output.genomeResults",                            
-                                                            downloadButton('fullGenomeDownloadT',"Download Coverage Matrix"),
-                                                            downloadButton('fullGenomeDownloadF', "Download Fasta Files"),
-                                                            downloadButton('fullGenomeDownloadG', "Download Genbank Files"))
-                                          #actionButton("FullGenomeSummaryDataButton", "Check Summary Data")) # TO BE USED OEN DAY?
-                                   )),
-                                 
-                        ),
-                        tabPanel("Information",
-                          h4("User Guide"),
-                          full_genome_guide.icon <- tags$a(href='https://docs.google.com/document/d/1Z9qLSy1ZiHaoT2i6rC_CLM_mKbo4uN2zLxaNbkz_w7U/edit?usp=sharing',
-                                                           icon("question-circle"),
-                                                           "Full Genome User Guide", target="_blank"))
-                      )),
+                      source("ui_files/ui_Rfiles/fullGenome_ui.R", echo = FALSE, print.eval = FALSE)[1],
+             ),
              
+             # BOLD Tab
              tabPanel("BOLD",
-                      tabsetPanel(
-                        id = "BOLDpage",
-                        tabPanel("Start Your BOLD Search",
-                                 # Application title
-                                 # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                                 
-                                 fluidRow(
-                                   column(8, align="center", offset = 2,
-                                            titlePanel("Welcome to the BOLD Metabarcoding Pipeline")
-                                   ),
-                                   column(8, align="justify", offset = 2,
-                                            p("The BOLD, Barcode of Life, pipeline of the Reference Sequence Browser (RSB) is designed to screen the BOLD 
-                                              database for genetic barcode coverage using a list of scientific names provided by the user. Once inputted, 
-                                              the application will conduct a search on the most up to date version of the BOLD database using the BOLD Systems API Package for R."),
-                                            p("The tool allows users to manipulate the results gathered by prompting the user to filter results by country 
-                                              of origin and by giving the option to remove entries also present in NCBI. All subsequent tables and visualizations 
-                                              are based on this filtering, which can be changed by returning to the appropriate tabs at any time."),
-                                            p(style="padding-bottom:40px", "Like the other database pipelines, the app produces a CM where the organism names are rows, gene names are columns, 
-                                              and each intersection of a row and column shows how many records are in the BOLD database. The app also creates 
-                                              a statistical summary of the CM and users may download the associated FASTA files. Afterwards, a variety of tables 
-                                              and graphs are presented to help users analyze the data and fine tune their filters.")
-                                           
-                                   )
-                                 ),
-                                 fluidRow(
-                                   column(6, align="center", offset = 3,
-                                          fileInput("uBOLDfile", "Choose CSV file to upload", accept = c(".csv"), width=800),
-                                          actionButton("BOLDStartButton", "Manually enter & adjust Organism name inputs"),
-                                          HTML("<br><br>"),
-                                          actionButton("BOLDUserGuide", 
-                                                       "BOLD User Guide", 
-                                                       onclick="window.open('https://docs.google.com/document/d/1A1_4d21JKkk98WujeqVp51epxDzPrTSr9--_CnM5M5E/edit?usp=sharing', '_blank')",
-                                                       icon=icon("book"),
-                                                       class="btn-success",
-                                                       style="margin-right:5px;"
-                                          ),
-                                          actionButton("BOLDCsvTemplate", 
-                                                       "BOLD CSV Template", 
-                                                       onclick="window.open('https://www.bluewaltzbio.com/research/test-our-tool/ncbi-csv-template', '_blank')",
-                                                       icon=icon("file-csv"),
-                                                       class="btn-success",
-                                                       style="margin-left:5px;",
-                                          ),
-                                   ),
-                                 ),
-                        ),
-                        tabPanel("Organism Names",
-                                 # Application title
-                                 # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                                 fluidRow(
-                                   column(6, align="center", offset = 3,
-                                          div(
-                                            titlePanel("Organism Names"),
-                                            style = "padding-top: 20px; padding-bottom: 10px;"
-                                          ),
-                                          textAreaInput(inputId = "BOLDorganismList", label = "A comma separated list of the names for your organism(s) of interest. All taxonomic ranks (family, genus, species-genus, etc) are searchable", width = 500, height = 200),
-                                          checkboxInput(inputId = "BOLDtaxizeOption", label = list("Append organism name synonyms and spelling corrections via the R Package “Taxize”", tags$a(id="BOLDtaxizeHelp",icon("question-circle")) ), value = TRUE, width = 500),
-                                          bsPopover(id="BOLDtaxizeHelp", title="Help", content = paste0(
-                                            '<p>If this box is checked, the programming package “Taxize” will:</p>',
-                                            '<ol>',
-                                            '<li><p>Spellcheck each of your organisms’ names before searching the NCBI database.</p></li>',
-                                            '<li><p>Check if you have the most up-to-date organism names, and replaces your search term if not.</p></li>',
-                                            '<li><p>Add synonyms for the organism(s) listed to assist in finding more entries. Example: <i>Homo sapiens</i> with the <b>Check spelling and synonyms for organism names</b> box checked will search both &#39;<i>Homo sapiens</i>&#39; and &#39;<i>Homo sapiens subsp. varitus</i>&#39;.</p></li>', # &#39; is HTML for ' (single apostrophe)
-                                            '</ol>',
-                                            '<p>Note: for a full list of the data sources that “Taxize” references for proper nomenclature, see the “Taxize” GitHub repo <a href="https://github.com/ropensci/taxize" target="_blank">here</a>.</p>'
-                                          ),
-                                          placement = "right",
-                                          options = list(container = "body"),
-                                          trigger="hover"),
-                                          actionButton("BOLDsearchButton", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
-                                   )),
-                        ),
-                        tabPanel("Species Not Found in BOLD Database",
-                          column(12, align="center", offset=0,style='padding-top:15px',
-                            div(id = "bold_species_not_found_panel",
-                              titlePanel("Species not found in BOLD database"),
-                              p("List of species that were not found when searching the BOLD database, 
-                                  if the species are not displayed in this table then they have results in the BOLD database. 
-                                  Additionally, the results in this table are not affected by the Country or NCBI filter")
-                              ),
-                            tags$div(id="loaderWrapperBOLD"),
-                            DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#00000000") #transparent spinner
-                        )),
-                        tabPanel("Filters",
-                                 fluidRow(
-                                   # Padding at the top so it doesn't clash with tabs
-                                   div(
-                                     style = "padding-bottom: 20px;"
-                                   ),
-                                   # First column set with the dropdown country filtero
-                                   column(6, align="center", offset = 3,
-                                          uiOutput("selectCountry") %>% withSpinner(color="#0dc5c1"),
-                                   )),
-                                 
-                                 # OLd left aligned  button leaving it here cause it may be useful for future reference
-                                 # column(2, align="left", style='padding-top:110px',
-                                 #        conditionalPanel(condition = "output.selectCountry",
-                                 #                         actionButton('BOLDClearFilter',"Remove Countries From Filter")
-                                 #        )),
-                                 fluidRow(
-                                   div(
-                                     style = "padding-bottom: 30px;"
-                                   ),
-                                   conditionalPanel(condition = "output.selectCountry", 
-                                                    column(6, align="center", offset = 3,  id = "removeNCBICol",
-                                                           div(
-                                                             style = "background-color: lightgray; width: 100%; padding: 0px; border-radius: 10px; border: 2px solid black;",
-                                                             # add ncbi option remove genome
-                                                             titlePanel("NCBI Entries Filter"),
-                                                             p("If the box is checked all entries also found in NCBI will be removed."), 
-                                                             p("If left unchecked then the NCBI entry removal filter won't applied "),
-                                                             tags$style(".my-class input[type=checkbox] { transform: scale(1.5); } .my-class label { font-size: 15px; display: flex; align-items: center; }"),                                                
-                                                             div(class = "my-class",
-                                                                 checkboxInput("removeNCBI", label = "Please Check the box to the left to remove all entries also present in NCBI", value = FALSE, width = 450),
-                                                             ),
-                                                           ))),  
-                                   column(6, align="center", offset = 3, style='padding-top:15px',
-                                          conditionalPanel(condition = "output.selectCountry",
-                                                           # tags$style(".buttonClass button { transform: scale(1.2); margin-right: 60px;}"),
-                                                           div(#class = "buttonClass",
-                                                             actionButton('BOLDfilterCountries',"Apply Filters"),
-                                                             actionButton('BOLDSkipFilter',"Skip Filters"),
-                                                           ),
-                                          ),
-                                   ),
-                                 ),
-                        ),
-                        tabPanel("Summary Data",
-                                 # Application title
-                                 # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                                 # Show a plot of the generated distribution and the corresponding buttons
-                                 fluidRow(
-                                   column(12, align="center", style='padding-top:15px',
-                                          #conditionalPanel(condition = "input.geo != list()",
-                                          #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
-                                          #mainPanel(plotOutput("geo_pie")),
-                                          titlePanel("Summary of Search Results"),
-                                          p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
-                                          DT::dataTableOutput("BOLDSummaryData") %>% withSpinner(color="#0dc5c1"),
-                                          conditionalPanel(condition = "output.BOLDSummaryData",
-                                                           #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
-                                                           downloadButton('downloadBoldSummary', "Download Summary Data"),
-                                          )),
-                                   
-                                 ),
-                        ),
-                        tabPanel("Coverage Matrix",
-                                 column(12, align="center", style='padding-top:15px',
-                                        titlePanel("Sequences Found for each Species Classified by Barcode"),
-                                        p("Total number of entries found for each species classified into the different barcodes found."),
-                                        p("The different barcodes found in BOLD are ordered left to right from most to least results"),
-                                        column(width = 12,
-                                               DT::dataTableOutput("BOLDcoverageResults"),style = "height:500px; overflow-y: scroll;"%>% withSpinner(color="#0dc5c1"),
-                                        ),
-                                        conditionalPanel(condition = "output.BOLDcoverageResults",
-                                                         #actionButton("geoSearch", "Search", width = 100, style='vertical-align- middle; font-size:120%'),
-                                                         downloadButton('downloadBoldFasta',"Download Fasta Files"),
-                                                         downloadButton('downloadBoldMatrix', "Download Coverage Matrix")
-                                        )
-                                  ),
-                        ),
-                        tabPanel("Country Data",
-                                 # Application title
-                                 # img(src = "https://media.giphy.com/media/rGlAZysKBcjRCkAX7S/giphy.gif", align = "left",height='250px',width='500px'),
-                                 # Show a plot of the generated distribution and the corresponding buttons
-                                 fluidRow(
-                                   column(12, align="center", style='padding-top:15px',
-                                          #conditionalPanel(condition = "input.geo != list()",
-                                          #DT::dataTableOutput("specificGeoResults") %>% withSpinner(color="#0dc5c1")),
-                                          #mainPanel(plotOutput("geo_pie")),
-                                          titlePanel("Total Number of Barcodes Found by Country for Each Unique Species"),
-                                          column(width = 12,
-                                                 DT::dataTableOutput("BOLDPresentTable"),style = "height:500px; overflow-y: scroll;"%>% withSpinner(color="#0dc5c1"),
-                                          ),
-                                          downloadButton('downloadBoldPresent', "Download entries per country table"),
-                                          
-                                          titlePanel("Suggested Countries to Add to Your Filter"),
-                                          p("For those species that have no barcodes found in the country(s) filtered we provide 
-                                 the top 3 unselected countries with the most sequence results."),
-                                          DT::dataTableOutput("BOLDAbsentTable") %>% withSpinner(color="#0dc5c1"),
-                                          downloadButton('downloadBoldAbsent', "Download suggested country filters table")
-                                   ),
-                                   
-                                 ),
-                        ),
-                        tabPanel("Plot Total Sequences Per Country",
-                                 fluidRow(
-                                   column(10, align="center", style='padding-top:15px',
-                                          mainPanel(plotOutput('treemap')),
-                                          # downloadButton('downloadTreeGraph',"Download Graph"),
-                                          
-                                   ),
-                                   column(2, align="left", style='padding-top:15px',
-                                          downloadButton('downloadTreeGraph',"Download Graph"),
-                                   ),
-                                 ),
-                        ),
-                        tabPanel("Plot Unique Species Per Country",
-                                 fluidRow(
-                                   column(10, align="center", style='padding-top:15px',
-                                          mainPanel(plotOutput('species')),
-                                 ),
-                                   column(2, align="left", style='padding-top:15px',
-                                     downloadButton('downloadBarGraph',"Download Graph"))
-                                 ),
-                        ),
-                        tabPanel("Manual Data Processing Required",
-                                 column(12, align="center", offset=0,style='padding-top:15px', 
-                                        conditionalPanel(condition = "output.selectCountry", 
-                                                         titlePanel("Bold UIDs for Entries With Unlabeled Barcodes"),
-                                                         p("For those entries in BOLD that have unlabeled barcodes, we provide their respective BOLD UIDs 
-                                                so that scientists may explore these results further."),
-                                                         DT::dataTableOutput("BOLDNATable") %>% withSpinner(color="#0dc5c1"),
-                                                         downloadButton('downloadBoldNaBarcodes', "Download NA Barcodes table")
-                                        ),
-                                 )),
-                      )),
-             
-             
-             tabPanel("Contact Us", 
+                      source("ui_files/ui_Rfiles/bold_ui.R", echo = FALSE, print.eval = FALSE)[1],
                       
-                      titlePanel("Contact us"),
-                      p(HTML('&emsp;'), "This app was developed by the BlueWaltzBio team." ),
-                      p(HTML('&emsp;'), "Learn more about us on our website BlueWaltzBio.com or direct message us on twitter @BlueWaltzBio" ),
-                      p(HTML('&emsp;'), "If you want to provide feedback please use the google link: ", a("https://forms.gle/ysT6g8sk1zxWQ1wZA", href="https://forms.gle/ysT6g8sk1zxWQ1wZA")),
-                      p(HTML('&emsp;'), "The app was iteratively built with direct feedback from eDNA scientists who spoke with members of BlueWaltzBio. In total our team has interviewed over 70 lab techs, professors, government regulators, and investors in the field of Environmental DNA. 
-            " ),
+             ),
+             
+             # Contact Tab
+             tabPanel("Contact Us", 
+                      includeMarkdown("ui_files/ui_text/contact_us.md"),
                       twitter.icon <- tags$a(href='https://twitter.com/?lang=en',
                                              icon("twitter"),
                                              'Twitter', target="_blank")
                       
-             )
-             
-  )
-))
+             ))))
