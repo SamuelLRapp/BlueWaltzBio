@@ -1,7 +1,8 @@
 tabsetPanel(
   id = "NCBIpage",
+  
+  # NCBI Start Page Tab
   tabPanel("Start Your NCBI Search",
-           # Application title
            column(8, align="center", offset = 2,
                   titlePanel("Welcome to the NCBI Nucleotide Pipeline")
            ),
