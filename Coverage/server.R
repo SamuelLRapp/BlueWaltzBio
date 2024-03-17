@@ -1247,13 +1247,10 @@ shinyServer(function(input, output, session) {
           records_bold <- .
           #table gets counts, data.frame converts table to dataframe
           #ggplot only accepts dataframes
-          print(colnames(records_bold))
           xf <- records_bold[c("country")] %>%
             table
           xf <- as.data.frame(xf)
           colnames(xf) <- c("country", "Freq")
-          print(colnames(xf))
-          print(rownames(records_bold))
           
           geom.text.size = 7
           theme.size = (14/5) * geom.text.size
