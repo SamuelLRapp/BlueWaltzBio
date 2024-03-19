@@ -1129,7 +1129,6 @@ shinyServer(function(input, output, session) {
                 print("ERROR IN BOLD SEARCH")
                 error <- 1
               })
-              print(records_bold)
               if (!is.null(records_bold) && !all(is.na(records_bold))){
                 records_bold[records_bold == ''] <- NA
                 records_bold <- records_bold %>% mutate(country = ifelse(is.na(country), "No Country Listed", country))
@@ -1248,13 +1247,10 @@ shinyServer(function(input, output, session) {
           records_bold <- .
           #table gets counts, data.frame converts table to dataframe
           #ggplot only accepts dataframes
-          print(colnames(records_bold))
           xf <- records_bold[c("country")] %>%
             table
           xf <- as.data.frame(xf)
           colnames(xf) <- c("country", "Freq")
-          print(colnames(xf))
-          print(rownames(records_bold))
           
           geom.text.size = 7
           theme.size = (14/5) * geom.text.size
