@@ -1,0 +1,13 @@
+OrganismNames,Barcodes,"Instructions: This downloadable template allows users of the Reference Sequence Browser upload a list of latin species names & barcode names, instead of typing them into the website's UI. This process is simple and easy. Just write one latin name and barcode name per row in the appropriate columns. Next download the file as a CSV and upload it on the website!",,,
+Eleutherodactylus coqui,,Common error: Do not change the column names (you can rewrite them if you accidently edit them). Only write in the first two columns of this CSV.,,,
+Lithobates catesbeianus,,"Example DNA barcode names are: COI, 12S, 18S",,,
+Xenopus laevis,,"Example Organism_names: Canis Lupus, Pisaster, Homo Sapien",,,
+Ctenopharyngodon idella,,,,,
+Dreissena polymorpha,,,,,
+Dreissena bugensis,,,,,
+Eriocheir senensis,,,,,
+Euwallacea kuroshio, ,,,,
+Euwallacea whitfordiodendrus,,,,,
+Pomacea canaliculata,,,,,
+Potamopyrgus antipodarum,,,,,", , , , , , , , , , "
+,,, ,,
