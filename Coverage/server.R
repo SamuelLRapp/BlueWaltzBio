@@ -34,7 +34,7 @@ suppressPackageStartupMessages({
 orgListHelper <- modules::use("orgListHelper.R")
 server_functions <- modules::use("server_functions.R")
 bold_functions <- modules::use("bold_functions.R")
-
+backup_functions <- modules::use("backup_functions.R")
 
 plan(multisession)
 options(future.rng.onMisuse="ignore")
@@ -102,7 +102,51 @@ shinyServer(function(input, output, session) {
     rownames(df)[which.max(df$mtime)]
   }
   
-  
+# Backup Modal -----------------------------------------------------------------
+  backupModal <- function() {
+    backup <- dbConnect(SQLite(), "backup.sqlite")
+    if (dbExistsTable(backup, "hasBackup")) {
+      #modal code based off example code at https://rstudio.github.io/shiny/reference/modalDialog.html#examples
+      showModal(
+        modalDialog("There is a backup for an incomplete download(s)!", 
+                    footer = tagList(downloadButton("completeDownload", "Complete Download(s)"), 
+                                     actionButton("discardDownload", "Don't Complete Download(s)", class = "btn-danger")
+                                    )
+                   )
+      )
+      
+      #unfinished
+      # output$completeDownload <- downloadHandler(
+      #   filename = function() {
+      #   },
+      #   content = function(downloadedFile) {
+      #     backup <- dbConnect(SQLite(), "backup.sqlite")
+      #     #need to update to get fasta_db from backup
+      #     fasta_db <- "NCBI"
+      #     
+      #     setwd(tempdir())
+      #     uids_df <- dbReadTable(backup, paste0(fasta_db,"uids"))
+      #     fasta_backups <- dbReadTable(backup, paste0(fasta_db,"fasta"))
+      #     
+      #     
+      #     #need to complete this function
+      #     
+      #     dbDisconnect(backup)
+      #   }
+      # )
+      
+      #also adapted from https://rstudio.github.io/shiny/reference/modalDialog.html#examples
+      observeEvent(input$discardDownload, {
+        removeModal()
+        #deletes every backup
+        file.remove("backup.sqlite")
+      })
+    }
+    
+    dbDisconnect(backup)
+  }
+  backupModal()
+    
 # NCBI Key ---------------------------------------------------------------------
   
   # Verifies the provided api key is
@@ -654,23 +698,45 @@ shinyServer(function(input, output, session) {
       paste("NCBI_Fastas", ".zip", sep = "")
     },
     content = function(downloadedFile) {
-      #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
-      setwd(tempdir())
+      backup_wd <- getwd()
+      
       ncbiSearch() %...>% {
+        backup <- dbConnect(SQLite(), "backup.sqlite")
+        
+        #mark this as having a backup
+        dbWriteTable(backup, "hasBackup", data.frame(fasta_db = c("NCBI")), append = TRUE)
+        
         barcodes <- barcodeList()
         codesLen <- length(barcodes)
+        
         uidsMatrix <- matrix(.[[2]], ncol = codesLen, byrow = TRUE)
+        
+        #move to backupUids function?
+        uids_df <- .[[2]] %>%
+                   lapply(function(l) {paste(l, collapse = ',')}) %>%
+                   unlist %>%
+                   matrix(ncol = codesLen, byrow = TRUE) %>%
+                   as.data.frame
+        backup_functions$backupUids(backup, "NCBI", uids_df)
+        
+        dbDisconnect(backup)
+        
         progress <- AsyncProgress$new(session, min=0, max=codesLen,
-                                      message = "Downloading Fasta files from NCBI")
+                                      message = "Downloading FASTA files from NCBI")
         
         future_promise({
+          #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
+          setwd(tempdir())
+          
+          #use saved cur_wd to form the path to the backup file
+          backup <- dbConnect(SQLite(), paste0(backup_wd,"/backup.sqlite"))
+          
           filenames <- lapply(barcodes, function(barcode) {
-            file_path <- paste("NCBI", barcodes, "sequences.fasta", sep="_")
+            filename <- paste("NCBI", barcodes, "sequences.fasta", sep="_")
           })[[1]]
+          
           i <- 0
-          #apply across columns
           apply(uidsMatrix, MARGIN = 2, function(idCol) {
-            
               # Download Fasta files from NCBI
               idsList <- unlist(idCol)
               Vector_Fasta = c("")
@@ -680,15 +746,23 @@ shinyServer(function(input, output, session) {
                                id = idsList,
                                rettype = "fasta")
               }
+              i <<- i+1
+              filename <- filenames[i]
+              backup_functions$backupDownload(backup, "NCBI", paste(Vector_Fasta, sep = '\n', collapse = '\n'), filename)
+              
               # Writes the vector containing all the fasta file information into
               # one fasta file
-              i <<- i+1
-              fn <- filenames[i]
-              file.create(fn)
-              write(Vector_Fasta, fn)
+              file.create(filename)
+              write(Vector_Fasta, filename)
               progress$inc(1/codesLen)
           })
           zip(zipfile = downloadedFile, files = filenames)
+          
+          #don't need backups anymore
+          dbRemoveTable(backup, "hasBackup")
+          backup_functions$deleteDownloadBackup(backup, "NCBI")
+          dbDisconnect(backup)
+          
           progress$close()
         })
       }
