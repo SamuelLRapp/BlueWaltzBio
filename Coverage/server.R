@@ -50,7 +50,7 @@ shinyServer(function(input, output, session) {
   hideTab("BOLDpage", "Summary Data")
   hideTab("BOLDpage", "Country Data")
   hideTab("BOLDpage", "Manual Data Processing Required")
-  hideTab("BOLDpage", "Species Not Found in BOLD Database")
+  hideTab("BOLDpage", "Absent/Invalid Metadata")
   
   
   # Hiding CRUXpage
@@ -1010,10 +1010,10 @@ shinyServer(function(input, output, session) {
     
     progressBOLD <- NULL
     observeEvent(input$BOLDsearchButton, {
-      updateTabsetPanel(session, "BOLDpage", selected = "Species Not Found in BOLD Database")
+      updateTabsetPanel(session, "BOLDpage", selected = "Absent/Invalid Metadata")
       shinyjs::show(id = "BOLDNullSpecies")
       showTab("BOLDpage", "Filters")
-      showTab("BOLDpage", "Species Not Found in BOLD Database")
+      showTab("BOLDpage", "Absent/Invalid Metadata")
       hideTab("BOLDpage", "Plot Unique Species Per Country")
       hideTab("BOLDpage", "Plot Total Sequences Per Country")
       hideTab("BOLDpage", "Coverage Matrix")
@@ -1054,7 +1054,7 @@ shinyServer(function(input, output, session) {
       }
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
-      showTab("BOLDpage", "Species Not Found in BOLD Database")
+      showTab("BOLDpage", "Absent/Invalid Metadata")
       click("BOLDfilterCountries")
     })
     
@@ -1071,7 +1071,7 @@ shinyServer(function(input, output, session) {
       }
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
-      showTab("BOLDpage", "Species Not Found in BOLD Database")
+      showTab("BOLDpage", "Absent/Invalid Metadata")
     })
     
     observeEvent(input$BOLDClearFilter, {
@@ -1122,12 +1122,15 @@ shinyServer(function(input, output, session) {
               progressBOLD$set(message = paste0("Retrieving barcodes for ", organism))
               progressBOLD$inc(amount = 0.5/organismListLength)
               searchResult <- tryCatch({
-                records_bold <- bold_seqspec(taxon = organism)
+              records_bold <- bold_seqspec(taxon = organism)
+              if (!all(is.na(records_bold))) {
                 records_bold <- subset(records_bold, select = c("country", "species_name", "markercode", "processid", "subspecies_name", "nucleotides", "genbank_accession"))
-                searchResult <- 1
+              }
+              searchResult <- 1
               }, error = function(err) {
                 print("ERROR IN BOLD SEARCH")
-                error <- 1
+                organism <<- paste(organism, "(invalid)")
+                records_bold <<- NULL
               })
               if (!is.null(records_bold) && !all(is.na(records_bold))){
                 records_bold[records_bold == ''] <- NA
