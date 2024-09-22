@@ -65,18 +65,14 @@ shinyUI(fluidPage(
              tabPanel("NCBI",
                       source("ui_files/ui_Rfiles/ncbi_ui.R", echo = FALSE, print.eval = FALSE)[1],
              ),
-             
              # Full Genome Tab
              tabPanel("Full Genome Search",
                       source("ui_files/ui_Rfiles/fullGenome_ui.R", echo = FALSE, print.eval = FALSE)[1],
              ),
-             
              # BOLD Tab
              tabPanel("BOLD",
-                      source("ui_files/ui_Rfiles/bold_ui.R", echo = FALSE, print.eval = FALSE)[1],
-                      
+                      source("ui_files/ui_Rfiles/bold_ui.R", echo = FALSE, print.eval = FALSE)[1],                      
              ),
-             
              # Contact Tab
              tabPanel("Contact Us", 
                       includeMarkdown("ui_files/ui_text/contact_us.md"),

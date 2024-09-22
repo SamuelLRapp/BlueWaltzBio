@@ -600,7 +600,7 @@ getSeqLenList <- function(barcodeList, input) {
 
 
 # creates a list of barcodes if
-# 'code' is of the form (b1; b2; b3;...),
+# 'code' is of the form b1+ b2+ b3+...,
 # else it's just a single element list
 splitBarcode <- function(barcode) {
   code <- trimws(barcode)
