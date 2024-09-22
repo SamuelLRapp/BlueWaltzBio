@@ -1,11 +1,13 @@
+# ------------------------------------------------------------------------------
+# Name: ui.R
+# Last Date Updated : September 22, 2024
 #
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
+# This code was build by Sriram Ramesh and Jorge Tapias Gomez
+# With help from Dickson Chung and Zia Truong
 #
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+# In collaboration with Samuel Rapp, Benjamine Levine, and Daniel Tapias Gomez
+# Also, a big thanks to all those that helped us along the project.
+# ------------------------------------------------------------------------------
 
 suppressPackageStartupMessages({
   library(shiny)
@@ -20,22 +22,12 @@ suppressPackageStartupMessages({
   library(shinyjs)
   library(shinyBS) # tooltip library
 })
-
+ 
 source("ui_files/ui_Rfiles/elements_ui.R", echo = FALSE, print.eval = FALSE)[1]
 
-components <- modules::use("components.R")
-
 shinyUI(fluidPage(
-  
-  useShinyjs(),
-  extendShinyjs(text = jsCode, functions = c("clickBtn")),
-  extendShinyjs(text = tst, functions = c("ncbiDwnFastaTest")),
-  extendShinyjs(text = loaderJs, functions = c("setLoaderAppearance")),
-  tags$link(rel="stylesheet", type="text/css", href="styles.css"),
-  
   navbarPage("Reference Sequence Browser",
              id = "mainPage",
-             
              # Home tab
              tabPanel("Home", 
                       sidebarLayout(
@@ -55,19 +47,13 @@ shinyUI(fluidPage(
                           p(style="padding-bottom:20px;text-align:center", "This app was developed by the ", a("BlueWaltzBio", href="https://www.bluewaltzbio.com/", target="_blank", rel="noopener noreferrer"), " team. "),
                           includeMarkdown("ui_files/ui_text/rsb_welcome_page.md"),
                         ))),
-             
              # CRUX Tab
              tabPanel("CRUX",
                       source("ui_files/ui_Rfiles/crux_ui.R", echo = FALSE, print.eval = FALSE)[1],
              ),
-             
              # NCBI Tab
              tabPanel("NCBI",
                       source("ui_files/ui_Rfiles/ncbi_ui.R", echo = FALSE, print.eval = FALSE)[1],
-             ),
-             # Full Genome Tab
-             tabPanel("Full Genome Search",
-                      source("ui_files/ui_Rfiles/fullGenome_ui.R", echo = FALSE, print.eval = FALSE)[1],
              ),
              # BOLD Tab
              tabPanel("BOLD",
@@ -79,5 +65,5 @@ shinyUI(fluidPage(
                       twitter.icon <- tags$a(href='https://twitter.com/?lang=en',
                                              icon("twitter"),
                                              'Twitter', target="_blank")
-                      
-             ))))
+             ))
+  ))

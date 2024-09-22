@@ -1,11 +1,13 @@
+# -----------------------------------------------------------------------------#
+# Name: Server.R
+# Last Date Updated : September 22, 2024
 #
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
+# This code was build by Sriram Ramesh and Jorge Tapias Gomez
+# With help from Dickson Chung and Zia Truong
 #
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-
+# In collaboration with Samuel Rapp, Benjamine Levine, and Daniel Tapias Gomez
+# Also, a big thanks to all those that helped us along the project.
+# -----------------------------------------------------------------------------#
 
 # Imports ----------------------------------------------------------------------
 
@@ -30,18 +32,20 @@ suppressPackageStartupMessages({
   library(zip)
 })
 
+# Import Modules
+orgListHelper <- modules::use("./server_files/orgListHelper.R")
+server_functions <- modules::use("./server_files/server_functions.R")
+bold_functions <- modules::use("./server_files/bold_functions.R")
 
-orgListHelper <- modules::use("orgListHelper.R")
-server_functions <- modules::use("server_functions.R")
-bold_functions <- modules::use("bold_functions.R")
-
-
+# Prepare concurrency
 plan(multisession)
 options(future.rng.onMisuse="ignore")
 
 shinyServer(function(input, output, session) {
   
-  # Hiding BOLD Page tabs
+  # At start of execution hide all Page tabs within the pipeline
+
+  # Hiding BOLD
   hideTab("BOLDpage", "Organism Names")
   hideTab("BOLDpage", "Plot Unique Species Per Country")
   hideTab("BOLDpage", "Plot Total Sequences Per Country")
@@ -51,7 +55,6 @@ shinyServer(function(input, output, session) {
   hideTab("BOLDpage", "Country Data")
   hideTab("BOLDpage", "Manual Data Processing Required")
   hideTab("BOLDpage", "Absent/Invalid Metadata")
-  
   
   # Hiding CRUXpage
   hideTab("CRUXpage", "Coverage Matrix")
@@ -69,44 +72,10 @@ shinyServer(function(input, output, session) {
   hideTab("FullGenomePage", "Results")
   hideTab("FullGenomePage", "Organism Names")
   hideTab("FullGenomePage", "Summary Results")
-
-  # max number of homonyms to return if any
-  # are found in the homonym check.
-  maxHomonyms <- 5L
-  
-  # * Download tests start------------------------------------------------------
-  observeEvent(input$dwntest, {
-    #run JS portion of test (ui interactions)
-    js$ncbiDwnFastaTest(testOrganisms = "canis lupus, cygnus")
-    
-    #gets reference file to see if download completed later
-    reffile <- mostRecentFile(".")
-    print("Waiting 40 secs for file to finish downloading...")
-    #runs when search complete and download button clicked
-    observeEvent(input[["ui-test-complete"]], {
-      #get the most recent file in the downloads file
-      dwnfile <- mostRecentFile(".")
-      
-      #if download has completed then filename should have changed
-      if (dwnfile != reffile){
-        print("Test passed")
-      } else {
-        print("Test failed: file did not download")
-      }
-    })
-  })
-  
-  mostRecentFile <- function(dirpath) {
-    #snippet from https://stackoverflow.com/a/50870673
-    df <- file.info(list.files(dirpath, full.names = T))
-    rownames(df)[which.max(df$mtime)]
-  }
-  
   
 # NCBI Key ---------------------------------------------------------------------
-  
-  # Verifies the provided api key is
-  # valid by performing a search with it.
+  # Verifies the provided api key by performing a search with it.
+  # Very useful for CRUX and NCBI
   # Sets key validity variable in server_functions.R
   observeEvent(input$SetKey, {
     keyValidity <- tryCatch({
@@ -124,190 +93,20 @@ shinyServer(function(input, output, session) {
       server_functions$setNcbiKeyIsValid(FALSE)
     })
   })
-  
-# Full Genome ----------------------------------------------------------------
-  
-  # * FullGenomeSearchButton ---------------------------------------------------
-  
-  
-  # Reactive on search button call.
-  # Gets the full results returned from the search
-  # to feed to the output datatable.
-  fullGenomeSearch <- eventReactive(input$genomeSearchButton, {
-    dbOption <- input$gsearch
-    orgList <- input$genomeOrganismList
-    taxizeOption <- input$fullGenomeTaxizeOption
-    refSeqChecked <- input$refSeq
-    progress <-
-      AsyncProgress$new(
-        session,
-        min = 0,
-        max = 1,
-        message = "Retrieving...",
-        value = 0
-      )
-    js$setLoaderAppearance("FullGenome")
-    future_promise({
-      server_functions$getGenomeSearchFullResults(
-        dbOption = dbOption, 
-        orgList = orgList, 
-        taxizeOption = taxizeOption,
-        refSeqChecked = refSeqChecked,
-        progress = progress)
-    })
-  })
-  
-  # * UI pipeline updates ------------------------------------------------------
-  observeEvent(input$genomeSearchButton, {
-    # Go to the results page after clicking the search button
-    updateTabsetPanel(session, "FullGenomePage", selected = "Results")
-    showTab("FullGenomePage", "Results")
-  })
-  
-  # * Full Genome Input CSV ----------------------------------------------------
-  observeEvent(input$FullGenomeStart,
-  {
-    # Begin Full genome pipeline
-    updateTabsetPanel(session, "FullGenomePage", selected = "Organism Names")
-    showTab("FullGenomePage", "Organism Names")
-    # It requires a file to be uploaded first
-    req(input$uploadGenomeFile,
-        file.exists(input$uploadGenomeFile$datapath)) 
-    isolate({
-      # It requires a file to be uploaded first
-      # Read the CSV and write all the Organism Names into the Text Area Input
-      uploadinfo <-
-        read.csv(input$uploadGenomeFile$datapath, header = TRUE)
-      updateTextAreaInput(
-        getDefaultReactiveDomain(), 
-        inputId = "genomeOrganismList", 
-        label = "Organism Names",
-        value = server_functions$parseCsvColumnForTxtBox(
-          input = input, 
-          file.index = "uploadGenomeFile",
-          
-          
-          #beware, adding a space into the column header name causes problems
-          column.header = "OrganismNames",
-          textbox.id = "genomeOrganismList"))
-    })
-  })
-  
-  # * Output table -------------------------------------------------------------  
-  
-  # parses fullGenomeSearch return value
-  # and passes the dataframe and genome list
-  # into the output data table.
-  output$genomeResults <- DT::renderDataTable({
-    then(fullGenomeSearch(), function(searchResults){
-      resultsMatrix <- searchResults[[1]]
-      statefulUids <- c(resultsMatrix[[2]])
-      genomeList <- searchResults[[2]]
-      DT::datatable(
-        resultsMatrix[[1]],
-        rownames = genomeList,
-        colnames = names(resultsMatrix[[1]]))})
-  })
-  
-  output$FullGenomeSummaryResults <- DT::renderDataTable({
-    promise_all(data_df = summary_report(0), 
-                rows = organismListGet()) %...>% with({
-                  DT::datatable(
-                    data_df
-                  )
-                })
-  })
-
-  
-  # * Download Fastas ----------------------------------------------------------
-  output$fullGenomeDownloadF <- downloadHandler(
-    filename = function() {
-      paste("Full_Genome_Fasta_File", ".fasta", sep = "")
-    },
-    content = function(file) {
-      fullGenomeSearch() %...>% {
-        resultsMatrix <- .[[1]]
-        statefulUids <- c(resultsMatrix[[2]])
-        progLength <- length(statefulUids)
-        progress <-
-          AsyncProgress$new(
-            session,
-            min = 0,
-            max = progLength,
-            message = "Downloading",
-            value = 0
-          )
-        future_promise({
-          # entrez_fetch can take a list of uids, instead of iterating
-          # over all uids and sleeping at each one, could provide a list
-          # to get all the files at once. 
-          # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
-          # for details
-          write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="fasta"), file)
-          progress$set(value = progLength)
-          progress$close()
-        })
-      }
-    }
-  )
-  
-  # * Download Genbank files ---------------------------------------------------
-  
-  output$fullGenomeDownloadG <- downloadHandler(
-    filename = function() {
-      paste("Full_Genome_Genbank_File", ".gb", sep = "")
-    },
-    content = function(file) {
-      fullGenomeSearch() %...>% {
-        resultsMatrix <- .[[1]]
-        statefulUids <- c(resultsMatrix[[2]])
-        progLength <- length(statefulUids)
-        progLength <- length(statefulUids)
-        progress <-
-          AsyncProgress$new(
-            session,
-            min = 0,
-            max = progLength,
-            message = "Downloading",
-            value = 0
-          )
-        future_promise({
-          # entrez_fetch can take a list of uids, instead of iterating
-          # over all uids and sleeping at each one, could provide a list
-          # to get all the files at once. 
-          # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
-          # for details
-          write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="gb"), file)
-          progress$set(value = progLength)
-          progress$close()
-        })
-      }
-    }
-  )
-
-  # * Download Full Genome Results Table ---------------------------------------
-  
-  output$fullGenomeDownloadT <- downloadHandler(
-    filename = function() {
-      # Create the file and set its name
-      paste("Full_Genome_Table", ".csv", sep = "")
-    },
-    content = function(file) {
-      fullGenomeSearch() %...>% {
-        write.csv(.[[1]], file)
-      }
-    }
-  )
 
 # CRUX ----------------------------------------------------------------------
-  # progress bar object
+  
+  # progress bar object for CRUX search
   progressCRUX <- NULL
+  
   # * CRUXSearchButton --------------------------------------------------------
   
+  # Button to start searches when user is ready to proceed
   CRUXOrgList <- eventReactive(input$searchButton, {
     input$CRUXorganismList
   })
     
+  
   organismListGet <- reactive({
     orgSearch <- CRUXOrgList()
     taxizeBool <- input$CRUXtaxizeOption
