@@ -9,6 +9,18 @@
 # Also, a big thanks to all those that helped us along the project.
 # -----------------------------------------------------------------------------#
 
+
+# Temporary example template (DELTE ONCE PUBLISHED)
+## ----#
+# Country Summary function
+#   - Input: 
+#         bold_coverage_df: The dataframe returned by the bold api with all the results 
+#   - Output:
+#         New dataframe with the number of times a species and country co-occur
+#         Used for our country summary data displaying #of species per country 
+## ----#
+
+
 # Imports ----------------------------------------------------------------------
 
 suppressPackageStartupMessages({
@@ -77,6 +89,17 @@ shinyServer(function(input, output, session) {
   # Verifies the provided api key by performing a search with it.
   # Very useful for CRUX and NCBI
   # Sets key validity variable in server_functions.R
+  
+  ## ----#
+  # Set NCBI function
+  #   - Input: 
+  #         SetKey: Reactive variable indicating if the user the NCBI key button
+  #   - Output:
+  #         The function checks if the user given NCBI key is valid, if so we set
+  #         the entrez key to that value and set the NCBI Key as valid. 
+  #         This helps speed up searches as you won't be limited.
+  #         If it key fails then we return a warning to the user in the form of a pop-up 
+  ## ----#
   observeEvent(input$SetKey, {
     keyValidity <- tryCatch({
       entrez_search(
@@ -107,6 +130,14 @@ shinyServer(function(input, output, session) {
   })
     
   
+  ## ----#
+  # Organism List Get function for CRUX
+  #   - Input: 
+  #         None
+  #   - Output:
+  #         The user-given organism list after returning 
+  #         from the taxize helper function to help with typos
+  ## ----#
   organismListGet <- reactive({
     orgSearch <- CRUXOrgList()
     taxizeBool <- input$CRUXtaxizeOption
@@ -128,7 +159,13 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
+  ## ----#
+  # Organism List Get function for CRUX
+  #   - Input: 
+  #         None
+  #   - Output:
+  #         Dataframe with the Coverage Matrix data table
+  ## ----#
   cruxOrgSearch <- reactive({
     organismListGet() %...>% {
       homonymFlag <- input$CRUXhomonymOption
@@ -140,8 +177,9 @@ shinyServer(function(input, output, session) {
   
   
   # * UI pipeline updates ------------------------------------------------------
+
+  # Observe Event to begin CRUX search
   observeEvent(input$searchButton, {
-    # Begin CRUX search
     updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
     progressCRUX <<-
       AsyncProgress$new(
@@ -155,6 +193,7 @@ shinyServer(function(input, output, session) {
     showTab("CRUXpage", "Summary Results")
   })
   
+  # Observe Event when Coverage matrix is ready display the Tab
   observeEvent(input$detailsButton, {
     # Begin CRUX search
     updateTabsetPanel(session, "CRUXpage", selected = "Coverage Matrix")
@@ -163,6 +202,9 @@ shinyServer(function(input, output, session) {
   
   # * CRUXInputCSV -------------------------------------------------------------
   
+  # Observe Event function to upload a CSV file with species
+  # so that the user doesn't have to manually type them
+  # Simply parse the csv and upade the text area input
   observeEvent(input$CruxStart,
                {
                  # Begin CRUX pipeline
@@ -177,7 +219,7 @@ shinyServer(function(input, output, session) {
                      input = input,
                      file.index = "uCRUXfile",
                      
-                     #beware, adding a space into the column header name causes problems
+                     # Beware, adding a space into the column header name causes problems
                      column.header = "OrganismNames",
                      textbox.id = "CRUXorganismList"
                    )

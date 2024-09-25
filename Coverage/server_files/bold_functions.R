@@ -18,6 +18,15 @@ is_missing <- function(val) {
 }
 
 # * BOLDCountryFilter -------------------------------------------
+
+## ----#
+# Country Summary function
+#   - Input: 
+#         bold_coverage_df: The dataframe returned by the bold api with all the results 
+#   - Output:
+#         New dataframe with the number of times a species and country co-occur
+#         Used for our country summary data displaying #of species per country 
+## ----#
 country_summary <- function(bold_coverage_df){
     #table() gets the number of times a species and country co-occur
     #as.data.frame.matrix() turns that into a co-occurrence count dataframe
@@ -32,6 +41,15 @@ country_summary <- function(bold_coverage_df){
 }
 
 # * NA Filter -------------------------------------------
+## ----#
+# Country Summary function
+#   - Input: 
+#         bold_coverage_df: The dataframe returned by the bold api with all the results 
+#                           (filtered if the user activated any filter)
+#   - Output:
+#         New dataframe with the number of times a species and country co-occur
+#         Used for our country summary data displaying #of species per country 
+## ----#
 naBarcodes <- function(bold_coverage){
   #summarise gets the processids and converts them to a list string with paste
   #for each group (species_name)
@@ -49,6 +67,15 @@ naBarcodes <- function(bold_coverage){
   summary_df
 }
 
+## ----#
+# Present Matrix function
+#   - Input: 
+#         bold_coverage: The dataframe returned by the bold api with all the results
+#                        (filtered if the user activated any filter)
+#         countries: The countries the user has chosen to filter by
+#   - Output:
+#         New dataframe that contains only the countries the user desires
+## ----#
 presentMatrix <- function(bold_coverage, countries){
     present_df <- country_summary(bold_coverage)
     
@@ -64,12 +91,17 @@ presentMatrix <- function(bold_coverage, countries){
     present_df
 }
 
-
-#####
-# Input:
-#   - The BOLD Coverage Matrix from bold_coverage function
-#   - A list of the filtered countries
-#.  - A list of all countries
+## ----#
+# Absent Matrix function
+#   - Input: 
+#       bold_coverage: The dataframe returned by the bold api with all the results
+#                      (filtered if the user activated any filter)
+#       countries: The countries the user has chosen to filter by
+#   - Output:
+#         New dataframe that, for those organism that have no results in the countries filtered
+#         will return the top 3 countries that do contain results for that organism
+#         This is meant to aid users to find good coverage
+## ----#
 absentMatrix <- function(bold_coverage, countries){
     # Get data frame with species as rows and countries as columns (with each number of sequences)
     if (!is.null(countries)) {
@@ -101,6 +133,15 @@ absentMatrix <- function(bold_coverage, countries){
 
 # * SummaryReport ------------------------------------------------------------
 
+## ----#
+# Barcode Summary function
+#   - Input: 
+#       bold_coverage: The dataframe returned by the bold api with all the results
+#                      (filtered if the user activated any filter)
+#   - Output:
+#         New dataframe that, generates the coverage matrix which contains 
+#         the total number of entries found in BOLD with that species and barcode pair.
+## ----#
 barcode_summary <- function(bold_coverage) {
     summary_df <- bold_coverage %>%
       subset(subset = !is_missing(species_name) & !is_missing(markercode),
@@ -111,6 +152,15 @@ barcode_summary <- function(bold_coverage) {
     summary_df
 }
 
+## ----#
+# Reduce Barcode Summary function
+#   - Input: 
+#       b_summary: The dataframe returned by the barcode summary function above
+#   - Output:
+#         At times BOLD has too many barcodes as user don't choose them, therefore
+#         to help users parse them we sort them by "relevance",
+#         which we define as having the most results/coverage
+## ----#
 reduce_barcode_summary <- function(b_summary) {
     #number of non-zeros in each column
     summary <- b_summary
@@ -124,6 +174,13 @@ reduce_barcode_summary <- function(b_summary) {
     summary
 }
 
+## ----#
+# Missing Species function
+#   - Input: 
+#       missingList: List of missing species i.e those that were not found while searching
+#   - Output:
+#         Simply format the list into a dataframe that can then be displayed to the user
+## ----#
 missingSpecies <- function(missingList) {
   #check for empty missing species list
   if (is.null(missingList[["Missing Species"]])) {
