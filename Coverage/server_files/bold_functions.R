@@ -28,9 +28,9 @@ is_missing <- function(val) {
 #         Used for our country summary data displaying #of species per country 
 ## ----#
 country_summary <- function(bold_coverage_df){
-    #table() gets the number of times a species and country co-occur
-    #as.data.frame.matrix() turns that into a co-occurrence count dataframe
-    #this idea is from, and nicely explained, here: https://stackoverflow.com/a/49217363
+    # The table() gets the number of times a species and country co-occur
+    # as.data.frame.matrix() turns that into a co-occurrence count dataframe
+    # this idea is from, and nicely explained, here: https://stackoverflow.com/a/49217363
     summary_df <- bold_coverage_df %>%
       subset(subset = !is_missing(species_name) & !is_missing(markercode) & !is_missing(country),
              select = c("species_name", "country")) %>%
@@ -51,9 +51,9 @@ country_summary <- function(bold_coverage_df){
 #         Used for our country summary data displaying #of species per country 
 ## ----#
 naBarcodes <- function(bold_coverage){
-  #summarise gets the processids and converts them to a list string with paste
-  #for each group (species_name)
-  #check.names = FALSE in data.frame makes sure spaces aren't replaced with '.'
+  # Summarise gets the processids and converts them to a list string with paste
+  # for each group (species_name)
+  # check.names = FALSE in data.frame makes sure spaces aren't replaced with '.'
   summary_df <- bold_coverage %>%
     subset(subset = !is_missing(species_name) & !is_missing(processid) & is_missing(markercode),
     select = c("species_name", "processid")) %>%
@@ -61,7 +61,7 @@ naBarcodes <- function(bold_coverage){
     summarise("Entries where Barcode was NA" = paste(processid, collapse = ", ")) %>%
     data.frame(row.names = .$species_name, check.names = FALSE)
   
-  #remove species_name column
+  # Remove species_name column
   summary_df$species_name <- NULL 
 
   summary_df
@@ -79,14 +79,14 @@ naBarcodes <- function(bold_coverage){
 presentMatrix <- function(bold_coverage, countries){
     present_df <- country_summary(bold_coverage)
     
-    #remove all columns that are not in filter
+    # Remove all columns that are not in filter
     if (!is.null(countries)) {
       present_df <- present_df[ , which(names(present_df) %in% countries), drop=FALSE]
     }
     
-    #remove all rows that have all 0s as values and return
-    #Need to include drop=false to prevent R from dropping dataframe structure when numcolumns is 1, otherwise rowsums will complain
-    #https://stackoverflow.com/questions/32330818/r-row-sums-for-1-or-more-columns
+    # Remove all rows that have all 0s as values and return
+    # Need to include drop=false to prevent R from dropping dataframe structure when numcolumns is 1, otherwise rowsums will complain
+    # https://stackoverflow.com/questions/32330818/r-row-sums-for-1-or-more-columns
     present_df <- present_df[rowSums(present_df[drop=FALSE])>0, ,drop=FALSE]
     present_df
 }
@@ -108,7 +108,7 @@ absentMatrix <- function(bold_coverage, countries){
       country_summary_df <- country_summary(bold_coverage)
       country_filtered <- country_summary_df %>% filter(if_all(all_of(countries), ~ . == 0) )
       
-      # the apply function, gets the top 3 countries with the most entries for each row (species)
+      # The apply function, gets the top 3 countries with the most entries for each row (species)
       absent_top_countries_values <- apply(country_filtered, 1, function(x) sort(x, decreasing = TRUE)[1:3])
       absent_top_countries <- apply(country_filtered, 1, function(x) names(sort(x, decreasing = TRUE))[1:3])
       absent_top_countries[absent_top_countries_values == 0] <- 'NA'
@@ -162,12 +162,12 @@ barcode_summary <- function(bold_coverage) {
 #         which we define as having the most results/coverage
 ## ----#
 reduce_barcode_summary <- function(b_summary) {
-    #number of non-zeros in each column
+    # Number of non-zeros in each column
     summary <- b_summary
     count <- apply(summary, 2, function(c)sum(c!=0))
     sums <- apply(summary, 2, sum)
   
-    #calculate and sort by relavance
+    # Calculate and sort by relavance
     calculated <- names(rev(sort(sums * count)))
   
     summary <- subset(summary, select = (calculated))
@@ -182,14 +182,14 @@ reduce_barcode_summary <- function(b_summary) {
 #         Simply format the list into a dataframe that can then be displayed to the user
 ## ----#
 missingSpecies <- function(missingList) {
-  #check for empty missing species list
+  # Check for empty missing species list
   if (is.null(missingList[["Missing Species"]])) {
     missing_df <- data.frame(" " <- c("NULL"))
   } else {
     missing_df <- data.frame(" " <- missingList[["Missing Species"]])
   }
   
-  #remove column name for species column
+  # Remove column name for species column
   colnames(missing_df) <- c(" ")
   
   missing_df

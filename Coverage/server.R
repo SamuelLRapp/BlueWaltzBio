@@ -267,6 +267,7 @@ shinyServer(function(input, output, session) {
   
   # * CRUXOutput ---------------------------------------------------------------
   
+  # Render CRUX Coverage Matrix
   output$CRUXcoverageResults <- DT::renderDataTable({
     then(cruxOrgSearch(), function(coverage){
       resultsMatrix <- coverage[[2]]
@@ -279,6 +280,7 @@ shinyServer(function(input, output, session) {
       })
     })
   
+  # Render CRUX Summary Data Table
   output$CRUXSummaryResults <- DT::renderDataTable({
     promise_all(data_df = summary_report(0), 
                 rows = organismListGet()) %...>% with({
@@ -289,9 +291,21 @@ shinyServer(function(input, output, session) {
   })
   
   # NCBI -----------------------------------------------------------------------
-  # progress bar object
+  # Progress bar object
   progressNCBI <- NULL
+  
   # * NCBISearchButton ---------------------------------------------------------
+  
+  ## ----#
+  # NCBI Search function
+  #   - Input: 
+  #         None, it waits for the search button to be pressed
+  #         But the function needs user-give 1) barcode list and
+  #         2) an organism list.
+  #   - Output:
+  #         A list with the counts per organisms, the unique NCBI ids
+  #         The search terms used for the API query and the organism List
+  ## ----#
   ncbiSearch <- eventReactive(input$NCBIsearchButton, {
     barcodeList <- barcodeList()
     organismList <- input$NCBIorganismList
@@ -335,8 +349,10 @@ shinyServer(function(input, output, session) {
   })
   
   # * NCBI pipeline step display handlers --------------------------------------
+  
+  # Start NCBI search button
+  # Shows NCBI Summary results 
   observeEvent(input$NCBIsearchButton, {
-    # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
     progressNCBI <<-
       AsyncProgress$new(
@@ -350,13 +366,14 @@ shinyServer(function(input, output, session) {
     showTab("NCBIpage", "Summary Results")
   })
   
+  # Displays the NCBI coverage matrix
   observeEvent(input$NCBIdetailsButton, {
-    # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Coverage Matrix")
     showTab("NCBIpage", "Coverage Matrix")
     showTab("NCBIpage", "Summary Results")
   })
   
+  # When starting over we hide all the tabs again and clean up the UI
   observeEvent(input$NCBIStartOver, {
     # Start NCBI search all over again
     updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
@@ -368,8 +385,8 @@ shinyServer(function(input, output, session) {
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
   })
   
+  # When starting over in the summary tab we hide all the tabs again
   observeEvent(input$NCBIStartOverSummary, {
-    # Start NCBI search all over again
     updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
     hideTab("NCBIpage", "Organism Names")
     hideTab("NCBIpage", "Barcodes of Interest")
@@ -380,18 +397,20 @@ shinyServer(function(input, output, session) {
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
   })
   
+  # Go the barcodes of interest tab
   observeEvent(input$BarcodesNext, {
-    # Go the barcodes tab to allow user to input them
      updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
      showTab("NCBIpage", "Barcodes of Interest")
    })
   
+  # Go the download number page
   observeEvent(input$NCBIRetMaxButton, {
-    # Go the barcodes tab to allow user to input them
     updateTabsetPanel(session, "NCBIpage", selected = "One last step!")
     showTab("NCBIpage", "One last step!")
   })
   
+  # Allows the user to upload csv files with the species and barcodes
+  # they are interested in and avoid manually typing.
   observeEvent(input$StartNCBIButton, {
     # Begin the NCBI pipeline button
     updateTabsetPanel(session, "NCBIpage", selected = "Organism Names")
@@ -434,6 +453,7 @@ shinyServer(function(input, output, session) {
   
   # * NCBIStrToList ------------------------------------------------------------
   
+  # NCBI Button startd the NCBI Search when the user clicking the search button
   NCBIorganismList <-
     reactive({
       #Converts string from NCBIorganismList into a list of Strings
@@ -447,6 +467,7 @@ shinyServer(function(input, output, session) {
   
   # * NCBIBarcodeList ----------------------------------------------------------
   
+  # Gather the barcodes that the user has provided, and clean them
   barcodeList <- reactive({
     # separate based on comma
     barcodeList <- strsplit(input$barcodeList, ",") 
@@ -457,8 +478,8 @@ shinyServer(function(input, output, session) {
   
   # * NCBISequenceLength -------------------------------------------------------
   
-  # returns a numericRangeInput object to display the min/max
-  # ui thing for the user to input sequence lengths
+  # Returns a numericRangeInput object to display the min/max
+  # UI object for the user to input sequence lengths
   seqLenList <- reactive({
     if (input$seqLengthOption) {
       barcodeList <- strsplit(input$barcodeList, ",")
@@ -471,6 +492,7 @@ shinyServer(function(input, output, session) {
   
   # *   NCBIGetIDs -------------------------------------------------------------
   
+  # Extract the unique IDs from the NCBI search
   uidsGet <-
     function(){
       # Returns the uids stored in the results from the NCBi query
@@ -488,14 +510,14 @@ shinyServer(function(input, output, session) {
   
   # * NCBIDownloadFASTA --------------------------------------------------------
   
-  # Download Fasta Files
+  # Download Fasta Files for all the barcodes (zipped) from NCBI
   output$fileDownloadF <- downloadHandler(
     filename = function() {
       # Create the file and set its name
       paste("NCBI_Fastas", ".zip", sep = "")
     },
     content = function(downloadedFile) {
-      #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
+      # Good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
       setwd(tempdir())
       ncbiSearch() %...>% {
         barcodes <- barcodeList()
@@ -509,7 +531,7 @@ shinyServer(function(input, output, session) {
             file_path <- paste("NCBI", barcodes, "sequences.fasta", sep="_")
           })[[1]]
           i <- 0
-          #apply across columns
+          # Apply across columns
           apply(uidsMatrix, MARGIN = 2, function(idCol) {
             
               # Download Fasta files from NCBI
@@ -521,8 +543,8 @@ shinyServer(function(input, output, session) {
                                id = idsList,
                                rettype = "fasta")
               }
-              # Writes the vector containing all the fasta file information into
-              # one fasta file
+              # Writes the vector containing all the fasta file information
+              # into one fasta file
               i <<- i+1
               fn <- filenames[i]
               file.create(fn)
@@ -539,14 +561,14 @@ shinyServer(function(input, output, session) {
   
   # * NCBIDownloadGenbank ------------------------------------------------------
   
-  # Download NCBI Genbank Files
+  # Download Genbank Files for all the barcodes (zipped) from NCBI
   output$fileDownloadG <- downloadHandler(
     filename = function() {
       # Create the file and set its name
       paste("NCBI_Genbank", ".zip", sep = "")
     },
     content = function(downloadedFile) {
-      #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
+      # Good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
       setwd(tempdir())
       ncbiSearch() %...>% {
         barcodes <- barcodeList()
@@ -560,7 +582,7 @@ shinyServer(function(input, output, session) {
             file_path <- paste("NCBI", barcodes, "sequences.gb", sep="_")
           })[[1]]
           i <- 0
-          #apply across columns
+          # Apply across columns
           apply(uidsMatrix, MARGIN = 2, function(idCol) {
             
             # Download Genbank files from NCBI
@@ -572,8 +594,8 @@ shinyServer(function(input, output, session) {
                              id = idsList,
                              rettype = "gb")
             }
-            # Writes the vector containing all the genbank file information into
-            # one genbank file
+            # Writes the vector containing all the genbank file information 
+            # into one genbank file
             i <<- i+1
             fn <- filenames[i]
             file.create(fn)
@@ -603,17 +625,18 @@ shinyServer(function(input, output, session) {
   )
   
   # * NCBIBarcodeButtons -------------------------------------------------------
+  # All the observe events below are for the barcode buttons (NCBI Pipeline)
   
   observeEvent(input$barcodeOptionCO1, {
-    # Detects when the specific barcode (in this case CO1) button has been 
-    # pressed
+    # Detects when the specific barcode (in this case CO1) 
+    # button has been pressed
     
     # If the input barcodeList is not empty (ie. the inputtextarea is not 
     # empty) then use the paste function to the add the barcode/s to the 
     # beginning
     if (input$barcodeList[[1]] != "") {
       # Updates the text area input adds the barcode/s to the beginning of 
-      # whatever is already in it
+      # the barcodes already present
       updateTextAreaInput(
         getDefaultReactiveDomain(),
         "barcodeList",
@@ -728,9 +751,10 @@ shinyServer(function(input, output, session) {
   # * NCBIOutputTables ---------------------------------------------------------
   
   
-  #outputs:
+  # Min/Max sequence length boxes rendering
   output$seqLenInputs <- renderUI(seqLenList())
   
+  # Render Table for Coverage Matrix
   output$NCBIcoverageResults <- DT::renderDataTable({
     then(ncbiSearch(), function(searchResults) {
       data_df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
@@ -744,6 +768,7 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  # Render NCBI Search Terms Table
   output$NCBIsearchQueries <- DT::renderDataTable({
     then(ncbiSearch(), function(searchResults) {
       data_df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList()))
@@ -758,6 +783,7 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  # Render NCBI Summary Report
   output$NCBISummaryResults <- DT::renderDataTable({
     promise_all(data_df = summary_report(1), 
                 rows = NCBIorganismList()) %...>% with({
@@ -787,7 +813,7 @@ shinyServer(function(input, output, session) {
   
   # * NCBIDownloadSearchTerms --------------------------------------------------
   
-  #Download Search Terms:
+  # Download Search Terms
   output$downloadStatements <- downloadHandler(
     filename = function() {
       # Create the file and set its name
@@ -807,9 +833,15 @@ shinyServer(function(input, output, session) {
   
   # * SummaryReport ------------------------------------------------------------
 
-  # Format the dataframe for each database correctly 
-  # Then send it to the summary data function for processing
-  # Returns the summary report data table
+  ## ----#
+  # Country Summary function
+  #   - Input: 
+  #         databaseFlag: 0) is for CRUX, 1) for NBCI, 2) (else) Bold
+  #   - Output:
+  #         Format the dataframe for each database correctly to generate the table
+  #         Then send it to the summary data function for processing
+  #         Returns the summary report data table
+  ## ----#
   summary_report <- function(databaseFlag) {
     if (databaseFlag == 1) {
       columns <- barcodeList()
