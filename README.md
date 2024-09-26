@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioIcon.jpg" />
+</p>
+
 # BlueWaltzBio Reference Sequence Browser
 
 Land managers, researchers, and regulators increasingly utilize environmental DNA (eDNA) techniques to monitor species richness, presence, and absence. In order to properly develop a biological assay for eDNA metabarcoding or quantitative PCR, scientists must be able to find not only reference sequences (previously identified sequences in a genomics database) that match their target taxa but also reference sequences that match non-target taxa. Determining which taxa have publicly available sequences in a time-efficient and accurate manner currently requires computational skills to search, manipulate, and parse multiple unconnected DNA sequence databases. 
@@ -21,10 +25,14 @@ While the tool is hosted in the UCLA servers (http://shiny.eeb.ucla.edu/BlueWalt
 In fact, we look forward to see what the community can add or think of adding to this tool!
 
 To install:
-1. You need to have R(version 4.1.2) and R Studio installed.
+1. You need to have R and R Studio installed. Everything was tested with R version 4.1.2.
 2. Clone our repo to your local machine.
 3. Run the rsbpackages.R script which will automatically install all the required packages with the right versions.
 4. Download the CRUX Database files from here: https://drive.google.com/file/d/106-Gxe8cWZiFEb_0WoIcAjRFtDfXG08b/view?usp=sharing
 5. You are all set now run the app using the RStudio "Run App" button or by executing the command shiny::runApp('Coverage')
+
+<p align="center">
+  <img src="https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioButterfly.jpg" />
+</p>
 
 ![Alt text](https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioButterfly.jpg)
