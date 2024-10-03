@@ -41,8 +41,6 @@ shinyUI(fluidPage(
                         ),
                         mainPanel(
                           h2(style="text-align:center", "Welcome to the Reference Sequence Browser"),
-                          # DON'T DELETE THE COMMENT BELOW, WE USE IT FOR INTERNAL TESTING
-                          # actionButton(inputId = "dwntest", label = "Run Download Tests"),
                           h4(style="text-align:center", "Read this page first if you want to make best use of our app!"),
                           p(style="padding-bottom:20px;text-align:center", "This app was developed by the ", a("BlueWaltzBio", href="https://www.bluewaltzbio.com/", target="_blank", rel="noopener noreferrer"), " team. "),
                           includeMarkdown("ui_files/ui_text/rsb_welcome_page.md"),
