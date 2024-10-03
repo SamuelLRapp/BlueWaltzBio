@@ -875,13 +875,19 @@ shinyServer(function(input, output, session) {
 
   # BOLD --------------------------------------------------------------------
   
+  # BOLD Progress Bar
+  progressBOLD <- NULL
   
   # * BOLDSearchButton ------------------------------------------------------
-    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update BOLDOrgSearch to return the value input into BOLDorganismList
-      input$BOLDorganismList #Returns as a string
+  
+    # When searchButton clicked, update BOLDOrgSearch to 
+    # return the value input into BOLDorganismList
+    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, {
+      input$BOLDorganismList # Returns as a string
     })
     
-    progressBOLD <- NULL
+    # Reset the UI (in case this isn't their first search) 
+    # and initilize the progress bar
     observeEvent(input$BOLDsearchButton, {
       updateTabsetPanel(session, "BOLDpage", selected = "Absent/Invalid Metadata")
       shinyjs::show(id = "BOLDNullSpecies")
@@ -914,6 +920,8 @@ shinyServer(function(input, output, session) {
     })
 
     
+    # If the user skips filters we move to the next part of the pipeline
+    # The next part of the pipeline being the Coverage Matrix
     observeEvent(input$BOLDSkipFilter, {
       updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
       showTab("BOLDpage", "Summary Data")
@@ -931,6 +939,8 @@ shinyServer(function(input, output, session) {
       click("BOLDfilterCountries")
     })
     
+    # If the user wants to filter countries then we move
+    # to the next stage of the pipeline the Coverage Matrix
     observeEvent(input$BOLDfilterCountries, {
       updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
       showTab("BOLDpage", "Summary Data")
@@ -947,12 +957,15 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Absent/Invalid Metadata")
     })
     
+    # This is to make filtering easy by allowing scientist
+    # to add countries to the filter by just clicking on them
     observeEvent(input$BOLDClearFilter, {
       updateSelectizeInput(inputId="selectCountry", selected = character(0))
     })
     
-    observeEvent(input$BOLDStartButton,
-   {
+    # BOLD Start button that allows the user to upload a file
+    # and shows the next tab of the pipeline
+    observeEvent(input$BOLDStartButton, {
      updateTabsetPanel(session, "BOLDpage", selected = "Organism Names")
      showTab("BOLDpage", "Organism Names")
      # It requires a file to be uploaded first
@@ -969,8 +982,15 @@ shinyServer(function(input, output, session) {
    })
 
     # * BOLDCoverage ------------------------------------------------------------
-
     
+    ## ----#
+    # Bold Coverage
+    #   - Input: 
+    #         No inputs directly to the function, but it reads the 
+    #         organisms the user provided 
+    #   - Output:
+    #         Result: List with all the results from the query, species, countries, etc
+    ## ----#
     boldCoverage <- reactive ({
         orgSearch <- BOLDOrgSearch()
         taxize_selected <- input$BOLDtaxizeOption
@@ -982,7 +1002,7 @@ shinyServer(function(input, output, session) {
             need(organismListLength > 0, 'Please name at least one organism')
           )
           
-          #puts variable in global scope
+          # Puts variable in global scope
           unfound_species <- c()
           searchResult <- 0
           results <- data.frame(matrix(ncol=0, nrow=0))
@@ -1024,7 +1044,8 @@ shinyServer(function(input, output, session) {
           }) %...>% {
             if(searchResult == 1){
               print("BOLD is down")
-              # POP UP TELLING USER THAT BOLD IS DOWN
+              # Bold is down not much we can do
+              # TODO: POP UP TELLING USER THAT BOLD IS DOWN
             }
             shinyjs::show(id = "BOLDClearFilter")
             shinyjs::show(id = "BOLDfilterCountries")
@@ -1033,27 +1054,33 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "removeNCBICol")
             shinyjs::show(id = "countryFilterCol")
             shinyjs::show(id = "bold_species_not_found_panel")
-            returnMatrix <- . #return data matrix
+            returnMatrix <- . # Return data matrix
             returnMatrix
           }
         }
     })
     
-    BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
-        input$selectCountry #Returns a list of countries
-    })
-    
-    
     # * BOLD MATRIX----------------
     
-    BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
+    ## ----#
+    # Bold Matrix
+    #   - Input: 
+    #         No direct input, but takes n the list from BOLD coverage with all the results
+    #   - Output:
+    #         data: Filtered data, without any NAs, removing NCBI duplicate entries,
+    #               removing the filtered countries.
+    ## ----#
+    BoldMatrix <- reactive({
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
-        # remove ncbi
+        
+        # Remove duplicate ncbi entries
         if (input$removeNCBI == TRUE){
           data <- subset(data, is.na(genbank_accession))
         }
+        
+        # Remove countries
         country_list <- BOLDOrgCountries()
         if(length(country_list) > 0){
           data <- subset(data, country %in% country_list)
@@ -1062,10 +1089,8 @@ shinyServer(function(input, output, session) {
       }
     })
     
-    # * Plot: Unique Species per Country ----------
-    # country summary function
-    # no. of species for all countries
-    
+    # * Plot: Unique Species per Country  ----------
+    # Build a Bar Graph counting all unique species per country
     BoldPlotBarGraph <- function(){
       if (!is.null(BOLDOrgCountries())){
         vals <- c()
@@ -1077,12 +1102,12 @@ shinyServer(function(input, output, session) {
           present_matrix <- bold_functions$presentMatrix(bold_matrix, selectCountry)
           countries <- colnames(present_matrix)
           
-          # set vals
-          ## counts # of cols for each country where cell > 0
+          # Set vals
+          # Counts number of cols for each country where cell > 0
           vals <- colSums(present_matrix != 0)
           
-          ## BOLD adds species/subspecies to search results
-          ## so # of species will often be more than # from boldOrganismList()
+          # BOLD adds species/subspecies to search results
+          # So number of species will often be more than number from boldOrganismList()
           max_uniq_species <- max(vals)
           
           xf <- data.frame(country = countries, values = vals)
@@ -1096,11 +1121,12 @@ shinyServer(function(input, output, session) {
       }
     }
     
-    
+    # Render BOLD Bar Graph
     output$species <- renderPlot ({
       BoldPlotBarGraph()
     }, height = 700, width = 1000)
     
+    # Download BOLD Bar Graph
     output$downloadBarGraph = downloadHandler(
       filename = 'bold_bargraph.png',
       content = function(file) {
@@ -1115,14 +1141,14 @@ shinyServer(function(input, output, session) {
     
     
     # * Plot: Total sequences per Country ----------
-    # for the treemap
-    
+    # Create the Treemap visualization for BOLD
+    # Representing how many species each country has
     BoldPlotTreemap <- function(){
       if (!is.null(input$selectCountry)){
         BoldMatrix() %...>% {
           records_bold <- .
-          #table gets counts, data.frame converts table to dataframe
-          #ggplot only accepts dataframes
+          # Table gets counts, data.frame converts table to dataframe
+          # ggplot only accepts dataframes
           xf <- records_bold[c("country")] %>%
             table
           xf <- as.data.frame(xf)
@@ -1131,9 +1157,9 @@ shinyServer(function(input, output, session) {
           geom.text.size = 7
           theme.size = (14/5) * geom.text.size
           
-          #reference for changing titles: http://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
-          #the "." column holds the countries (.data refers to xf)
-          #using .data instead of xf to avoid warnings about it
+          # Reference for changing titles: http://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
+          # the "." column holds the countries (.data refers to xf)
+          # using .data instead of xf to avoid warnings about it
           ggplot(xf, aes(area = .data[["Freq"]], fill = .data[["country"]], label = .data[["country"]])) +
             geom_treemap() +  
             geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
@@ -1142,14 +1168,16 @@ shinyServer(function(input, output, session) {
                   plot.title = element_text(size = 20, face = "bold")) +
             labs(fill = "Countries")
         }
-    }}
+      }}
     
+    # Render BOLD Treemap
+    # from https://stackoverflow.com/questions/25061822/ggplot-geom-text-font-size-control
     output$treemap <- renderPlot({ 
-        # from https://stackoverflow.com/questions/25061822/ggplot-geom-text-font-size-control
         BoldPlotTreemap()
       }, height = 700, width = 1000)
   
     
+    # Dowload the BOLD Treemap
     output$downloadTreeGraph = downloadHandler(
       filename = 'bold_treegraph.png',
       content = function(file) {
@@ -1162,7 +1190,7 @@ shinyServer(function(input, output, session) {
         }
       })
     
-    
+    # Render Coverage Matrix for BOLD
     output$BOLDcoverageResults <- 
       DT::renderDataTable({
         BoldMatrix() %...>% {
@@ -1172,6 +1200,7 @@ shinyServer(function(input, output, session) {
         }
       })
 
+    # Render Present Countries Table for BOLD
     output$BOLDPresentTable <- 
       DT::renderDataTable({
         BoldMatrix() %...>% {
@@ -1179,6 +1208,7 @@ shinyServer(function(input, output, session) {
         }
       })
     
+    # Render Absent Countries Table for BOLD
     output$BOLDAbsentTable <- 
       DT::renderDataTable({
         promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
@@ -1188,6 +1218,7 @@ shinyServer(function(input, output, session) {
         })
       })
 
+    # Render table with those species that did not have Barcodes for BOLD
     output$BOLDNATable <- 
       DT::renderDataTable({
         boldCoverage() %...>% {
@@ -1195,10 +1226,13 @@ shinyServer(function(input, output, session) {
         }
       })
     
+    # Render Summary Data table for BOLD
     output$BOLDSummaryData <- 
       DT::renderDataTable(
         summary_report(2))
   
+    
+    # Render table with those species that were completely missing from BOLD
     output$BOLDNullSpecies <-
       DT::renderDataTable(
         boldCoverage() %...>% {
@@ -1206,12 +1240,13 @@ shinyServer(function(input, output, session) {
           bold_functions$missingSpecies(df["Missing Species"])
         })
     
-    
+    # Render warning for users so they know what they table does
     output$BOLDNullSpeciesWarning <-
       renderText({
         "Warning: The following organisms were not found"
       })
     
+    # Render Select Country Filter UI
     output$selectCountry <- renderUI({
       boldCoverage() %...>% {
         coverage <- .
@@ -1231,12 +1266,13 @@ shinyServer(function(input, output, session) {
 
     # * BOLDFASTADownload ------------------------------------------------------------
     
+    # Download Fasta Files for all the barcodes (zipped) from BOLD
     output$downloadBoldFasta <- downloadHandler(
       filename = function() {
         paste("BOLD", ".zip", sep="")
       },
       content = function(downloadedFile) {
-        #make temporary directory to hold files to be zipped
+        # Make a temporary directory to hold files to be zipped
         setwd(tempdir())
         
         BoldMatrix() %...>% {
@@ -1255,18 +1291,18 @@ shinyServer(function(input, output, session) {
               
               fasta_vector = c()
               for(i in 1:codesLen){
-                
-                #display species name if subspecies name is not available
+                # Need to create Fasta format
+                # Display species name if subspecies name is not available
                 species_name <- if(is.na(barcode_table$subspecies_name[i]) || barcode_table$subspecies_name[i] == "") barcode_table$species_name[i] else barcode_table$subspecies_name[i]
                 
-                #put data into vector
+                # Put data into vector
                 org_vector <- c(barcode_table$processid[i], species_name, barcode, barcode_table$genbank_accession[i])
-                #remove empty data
+                # Remove empty data
                 org_fasta <- org_vector[org_vector != '']
                 org_data <- paste(org_fasta, collapse = '|')
                 org_data <- paste('>', org_data, sep = '')
                 
-                #do not include entries with no sequences
+                # Do not include entries with no sequences
                 
                 if (barcode_table$nucleotides[i] != '' && !is.na(barcode_table$nucleotides[i])){
                   fasta_vector <- c(fasta_vector, org_data)
@@ -1293,6 +1329,7 @@ shinyServer(function(input, output, session) {
     
     # * BOLDSummaryDownload ----------------------------------------------------
     
+    # Download BOLD summary table
     output$downloadBoldSummary <- downloadHandler(
       filename = function() {
         paste("BOLD_Summary_Report", ".csv", sep="")
@@ -1306,6 +1343,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD Coverage Matrix Download ------------------------------------------
+    
+    # Download BOLD Coverage Matrix
     output$downloadBoldMatrix <- downloadHandler(
       filename = function() {
         paste("BOLD_Coverage_Matrix", ".csv", sep="")
@@ -1321,6 +1360,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD Sequences per Country Download ------------------------------------------
+    
+    # Download BOLD Present Species Table
     output$downloadBoldPresent <- downloadHandler(
       filename = function() {
         paste("BOLD_Sequences_per_Country", ".csv", sep="")
@@ -1335,6 +1376,8 @@ shinyServer(function(input, output, session) {
     
     
     # * BOLD Recommended Countries Download ------------------------------------------
+    
+    # Download BOLD absent species Table
     output$downloadBoldAbsent <- downloadHandler(
       filename = function() {
         paste("BOLD_Recommended_Country_Filters", ".csv", sep="")
@@ -1350,6 +1393,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD NA Barcodes Download ------------------------------------------
+    
+    # Download BOLD NA barcodes table
     output$downloadBoldNaBarcodes <- downloadHandler(
       filename = function() {
         paste("BOLD_NA_Barcodes", ".csv", sep="")
@@ -1363,6 +1408,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD Null Species Download ------------------------------------------
+    
+    # Download BOLD not found species table
     output$downloadBoldNullSpecies <- downloadHandler(
       filename = function() {
         paste("BOLD_Missing_Species", ".csv", sep="")
@@ -1375,6 +1422,5 @@ shinyServer(function(input, output, session) {
         }
       }
     )
-    
 })
 
