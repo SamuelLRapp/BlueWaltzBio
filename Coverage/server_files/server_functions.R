@@ -200,22 +200,21 @@ orgamismPresence <- function(dataframe, column){
 
 # CRUX Tab ---------------------------------------------------------------------
 
-# maximum number of homonyms to return to the user
+# Maximum number of homonyms to return to the user
 maxHomonyms <- 5L
 
-# the list of database tables in the crux database. 
+# The list of database tables in the crux database. 
 cruxDbList <- list(
   "MB18S", "MB16S", "MBPITS", "MBCO1", "MBFITS", "MBtrnL", "MB12S")
 
 # Takes orgList, the raw list from the organism names text box,
-# and taxizeOption, the logical value of the "check spelling..." 
-# checkbox.
-# Returns a Five element list. First value is a list
+# and taxizeOption, the logical value of the "check spelling..." checkbox.
+# Returns a five element list. First value is a list
 # containing the organism names, including homonyms. 
 # The second value is the matrix of search results. The
 # remaining three values are empty vectors, left in place
 # in case the previous homonym failure notification scheme
-# is wanted. 
+# is wanted. Used to have pop-ups for the user.
 getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
   nameUidList <- getHomonyms(organismList, homonymFlag)
   nameList <- nameUidList[[1]]
@@ -276,7 +275,7 @@ cruxOrgSearch <- function(results, searchTerm, organism) {
   results
 }
 
-# transforms the vector of crux results into a matrix
+# Transforms the vector of crux results into a matrix
 getCruxResultsMatrix <- function(resultsVector, numOrganisms) {
   matrix(
     resultsVector, 
@@ -285,8 +284,7 @@ getCruxResultsMatrix <- function(resultsVector, numOrganisms) {
     byrow = TRUE)
 }
 
-# asks NCBi for a list of homonyms for each
-# organism in organismList. 
+# Asks NCBi for a list of homonyms for each organism in organismList. 
 # Returns list(newOrganismNamesList, newOrganismUidsList)
 # where newOrganismNamesList is a list of the scientific
 # names for the organism. If no homonyms were found for an 
@@ -300,13 +298,13 @@ getHomonyms <- function(organismList, homonymFlag) {
   for (organism in organismList) {
     
     # get_uid_ calls function get_uid_help,
-    # which calls Sys.sleep(0.33). Explicitly sleeping
+    # Which calls Sys.sleep(0.33). Explicitly sleeping
     # https://rdrr.io/cran/taxize/src/R/get_uid.R
     sleep()
     
     if (homonymFlag) {
       # get_uid_ returns a data.frame.
-      # source at https://rdrr.io/cran/taxize/src/R/get_uid.R
+      # Source at https://rdrr.io/cran/taxize/src/R/get_uid.R
       search <- get_uid_(sci_com=organism, messages=FALSE)
       print(search)
       if (!is.null(search) && !is.null(search[[1]]) && nrow(search[[1]])>1) {
@@ -335,7 +333,7 @@ getHomonyms <- function(organismList, homonymFlag) {
   list(newOrganismNamesList, newOrganismUidsList)
 }
 
-# Checks all taxonomic ranks on the taxa db for a match,
+# Checks all taxonomic ranks on the taxa db for a match, 
 # lowest taxonomic level first.
 # Returns the number of rows in the results object as string,
 # or the name of the taxonomic rank where a result was found.
@@ -407,8 +405,7 @@ getTaxaDbQueryResults <- function(taxaDb, query, organism, searchTerm) {
 }
 
 
-# Set up a dataframe to use in the params argument in a call
-# to dbGetQuery.
+# Set up a dataframe to use in the params argument in a call to dbGetQuery.
 getSearchTerm <- function(organismName, organismUid) {
   sleep()
   if (organismUid == "") {
@@ -438,15 +435,12 @@ getSearchTerm <- function(organismName, organismUid) {
   }
 }
 
-
+# Take a crux output matrix and  turn the characters "genus, spp, etc" 
+# into  0s/1s. This function is used by orgamismPresence()
 convert_CRUX <-
   function(crux_output) 
-    # Take a crux output matrix and  turn the characters "genus, spp, etc" 
-    # into  0s/1s. This function is used by orgamismPresence()
   {
     crux_without_taxonomic_names <- crux_output
-    #crux_without_taxonomic_names <-
-    #  na.omit(crux_without_taxonomic_names)
     
     non_number_values <-
       c('genus', 'family', 'class', 'order', 'phylum', 'kingdom', 'error')
@@ -460,7 +454,7 @@ convert_CRUX <-
       {
         boolean <- 
           crux_without_taxonomic_names[j, i] %in% non_number_values
-        #if true, ie it matches genus, family, class, order
+        # If true, ie it matches genus, family, class, order
         if (isTRUE(boolean))
         {
           crux_without_taxonomic_names[j, i] <- as.numeric(0)
@@ -507,15 +501,15 @@ getRangeList_MarkerSequenceLength <- function(barcodeList, ...){
                       inputId = marker,
                       label = paste("Min/max sequence length for", marker),
                       value = c(0, 2000))
-    #add a numeric input
+    # Add a numeric input
     textList <- list(
       textList, rangeInput)
   }
-  #return the list of numeric inputs
+  # Return the list of numeric inputs
   textList
 }
 
-# setup a list of sequence lengths based on the selections in the ui
+# Setup a list of sequence lengths based on the selections in the ui
 getSeqLenList <- function(barcodeList, input) {
   seq_len_list <- list()
   for (code in barcodeList) {
@@ -526,8 +520,7 @@ getSeqLenList <- function(barcodeList, input) {
 
 
 
-# creates a list of barcodes if
-# 'code' is of the form b1+ b2+ b3+...,
+# Creates a list of barcodes if 'code' is of the form b1+ b2+ b3+...,
 # else it's just a single element list
 splitBarcode <- function(barcode) {
   code <- trimws(barcode)
@@ -537,9 +530,9 @@ splitBarcode <- function(barcode) {
 
 
 
-# pings the database db with searchTerm and downloadNumber.
-# returns a two element list containing the uids in the first
-# position and the count in the second position.
+# Pings the database db with searchTerm and downloadNumber.
+# Returns a two element list containing the uids in the first
+# Position and the count in the second position.
 getNcbiSearchFullResults <- function(db, searchTerm, downloadNumber) {
   sleep()
   searchResult <- entrez_search(db = "nucleotide",
@@ -549,7 +542,7 @@ getNcbiSearchFullResults <- function(db, searchTerm, downloadNumber) {
 }
 
 
-# sets up the search term that will be sent in a query to the database
+# Sets up the search term that will be sent in a query to the database
 getNcbiSearchTerm <- function(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seqLen) {
   code <- splitBarcode(code)
   searchTerm <- ""
@@ -587,7 +580,7 @@ getNcbiSearchTerm <- function(organism, code, searchOptionGene, searchOptionOrgn
   searchTerm
 }
 
-# converts the results object to a R matrix
+# Converts the results object to a R matrix
 # where the rows are the organism names and 
 # columns are the barcodes. Entries are the number
 # of results found for that organism for that barcode.
@@ -599,7 +592,7 @@ getNcbiResultsMatrix <- function(resultsDf, codeListLength) {
   
   organismList <- resultsDf[[4]]
   organismListLength <- length(organismList)
-  #convert results vector to dataframe
+  # Convert results vector to dataframe
   data <-
     matrix(count,
            nrow = organismListLength,
@@ -608,7 +601,7 @@ getNcbiResultsMatrix <- function(resultsDf, codeListLength) {
   data
 }
 
-# converts the results object to a R matrix
+# Converts the results object to a R matrix
 # where the rows are the organism names and 
 # columns are the barcodes. Entries are the 
 # searchTerm used to ping the database.
