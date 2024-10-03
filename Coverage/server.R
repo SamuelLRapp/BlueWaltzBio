@@ -10,17 +10,6 @@
 # -----------------------------------------------------------------------------#
 
 
-# Temporary example template (DELTE ONCE PUBLISHED)
-## ----#
-# Country Summary function
-#   - Input: 
-#         bold_coverage_df: The dataframe returned by the bold api with all the results 
-#   - Output:
-#         New dataframe with the number of times a species and country co-occur
-#         Used for our country summary data displaying #of species per country 
-## ----#
-
-
 # Imports ----------------------------------------------------------------------
 
 suppressPackageStartupMessages({
@@ -79,11 +68,6 @@ shinyServer(function(input, output, session) {
   hideTab("NCBIpage", "One last step!")
   hideTab("NCBIpage", "Coverage Matrix")
   hideTab("NCBIpage", "Summary Results")
-  
-  # Hiding Full Genome Tab 
-  hideTab("FullGenomePage", "Results")
-  hideTab("FullGenomePage", "Organism Names")
-  hideTab("FullGenomePage", "Summary Results")
   
 # NCBI Key ---------------------------------------------------------------------
   # Verifies the provided api key by performing a search with it.
@@ -189,7 +173,7 @@ shinyServer(function(input, output, session) {
         message = "Retrieving...",
         value = 0
       )
-    js$setLoaderAppearance("CRUX") #This may need to be changed?
+    js$setLoaderAppearance("CRUX")
     showTab("CRUXpage", "Summary Results")
   })
   
@@ -204,7 +188,7 @@ shinyServer(function(input, output, session) {
   
   # Observe Event function to upload a CSV file with species
   # so that the user doesn't have to manually type them
-  # Simply parse the csv and upade the text area input
+  # Simply parse the csv and update the text area input
   observeEvent(input$CruxStart,
                {
                  # Begin CRUX pipeline
@@ -218,7 +202,6 @@ shinyServer(function(input, output, session) {
                    newOrganismNamesList <- server_functions$parseCsvColumnForTxtBox(
                      input = input,
                      file.index = "uCRUXfile",
-                     
                      # Beware, adding a space into the column header name causes problems
                      column.header = "OrganismNames",
                      textbox.id = "CRUXorganismList"
