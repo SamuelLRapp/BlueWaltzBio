@@ -75,9 +75,6 @@ shinyUI(fluidPage(
              ),
              # Contact Tab
              tabPanel("Contact Us", 
-                      includeMarkdown("ui_files/ui_text/contact_us.md"),
-                      twitter.icon <- tags$a(href='https://twitter.com/?lang=en',
-                                             icon("twitter"),
-                                             'Twitter', target="_blank")
+                      includeMarkdown("ui_files/ui_text/contact_us.md")
                       
              ))))
