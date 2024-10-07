@@ -1043,6 +1043,10 @@ shinyServer(function(input, output, session) {
         }
     })
     
+    BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, {
+      input$selectCountry # Returns a list of countries
+    })
+    
     # * BOLD MATRIX----------------
     
     ## ----#
