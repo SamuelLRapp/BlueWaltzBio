@@ -68,6 +68,8 @@ shinyServer(function(input, output, session) {
   hideTab("NCBIpage", "One last step!")
   hideTab("NCBIpage", "Coverage Matrix")
   hideTab("NCBIpage", "Summary Results")
+  hideTab("NCBIpage", "Manual Data Processing Required")
+  
   
 # NCBI Key ---------------------------------------------------------------------
   # Verifies the provided api key by performing a search with it.
@@ -335,9 +337,10 @@ shinyServer(function(input, output, session) {
         progressNCBI$inc(amount = 0.5/organismListLength)
       }
       progressNCBI$close()
-      results <- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
+      results <- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList, error_species=error_species)
     })%...>% {
       showTab("NCBIpage", "Coverage Matrix")
+      showTab("NCBIpage", "Manual Data Processing Required")
       results <- .
     }
   })
@@ -365,6 +368,7 @@ shinyServer(function(input, output, session) {
     updateTabsetPanel(session, "NCBIpage", selected = "Coverage Matrix")
     showTab("NCBIpage", "Coverage Matrix")
     showTab("NCBIpage", "Summary Results")
+    showTab("NCBIpage", "Manual Data Processing Required")
   })
   
   # When starting over we hide all the tabs again and clean up the UI
@@ -375,6 +379,7 @@ shinyServer(function(input, output, session) {
     hideTab("NCBIpage", "Barcodes of Interest")
     hideTab("NCBIpage", "Coverage Matrix")
     hideTab("NCBIpage", "Summary Results")
+    hideTab("NCBIpage", "Manual Data Processing Required")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
   })
@@ -387,6 +392,7 @@ shinyServer(function(input, output, session) {
     hideTab("NCBIpage", "One last step!")
     hideTab("NCBIpage", "Coverage Matrix")
     hideTab("NCBIpage", "Summary Results")
+    hideTab("NCBIpage", "Manual Data Processing Required")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
   })
@@ -777,6 +783,20 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  # * Render NCBI NA Table -------
+  output$NCBINATable <- DT::renderDataTable({
+    then(ncbiSearch(), function(searchResults) {
+      results = searchResults[[5]]
+      if (is_null(searchResults[[5]])) {
+        results = "No Errors!"
+      }
+      invalid_search_terms_df <- data.frame("SearchTerms" = results, check.names = FALSE)
+      DT::datatable(
+        invalid_search_terms_df
+      )
+    })
+  })
+  
   # Render NCBI Summary Report
   output$NCBISummaryResults <- DT::renderDataTable({
     promise_all(data_df = summary_report(1), 
@@ -821,6 +841,23 @@ shinyServer(function(input, output, session) {
         colnames(df) <- columns
         rownames(df) <- rows
         write.csv(df, file)
+      })
+    }
+  )
+  
+  # * Download NCBI NA table --------------------------------------------------
+  output$downloadNCBINaTable <- downloadHandler(
+    filename = function() {
+      paste("NCBI_NA_Entries", ".csv", sep="")
+    },
+    content = function(file) {
+      then(ncbiSearch(), function(searchResults) {
+        results <- searchResults[[5]]
+        if (is_null(results)) {
+          results = "No Errors!"
+        }
+        invalid_search_terms_df <- data.frame("SearchTerms" = results, check.names = FALSE)
+        write.csv(invalid_search_terms_df,file)
       })
     }
   )
