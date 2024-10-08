@@ -788,7 +788,7 @@ shinyServer(function(input, output, session) {
     then(ncbiSearch(), function(searchResults) {
       results = searchResults[[5]]
       if (is_null(searchResults[[5]])) {
-        results = "No Errors!"
+        results = "No Manual Processing Required!"
       }
       invalid_search_terms_df <- data.frame("SearchTerms" = results, check.names = FALSE)
       DT::datatable(
@@ -816,7 +816,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
-        rows <- searchResults[[4]] #organismList
+        rows <- searchResults[[4]] # OrganismList
         df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
         colnames(df) <- columns
         rownames(df) <- rows
@@ -836,7 +836,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
-        rows <- searchResults[[4]] #organismList
+        rows <- searchResults[[4]] # OrganismList
         df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList()))
         colnames(df) <- columns
         rownames(df) <- rows
@@ -854,7 +854,7 @@ shinyServer(function(input, output, session) {
       then(ncbiSearch(), function(searchResults) {
         results <- searchResults[[5]]
         if (is_null(results)) {
-          results = "No Errors!"
+          results = "No Manual Processing Required!"
         }
         invalid_search_terms_df <- data.frame("SearchTerms" = results, check.names = FALSE)
         write.csv(invalid_search_terms_df,file)

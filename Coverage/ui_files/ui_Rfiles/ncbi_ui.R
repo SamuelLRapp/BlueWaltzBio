@@ -140,7 +140,7 @@ tabsetPanel(
   ),
   tabPanel("Manual Data Processing Required",
            column(12, align="center", offset=0,style='padding-top:15px',
-                  titlePanel("NCBI SearchTerms for Entries Where Search Failed and Requires Manual Checking"),
+                  titlePanel("NCBI Search Terms Requiring Manual Processing"),
                   p("For those entries in NCBI where the database returned some incorrect data that we could not process correctly.
                     This is usually due to a error thrown on the NCBI server badly formatted data. In these cases, you may want to manually search in NCBI Nucleotide"),
                   DT::dataTableOutput("NCBINATable") %>% withSpinner(color="#0dc5c1"),
