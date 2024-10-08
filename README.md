@@ -14,7 +14,7 @@ To learn more about the tool itself and how to use it please refer to the Protoc
 
 Protocol/User Guide: dx.doi.org/10.17504/protocols.io.q26g71zxqgwz/v1
 
-This tool was developed by a dedicated group of undergraduates at UC Santa Cruz to support eDNA and metabarcoding scientists. To create this tool, we interviewed numerous eDNA researchers and integrated their feedback throughout the development process. After a few years of development work, we are excited to share that our paper has now been published, and the tool is ready for use. We hope it proves valuable to your workflow. If you find it useful, we would greatly appreciate your citation of our paper (linked above) and any feedback you may have to help us further enhance the tool.
+This tool was developed by a dedicated group of graduate and undergraduate students from different institutions to support eDNA and metabarcoding scientists. To create this tool, we interviewed numerous eDNA researchers and integrated their feedback throughout the development process. After a couple years of development work, we are excited to share that our paper has now been published, and the tool is ready for use. We hope it proves valuable to your workflow. If you find it useful, we would greatly appreciate if you cite our paper (linked above) and any feedback/comments you may have to help us further enhance the tool would be greatly appreciated.
 
 # Installation Guide
 

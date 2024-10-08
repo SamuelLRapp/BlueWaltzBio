@@ -26,16 +26,6 @@ suppressPackageStartupMessages({
 orgListHelper <- tryCatch({modules::use("./server_files/orgListHelper.R")},
                           error = function(err){modules::use("Coverage/server_files/orgListHelper.R")})
 
-# Temporary example template (DELTE ONCE PUBLISHED)
-## ----#
-# Country Summary function
-#   - Input: 
-#         bold_coverage_df: The dataframe returned by the bold api with all the results 
-#   - Output:
-#         New dataframe with the number of times a species and country co-occur
-#         Used for our country summary data displaying #of species per country 
-## ----#
-
 # General ----------------------------------------------------------------------
 
 ## ----#
@@ -306,7 +296,6 @@ getHomonyms <- function(organismList, homonymFlag) {
       # get_uid_ returns a data.frame.
       # Source at https://rdrr.io/cran/taxize/src/R/get_uid.R
       search <- get_uid_(sci_com=organism, messages=FALSE)
-      print(search)
       if (!is.null(search) && !is.null(search[[1]]) && nrow(search[[1]])>1) {
         newOrganismNamesList <- c(newOrganismNamesList, organism)
         newOrganismUidsList <- c(newOrganismUidsList, "")

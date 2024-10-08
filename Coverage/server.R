@@ -277,7 +277,7 @@ shinyServer(function(input, output, session) {
   # Progress bar object
   progressNCBI <- NULL
   
-  # * NCBISearchButton ---------------------------------------------------------
+  # * NCBISearch ---------------------------------------------------------
   
   ## ----#
   # NCBI Search function
@@ -298,6 +298,7 @@ shinyServer(function(input, output, session) {
     downloadNumber <- input$downloadNum
     seqLengthOption <- input$seqLengthOption
     ncbiTaxizeOption <- input$NCBItaxizeOption
+    error_species <- c()
     seq_len_list <- server_functions$getSeqLenList(barcodeList, input)
     future_promise({
       uids <- list()
@@ -312,11 +313,21 @@ shinyServer(function(input, output, session) {
         progressNCBI$set(message = paste0("Retrieving barcodes for ", organism))
         progressNCBI$inc(amount = 0.5/organismListLength)
         for (code in barcodeList) {
+          searchResult <- tryCatch({
           searchTerm <- server_functions$getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
           searchResult <- server_functions$getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
-          uids <- list.append(uids, searchResult[[1]])
-          countResults <- list.append(countResults, searchResult[[2]])
-          searchTerms <- list.append(searchTerms, searchTerm) 
+          }, error = function(err) {
+            print("ERROR IN NCBI SEARCH")
+            organism <<- paste(searchTerm, "(invalid)")
+            searchResult <<- NULL
+          })
+          if (!is.null(searchResult) && !all(is.na(searchResult))){
+            uids <- list.append(uids, searchResult[[1]])
+            countResults <- list.append(countResults, searchResult[[2]])
+            searchTerms <- list.append(searchTerms, searchTerm) 
+          } else {
+            error_species <- c(error_species, organism)
+          }
         }
         organismsDownloaded <- organismsDownloaded + 1
         progressNCBI$set(message = paste0("Retrieved barcodes for ", organism),
