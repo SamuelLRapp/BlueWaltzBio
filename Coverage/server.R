@@ -48,6 +48,7 @@ shinyServer(function(input, output, session) {
 
   # Hiding BOLD
   hideTab("BOLDpage", "Organism Names")
+  hideTab("BOLDpage", "Species Not Found in BOLD Database")
   hideTab("BOLDpage", "Plot Unique Species Per Country")
   hideTab("BOLDpage", "Plot Total Sequences Per Country")
   hideTab("BOLDpage", "Filters")
@@ -920,10 +921,10 @@ shinyServer(function(input, output, session) {
     # Reset the UI (in case this isn't their first search) 
     # and initilize the progress bar
     observeEvent(input$BOLDsearchButton, {
-      updateTabsetPanel(session, "BOLDpage", selected = "Absent/Invalid Metadata")
       shinyjs::show(id = "BOLDNullSpecies")
       showTab("BOLDpage", "Filters")
-      showTab("BOLDpage", "Absent/Invalid Metadata")
+      showTab("BOLDpage", "Species Not Found in BOLD Database")
+      updateTabsetPanel(session, "BOLDpage", selected = "Species Not Found in BOLD Database")
       hideTab("BOLDpage", "Plot Unique Species Per Country")
       hideTab("BOLDpage", "Plot Total Sequences Per Country")
       hideTab("BOLDpage", "Coverage Matrix")
