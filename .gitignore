@@ -7,3 +7,4 @@
 .DS_Store
 *.fasta
 Coverage/tests/Unit_Tests/test_output/*
+Coverage/tests/Unit_Tests/*
