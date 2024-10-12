@@ -245,7 +245,7 @@ getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
 # The database responses are appended to the results parameter,
 # then results is returned to the caller.
 cruxOrgSearch <- function(results, searchTerm, organism) {
-  taxaDB <- dbConnect(RSQLite::SQLite(), "crux-taxa-db.sqlite")
+  taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
   for (table in cruxDbList) {
     queryStatement <- paste(
       "SELECT * from ",
