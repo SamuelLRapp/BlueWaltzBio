@@ -25,7 +25,16 @@ suppressPackageStartupMessages({
  
 source("ui_files/ui_Rfiles/elements_ui.R", echo = FALSE, print.eval = FALSE)[1]
 
+components <- modules::use("ui_files/ui_Rfiles/components.R")
+
 shinyUI(fluidPage(
+  
+  useShinyjs(),
+  extendShinyjs(text = jsCode, functions = c("clickBtn")),
+  extendShinyjs(text = tst, functions = c("ncbiDwnFastaTest")),
+  extendShinyjs(text = loaderJs, functions = c("setLoaderAppearance")),
+  tags$link(rel="stylesheet", type="text/css", href="styles.css"),
+  
   navbarPage("Reference Sequence Browser",
              id = "mainPage",
              # Home tab
