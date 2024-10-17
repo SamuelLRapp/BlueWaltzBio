@@ -316,6 +316,7 @@ shinyServer(function(input, output, session) {
         progressNCBI$set(message = paste0("Retrieving barcodes for ", organism))
         progressNCBI$inc(amount = 0.5/organismListLength)
         for (code in barcodeList) {
+          searchResult <- 0
           searchResult <- tryCatch({
           searchTerm <- server_functions$getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
           searchResult <- server_functions$getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
@@ -924,6 +925,7 @@ shinyServer(function(input, output, session) {
       shinyjs::show(id = "BOLDNullSpecies")
       showTab("BOLDpage", "Filters")
       showTab("BOLDpage", "Species Not Found in BOLD Database")
+      updateTabsetPanel(session, "BOLDpage", selected = "Filters")
       updateTabsetPanel(session, "BOLDpage", selected = "Species Not Found in BOLD Database")
       hideTab("BOLDpage", "Plot Unique Species Per Country")
       hideTab("BOLDpage", "Plot Total Sequences Per Country")
@@ -968,7 +970,12 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
       showTab("BOLDpage", "Absent/Invalid Metadata")
-      click("BOLDfilterCountries")
+      
+      # Reset all filters
+      updateSelectizeInput(inputId="selectCountry", selected = character(0))
+      if (input$removeNCBI) { 
+        updateCheckboxInput(session, "removeNCBI", value = FALSE)
+      }
     })
     
     # If the user wants to filter countries then we move
@@ -1092,7 +1099,7 @@ shinyServer(function(input, output, session) {
         }
     })
     
-    BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, {
+    BOLDOrgCountries <- eventReactive(c(input$BOLDfilterCountries, input$BOLDSkipFilter), {
       input$selectCountry # Returns a list of countries
     })
     
