@@ -109,7 +109,7 @@ tabsetPanel(
                                       p("For each barcode, we display the total number of database entries found, the percentage of the total number of database entries that each marker/gene accounts for, and the number of organisms with at least one or no sequences found"),
                     ),
                     tags$div(id="loaderWrapperNCBI"),
-                    DT::dataTableOutput("NCBISummaryResults")  %>% withSpinner(color="#0dc5c1"),
+                    DT::dataTableOutput("NCBISummaryResults")  %>% withSpinner(color="#00000000"),
                     conditionalPanel( condition = "output.NCBISummaryResults",
                                       downloadButton("NCBIfileDownloadSD","Download Summary Data"),
                                       actionButton("NCBIdetailsButton", "See More Detailed Results"),
