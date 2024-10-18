@@ -216,9 +216,14 @@ getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
     progress$set(message = paste0("Retrieving barcodes for ", nameList[i]))
     progress$inc(amount = 0.5/nameListLength)
     
-    searchTerm <- getSearchTerm(nameList[i], uidList[i])
-    results <- cruxOrgSearch(
-      results, searchTerm, nameList[i])
+    searchResults <- tryCatch({
+      searchTerm <- getSearchTerm(nameList[i], uidList[i])
+      searchResults <- cruxOrgSearch(searchTerm, nameList[i])
+    }, error = function(err) {
+      print("ERROR IN CRUX SEARCH")
+      searchResults <- "Error"
+    })
+    results <- c(results, searchResults)
     
     progress$set(message = paste0("Retrieved barcodes for ", nameList[i]),
                  detail = paste0(i,"/",nameListLength))
@@ -244,7 +249,7 @@ getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
 # getTaxaDbQueryResults.
 # The database responses are appended to the results parameter,
 # then results is returned to the caller.
-cruxOrgSearch <- function(results, searchTerm, organism) {
+cruxOrgSearch <- function(searchTerm, organism) {
   taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
   for (table in cruxDbList) {
     queryStatement <- paste(
@@ -252,13 +257,7 @@ cruxOrgSearch <- function(results, searchTerm, organism) {
       table,
       " where regio= :x or phylum= :x or classis= :x or ordo= :x
         or familia= :x or genus= :x or genusspecies= :x")
-    results <- c(
-      results,
-      getTaxaDbQueryResults(
-        taxaDB, 
-        queryStatement, 
-        organism, 
-        searchTerm))
+    results <- getTaxaDbQueryResults(taxaDB, queryStatement, organism, searchTerm)
   }
   dbDisconnect(taxaDB)
   browser()
@@ -292,7 +291,7 @@ getHomonyms <- function(organismList, homonymFlag) {
       # Which calls Sys.sleep(0.33). Explicitly sleeping
       # https://rdrr.io/cran/taxize/src/R/get_uid.R
       sleep()
-      
+
       # get_uid_ returns a data.frame.
       # Source at https://rdrr.io/cran/taxize/src/R/get_uid.R
       search <- get_uid_(sci_com=organism, messages=FALSE)
@@ -399,7 +398,7 @@ getSearchTerm <- function(organismName, organismUid) {
   sleep()
   if (organismUid == "") {
     match <- tax_name(
-      query = organismName,
+      sci = organismName,
       get = c("genus", "family", "order", "class", "phylum", "domain"),
       db = "ncbi",
       messages = FALSE)
@@ -432,7 +431,7 @@ convert_CRUX <-
     crux_without_taxonomic_names <- crux_output
     
     non_number_values <-
-      c('genus', 'family', 'class', 'order', 'phylum', 'kingdom', 'error')
+      c('genus', 'family', 'class', 'order', 'phylum', 'kingdom', 'Error', 'error')
     
     ncols <- ncol(crux_output)
     nrows <- nrow(crux_output)
