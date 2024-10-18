@@ -31,7 +31,6 @@ shinyUI(fluidPage(
   
   useShinyjs(),
   extendShinyjs(text = jsCode, functions = c("clickBtn")),
-  extendShinyjs(text = tst, functions = c("ncbiDwnFastaTest")),
   extendShinyjs(text = loaderJs, functions = c("setLoaderAppearance")),
   tags$link(rel="stylesheet", type="text/css", href="styles.css"),
   
