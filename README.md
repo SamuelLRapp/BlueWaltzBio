@@ -29,6 +29,8 @@ To install:
 4. Download the CRUX Database files from here: https://drive.google.com/file/d/106-Gxe8cWZiFEb_0WoIcAjRFtDfXG08b/view?usp=sharing
 5. You are all set now run the app using the RStudio "Run App" button or by executing the command shiny::runApp('Coverage')
 
+**Warning:** This tool relies on the databases and APIs (Application Programming Interfaces) of NCBI and BOLD to access stored data. The APIs are what allow us to access and gather the data from NCBI and BOLD. If either of these services experiences downtime or issues, the tool may not function as expected. However, if any issues arise please open an issue in Github and we will try to resolve them.
+
 <p align="center">
   <img src="https://github.com/SamuelLRapp/BlueWaltzBio/blob/master/BlueWaltzBioButterfly.jpg" />
 </p>

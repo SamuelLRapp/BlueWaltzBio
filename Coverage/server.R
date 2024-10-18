@@ -295,7 +295,6 @@ shinyServer(function(input, output, session) {
   ncbiSearch <- eventReactive(input$NCBIsearchButton, {
     barcodeList <- barcodeList()
     organismList <- input$NCBIorganismList
-    
     searchOptionGene <- input$NCBISearchOptionGene
     searchOptionOrgn <- input$NCBISearchOptionOrgn
     downloadNumber <- input$downloadNum
@@ -308,6 +307,7 @@ shinyServer(function(input, output, session) {
       searchTerms <- list()
       countResults <- list()
       taxize_results <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
+
       organismList <- taxize_results$results
       organismsDownloaded <- 0
       organismListLength <- length(organismList)
@@ -461,6 +461,7 @@ shinyServer(function(input, output, session) {
       #Converts string from NCBIorganismList into a list of Strings
       orgString <- input$NCBIorganismList
       NCBItaxizeOption <- input$NCBItaxizeOption
+      
       future_promise({
         orgListHelper$taxizeHelper(orgString, NCBItaxizeOption)
       })
@@ -540,11 +541,17 @@ shinyServer(function(input, output, session) {
               idsList <- unlist(idCol)
               Vector_Fasta = c("")
               if (length(idsList) > 0) {
-                Vector_Fasta <-
-                  entrez_fetch(db = "nucleotide",
-                               id = idsList,
-                               rettype = "fasta")
+                
+                id_chunks <- split(idsList, ceiling(seq_along(idsList) / 300))
+                # Loop over each chunk and fetch results
+                for (chunk in id_chunks) {
+                  Vector_Fasta_chunk <- entrez_fetch(db = "nucleotide", id = chunk, rettype = "fasta")
+                  # Append the result to the all_results vector
+                  Vector_Fasta <- c(Vector_Fasta, Vector_Fasta_chunk)
+                }
               }
+              
+              
               # Writes the vector containing all the fasta file information
               # into one fasta file
               i <<- i+1
@@ -591,10 +598,13 @@ shinyServer(function(input, output, session) {
             idsList <- unlist(idCol)
             vectorGb = c("")
             if (length(idsList) > 0) {
-              vectorGb <-
-                entrez_fetch(db = "nucleotide",
-                             id = idsList,
-                             rettype = "gb")
+              id_chunks <- split(idsList, ceiling(seq_along(idsList) / 300))
+              # Loop over each chunk and fetch results
+              for (chunk in id_chunks) {
+                Vector_Gb_chunk <- entrez_fetch(db = "nucleotide", id = chunk, rettype = "gb")
+                # Append the result to the all_results vector
+                vectorGb <- c(vectorGb, Vector_Gb_chunk)
+              }
             }
             # Writes the vector containing all the genbank file information 
             # into one genbank file
@@ -879,7 +889,7 @@ shinyServer(function(input, output, session) {
     if (databaseFlag == 1) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
-        rows <- searchResults[[4]] #organismList
+        rows <- searchResults[[4]] # OrganismList
         dataframe <- as.data.frame(server_functions$getNcbiResultsMatrix(searchResults, 
                                                                          length(barcodeList())))
         colnames(dataframe) <- columns
