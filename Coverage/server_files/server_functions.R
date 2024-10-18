@@ -287,12 +287,12 @@ getHomonyms <- function(organismList, homonymFlag) {
   newOrganismUidsList <- c()
   for (organism in organismList) {
     
-    # get_uid_ calls function get_uid_help,
-    # Which calls Sys.sleep(0.33). Explicitly sleeping
-    # https://rdrr.io/cran/taxize/src/R/get_uid.R
-    sleep()
-    
     if (homonymFlag) {
+      # get_uid_ calls function get_uid_help,
+      # Which calls Sys.sleep(0.33). Explicitly sleeping
+      # https://rdrr.io/cran/taxize/src/R/get_uid.R
+      sleep()
+      
       # get_uid_ returns a data.frame.
       # Source at https://rdrr.io/cran/taxize/src/R/get_uid.R
       search <- get_uid_(sci_com=organism, messages=FALSE)
@@ -527,6 +527,9 @@ getNcbiSearchFullResults <- function(db, searchTerm, downloadNumber) {
   searchResult <- entrez_search(db = "nucleotide",
                                 term = searchTerm,
                                 retmax = downloadNumber)
+  print("NCBISearchFullResults:")
+  print(searchResult$ids)
+  print(searchResult$count)
   list(searchResult$ids, searchResult$count)
 }
 
