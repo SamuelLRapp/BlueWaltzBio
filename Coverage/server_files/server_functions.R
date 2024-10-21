@@ -221,7 +221,7 @@ getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
       searchResults <- cruxOrgSearch(searchTerm, nameList[i])
     }, error = function(err) {
       print("ERROR IN CRUX SEARCH")
-      searchResults <- "Error"
+      searchResults <- c("Error", "Error", "Error", "Error", "Error", "Error", "Error")
     })
     results <- c(results, searchResults)
     
@@ -251,16 +251,16 @@ getCruxSearchFullResults <- function(organismList, progress, homonymFlag) {
 # then results is returned to the caller.
 cruxOrgSearch <- function(searchTerm, organism) {
   taxaDB <- dbConnect(RSQLite::SQLite(), "taxa-db.sqlite")
+  results <- c()
   for (table in cruxDbList) {
     queryStatement <- paste(
       "SELECT * from ",
       table,
       " where regio= :x or phylum= :x or classis= :x or ordo= :x
         or familia= :x or genus= :x or genusspecies= :x")
-    results <- getTaxaDbQueryResults(taxaDB, queryStatement, organism, searchTerm)
+    results <- c(results, getTaxaDbQueryResults(taxaDB, queryStatement, organism, searchTerm))
   }
   dbDisconnect(taxaDB)
-  browser()
   results
 }
 
@@ -403,7 +403,7 @@ getSearchTerm <- function(organismName, organismUid) {
       db = "ncbi",
       messages = FALSE)
   } else {
-    hierarchy <- classification(organismUid, db = "ncbi")[[1]]
+    hierarchy <- classification(organismUid, db = "ncbi", messages=FALSE)[[1]]
     query <- c(
       "db", 
       "query", 
@@ -526,9 +526,6 @@ getNcbiSearchFullResults <- function(db, searchTerm, downloadNumber) {
   searchResult <- entrez_search(db = "nucleotide",
                                 term = searchTerm,
                                 retmax = downloadNumber)
-  print("NCBISearchFullResults:")
-  print(searchResult$ids)
-  print(searchResult$count)
   list(searchResult$ids, searchResult$count)
 }
 

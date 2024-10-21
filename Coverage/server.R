@@ -307,7 +307,6 @@ shinyServer(function(input, output, session) {
       searchTerms <- list()
       countResults <- list()
       taxize_results <- orgListHelper$taxizeHelper(organismList, ncbiTaxizeOption)
-
       organismList <- taxize_results$results
       organismsDownloaded <- 0
       organismListLength <- length(organismList)
@@ -441,14 +440,14 @@ shinyServer(function(input, output, session) {
         updateTextAreaInput(
           getDefaultReactiveDomain(),
           "barcodeList",
-          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != "" && !is.na(uploadinfo$Barcodes)]),
+          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != "" & !is.na(uploadinfo$Barcodes)]),
                     input$barcodeList)
         )
       }
       else {
         updateTextAreaInput(getDefaultReactiveDomain(),
                             "barcodeList",
-                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != "" && !is.na(uploadinfo$Barcodes)])
+                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != "" & !is.na(uploadinfo$Barcodes)])
       }
     })
   })
