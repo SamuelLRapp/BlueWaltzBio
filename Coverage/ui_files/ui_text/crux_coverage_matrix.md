@@ -5,3 +5,4 @@ The cells will show one of the following:
 1. The number of sequences in a database, if direct matches are found.
 2. If no direct matches are found, the next most specific taxonomic rank found.
 3. `0` if nothing is found at any taxonomic rank.
+4. `Error` if while searching there was an issue while running the search
