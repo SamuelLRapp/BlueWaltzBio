@@ -2,7 +2,7 @@ OrganismNames,Barcodes,"Instructions: This downloadable template allows users of
 Codium fragile subsp. tomentosoides,18S,Common error: Do not change the column names (you can rewrite them if you accidently edit them). Only write in the first two columns of this CSV.
 Heterosiphonia,16S,"Example DNA barcode names are: COI, 12S, 18S"
 Prorocentrum minimum,12S,"Example Organism_names: Canis Lupus, Pisaster, Homo Sapien"
-Sargassum muticum,(CO1; COI; COX1),
+Sargassum muticum,CO1 + COI + COX1,
 Bonnemaisonia hamifera,,
 Ficopomatus enigmaticus,,
 Teredo navalis,,
