@@ -1,10 +1,13 @@
+# -----------------------------------------------------------------------------#
+# Name: Server.R
+# Last Date Updated : September 22, 2024
 #
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
+# This code was build by Sriram Ramesh and Jorge Tapias Gomez
+# With help from Dickson Chung and Zia Truong
 #
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
+# In collaboration with Samuel Rapp, Benjamine Levine, and Daniel Tapias Gomez
+# Also, a big thanks to all those that helped us along the project.
+# -----------------------------------------------------------------------------#
 
 
 # Imports ----------------------------------------------------------------------
@@ -30,19 +33,22 @@ suppressPackageStartupMessages({
   library(zip)
 })
 
+# Import Modules
+orgListHelper <- modules::use("./server_files/orgListHelper.R")
+server_functions <- modules::use("./server_files/server_functions.R")
+bold_functions <- modules::use("./server_files/bold_functions.R")
 
-orgListHelper <- modules::use("orgListHelper.R")
-server_functions <- modules::use("server_functions.R")
-bold_functions <- modules::use("bold_functions.R")
-
-
+# Prepare concurrency
 plan(multisession)
 options(future.rng.onMisuse="ignore")
 
 shinyServer(function(input, output, session) {
   
-  # Hiding BOLD Page tabs
+  # At start of execution hide all Page tabs within the pipeline
+
+  # Hiding BOLD
   hideTab("BOLDpage", "Organism Names")
+  hideTab("BOLDpage", "Species Not Found in BOLD Database")
   hideTab("BOLDpage", "Plot Unique Species Per Country")
   hideTab("BOLDpage", "Plot Total Sequences Per Country")
   hideTab("BOLDpage", "Filters")
@@ -51,7 +57,6 @@ shinyServer(function(input, output, session) {
   hideTab("BOLDpage", "Country Data")
   hideTab("BOLDpage", "Manual Data Processing Required")
   hideTab("BOLDpage", "Absent/Invalid Metadata")
-  
   
   # Hiding CRUXpage
   hideTab("CRUXpage", "Coverage Matrix")
@@ -64,50 +69,24 @@ shinyServer(function(input, output, session) {
   hideTab("NCBIpage", "One last step!")
   hideTab("NCBIpage", "Coverage Matrix")
   hideTab("NCBIpage", "Summary Results")
-  
-  # Hiding Full Genome Tab 
-  hideTab("FullGenomePage", "Results")
-  hideTab("FullGenomePage", "Organism Names")
-  hideTab("FullGenomePage", "Summary Results")
-
-  # max number of homonyms to return if any
-  # are found in the homonym check.
-  maxHomonyms <- 5L
-  
-  # * Download tests start------------------------------------------------------
-  observeEvent(input$dwntest, {
-    #run JS portion of test (ui interactions)
-    js$ncbiDwnFastaTest(testOrganisms = "canis lupus, cygnus")
-    
-    #gets reference file to see if download completed later
-    reffile <- mostRecentFile(".")
-    print("Waiting 40 secs for file to finish downloading...")
-    #runs when search complete and download button clicked
-    observeEvent(input[["ui-test-complete"]], {
-      #get the most recent file in the downloads file
-      dwnfile <- mostRecentFile(".")
-      
-      #if download has completed then filename should have changed
-      if (dwnfile != reffile){
-        print("Test passed")
-      } else {
-        print("Test failed: file did not download")
-      }
-    })
-  })
-  
-  mostRecentFile <- function(dirpath) {
-    #snippet from https://stackoverflow.com/a/50870673
-    df <- file.info(list.files(dirpath, full.names = T))
-    rownames(df)[which.max(df$mtime)]
-  }
+  hideTab("NCBIpage", "Manual Data Processing Required")
   
   
 # NCBI Key ---------------------------------------------------------------------
-  
-  # Verifies the provided api key is
-  # valid by performing a search with it.
+  # Verifies the provided api key by performing a search with it.
+  # Very useful for CRUX and NCBI
   # Sets key validity variable in server_functions.R
+  
+  ## ----#
+  # Set NCBI function
+  #   - Input: 
+  #         SetKey: Reactive variable indicating if the user the NCBI key button
+  #   - Output:
+  #         The function checks if the user given NCBI key is valid, if so we set
+  #         the entrez key to that value and set the NCBI Key as valid. 
+  #         This helps speed up searches as you won't be limited.
+  #         If it key fails then we return a warning to the user in the form of a pop-up 
+  ## ----#
   observeEvent(input$SetKey, {
     keyValidity <- tryCatch({
       entrez_search(
@@ -124,190 +103,28 @@ shinyServer(function(input, output, session) {
       server_functions$setNcbiKeyIsValid(FALSE)
     })
   })
-  
-# Full Genome ----------------------------------------------------------------
-  
-  # * FullGenomeSearchButton ---------------------------------------------------
-  
-  
-  # Reactive on search button call.
-  # Gets the full results returned from the search
-  # to feed to the output datatable.
-  fullGenomeSearch <- eventReactive(input$genomeSearchButton, {
-    dbOption <- input$gsearch
-    orgList <- input$genomeOrganismList
-    taxizeOption <- input$fullGenomeTaxizeOption
-    refSeqChecked <- input$refSeq
-    progress <-
-      AsyncProgress$new(
-        session,
-        min = 0,
-        max = 1,
-        message = "Retrieving...",
-        value = 0
-      )
-    js$setLoaderAppearance("FullGenome")
-    future_promise({
-      server_functions$getGenomeSearchFullResults(
-        dbOption = dbOption, 
-        orgList = orgList, 
-        taxizeOption = taxizeOption,
-        refSeqChecked = refSeqChecked,
-        progress = progress)
-    })
-  })
-  
-  # * UI pipeline updates ------------------------------------------------------
-  observeEvent(input$genomeSearchButton, {
-    # Go to the results page after clicking the search button
-    updateTabsetPanel(session, "FullGenomePage", selected = "Results")
-    showTab("FullGenomePage", "Results")
-  })
-  
-  # * Full Genome Input CSV ----------------------------------------------------
-  observeEvent(input$FullGenomeStart,
-  {
-    # Begin Full genome pipeline
-    updateTabsetPanel(session, "FullGenomePage", selected = "Organism Names")
-    showTab("FullGenomePage", "Organism Names")
-    # It requires a file to be uploaded first
-    req(input$uploadGenomeFile,
-        file.exists(input$uploadGenomeFile$datapath)) 
-    isolate({
-      # It requires a file to be uploaded first
-      # Read the CSV and write all the Organism Names into the Text Area Input
-      uploadinfo <-
-        read.csv(input$uploadGenomeFile$datapath, header = TRUE)
-      updateTextAreaInput(
-        getDefaultReactiveDomain(), 
-        inputId = "genomeOrganismList", 
-        label = "Organism Names",
-        value = server_functions$parseCsvColumnForTxtBox(
-          input = input, 
-          file.index = "uploadGenomeFile",
-          
-          
-          #beware, adding a space into the column header name causes problems
-          column.header = "OrganismNames",
-          textbox.id = "genomeOrganismList"))
-    })
-  })
-  
-  # * Output table -------------------------------------------------------------  
-  
-  # parses fullGenomeSearch return value
-  # and passes the dataframe and genome list
-  # into the output data table.
-  output$genomeResults <- DT::renderDataTable({
-    then(fullGenomeSearch(), function(searchResults){
-      resultsMatrix <- searchResults[[1]]
-      statefulUids <- c(resultsMatrix[[2]])
-      genomeList <- searchResults[[2]]
-      DT::datatable(
-        resultsMatrix[[1]],
-        rownames = genomeList,
-        colnames = names(resultsMatrix[[1]]))})
-  })
-  
-  output$FullGenomeSummaryResults <- DT::renderDataTable({
-    promise_all(data_df = summary_report(0), 
-                rows = organismListGet()) %...>% with({
-                  DT::datatable(
-                    data_df
-                  )
-                })
-  })
-
-  
-  # * Download Fastas ----------------------------------------------------------
-  output$fullGenomeDownloadF <- downloadHandler(
-    filename = function() {
-      paste("Full_Genome_Fasta_File", ".fasta", sep = "")
-    },
-    content = function(file) {
-      fullGenomeSearch() %...>% {
-        resultsMatrix <- .[[1]]
-        statefulUids <- c(resultsMatrix[[2]])
-        progLength <- length(statefulUids)
-        progress <-
-          AsyncProgress$new(
-            session,
-            min = 0,
-            max = progLength,
-            message = "Downloading",
-            value = 0
-          )
-        future_promise({
-          # entrez_fetch can take a list of uids, instead of iterating
-          # over all uids and sleeping at each one, could provide a list
-          # to get all the files at once. 
-          # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
-          # for details
-          write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="fasta"), file)
-          progress$set(value = progLength)
-          progress$close()
-        })
-      }
-    }
-  )
-  
-  # * Download Genbank files ---------------------------------------------------
-  
-  output$fullGenomeDownloadG <- downloadHandler(
-    filename = function() {
-      paste("Full_Genome_Genbank_File", ".gb", sep = "")
-    },
-    content = function(file) {
-      fullGenomeSearch() %...>% {
-        resultsMatrix <- .[[1]]
-        statefulUids <- c(resultsMatrix[[2]])
-        progLength <- length(statefulUids)
-        progLength <- length(statefulUids)
-        progress <-
-          AsyncProgress$new(
-            session,
-            min = 0,
-            max = progLength,
-            message = "Downloading",
-            value = 0
-          )
-        future_promise({
-          # entrez_fetch can take a list of uids, instead of iterating
-          # over all uids and sleeping at each one, could provide a list
-          # to get all the files at once. 
-          # See https://www.ncbi.nlm.nih.gov/books/NBK25499/#_chapter4_EFetch_
-          # for details
-          write(entrez_fetch(db="nucleotide", id=statefulUids, rettype="gb"), file)
-          progress$set(value = progLength)
-          progress$close()
-        })
-      }
-    }
-  )
-
-  # * Download Full Genome Results Table ---------------------------------------
-  
-  output$fullGenomeDownloadT <- downloadHandler(
-    filename = function() {
-      # Create the file and set its name
-      paste("Full_Genome_Table", ".csv", sep = "")
-    },
-    content = function(file) {
-      fullGenomeSearch() %...>% {
-        write.csv(.[[1]], file)
-      }
-    }
-  )
 
 # CRUX ----------------------------------------------------------------------
-  # progress bar object
+  
+  # progress bar object for CRUX search
   progressCRUX <- NULL
+  
   # * CRUXSearchButton --------------------------------------------------------
   
+  # Button to start searches when user is ready to proceed
   CRUXOrgList <- eventReactive(input$searchButton, {
     input$CRUXorganismList
   })
     
+  
+  ## ----#
+  # Organism List Get function for CRUX
+  #   - Input: 
+  #         None
+  #   - Output:
+  #         The user-given organism list after returning 
+  #         from the taxize helper function to help with typos
+  ## ----#
   organismListGet <- reactive({
     orgSearch <- CRUXOrgList()
     taxizeBool <- input$CRUXtaxizeOption
@@ -329,7 +146,13 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
+  ## ----#
+  # Organism List Get function for CRUX
+  #   - Input: 
+  #         None
+  #   - Output:
+  #         Dataframe with the Coverage Matrix data table
+  ## ----#
   cruxOrgSearch <- reactive({
     organismListGet() %...>% {
       homonymFlag <- input$CRUXhomonymOption
@@ -341,8 +164,9 @@ shinyServer(function(input, output, session) {
   
   
   # * UI pipeline updates ------------------------------------------------------
+
+  # Observe Event to begin CRUX search
   observeEvent(input$searchButton, {
-    # Begin CRUX search
     updateTabsetPanel(session, "CRUXpage", selected = "Summary Results")
     progressCRUX <<-
       AsyncProgress$new(
@@ -352,10 +176,11 @@ shinyServer(function(input, output, session) {
         message = "Retrieving...",
         value = 0
       )
-    js$setLoaderAppearance("CRUX") #This may need to be changed?
+    js$setLoaderAppearance("CRUX")
     showTab("CRUXpage", "Summary Results")
   })
   
+  # Observe Event when Coverage matrix is ready display the Tab
   observeEvent(input$detailsButton, {
     # Begin CRUX search
     updateTabsetPanel(session, "CRUXpage", selected = "Coverage Matrix")
@@ -364,6 +189,9 @@ shinyServer(function(input, output, session) {
   
   # * CRUXInputCSV -------------------------------------------------------------
   
+  # Observe Event function to upload a CSV file with species
+  # so that the user doesn't have to manually type them
+  # Simply parse the csv and update the text area input
   observeEvent(input$CruxStart,
                {
                  # Begin CRUX pipeline
@@ -377,8 +205,7 @@ shinyServer(function(input, output, session) {
                    newOrganismNamesList <- server_functions$parseCsvColumnForTxtBox(
                      input = input,
                      file.index = "uCRUXfile",
-                     
-                     #beware, adding a space into the column header name causes problems
+                     # Beware, adding a space into the column header name causes problems
                      column.header = "OrganismNames",
                      textbox.id = "CRUXorganismList"
                    )
@@ -426,6 +253,7 @@ shinyServer(function(input, output, session) {
   
   # * CRUXOutput ---------------------------------------------------------------
   
+  # Render CRUX Coverage Matrix
   output$CRUXcoverageResults <- DT::renderDataTable({
     then(cruxOrgSearch(), function(coverage){
       resultsMatrix <- coverage[[2]]
@@ -438,6 +266,7 @@ shinyServer(function(input, output, session) {
       })
     })
   
+  # Render CRUX Summary Data Table
   output$CRUXSummaryResults <- DT::renderDataTable({
     promise_all(data_df = summary_report(0), 
                 rows = organismListGet()) %...>% with({
@@ -448,18 +277,30 @@ shinyServer(function(input, output, session) {
   })
   
   # NCBI -----------------------------------------------------------------------
-  # progress bar object
+  # Progress bar object
   progressNCBI <- NULL
-  # * NCBISearchButton ---------------------------------------------------------
+  
+  # * NCBISearch ---------------------------------------------------------
+  
+  ## ----#
+  # NCBI Search function
+  #   - Input: 
+  #         None, it waits for the search button to be pressed
+  #         But the function needs user-give 1) barcode list and
+  #         2) an organism list.
+  #   - Output:
+  #         A list with the counts per organisms, the unique NCBI ids
+  #         The search terms used for the API query and the organism List
+  ## ----#
   ncbiSearch <- eventReactive(input$NCBIsearchButton, {
     barcodeList <- barcodeList()
     organismList <- input$NCBIorganismList
-    
     searchOptionGene <- input$NCBISearchOptionGene
     searchOptionOrgn <- input$NCBISearchOptionOrgn
     downloadNumber <- input$downloadNum
     seqLengthOption <- input$seqLengthOption
     ncbiTaxizeOption <- input$NCBItaxizeOption
+    error_species <- c()
     seq_len_list <- server_functions$getSeqLenList(barcodeList, input)
     future_promise({
       uids <- list()
@@ -474,11 +315,22 @@ shinyServer(function(input, output, session) {
         progressNCBI$set(message = paste0("Retrieving barcodes for ", organism))
         progressNCBI$inc(amount = 0.5/organismListLength)
         for (code in barcodeList) {
+          searchResult <- 0
+          searchResult <- tryCatch({
           searchTerm <- server_functions$getNcbiSearchTerm(organism, code, searchOptionGene, searchOptionOrgn, seqLengthOption, seq_len_list[[code]])
           searchResult <- server_functions$getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
-          uids <- list.append(uids, searchResult[[1]])
-          countResults <- list.append(countResults, searchResult[[2]])
-          searchTerms <- list.append(searchTerms, searchTerm) 
+          }, error = function(err) {
+            print("ERROR IN NCBI SEARCH")
+            searchTerm <<- paste(searchTerm, "(invalid)")
+            searchResult <<- NULL
+          })
+          if (!is.null(searchResult) && !all(is.na(searchResult))){
+            uids <- list.append(uids, searchResult[[1]])
+            countResults <- list.append(countResults, searchResult[[2]])
+            searchTerms <- list.append(searchTerms, searchTerm) 
+          } else {
+            error_species <- c(error_species, searchTerm)
+          }
         }
         organismsDownloaded <- organismsDownloaded + 1
         progressNCBI$set(message = paste0("Retrieved barcodes for ", organism),
@@ -486,16 +338,19 @@ shinyServer(function(input, output, session) {
         progressNCBI$inc(amount = 0.5/organismListLength)
       }
       progressNCBI$close()
-      results <- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList)
+      results <- list(count = countResults, ids = uids, searchTermslist = searchTerms, organismList = organismList, error_species=error_species)
     })%...>% {
       showTab("NCBIpage", "Coverage Matrix")
+      showTab("NCBIpage", "Manual Data Processing Required")
       results <- .
     }
   })
   
   # * NCBI pipeline step display handlers --------------------------------------
+  
+  # Start NCBI search button
+  # Shows NCBI Summary results 
   observeEvent(input$NCBIsearchButton, {
-    # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Summary Results")
     progressNCBI <<-
       AsyncProgress$new(
@@ -509,13 +364,15 @@ shinyServer(function(input, output, session) {
     showTab("NCBIpage", "Summary Results")
   })
   
+  # Displays the NCBI coverage matrix
   observeEvent(input$NCBIdetailsButton, {
-    # Start NCBI search button
     updateTabsetPanel(session, "NCBIpage", selected = "Coverage Matrix")
     showTab("NCBIpage", "Coverage Matrix")
     showTab("NCBIpage", "Summary Results")
+    showTab("NCBIpage", "Manual Data Processing Required")
   })
   
+  # When starting over we hide all the tabs again and clean up the UI
   observeEvent(input$NCBIStartOver, {
     # Start NCBI search all over again
     updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
@@ -523,34 +380,38 @@ shinyServer(function(input, output, session) {
     hideTab("NCBIpage", "Barcodes of Interest")
     hideTab("NCBIpage", "Coverage Matrix")
     hideTab("NCBIpage", "Summary Results")
+    hideTab("NCBIpage", "Manual Data Processing Required")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
   })
   
+  # When starting over in the summary tab we hide all the tabs again
   observeEvent(input$NCBIStartOverSummary, {
-    # Start NCBI search all over again
     updateTabsetPanel(session, "NCBIpage", selected = "Start Your NCBI Search")
     hideTab("NCBIpage", "Organism Names")
     hideTab("NCBIpage", "Barcodes of Interest")
     hideTab("NCBIpage", "One last step!")
     hideTab("NCBIpage", "Coverage Matrix")
     hideTab("NCBIpage", "Summary Results")
+    hideTab("NCBIpage", "Manual Data Processing Required")
     updateTextAreaInput(getDefaultReactiveDomain(), "barcodeList", value = c(""))
     updateTextAreaInput(getDefaultReactiveDomain(), "NCBIorganismList", value = c(""))
   })
   
+  # Go the barcodes of interest tab
   observeEvent(input$BarcodesNext, {
-    # Go the barcodes tab to allow user to input them
      updateTabsetPanel(session, "NCBIpage", selected = "Barcodes of Interest")
      showTab("NCBIpage", "Barcodes of Interest")
    })
   
+  # Go the download number page
   observeEvent(input$NCBIRetMaxButton, {
-    # Go the barcodes tab to allow user to input them
     updateTabsetPanel(session, "NCBIpage", selected = "One last step!")
     showTab("NCBIpage", "One last step!")
   })
   
+  # Allows the user to upload csv files with the species and barcodes
+  # they are interested in and avoid manually typing.
   observeEvent(input$StartNCBIButton, {
     # Begin the NCBI pipeline button
     updateTabsetPanel(session, "NCBIpage", selected = "Organism Names")
@@ -579,25 +440,27 @@ shinyServer(function(input, output, session) {
         updateTextAreaInput(
           getDefaultReactiveDomain(),
           "barcodeList",
-          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != "" && !is.na(uploadinfo$Barcodes)]),
+          value = c(head(uploadinfo$Barcodes[uploadinfo$Barcodes != "" & !is.na(uploadinfo$Barcodes)]),
                     input$barcodeList)
         )
       }
       else {
         updateTextAreaInput(getDefaultReactiveDomain(),
                             "barcodeList",
-                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != "" && !is.na(uploadinfo$Barcodes)])
+                            value = uploadinfo$Barcodes[uploadinfo$Barcodes != "" & !is.na(uploadinfo$Barcodes)])
       }
     })
   })
   
   # * NCBIStrToList ------------------------------------------------------------
   
+  # NCBI Button startd the NCBI Search when the user clicking the search button
   NCBIorganismList <-
     reactive({
       #Converts string from NCBIorganismList into a list of Strings
       orgString <- input$NCBIorganismList
       NCBItaxizeOption <- input$NCBItaxizeOption
+      
       future_promise({
         orgListHelper$taxizeHelper(orgString, NCBItaxizeOption)
       })
@@ -606,6 +469,7 @@ shinyServer(function(input, output, session) {
   
   # * NCBIBarcodeList ----------------------------------------------------------
   
+  # Gather the barcodes that the user has provided, and clean them
   barcodeList <- reactive({
     # separate based on comma
     barcodeList <- strsplit(input$barcodeList, ",") 
@@ -616,8 +480,8 @@ shinyServer(function(input, output, session) {
   
   # * NCBISequenceLength -------------------------------------------------------
   
-  # returns a numericRangeInput object to display the min/max
-  # ui thing for the user to input sequence lengths
+  # Returns a numericRangeInput object to display the min/max
+  # UI object for the user to input sequence lengths
   seqLenList <- reactive({
     if (input$seqLengthOption) {
       barcodeList <- strsplit(input$barcodeList, ",")
@@ -630,6 +494,7 @@ shinyServer(function(input, output, session) {
   
   # *   NCBIGetIDs -------------------------------------------------------------
   
+  # Extract the unique IDs from the NCBI search
   uidsGet <-
     function(){
       # Returns the uids stored in the results from the NCBi query
@@ -647,14 +512,14 @@ shinyServer(function(input, output, session) {
   
   # * NCBIDownloadFASTA --------------------------------------------------------
   
-  # Download Fasta Files
+  # Download Fasta Files for all the barcodes (zipped) from NCBI
   output$fileDownloadF <- downloadHandler(
     filename = function() {
       # Create the file and set its name
       paste("NCBI_Fastas", ".zip", sep = "")
     },
     content = function(downloadedFile) {
-      #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
+      # Good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
       setwd(tempdir())
       ncbiSearch() %...>% {
         barcodes <- barcodeList()
@@ -668,20 +533,26 @@ shinyServer(function(input, output, session) {
             file_path <- paste("NCBI", barcodes, "sequences.fasta", sep="_")
           })[[1]]
           i <- 0
-          #apply across columns
+          # Apply across columns
           apply(uidsMatrix, MARGIN = 2, function(idCol) {
             
               # Download Fasta files from NCBI
               idsList <- unlist(idCol)
               Vector_Fasta = c("")
               if (length(idsList) > 0) {
-                Vector_Fasta <-
-                  entrez_fetch(db = "nucleotide",
-                               id = idsList,
-                               rettype = "fasta")
+                
+                id_chunks <- split(idsList, ceiling(seq_along(idsList) / 300))
+                # Loop over each chunk and fetch results
+                for (chunk in id_chunks) {
+                  Vector_Fasta_chunk <- entrez_fetch(db = "nucleotide", id = chunk, rettype = "fasta")
+                  # Append the result to the all_results vector
+                  Vector_Fasta <- c(Vector_Fasta, Vector_Fasta_chunk)
+                }
               }
-              # Writes the vector containing all the fasta file information into
-              # one fasta file
+              
+              
+              # Writes the vector containing all the fasta file information
+              # into one fasta file
               i <<- i+1
               fn <- filenames[i]
               file.create(fn)
@@ -698,14 +569,14 @@ shinyServer(function(input, output, session) {
   
   # * NCBIDownloadGenbank ------------------------------------------------------
   
-  # Download NCBI Genbank Files
+  # Download Genbank Files for all the barcodes (zipped) from NCBI
   output$fileDownloadG <- downloadHandler(
     filename = function() {
       # Create the file and set its name
       paste("NCBI_Genbank", ".zip", sep = "")
     },
     content = function(downloadedFile) {
-      #good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
+      # Good explanation of setwd zipping approach here: https://stackoverflow.com/a/43939912
       setwd(tempdir())
       ncbiSearch() %...>% {
         barcodes <- barcodeList()
@@ -719,20 +590,23 @@ shinyServer(function(input, output, session) {
             file_path <- paste("NCBI", barcodes, "sequences.gb", sep="_")
           })[[1]]
           i <- 0
-          #apply across columns
+          # Apply across columns
           apply(uidsMatrix, MARGIN = 2, function(idCol) {
             
             # Download Genbank files from NCBI
             idsList <- unlist(idCol)
             vectorGb = c("")
             if (length(idsList) > 0) {
-              vectorGb <-
-                entrez_fetch(db = "nucleotide",
-                             id = idsList,
-                             rettype = "gb")
+              id_chunks <- split(idsList, ceiling(seq_along(idsList) / 300))
+              # Loop over each chunk and fetch results
+              for (chunk in id_chunks) {
+                Vector_Gb_chunk <- entrez_fetch(db = "nucleotide", id = chunk, rettype = "gb")
+                # Append the result to the all_results vector
+                vectorGb <- c(vectorGb, Vector_Gb_chunk)
+              }
             }
-            # Writes the vector containing all the genbank file information into
-            # one genbank file
+            # Writes the vector containing all the genbank file information 
+            # into one genbank file
             i <<- i+1
             fn <- filenames[i]
             file.create(fn)
@@ -762,17 +636,18 @@ shinyServer(function(input, output, session) {
   )
   
   # * NCBIBarcodeButtons -------------------------------------------------------
+  # All the observe events below are for the barcode buttons (NCBI Pipeline)
   
   observeEvent(input$barcodeOptionCO1, {
-    # Detects when the specific barcode (in this case CO1) button has been 
-    # pressed
+    # Detects when the specific barcode (in this case CO1) 
+    # button has been pressed
     
     # If the input barcodeList is not empty (ie. the inputtextarea is not 
     # empty) then use the paste function to the add the barcode/s to the 
     # beginning
     if (input$barcodeList[[1]] != "") {
       # Updates the text area input adds the barcode/s to the beginning of 
-      # whatever is already in it
+      # the barcodes already present
       updateTextAreaInput(
         getDefaultReactiveDomain(),
         "barcodeList",
@@ -887,9 +762,10 @@ shinyServer(function(input, output, session) {
   # * NCBIOutputTables ---------------------------------------------------------
   
   
-  #outputs:
+  # Min/Max sequence length boxes rendering
   output$seqLenInputs <- renderUI(seqLenList())
   
+  # Render Table for Coverage Matrix
   output$NCBIcoverageResults <- DT::renderDataTable({
     then(ncbiSearch(), function(searchResults) {
       data_df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
@@ -903,6 +779,7 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  # Render NCBI Search Terms Table
   output$NCBIsearchQueries <- DT::renderDataTable({
     then(ncbiSearch(), function(searchResults) {
       data_df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList()))
@@ -917,6 +794,21 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  # * Render NCBI NA Table -------
+  output$NCBINATable <- DT::renderDataTable({
+    then(ncbiSearch(), function(searchResults) {
+      results = searchResults[[5]]
+      if (is_null(searchResults[[5]])) {
+        results = "No Manual Processing Required!"
+      }
+      invalid_search_terms_df <- data.frame("SearchTerms" = results, check.names = FALSE)
+      DT::datatable(
+        invalid_search_terms_df
+      )
+    })
+  })
+  
+  # Render NCBI Summary Report
   output$NCBISummaryResults <- DT::renderDataTable({
     promise_all(data_df = summary_report(1), 
                 rows = NCBIorganismList()) %...>% with({
@@ -935,7 +827,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
-        rows <- searchResults[[4]] #organismList
+        rows <- searchResults[[4]] # OrganismList
         df <- server_functions$getNcbiResultsMatrix(searchResults, length(barcodeList()))
         colnames(df) <- columns
         rownames(df) <- rows
@@ -946,7 +838,7 @@ shinyServer(function(input, output, session) {
   
   # * NCBIDownloadSearchTerms --------------------------------------------------
   
-  #Download Search Terms:
+  # Download Search Terms
   output$downloadStatements <- downloadHandler(
     filename = function() {
       # Create the file and set its name
@@ -955,7 +847,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
-        rows <- searchResults[[4]] #organismList
+        rows <- searchResults[[4]] # OrganismList
         df <- server_functions$getNcbiSearchTermsMatrix(searchResults, length(barcodeList()))
         colnames(df) <- columns
         rownames(df) <- rows
@@ -964,16 +856,39 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  # * Download NCBI NA table --------------------------------------------------
+  output$downloadNCBINaTable <- downloadHandler(
+    filename = function() {
+      paste("NCBI_NA_Entries", ".csv", sep="")
+    },
+    content = function(file) {
+      then(ncbiSearch(), function(searchResults) {
+        results <- searchResults[[5]]
+        if (is_null(results)) {
+          results = "No Manual Processing Required!"
+        }
+        invalid_search_terms_df <- data.frame("SearchTerms" = results, check.names = FALSE)
+        write.csv(invalid_search_terms_df,file)
+      })
+    }
+  )
+  
   # * SummaryReport ------------------------------------------------------------
 
-  # Format the dataframe for each database correctly 
-  # Then send it to the summary data function for processing
-  # Returns the summary report data table
+  ## ----#
+  # Country Summary function
+  #   - Input: 
+  #         databaseFlag: 0) is for CRUX, 1) for NBCI, 2) (else) Bold
+  #   - Output:
+  #         Format the dataframe for each database correctly to generate the table
+  #         Then send it to the summary data function for processing
+  #         Returns the summary report data table
+  ## ----#
   summary_report <- function(databaseFlag) {
     if (databaseFlag == 1) {
       columns <- barcodeList()
       then(ncbiSearch(), function(searchResults) {
-        rows <- searchResults[[4]] #organismList
+        rows <- searchResults[[4]] # OrganismList
         dataframe <- as.data.frame(server_functions$getNcbiResultsMatrix(searchResults, 
                                                                          length(barcodeList())))
         colnames(dataframe) <- columns
@@ -1002,18 +917,25 @@ shinyServer(function(input, output, session) {
 
   # BOLD --------------------------------------------------------------------
   
+  # BOLD Progress Bar
+  progressBOLD <- NULL
   
   # * BOLDSearchButton ------------------------------------------------------
-    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, { #When searchButton clicked, update BOLDOrgSearch to return the value input into BOLDorganismList
-      input$BOLDorganismList #Returns as a string
+  
+    # When searchButton clicked, update BOLDOrgSearch to 
+    # return the value input into BOLDorganismList
+    BOLDOrgSearch <- eventReactive(input$BOLDsearchButton, {
+      input$BOLDorganismList # Returns as a string
     })
     
-    progressBOLD <- NULL
+    # Reset the UI (in case this isn't their first search) 
+    # and initilize the progress bar
     observeEvent(input$BOLDsearchButton, {
-      updateTabsetPanel(session, "BOLDpage", selected = "Absent/Invalid Metadata")
       shinyjs::show(id = "BOLDNullSpecies")
       showTab("BOLDpage", "Filters")
-      showTab("BOLDpage", "Absent/Invalid Metadata")
+      showTab("BOLDpage", "Species Not Found in BOLD Database")
+      updateTabsetPanel(session, "BOLDpage", selected = "Filters")
+      updateTabsetPanel(session, "BOLDpage", selected = "Species Not Found in BOLD Database")
       hideTab("BOLDpage", "Plot Unique Species Per Country")
       hideTab("BOLDpage", "Plot Total Sequences Per Country")
       hideTab("BOLDpage", "Coverage Matrix")
@@ -1041,6 +963,8 @@ shinyServer(function(input, output, session) {
     })
 
     
+    # If the user skips filters we move to the next part of the pipeline
+    # The next part of the pipeline being the Coverage Matrix
     observeEvent(input$BOLDSkipFilter, {
       updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
       showTab("BOLDpage", "Summary Data")
@@ -1055,9 +979,16 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Country Data")
       showTab("BOLDpage", "Manual Data Processing Required")
       showTab("BOLDpage", "Absent/Invalid Metadata")
-      click("BOLDfilterCountries")
+      
+      # Reset all filters
+      updateSelectizeInput(inputId="selectCountry", selected = character(0))
+      if (input$removeNCBI) { 
+        updateCheckboxInput(session, "removeNCBI", value = FALSE)
+      }
     })
     
+    # If the user wants to filter countries then we move
+    # to the next stage of the pipeline the Coverage Matrix
     observeEvent(input$BOLDfilterCountries, {
       updateTabsetPanel(session, "BOLDpage", selected = "Summary Data")
       showTab("BOLDpage", "Summary Data")
@@ -1074,12 +1005,15 @@ shinyServer(function(input, output, session) {
       showTab("BOLDpage", "Absent/Invalid Metadata")
     })
     
+    # This is to make filtering easy by allowing scientist
+    # to add countries to the filter by just clicking on them
     observeEvent(input$BOLDClearFilter, {
       updateSelectizeInput(inputId="selectCountry", selected = character(0))
     })
     
-    observeEvent(input$BOLDStartButton,
-   {
+    # BOLD Start button that allows the user to upload a file
+    # and shows the next tab of the pipeline
+    observeEvent(input$BOLDStartButton, {
      updateTabsetPanel(session, "BOLDpage", selected = "Organism Names")
      showTab("BOLDpage", "Organism Names")
      # It requires a file to be uploaded first
@@ -1096,8 +1030,15 @@ shinyServer(function(input, output, session) {
    })
 
     # * BOLDCoverage ------------------------------------------------------------
-
     
+    ## ----#
+    # Bold Coverage
+    #   - Input: 
+    #         No inputs directly to the function, but it reads the 
+    #         organisms the user provided 
+    #   - Output:
+    #         Result: List with all the results from the query, species, countries, etc
+    ## ----#
     boldCoverage <- reactive ({
         orgSearch <- BOLDOrgSearch()
         taxize_selected <- input$BOLDtaxizeOption
@@ -1109,7 +1050,7 @@ shinyServer(function(input, output, session) {
             need(organismListLength > 0, 'Please name at least one organism')
           )
           
-          #puts variable in global scope
+          # Puts variable in global scope
           unfound_species <- c()
           searchResult <- 0
           results <- data.frame(matrix(ncol=0, nrow=0))
@@ -1151,7 +1092,8 @@ shinyServer(function(input, output, session) {
           }) %...>% {
             if(searchResult == 1){
               print("BOLD is down")
-              # POP UP TELLING USER THAT BOLD IS DOWN
+              # Bold is down not much we can do
+              # TODO: POP UP TELLING USER THAT BOLD IS DOWN
             }
             shinyjs::show(id = "BOLDClearFilter")
             shinyjs::show(id = "BOLDfilterCountries")
@@ -1160,27 +1102,37 @@ shinyServer(function(input, output, session) {
             shinyjs::show(id = "removeNCBICol")
             shinyjs::show(id = "countryFilterCol")
             shinyjs::show(id = "bold_species_not_found_panel")
-            returnMatrix <- . #return data matrix
+            returnMatrix <- . # Return data matrix
             returnMatrix
           }
         }
     })
     
-    BOLDOrgCountries <- eventReactive(input$BOLDfilterCountries, { #When searchButton clicked, update CruxOrgSearch to return the value input into CRUXorganismList
-        input$selectCountry #Returns a list of countries
+    BOLDOrgCountries <- eventReactive(c(input$BOLDfilterCountries, input$BOLDSkipFilter), {
+      input$selectCountry # Returns a list of countries
     })
-    
     
     # * BOLD MATRIX----------------
     
-    BoldMatrix <- reactive({# creates and returns the matrix to be displayed with the count
+    ## ----#
+    # Bold Matrix
+    #   - Input: 
+    #         No direct input, but takes n the list from BOLD coverage with all the results
+    #   - Output:
+    #         data: Filtered data, without any NAs, removing NCBI duplicate entries,
+    #               removing the filtered countries.
+    ## ----#
+    BoldMatrix <- reactive({
       boldCoverage() %...>% {
         list <- .
         data <- list[["results"]]
-        # remove ncbi
+        
+        # Remove duplicate ncbi entries
         if (input$removeNCBI == TRUE){
           data <- subset(data, is.na(genbank_accession))
         }
+        
+        # Remove countries
         country_list <- BOLDOrgCountries()
         if(length(country_list) > 0){
           data <- subset(data, country %in% country_list)
@@ -1189,10 +1141,8 @@ shinyServer(function(input, output, session) {
       }
     })
     
-    # * Plot: Unique Species per Country ----------
-    # country summary function
-    # no. of species for all countries
-    
+    # * Plot: Unique Species per Country  ----------
+    # Build a Bar Graph counting all unique species per country
     BoldPlotBarGraph <- function(){
       if (!is.null(BOLDOrgCountries())){
         vals <- c()
@@ -1204,12 +1154,12 @@ shinyServer(function(input, output, session) {
           present_matrix <- bold_functions$presentMatrix(bold_matrix, selectCountry)
           countries <- colnames(present_matrix)
           
-          # set vals
-          ## counts # of cols for each country where cell > 0
+          # Set vals
+          # Counts number of cols for each country where cell > 0
           vals <- colSums(present_matrix != 0)
           
-          ## BOLD adds species/subspecies to search results
-          ## so # of species will often be more than # from boldOrganismList()
+          # BOLD adds species/subspecies to search results
+          # So number of species will often be more than number from boldOrganismList()
           max_uniq_species <- max(vals)
           
           xf <- data.frame(country = countries, values = vals)
@@ -1223,11 +1173,12 @@ shinyServer(function(input, output, session) {
       }
     }
     
-    
+    # Render BOLD Bar Graph
     output$species <- renderPlot ({
       BoldPlotBarGraph()
     }, height = 700, width = 1000)
     
+    # Download BOLD Bar Graph
     output$downloadBarGraph = downloadHandler(
       filename = 'bold_bargraph.png',
       content = function(file) {
@@ -1242,14 +1193,14 @@ shinyServer(function(input, output, session) {
     
     
     # * Plot: Total sequences per Country ----------
-    # for the treemap
-    
+    # Create the Treemap visualization for BOLD
+    # Representing how many species each country has
     BoldPlotTreemap <- function(){
       if (!is.null(input$selectCountry)){
         BoldMatrix() %...>% {
           records_bold <- .
-          #table gets counts, data.frame converts table to dataframe
-          #ggplot only accepts dataframes
+          # Table gets counts, data.frame converts table to dataframe
+          # ggplot only accepts dataframes
           xf <- records_bold[c("country")] %>%
             table
           xf <- as.data.frame(xf)
@@ -1258,9 +1209,9 @@ shinyServer(function(input, output, session) {
           geom.text.size = 7
           theme.size = (14/5) * geom.text.size
           
-          #reference for changing titles: http://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
-          #the "." column holds the countries (.data refers to xf)
-          #using .data instead of xf to avoid warnings about it
+          # Reference for changing titles: http://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
+          # the "." column holds the countries (.data refers to xf)
+          # using .data instead of xf to avoid warnings about it
           ggplot(xf, aes(area = .data[["Freq"]], fill = .data[["country"]], label = .data[["country"]])) +
             geom_treemap() +  
             geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE, reflow = TRUE) +
@@ -1269,14 +1220,16 @@ shinyServer(function(input, output, session) {
                   plot.title = element_text(size = 20, face = "bold")) +
             labs(fill = "Countries")
         }
-    }}
+      }}
     
+    # Render BOLD Treemap
+    # from https://stackoverflow.com/questions/25061822/ggplot-geom-text-font-size-control
     output$treemap <- renderPlot({ 
-        # from https://stackoverflow.com/questions/25061822/ggplot-geom-text-font-size-control
         BoldPlotTreemap()
       }, height = 700, width = 1000)
   
     
+    # Dowload the BOLD Treemap
     output$downloadTreeGraph = downloadHandler(
       filename = 'bold_treegraph.png',
       content = function(file) {
@@ -1289,7 +1242,7 @@ shinyServer(function(input, output, session) {
         }
       })
     
-    
+    # Render Coverage Matrix for BOLD
     output$BOLDcoverageResults <- 
       DT::renderDataTable({
         BoldMatrix() %...>% {
@@ -1299,6 +1252,7 @@ shinyServer(function(input, output, session) {
         }
       })
 
+    # Render Present Countries Table for BOLD
     output$BOLDPresentTable <- 
       DT::renderDataTable({
         BoldMatrix() %...>% {
@@ -1306,6 +1260,7 @@ shinyServer(function(input, output, session) {
         }
       })
     
+    # Render Absent Countries Table for BOLD
     output$BOLDAbsentTable <- 
       DT::renderDataTable({
         promise_all(matrix = boldCoverage(), coverage = boldCoverage()) %...>% with({
@@ -1315,6 +1270,7 @@ shinyServer(function(input, output, session) {
         })
       })
 
+    # Render table with those species that did not have Barcodes for BOLD
     output$BOLDNATable <- 
       DT::renderDataTable({
         boldCoverage() %...>% {
@@ -1322,10 +1278,13 @@ shinyServer(function(input, output, session) {
         }
       })
     
+    # Render Summary Data table for BOLD
     output$BOLDSummaryData <- 
       DT::renderDataTable(
         summary_report(2))
   
+    
+    # Render table with those species that were completely missing from BOLD
     output$BOLDNullSpecies <-
       DT::renderDataTable(
         boldCoverage() %...>% {
@@ -1333,12 +1292,13 @@ shinyServer(function(input, output, session) {
           bold_functions$missingSpecies(df["Missing Species"])
         })
     
-    
+    # Render warning for users so they know what they table does
     output$BOLDNullSpeciesWarning <-
       renderText({
         "Warning: The following organisms were not found"
       })
     
+    # Render Select Country Filter UI
     output$selectCountry <- renderUI({
       boldCoverage() %...>% {
         coverage <- .
@@ -1358,12 +1318,13 @@ shinyServer(function(input, output, session) {
 
     # * BOLDFASTADownload ------------------------------------------------------------
     
+    # Download Fasta Files for all the barcodes (zipped) from BOLD
     output$downloadBoldFasta <- downloadHandler(
       filename = function() {
         paste("BOLD", ".zip", sep="")
       },
       content = function(downloadedFile) {
-        #make temporary directory to hold files to be zipped
+        # Make a temporary directory to hold files to be zipped
         setwd(tempdir())
         
         BoldMatrix() %...>% {
@@ -1382,18 +1343,18 @@ shinyServer(function(input, output, session) {
               
               fasta_vector = c()
               for(i in 1:codesLen){
-                
-                #display species name if subspecies name is not available
+                # Need to create Fasta format
+                # Display species name if subspecies name is not available
                 species_name <- if(is.na(barcode_table$subspecies_name[i]) || barcode_table$subspecies_name[i] == "") barcode_table$species_name[i] else barcode_table$subspecies_name[i]
                 
-                #put data into vector
+                # Put data into vector
                 org_vector <- c(barcode_table$processid[i], species_name, barcode, barcode_table$genbank_accession[i])
-                #remove empty data
+                # Remove empty data
                 org_fasta <- org_vector[org_vector != '']
                 org_data <- paste(org_fasta, collapse = '|')
                 org_data <- paste('>', org_data, sep = '')
                 
-                #do not include entries with no sequences
+                # Do not include entries with no sequences
                 
                 if (barcode_table$nucleotides[i] != '' && !is.na(barcode_table$nucleotides[i])){
                   fasta_vector <- c(fasta_vector, org_data)
@@ -1420,6 +1381,7 @@ shinyServer(function(input, output, session) {
     
     # * BOLDSummaryDownload ----------------------------------------------------
     
+    # Download BOLD summary table
     output$downloadBoldSummary <- downloadHandler(
       filename = function() {
         paste("BOLD_Summary_Report", ".csv", sep="")
@@ -1433,6 +1395,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD Coverage Matrix Download ------------------------------------------
+    
+    # Download BOLD Coverage Matrix
     output$downloadBoldMatrix <- downloadHandler(
       filename = function() {
         paste("BOLD_Coverage_Matrix", ".csv", sep="")
@@ -1448,6 +1412,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD Sequences per Country Download ------------------------------------------
+    
+    # Download BOLD Present Species Table
     output$downloadBoldPresent <- downloadHandler(
       filename = function() {
         paste("BOLD_Sequences_per_Country", ".csv", sep="")
@@ -1462,6 +1428,8 @@ shinyServer(function(input, output, session) {
     
     
     # * BOLD Recommended Countries Download ------------------------------------------
+    
+    # Download BOLD absent species Table
     output$downloadBoldAbsent <- downloadHandler(
       filename = function() {
         paste("BOLD_Recommended_Country_Filters", ".csv", sep="")
@@ -1477,6 +1445,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD NA Barcodes Download ------------------------------------------
+    
+    # Download BOLD NA barcodes table
     output$downloadBoldNaBarcodes <- downloadHandler(
       filename = function() {
         paste("BOLD_NA_Barcodes", ".csv", sep="")
@@ -1490,6 +1460,8 @@ shinyServer(function(input, output, session) {
     )
     
     # * BOLD Null Species Download ------------------------------------------
+    
+    # Download BOLD not found species table
     output$downloadBoldNullSpecies <- downloadHandler(
       filename = function() {
         paste("BOLD_Missing_Species", ".csv", sep="")
@@ -1502,6 +1474,5 @@ shinyServer(function(input, output, session) {
         }
       }
     )
-    
 })
 

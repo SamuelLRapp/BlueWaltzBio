@@ -80,7 +80,8 @@ tabsetPanel(
                                   Additionally, the results in this table are not affected by the Country or NCBI filter")
                   ),
                   tags$div(id="loaderWrapperBOLD"),
-                  DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#00000000") #transparent spinner
+                  DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#00000000"), # Transparent spinner
+                  downloadButton('downloadBoldNullSpecies', "Download Species Not Found Table")
            )),
   
   
