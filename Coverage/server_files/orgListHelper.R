@@ -100,11 +100,12 @@ taxizeHelper <- function(orgSearch, taxizeSelected){
           }
         }
       }
-      list(status=0,results=taxize_organism_list)
+      list(status=0,results=unique(taxize_organism_list))
       
     } else{
       # If the checkbox wasn't selected, return the list as is
       organismList 
       list(status=0,results=organismList)
     }
+    
 }

@@ -184,7 +184,7 @@ reduce_barcode_summary <- function(b_summary) {
 missingSpecies <- function(missingList) {
   # Check for empty missing species list
   if (is.null(missingList[["Missing Species"]])) {
-    missing_df <- data.frame(" " <- c("NULL"))
+    missing_df <- data.frame(" " <- c("No Manual Processing Required!"))
   } else {
     missing_df <- data.frame(" " <- missingList[["Missing Species"]])
   }
