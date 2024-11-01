@@ -81,7 +81,8 @@ tabsetPanel(
                   ),
                   tags$div(id="loaderWrapperBOLD"),
                   DT::dataTableOutput("BOLDNullSpecies") %>% withSpinner(color="#00000000"), # Transparent spinner
-                  downloadButton('downloadBoldNullSpecies', "Download Species Not Found Table")
+                  conditionalPanel(condition = "output.BOLDNullSpecies",
+                  downloadButton('downloadBoldNullSpecies', "Download Species Not Found Table"))
            )),
   
   
