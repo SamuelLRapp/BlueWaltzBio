@@ -321,7 +321,7 @@ shinyServer(function(input, output, session) {
           searchResult <- server_functions$getNcbiSearchFullResults("nucleotide", searchTerm, downloadNumber)
           }, error = function(err) {
             print("ERROR IN NCBI SEARCH")
-            organism <<- paste(searchTerm, "(invalid)")
+            searchTerm <<- paste(searchTerm, "(invalid)")
             searchResult <<- NULL
           })
           if (!is.null(searchResult) && !all(is.na(searchResult))){
@@ -329,7 +329,7 @@ shinyServer(function(input, output, session) {
             countResults <- list.append(countResults, searchResult[[2]])
             searchTerms <- list.append(searchTerms, searchTerm) 
           } else {
-            error_species <- c(error_species, organism)
+            error_species <- c(error_species, searchTerm)
           }
         }
         organismsDownloaded <- organismsDownloaded + 1
