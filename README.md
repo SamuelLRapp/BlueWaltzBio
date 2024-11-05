@@ -18,11 +18,12 @@ This tool was developed by a dedicated group of graduate and undergraduate stude
 
 # Installation Guide
 
-While the tool is hosted in the Shiny servers (https://sriramramesh.shinyapps.io/ReferenceSequenceBrowser/) you can also install set it up on your local machine and modify the code as you want.
+While the tool is hosted in the Shiny servers (https://sriramramesh.shinyapps.io/ReferenceSequenceBrowser/) you can also set it up on your local machine and modify the code as you want.
 
 In fact, we look forward to see what the community can add or think of adding to this tool!
 
 To install:
+
 1. You need to have R and R Studio installed. Everything was tested with R version 4.1.2.
 2. Clone our repo to your local machine.
 3. Run the rsbpackages.R script which will automatically install all the required packages with the right versions.
