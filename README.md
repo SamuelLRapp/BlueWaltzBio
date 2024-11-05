@@ -18,7 +18,7 @@ This tool was developed by a dedicated group of graduate and undergraduate stude
 
 # Installation Guide
 
-While the tool is hosted in the UCLA servers (http://shiny.eeb.ucla.edu/BlueWaltzBio/Coverage/) you can also install set it up on your local machine and modify the code as you want.
+While the tool is hosted in the Shiny servers (https://sriramramesh.shinyapps.io/ReferenceSequenceBrowser/) you can also install set it up on your local machine and modify the code as you want.
 
 In fact, we look forward to see what the community can add or think of adding to this tool!
 
